@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<script src="../vendor/swisseph-local.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>वैदिक ज्योतिष कैलकुलेटर (v14.0 - फाइनल)</title>
+    <style>
+        /* --- Styles --- */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; line-height: 1.6; padding: 20px; background-color: #f0f2f5; color: #1d2129; margin: 0; }
+        .container { max-width: 950px; margin: 20px auto; background: #ffffff; padding: 35px 40px; border-radius: 10px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
+        h1, h2 { text-align: center; color: #0d3b66; margin-bottom: 30px; }
+        h1 { font-weight: 600; }
+        h2 { font-size: 1.2em; color: #343a40; border-bottom: 1px solid #eaeaea; padding-bottom: 12px; font-weight: 500; margin-top: 25px;}
+
+        /* Input Section */
+        .input-section { background-color: #e3f2fd; padding: 20px; border-radius: 8px; border: 1px solid #bbdefb; margin-bottom: 25px; }
+        .input-section label { font-weight: bold; color: #0d47a1; display: block; margin-bottom: 8px; }
+        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #90caf9; border-radius: 6px; font-size: 1rem; }
+        .instruction { font-size: 0.85em; color: #555; margin-top: 6px; }
+
+        /* Status Grid */
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 10px; }
+        .planet-status-card { background: #f8f9fa; border: 1px solid #dee2e6; padding: 10px 15px; border-radius: 6px; }
+        .planet-status-title { font-weight: bold; color: #495057; margin-bottom: 8px; display: block; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
+        .checkbox-item { display: flex; align-items: center; font-size: 0.85em; color: #333; cursor: pointer; }
+        .checkbox-item input { margin-right: 5px; transform: scale(1.1); cursor: pointer; }
+
+        button { display: block; width: auto; min-width: 200px; margin: 30px auto 0 auto; padding: 12px 30px; background-color: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.05rem; font-weight: 500; transition: background-color 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        button:hover { background-color: #1558b0; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+        button:disabled { opacity: 0.55; cursor: wait; }
+
+        .button-group { display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .copy-button, .download-button { font-size: 0.9rem; padding: 8px 15px; margin-top: 10px; margin-bottom: 5px; min-width: 140px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .download-button { background-color: #28a745; }
+
+        /* Output Formatting */
+        .house-info { margin-bottom: 15px; padding: 20px 25px; background-color: #ffffff; border-radius: 8px; border: 1px solid #e7e7e7; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .house-title { font-weight: 600; font-size: 1.15em; color: #1c2a48; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0; }
+        .section-title { font-weight: 600; color: #555; margin-top: 15px; margin-bottom: 8px; font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.5px; }
+        .planet-entry { margin-bottom: 12px; padding: 12px 15px; border-left: 4px solid #1a73e8; background-color: #f9f9f9; border-radius: 4px; border: 1px solid #eee; }
+        .planet-name { font-weight: 600; color: #1d2129; font-size: 1.05em; }
+        .dignity { font-weight: 500; }
+        .dignity.ucch { color: #1e7e34; } .dignity.neech { color: #c82333; } .dignity.neechabhanga { color: #5a2a96; font-weight: 600; } .dignity.swagrihi { color: #0069d9; }
+        .relationship.mitra { color: #117a8b; } .relationship.shatru { color: #d39e00; } .relationship.sama { color: #5a6268; }
+        .error-msg { color: #c82333; text-align: center; margin-top: 10px; font-weight: bold;}
+
+        /* --- Output colors: attractive & colorful (logic & text untouched, only CSS) --- */
+        .house-info { border-top: 3px solid #ff9933; }
+        .house-info:nth-child(4n+2) { border-top-color: #1a73e8; }
+        .house-info:nth-child(4n+3) { border-top-color: #2e7d32; }
+        .house-info:nth-child(4n) { border-top-color: #b3003f; }
+        .house-title { border-bottom: 2px solid #ffe0b2; }
+        .section-title { color: #b3003f; }
+        .planet-entry { background: linear-gradient(to right, #eef4ff, #f9f9f9 65%); }
+        .planet-name { color: #0d3b66; }
+        .aspect-info-line { color: #c82333; font-weight: 600; }
+        .aspect-received-info { font-weight: 500; }
+        .lord-info { background-color: #e3f2fd !important; border: 1px solid #90caf9; color: #0d47a1; }
+
+        /* --- Swiss Ephemeris auto-fill section --- */
+        .ephem-section { background-color: #fff8e1; border: 1px solid #ffe082; }
+        .ephem-section label { color: #e65100; }
+        /* --- जन्म विवरण: 2-line compact --- */
+        .c2-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .c2-row { display: flex; gap: 6px; align-items: flex-end; flex-wrap: wrap; }
+        .c2-f { display: flex; flex-direction: column; font-size: 0.68em; color: #9c5b00; font-weight: 600; flex: 1 1 50px; min-width: 0; }
+        .c2-f input, .c2-f select { width: 100%; padding: 6px 4px; font-size: 0.88rem; border: 1px solid #ffcc80; border-radius: 5px; background: #fff; box-sizing: border-box; }
+        .c2-grow { flex: 3 1 150px; }
+        .c2-wrap { position: relative; display: block; }
+        button.c2-btn { padding: 6px 9px; font-size: 0.88rem; flex: 0 0 auto; }
+        .c2-sep { width: 1px; align-self: stretch; background: #ffe0b2; }
+        .c2-dst { font-size: 0.72em; color: #c82333; }
+        button.bd-toggle { display: inline-block; min-width: 0; margin: 0; padding: 9px 14px; border: 2px solid #1a73e8; color: #1a73e8; background: #fff; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 1rem; box-shadow: none; }
+        button.bd-toggle:hover { background: #e3f2fd; box-shadow: none; }
+        .dst-hint { font-size: 0.82em; color: #c82333; margin-top: 5px; }
+        #btn-ephem { background-color: #ef6c00; margin-top: 18px; }
+        #btn-ephem:hover { background-color: #d55a00; }
+        #ephem-status { font-size: 0.88em; color: #e65100; margin-bottom: 10px; }
+        #ephem-status.ok { color: #2e7d32; }
+        .ephem-place-wrap { position: relative; }
+        #place-results { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ffcc80; border-radius: 0 0 6px 6px; max-height: 230px; overflow-y: auto; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.12); display: none; }
+        #place-results .pr-item { padding: 9px 12px; cursor: pointer; font-size: 0.92em; border-bottom: 1px solid #f5f5f5; }
+        #place-results .pr-item:hover { background: #fff3e0; }
+        #place-results .pr-none { padding: 10px 12px; color: #888; font-size: 0.88em; }
+        @media (max-width: 520px) { .container { padding: 20px 16px; } .c2-f input, .c2-f select { font-size: 0.85rem; } }
+        /* v6: ग्रह-गरिमा summary pills */
+        #dignity-summary { margin: 2px 0 12px; padding: 9px 12px; background: #fffdf7; border: 1px solid #ffe0b2; border-radius: 8px; font-size: 13px; line-height: 2; color: #4e342e; }
+        #dignity-summary .ds-title { font-weight: 700; color: #bf360c; margin-right: 6px; }
+        #dignity-summary .dg { font-weight: 600; padding: 2px 9px; border-radius: 11px; margin: 0 3px; white-space: nowrap; }
+        #dignity-summary .dg-ucch { background: #e8f5e9; color: #1b5e20; }
+        #dignity-summary .dg-neech { background: #ffebee; color: #b71c1c; }
+        #dignity-summary .dg-nbhanga { background: #fff3e0; color: #e65100; }
+        #dignity-summary .dg-swa { background: #e3f2fd; color: #0d47a1; }
+        #dignity-summary .dg-mitra { background: #e0f2f1; color: #00695c; }
+        #dignity-summary .dg-shatru { background: #fce4ec; color: #ad1457; }
+        #dignity-summary .dg-sama { background: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>वैदिक ज्योतिष कैलकुलेटर</h1>
+
+    <!-- Swiss Ephemeris Auto-fill Section -->
+    <div class="input-section ephem-section">
+        <label>🪐 जन्म विवरण से ग्रह स्थिति निकालें (Swiss Ephemeris)</label>
+        <div id="ephem-status">⏳ Engine लोड हो रहा है…</div>
+        <div class="c2-grid">
+            <div class="c2-row">
+                <label class="c2-f">दिन<select id="bd-day"><option value="">--</option></select></label>
+                <label class="c2-f">माह<select id="bd-month"><option value="">--</option><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select></label>
+                <label class="c2-f">वर्ष<input type="number" id="bd-year" placeholder="1995"></label>
+                <span class="c2-sep"></span>
+                <label class="c2-f">घंटे<input type="number" id="bd-hh" placeholder="3"></label>
+                <label class="c2-f">मिनट<input type="number" id="bd-mm" placeholder="00"></label>
+                <label class="c2-f">सेकंड<input type="number" id="bd-ss" value="0"></label>
+                <button type="button" class="bd-toggle c2-btn" id="bd-ampm" data-val="AM">AM</button>
+                <span class="c2-sep"></span>
+                <button type="button" class="bd-toggle c2-btn" id="tz-sign" data-val="+">+</button>
+                <label class="c2-f">TZ घंटे<input type="number" id="tz-hh" value="5"></label>
+                <label class="c2-f">मिनट<input type="number" id="tz-mm" value="30"></label>
+            </div>
+            <div class="c2-dst">(Daylight saving (DST) लागू हो तो timezone उसी के अनुसार भरें)</div>
+            <div class="c2-row">
+                <label class="c2-f c2-grow">जन्म स्थान<span class="c2-wrap"><input type="text" id="birth-place" placeholder="शहर English में लिखें" autocomplete="off"><div id="place-results"></div></span></label>
+                <label class="c2-f">अक्षांश°<input type="number" id="lat-deg" placeholder="21"></label>
+                <button type="button" class="bd-toggle c2-btn" id="lat-dir" data-val="N">N</button>
+                <label class="c2-f">मिनट<input type="number" id="lat-min" placeholder="27"></label>
+                <label class="c2-f">देशांतर°<input type="number" id="lon-deg" placeholder="80"></label>
+                <button type="button" class="bd-toggle c2-btn" id="lon-dir" data-val="E">E</button>
+                <label class="c2-f">मिनट<input type="number" id="lon-min" placeholder="11"></label>
+            </div>
+        </div>
+        <button type="button" id="btn-ephem" disabled>🪐 ग्रह स्थिति निकालें व भरें</button>
+        <button type="button" id="btn-makecode" class="c2-btn" style="margin-top:10px; width:100%; background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:10px; font-weight:bold; cursor:pointer;">🔗 Astro Code बनाएं (दूसरे tools के लिए)</button>
+        <div id="code-out" style="display:none; margin-top:8px;">
+            <div class="c2-row">
+                <label class="c2-f c2-grow">Astro Code<span class="c2-wrap"><input type="text" id="astro-code-text" readonly style="font-family:monospace;"></span></label>
+                <button type="button" id="btn-copycode" class="c2-btn">📋 Copy</button>
+            </div>
+        </div>
+        <div class="instruction">बटन दबाते ही 10 राशि नंबर नीचे auto-fill होंगे + वक्री/अस्त/वर्गोत्तम tick होंगे, फिर विश्लेषण अपने आप बनेगा। Manual entry भी पहले जैसी चलती रहेगी।</div>
+        <div id="ephem-error" class="error-msg"></div>
+    </div>
+
+    <!-- Input Section -->
+    <div class="input-section">
+        <label for="rashi-input">लग्न और 9 ग्रहों की राशि संख्या (1-12) कॉमा से अलग करके:</label>
+        <input type="text" id="rashi-input" placeholder="उदा. 1,5,10,1,3,11,9,7,2,8 (क्रम: लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु)">
+        <div class="instruction">क्रम अनिवार्य: 1.लग्न, 2.सूर्य, 3.चंद्र, 4.मंगल, 5.बुध, 6.गुरु, 7.शुक्र, 8.शनि, 9.राहु, 10.केतु</div>
+        <div id="error-display" class="error-msg"></div>
+    </div>
+
+    <!-- Checkbox Section -->
+    <h2>ग्रहों की विशेष स्थिति (Optional)</h2>
+    <div id="dignity-summary" style="display:none"></div>
+    <div class="status-grid" id="status-container">
+        <!-- JS will populate this -->
+    </div>
+
+    <button onclick="calculateAstrology()">गणना करें</button>
+
+    <div id="output">
+        <div id="house-analysis-output"></div>
+    </div>
+</div>
+
+<script>
+    // --- Constants ---
+    const RASHIS = ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुम्भ', 'मीन'];
+    const PLANETS_MAP = ['Lagna', 'Surya', 'Chandra', 'Mangal', 'Budh', 'Guru', 'Shukra', 'Shani', 'Rahu', 'Ketu'];
+    const PLANETS_DISPLAY = { 'Surya': 'सूर्य', 'Chandra': 'चंद्र', 'Mangal': 'मंगल', 'Budh': 'बुध', 'Guru': 'गुरु', 'Shukra': 'शुक्र', 'Shani': 'शनि', 'Rahu': 'राहु', 'Ketu': 'केतु' };
+    const RASHI_LORDS = { 0: 'Mangal', 1: 'Shukra', 2: 'Budh', 3: 'Chandra', 4: 'Surya', 5: 'Budh', 6: 'Shukra', 7: 'Mangal', 8: 'Guru', 9: 'Shani', 10: 'Shani', 11: 'Guru' };
+    const PLANET_ASPECTS = { 'Surya': [7], 'Chandra': [7], 'Mangal': [4, 7, 8], 'Budh': [7], 'Guru': [5, 7, 9], 'Shukra': [7], 'Shani': [3, 7, 10], 'Rahu': [5, 7, 9], 'Ketu': [5, 7, 9] };
+    const DIGNITIES = { ucch: { 'Surya': 0, 'Chandra': 1, 'Mangal': 9, 'Budh': 5, 'Guru': 3, 'Shukra': 11, 'Shani': 6 }, neech: { 'Surya': 6, 'Chandra': 7, 'Mangal': 3, 'Budh': 11, 'Guru': 9, 'Shani': 0 }, swagrihi: { 'Surya': [4], 'Chandra': [3], 'Mangal': [0, 7], 'Budh': [2, 5], 'Guru': [8, 11], 'Shukra': [1, 6], 'Shani': [9, 10] } };
+    const NAISARGIKA_MITRA = { 'Surya': ['Chandra', 'Mangal', 'Guru'], 'Chandra': ['Surya', 'Budh'], 'Mangal': ['Surya', 'Chandra', 'Guru'], 'Budh': ['Surya', 'Shukra', 'Rahu', 'Ketu'], 'Guru': ['Surya', 'Chandra', 'Mangal', 'Ketu'], 'Shukra': ['Budh', 'Shani', 'Rahu', 'Ketu'], 'Shani': ['Budh', 'Shukra', 'Rahu', 'Ketu'], 'Rahu': ['Budh', 'Shukra', 'Shani', 'Guru'], 'Ketu': ['Mangal', 'Guru', 'Shukra', 'Shani'] };
+    const NAISARGIKA_SHATRU = { 'Surya': ['Shani', 'Shukra', 'Rahu', 'Ketu'], 'Chandra': [], 'Mangal': ['Budh', 'Rahu', 'Ketu'], 'Budh': ['Chandra'], 'Guru': ['Budh', 'Shukra', 'Rahu'], 'Shukra': ['Surya', 'Chandra', 'Mangal'], 'Shani': ['Surya', 'Chandra', 'Mangal'], 'Rahu': ['Surya', 'Chandra', 'Mangal'], 'Ketu': ['Surya', 'Chandra', 'Budh'] };
+
+    // --- 1. UI Generation for Checkboxes ---
+    function generateStatusInputs() {
+        const container = document.getElementById('status-container');
+        // Defined exactly as requested
+        const controls = [
+            { key: 'Surya', opts: [ {id:'rv', label:'राशि वर्गोत्तम'}, {id:'bv', label:'भाव वर्गोत्तम'} ] },
+            { key: 'Chandra', opts: [ {id:'ast', label:'अस्त (C)'}, {id:'rv', label:'राशि वर्गोत्तम'}, {id:'bv', label:'भाव वर्गोत्तम'} ] },
+            { key: 'Mangal', opts: [ {id:'vakri', label:'वक्री (R)'}, {id:'ast', label:'अस्त (C)'}, {id:'rv', label:'राशि वर्गोत्तम'}, {id:'bv', label:'भाव वर्गोत्तम'} ] },
+            { key: 'Budh', opts: [ {id:'vakri', label:'वक्री (R)'}, {id:'ast', label:'अस्त (C)'}, {id:'rv', label:'राशि वर्गोत्तम'}, {id:'bv', label:'भाव वर्गोत्तम'} ] },
+            { key: 'Guru', opts: [ {id:'vakri', label:'वक्री (R)'}, {id:'ast', label:'अस्त (C)'}, {id:'rv', label:'राशि वर्गोत्तम'}, {id:'bv', label:'भाव वर्गोत्तम'} ] },
+            { key: 'Shukra', opts: [ {id:'vakri', label:'वक्री (R)'}, {id:'ast', label:'अस्त (C)'}, {id:'rv', label:'राशि वर्गोत्तम'}, {id:'bv', label:'भाव वर्गोत्तम'} ] },
+            { key: 'Shani', opts: [ {id:'vakri', label:'वक्री (R)'}, {id:'ast', label:'अस्त (C)'}, {id:'rv', label:'राशि वर्गोत्तम'}, {id:'bv', label:'भाव वर्गोत्तम'} ] },
+            { key: 'Rahu', opts: [ {id:'rv', label:'राशि वर्गोत्तम'}, {id:'bv', label:'भाव वर्गोत्तम'} ] },
+            { key: 'Ketu', opts: [ {id:'rv', label:'राशि वर्गोत्तम'}, {id:'bv', label:'भाव वर्गोत्तम'} ] }
+        ];
+
+        let html = '';
+        controls.forEach(p => {
+            html += `<div class="planet-status-card">
+                        <span class="planet-status-title">${PLANETS_DISPLAY[p.key]}</span>
+                        <div class="checkbox-group">`;
+            p.opts.forEach(opt => {
+                html += `<label class="checkbox-item">
+                            <input type="checkbox" id="${p.key}-${opt.id}"> ${opt.label}
+                         </label>`;
+            });
+            html += `   </div>
+                     </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    // --- Helper Functions ---
+    function normalizeHouse(house) { return ((house - 1 + 12) % 12) + 1; }
+    function getOrdinal(n) { const map = {1:'प्रथम', 2:'द्वितीय', 3:'तृतीय', 4:'चतुर्थ', 5:'पंचम', 6:'षष्ठ', 7:'सप्तम', 8:'अष्टम', 9:'नवम', 10:'दशम', 11:'एकादश', 12:'द्वादश'}; return map[n] || n; }
+    function getOrdinalLordship(n) { return getOrdinal(n); }
+    function isKendra(relHouse) { return relHouse && [1, 4, 7, 10].includes(relHouse); }
+    function getHouseRelativeToRef(ref, target) { return ref && target ? normalizeHouse(target - ref + 1) : null; }
+    function doesPlanetAspectHouse(pKey, pAbsHouse, tAbsHouse) {
+        if (!pAbsHouse) return false;
+        return (PLANET_ASPECTS[pKey] || []).some(offset => normalizeHouse(pAbsHouse + offset - 1) === tAbsHouse);
+    }
+
+    // --- Dignity & Relationship Logic ---
+    function getDignityInfo(pKey, rashiIdx, pAbsHouse, pPos, houseRashis, planetsInHouse, moonAbsHouse, showReasons = true) {
+        // !!! EXPLICITLY IGNORE RAHU/KETU FOR DIGNITY !!!
+        if(pKey === 'Rahu' || pKey === 'Ketu') return { text: '', cssClass: '' };
+
+        let dignity = '', cssClass = '', neechabhanga = false, reasons = [];
+        if (DIGNITIES.ucch[pKey] === rashiIdx) { dignity = 'उच्च'; cssClass = 'ucch'; }
+        else if (DIGNITIES.neech[pKey] === rashiIdx) {
+            dignity = 'नीच'; cssClass = 'neech';
+            // Neechabhanga Logic
+            const debLord = RASHI_LORDS[rashiIdx], debLordPos = pPos[debLord];
+            if (debLord && debLordPos) {
+                if (isKendra(getHouseRelativeToRef(1, debLordPos))) { neechabhanga = true; reasons.push(`[${PLANETS_DISPLAY[debLord]} लग्न से केंद्र में]`); }
+                if (debLord !== 'Chandra' && moonAbsHouse && isKendra(getHouseRelativeToRef(moonAbsHouse, debLordPos))) { neechabhanga = true; reasons.push(`[${PLANETS_DISPLAY[debLord]} चंद्र से केंद्र में]`); }
+                if (debLordPos === pAbsHouse) { neechabhanga = true; reasons.push(`[${PLANETS_DISPLAY[debLord]} से युति]`); }
+                if (doesPlanetAspectHouse(debLord, debLordPos, pAbsHouse)) { neechabhanga = true; reasons.push(`[${PLANETS_DISPLAY[debLord]} की दृष्टि]`); }
+            }
+            const exRashiIdx = DIGNITIES.ucch[pKey];
+            if (exRashiIdx !== undefined) {
+                const exLord = RASHI_LORDS[exRashiIdx], exLordPos = pPos[exLord];
+                if (exLord && exLordPos) {
+                    if (isKendra(getHouseRelativeToRef(1, exLordPos))) { neechabhanga = true; reasons.push(`[${PLANETS_DISPLAY[exLord]} लग्न से केंद्र में]`); }
+                    if (exLord !== 'Chandra' && moonAbsHouse && isKendra(getHouseRelativeToRef(moonAbsHouse, exLordPos))) { neechabhanga = true; reasons.push(`[${PLANETS_DISPLAY[exLord]} चंद्र से केंद्र में]`); }
+                    if (doesPlanetAspectHouse(exLord, exLordPos, pAbsHouse)) { neechabhanga = true; reasons.push(`[${PLANETS_DISPLAY[exLord]} की दृष्टि]`); }
+                }
+            }
+            (planetsInHouse[pAbsHouse - 1] || []).forEach(otherPKey => {
+                if (otherPKey !== pKey && DIGNITIES.ucch[otherPKey] === rashiIdx) { neechabhanga = true; reasons.push(`[${PLANETS_DISPLAY[otherPKey]} (उच्च) से युति]`); }
+            });
+            if (neechabhanga) {
+                dignity = showReasons ? `नीचभंग ${[...new Set(reasons)].join('; ')}` : 'नीचभंग';
+                cssClass = 'neechabhanga';
+            }
+        } else if (DIGNITIES.swagrihi[pKey]?.includes(rashiIdx)) { dignity = 'स्वगृही'; cssClass = 'swagrihi'; }
+        return { text: dignity, cssClass: cssClass };
+    }
+
+    function getRelationship(pKey, rashiIdx) {
+        // !!! EXPLICITLY IGNORE RAHU/KETU FOR RELATIONSHIP !!!
+        if(pKey === 'Rahu' || pKey === 'Ketu') return null;
+
+        const signLord = RASHI_LORDS[rashiIdx];
+        if (!signLord || pKey === signLord) return null;
+        if (NAISARGIKA_MITRA[pKey]?.includes(signLord)) return { text: 'मित्र', cssClass: 'mitra' };
+        if (NAISARGIKA_SHATRU[pKey]?.includes(signLord)) return { text: 'शत्रु', cssClass: 'shatru' };
+        return { text: 'सम', cssClass: 'sama' };
+    }
+
+    /* v6: ग्रह-गरिमा summary — output वाली existing गणना (getDignityInfo/getRelationship) reuse, logic unchanged */
+    function updateDignitySummary(){
+      const box=document.getElementById('dignity-summary');
+      if(!box) return;
+      const inputStr=document.getElementById('rashi-input').value.trim();
+      const numbers=inputStr.split(',').map(s=>parseInt(s.trim()));
+      if(numbers.length!==10 || numbers.some(isNaN) || numbers.some(n=>n<1||n>12)){ box.style.display='none'; box.innerHTML=''; return; }
+      const lagnaRashi=numbers[0]-1;
+      const planetPositions={}, planetRashiIndices={};
+      const planetsInHouse=Array.from({length:12},()=>[]);
+      const order=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani'];
+      for(let i=1;i<=9;i++){
+        const pKey=PLANETS_MAP[i], pRashiIdx=numbers[i]-1;
+        const houseNum=((pRashiIdx-lagnaRashi+12)%12)+1;
+        planetPositions[pKey]=houseNum;
+        planetRashiIndices[pKey]=pRashiIdx;
+        planetsInHouse[houseNum-1].push(pKey);
+      }
+      const moonAbsHouse=planetPositions['Chandra'];
+      const houseRashis=[];
+      for(let i=0;i<12;i++) houseRashis.push((lagnaRashi+i)%12);
+      const groups={'उच्च':[],'नीच':[],'नीचभंग':[],'स्वगृही':[],'मित्र':[],'शत्रु':[],'सम':[]};
+      order.forEach(pKey=>{
+        const rashiIdx=planetRashiIndices[pKey], pAbsHouse=planetPositions[pKey];
+        let cat='';
+        try{
+          const d=getDignityInfo(pKey,rashiIdx,pAbsHouse,planetPositions,houseRashis,planetsInHouse,moonAbsHouse,false);
+          if(d && d.text) cat=d.text;
+        }catch(e){}
+        if(!cat){
+          try{
+            const r=getRelationship(pKey,rashiIdx);
+            if(r && r.text) cat=r.text;
+          }catch(e){}
+        }
+        if(cat && groups[cat]) groups[cat].push(PLANETS_DISPLAY[pKey]);
+      });
+      const cls={'उच्च':'dg-ucch','नीच':'dg-neech','नीचभंग':'dg-nbhanga','स्वगृही':'dg-swa','मित्र':'dg-mitra','शत्रु':'dg-shatru','सम':'dg-sama'};
+      let pills='';
+      Object.keys(groups).forEach(cat=>{
+        if(groups[cat].length) pills+='<span class="dg '+cls[cat]+'">'+cat+': '+groups[cat].join(', ')+'</span>';
+      });
+      if(!pills){ box.style.display='none'; box.innerHTML=''; return; }
+      box.innerHTML='<span class="ds-title">✨ ग्रह-गरिमा:</span>'+pills;
+      box.style.display='block';
+    }
+
+    // --- Main Calculation ---
+    function calculateAstrology() {
+        updateDignitySummary();
+        const inputStr = document.getElementById('rashi-input').value.trim();
+        const errDiv = document.getElementById('error-display');
+        const outputDiv = document.getElementById('house-analysis-output');
+        errDiv.innerText = '';
+        outputDiv.innerHTML = '';
+
+        if (!inputStr) { errDiv.innerText = 'कृपया राशि संख्या दर्ज करें।'; return; }
+        const numbers = inputStr.split(',').map(s => parseInt(s.trim()));
+        if (numbers.length !== 10 || numbers.some(isNaN)) {
+            errDiv.innerText = `त्रुटि: आपको 10 संख्याएँ (लग्न + 9 ग्रह) दर्ज करनी होंगी। आपने ${numbers.length} दर्ज की हैं।`; return;
+        }
+        if (numbers.some(n => n < 1 || n > 12)) {
+            errDiv.innerText = 'त्रुटि: संख्याएँ 1 से 12 के बीच होनी चाहिए।'; return;
+        }
+
+        outputDiv.innerHTML = `<div style="text-align:center; padding: 20px; color: #555;">गणना की जा रही है...</div>`;
+
+        // 1. Process Input & Determine House Positions
+        const lagnaRashi = numbers[0] - 1;
+        const planetPositions = {};
+        const planetRashiIndices = {};
+        const planetsInHouse = Array.from({ length: 12 }, () => []);
+
+        for(let i=1; i<=9; i++) {
+            const pKey = PLANETS_MAP[i];
+            const pRashiVal = numbers[i];
+            const pRashiIdx = pRashiVal - 1;
+            const houseNum = ((pRashiIdx - lagnaRashi + 12) % 12) + 1;
+
+            planetPositions[pKey] = houseNum;
+            planetRashiIndices[pKey] = pRashiIdx;
+            planetsInHouse[houseNum - 1].push(pKey);
+        }
+
+        const moonAbsoluteHouse = planetPositions['Chandra'];
+
+        // 2. Capture Checkbox States
+        const planetStates = {};
+        PLANETS_MAP.slice(1).forEach(key => {
+            planetStates[key] = {
+                vakri: document.getElementById(`${key}-vakri`)?.checked || false,
+                ast: document.getElementById(`${key}-ast`)?.checked || false,
+                rashiVar: document.getElementById(`${key}-rv`)?.checked || false,
+                bhavaVar: document.getElementById(`${key}-bv`)?.checked || false
+            };
+        });
+
+        // 3. Determine House Lords & Rashis
+        const houseRashis = [];
+        const houseLords = {};
+        const planetLordships = {};
+        PLANETS_MAP.slice(1).forEach(pKey => planetLordships[pKey] = []);
+
+        for (let i = 0; i < 12; i++) {
+            const rashiIndex = (lagnaRashi + i) % 12;
+            houseRashis.push(rashiIndex);
+            houseLords[i + 1] = RASHI_LORDS[rashiIndex];
+
+            const lord = RASHI_LORDS[rashiIndex];
+            if(lord && planetLordships[lord]) {
+                planetLordships[lord].push(i + 1);
+            }
+        }
+
+        // 4. Calculate Aspects
+        const aspectsOnHouse = Array.from({ length: 12 }, () => []);
+        PLANETS_MAP.slice(1).forEach(pKey => {
+            const pHouse = planetPositions[pKey];
+            (PLANET_ASPECTS[pKey] || []).forEach(offset => {
+                const targetHouse = normalizeHouse(pHouse + offset - 1);
+                aspectsOnHouse[targetHouse - 1].push({ planet: pKey, aspectType: offset });
+            });
+        });
+
+        // 5. Generate HTML
+        let html = '';
+        for (let i = 0; i < 12; i++) {
+            const houseNum = i + 1;
+            const rashiIdx = houseRashis[i];
+            const currentPlanets = planetsInHouse[i] || [];
+
+            html += `<div class="house-info"><div class="house-title">भाव ${houseNum}: ${RASHIS[rashiIdx]} राशि</div>`;
+
+            // Planets in House
+            html += `<div class="section-title">स्थित ग्रह:</div>`;
+            if (currentPlanets.length > 0) {
+                currentPlanets.forEach(pKey => {
+                    const st = planetStates[pKey];
+                    const statusList = [];
+                    // Order of status in name parenthesis
+                    if(st.vakri) statusList.push('वक्री');
+                    if(st.ast) statusList.push('अस्त');
+                    if(st.rashiVar) statusList.push('राशि वर्गोत्तम');
+                    if(st.bhavaVar) statusList.push('भाव वर्गोत्तम');
+
+                    const statusStr = statusList.length ? ` (${statusList.join(', ')})` : '';
+
+                    const dignity = getDignityInfo(pKey, rashiIdx, houseNum, planetPositions, houseRashis, planetsInHouse, moonAbsoluteHouse);
+                    const rel = getRelationship(pKey, rashiIdx);
+
+                    let details = planetLordships[pKey]?.length ? `${planetLordships[pKey].map(h => `${getOrdinalLordship(h)}ेश`).join('/')}` : 'किसी भाव का स्वामी नहीं';
+
+                    // Logic: Only append Dignity/Relationship if returned (Rahu/Ketu returns null/empty)
+                    const isSpecial = dignity.cssClass && ['ucch','neech','neechabhanga','swagrihi'].includes(dignity.cssClass);
+                    if (dignity.text) details += `, <span class="dignity ${dignity.cssClass}">${dignity.text}</span>`;
+                    if (rel && !isSpecial) details += `, <span class="relationship ${rel.cssClass}">${rel.text} राशि</span>`;
+
+                    html += `<div class="planet-entry">
+                                <span class="planet-name">${PLANETS_DISPLAY[pKey]}${statusStr}</span>
+                                <span class="planet-details-line">(${details})</span>`;
+
+                    // Aspects FROM this planet
+                    const aspList = (PLANET_ASPECTS[pKey] || []).map(offset => {
+                        const targetH = normalizeHouse(houseNum + offset - 1);
+                        return `भाव ${targetH} [${offset}वीं]`;
+                    }).join(', ');
+                    if(aspList) html += `<span class="aspect-info-line">दृष्टि डाल रहे: ${aspList}</span>`;
+
+                    html += `</div>`;
+                });
+            } else { html += `<div class="no-planets-info" style="color:#777; font-style:italic;">कोई नहीं</div>`; }
+
+            // Aspects ON House
+            html += `<div class="section-title">दृष्टि प्राप्त:</div>`;
+            const aspectsRec = [...new Set(aspectsOnHouse[i].map(JSON.stringify))].map(JSON.parse);
+            if (aspectsRec.length > 0) {
+                 html += `<div class="aspect-received-info" style="color:#b3003f;">
+                            ${aspectsRec.map(d => `${PLANETS_DISPLAY[d.planet]} (${d.aspectType}वीं)`).join(', ')}
+                          </div>`;
+            } else { html += `<div class="no-aspects-info" style="color:#777; font-style:italic;">कोई नहीं</div>`; }
+
+            // House Lord
+            if (currentPlanets.length === 0) {
+                 html += `<div class="section-title">भाव स्वामी:</div>`;
+                 const lordKey = houseLords[houseNum];
+                 if(lordKey) {
+                     const lordHouse = planetPositions[lordKey];
+                     const lordRashiIdx = planetRashiIndices[lordKey];
+                     const lordDignity = getDignityInfo(lordKey, lordRashiIdx, lordHouse, planetPositions, houseRashis, planetsInHouse, moonAbsoluteHouse, false);
+
+                     // Check special status of lord
+                     const lst = planetStates[lordKey];
+                     const lordFlags = [];
+                     if(lst.vakri) lordFlags.push('R');
+                     if(lst.ast) lordFlags.push('C');
+                     const flagStr = lordFlags.length ? `(${lordFlags.join(',')})` : '';
+
+                     html += `<div class="lord-info" style="background:#f1f1f1; padding:8px; border-radius:4px;">
+                                ${PLANETS_DISPLAY[lordKey]}${flagStr} - भाव ${lordHouse} में
+                                ${lordDignity.text ? `(<span class="dignity ${lordDignity.cssClass}">${lordDignity.text}</span>)` : ''}
+                              </div>`;
+                 }
+            }
+
+            html += `</div>`;
+        }
+
+        // Store data for detailed bhava analysis (v8)
+        window._d1DetailData = {
+            houseRashis, houseLords, planetsInHouse, planetPositions,
+            planetRashiIndices, aspectsOnHouse, planetStates,
+            lagnaRashi, moonAbsoluteHouse
+        };
+
+        outputDiv.innerHTML = `<div class="output-section">
+                                    <div class="button-group">
+                                        <button class="copy-button" onclick="copyToClipboard(htmlToPlainText('house-analysis-content'), this)">विश्लेषण कॉपी करें</button>
+                                        <button class="download-button" onclick="downloadDetailedTxt()">TXT डाउनलोड करें</button>
+                                    </div>
+                                    <div style="text-align:center;margin-top:10px;">
+                                        <label style="font-size:0.9em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">
+                                            <span class="toggle-switch">
+                                                <input type="checkbox" id="detailed-bhava-toggle" onchange="toggleDetailedDisplay()">
+                                                <span class="toggle-slider"></span>
+                                            </span>
+                                            विस्तृत भाव विश्लेषण (12 भाव) दिखाएं + TXT में जोड़ें
+                                        </label>
+                                    </div>
+                                    <style>
+                                    .toggle-switch { position:relative; display:inline-block; width:44px; height:24px; flex-shrink:0; }
+                                    .toggle-switch input { opacity:0; width:0; height:0; }
+                                    .toggle-slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.3s; border-radius:24px; }
+                                    .toggle-slider:before { position:absolute; content:""; height:18px; width:18px; left:3px; bottom:3px; background-color:white; transition:.3s; border-radius:50%; }
+                                    .toggle-switch input:checked + .toggle-slider { background-color:#28a745; }
+                                    .toggle-switch input:checked + .toggle-slider:before { transform:translateX(20px); }
+                                    </style>
+                                    </div>
+                                    <div id="house-analysis-content" style="margin-top:15px;">${html}</div>
+                                    <div id="detailed-bhava-display" style="margin-top:15px;display:none;white-space:pre-wrap;font-size:0.95em;line-height:1.7;background:#f8f9fa;padding:15px;border-radius:6px;border:1px solid #e0e0e0;"></div>
+                               </div>`;
+    }
+
+    // v8: Toggle detailed bhava display on screen
+    function toggleDetailedDisplay() {
+        const toggle = document.getElementById('detailed-bhava-toggle');
+        const disp = document.getElementById('detailed-bhava-display');
+        if (toggle && toggle.checked && window._d1DetailData) {
+            disp.textContent = generateDetailedBhavaAnalysis();
+            disp.style.display = 'block';
+        } else if (disp) {
+            disp.style.display = 'none';
+        }
+    }
+
+    // --- Utilities ---
+    function copyToClipboard(text, btn) {
+        navigator.clipboard.writeText(text).then(() => {
+            const orig = btn.textContent; btn.textContent = 'कॉपी हुआ!';
+            setTimeout(() => btn.textContent = orig, 2000);
+        });
+    }
+    function downloadAsTxt(filename, text) {
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+    // v8: Detailed bhava analysis download with toggle
+    function downloadDetailedTxt() {
+        let text = htmlToPlainText('house-analysis-content');
+        const toggle = document.getElementById('detailed-bhava-toggle');
+        if (toggle && toggle.checked && window._d1DetailData) {
+            text += '\n\n' + '='.repeat(60) + '\nविस्तृत भाव विश्लेषण (12 भाव)\n' + '='.repeat(60) + '\n\n';
+            text += generateDetailedBhavaAnalysis();
+        }
+        downloadAsTxt('D1_Analysis.txt', text);
+    }
+    // v8: Generate Gemini-pattern detailed 12-bhava analysis
+    function generateDetailedBhavaAnalysis() {
+        const d = window._d1DetailData;
+        if (!d) return '';
+        const RASHIS = ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुम्भ', 'मीन'];
+        const PLANETS_DISPLAY = { 'Surya': 'सूर्य', 'Chandra': 'चंद्र', 'Mangal': 'मंगल', 'Budh': 'बुध', 'Guru': 'गुरु', 'Shukra': 'शुक्र', 'Shani': 'शनि', 'Rahu': 'राहु', 'Ketu': 'केतु' };
+        const BHAVA_NAMES = ['पहला', 'दूसरा', 'तीसरा', 'चौथा', 'पांचवा', 'छठा', 'सातवां', 'आठवां', 'नौवां', 'दसवां', 'ग्यारहवां', 'बारहवां'];
+        const BHAVESH_NAMES = ['लग्नेश', 'द्वितीयेश', 'तृतीयेश', 'चतुर्थेश', 'पंचमेश', 'षष्ठेश', 'सप्तमेश', 'अष्टमेश', 'नवमेश', 'दशमेश', 'एकादशेश', 'द्वादशेश'];
+        const ASPECT_HINDI = {3:'तीसरी', 4:'चौथी', 5:'पांचवीं', 7:'सातवीं', 8:'आठवीं', 9:'नौवीं', 10:'दसवीं'};
+
+        let out = '';
+        for (let i = 0; i < 12; i++) {
+            const houseNum = i + 1;
+            const rashiIdx = d.houseRashis[i];
+            const rashiName = RASHIS[rashiIdx];
+            const lordKey = d.houseLords[houseNum];
+            const lordName = PLANETS_DISPLAY[lordKey] || lordKey;
+            const bhaveshName = BHAVESH_NAMES[i];
+            const bhavaName = BHAVA_NAMES[i] + (houseNum === 1 ? ' भाव (लग्न)' : ' भाव');
+
+            out += bhavaName + ':\n';
+            out += `इस भाव में ${rashiName} राशि है, इसलिए ${bhaveshName} ${lordName} हैं।\n`;
+
+            const planets = d.planetsInHouse[i] || [];
+            if (planets.length === 0) {
+                out += 'इस भाव में कोई ग्रह स्थित नहीं है।\n';
+            } else {
+                const pNames = planets.map(p => PLANETS_DISPLAY[p] || p);
+                out += `इस भाव में ${pNames.join(' और ')} ग्रह स्थित ${planets.length > 1 ? 'हैं' : 'है'}।\n`;
+                // Per-planet details
+                planets.forEach(pKey => {
+                    const pName = PLANETS_DISPLAY[pKey] || pKey;
+                    const pRashiIdx = d.planetRashiIndices[pKey];
+                    const pRashiName = RASHIS[pRashiIdx];
+                    let detail = `${pName}: ${pRashiName} राशि में स्थित है।`;
+                    // Dignity (skip Rahu/Ketu uchh/neech/vakri per prompt)
+                    if (pKey !== 'Rahu' && pKey !== 'Ketu') {
+                        const dig = getDignityInfo(pKey, pRashiIdx, houseNum, d.planetPositions, d.houseRashis, d.planetsInHouse, d.moonAbsoluteHouse, false);
+                        if (dig.text) detail += ` ${pName} ${dig.text} है।`;
+                        const rel = getRelationship(pKey, pRashiIdx);
+                        if (rel && rel.text) detail += ` (${rel.text} राशि)`;
+                    }
+                    // Vakri/Asta/Vargottama from checkboxes
+                    const st = d.planetStates[pKey] || {};
+                    const flags = [];
+                    if (st.vakri && pKey !== 'Rahu' && pKey !== 'Ketu') flags.push('वक्री');
+                    if (st.ast) flags.push('अस्त');
+                    if (st.rashiVar) flags.push('राशि वर्गोत्तम');
+                    if (st.bhavaVar) flags.push('भाव वर्गोत्तम');
+                    if (flags.length) detail += ` [${flags.join(', ')}]`;
+                    // Bhava lord placed in own bhava highlight
+                    const lordships = [];
+                    for (let h = 1; h <= 12; h++) {
+                        if (d.houseLords[h] === pKey) lordships.push(h);
+                    }
+                    if (lordships.includes(houseNum)) {
+                        detail += ` ${pName} ${bhaveshName} (${rashiName}) के स्वामी होकर ${BHAVA_NAMES[i]} भाव में बैठे हैं।`;
+                    }
+                    // Drishti of this planet
+                    const aspects = { 'Surya': [7], 'Chandra': [7], 'Mangal': [4, 7, 8], 'Budh': [7], 'Guru': [5, 7, 9], 'Shukra': [7], 'Shani': [3, 7, 10], 'Rahu': [5, 7, 9], 'Ketu': [5, 7, 9] }[pKey] || [7];
+                    const pHouse = d.planetPositions[pKey];
+                    const drishtiParts = aspects.map(off => {
+                        const tHouse = ((pHouse + off - 2) % 12) + 1;
+                        const tRashi = RASHIS[d.houseRashis[tHouse - 1]];
+                        return `${ASPECT_HINDI[off] || off} भाव (${tRashi})`;
+                    });
+                    // Use Hindi bhava ordinals for drishti
+                    const drishtiHindi = aspects.map(off => {
+                        const tHouse = ((pHouse + off - 2) % 12) + 1;
+                        const tRashi = RASHIS[d.houseRashis[tHouse - 1]];
+                        const bhName = ['', 'पहले', 'दूसरे', 'तीसरे', 'चौथे', 'पांचवें', 'छठे', 'सातवें', 'आठवें', 'नौवें', 'दसवें', 'ग्यारहवें', 'बारहवें'][tHouse];
+                        return `${bhName} भाव (${tRashi})`;
+                    });
+                    detail += ` ${pName} की दृष्टि ${drishtiHindi.join(', ')} पर है।`;
+                    out += detail + '\n';
+                });
+            }
+            // Aspects ON this house (purna drishti)
+            const aspList = d.aspectsOnHouse[i] || [];
+            if (aspList.length > 0) {
+                const aspStr = aspList.map(a => {
+                    const pName = PLANETS_DISPLAY[a.planet] || a.planet;
+                    const ah = ASPECT_HINDI[a.aspectType] || a.aspectType;
+                    return `${pName} (${ah} दृष्टि)`;
+                }).join(', ');
+                out += `इस भाव पर ${aspStr} की पूर्ण दृष्टि है।\n`;
+            }
+            out += '\n';
+        }
+        return out.trim();
+    }
+    function htmlToPlainText(id) {
+        const root = document.getElementById(id);
+        if(!root) return '';
+        let text = root.innerText;
+        return text.replace(/\n\s*\n/g, '\n\n').trim();
+    }
+
+    // Initialize UI
+    generateStatusInputs();
+
+</script>
+
+<script>
+/* ============ जन्म स्थान: worldwide live search (astro apps जैसा) ============ */
+(function(){
+  var place=document.getElementById('birth-place'), box=document.getElementById('place-results');
+  var timer=null, ctrl=null;
+
+  /* दिन dropdown (1-31) */
+  (function(){ var s=document.getElementById('bd-day'); for(var d=1; d<=31; d++){ var o=document.createElement('option'); o.value=d; o.textContent=d; s.appendChild(o); } })();
+
+  /* toggle buttons: AM/PM, +/-, N/S, E/W */
+  [['bd-ampm',['AM','PM']],['tz-sign',['+','-']],['lat-dir',['N','S']],['lon-dir',['E','W']]].forEach(function(t){
+    var el=document.getElementById(t[0]), vals=t[1];
+    el.addEventListener('click', function(){ var i=(vals.indexOf(el.dataset.val)+1)%vals.length; el.dataset.val=vals[i]; el.textContent=vals[i]; });
+  });
+
+  function closeBox(){ box.style.display='none'; box.innerHTML=''; }
+  function setDms(dec, isLat){
+    var dir=dec>=0?(isLat?'N':'E'):(isLat?'S':'W');
+    var a=Math.abs(dec), d=Math.floor(a), m=Math.round((a-d)*60);
+    if(m===60){ d+=1; m=0; }
+    document.getElementById(isLat?'lat-deg':'lon-deg').value=d;
+    document.getElementById(isLat?'lat-min':'lon-min').value=m;
+    var dirEl=document.getElementById(isLat?'lat-dir':'lon-dir');
+    dirEl.dataset.val=dir; dirEl.textContent=dir;
+  }
+  function pick(label, la, lo){ clearTimeout(timer); place.value=label; setDms(la,true); setDms(lo,false); closeBox(); }
+
+  function render(items){
+    if(!items.length){ box.innerHTML='<div class="pr-none">कोई शहर नहीं मिला — इंटरनेट जांचें या lat/long manual भरें</div>'; }
+    else{
+      box.innerHTML=items.map(function(it,i){
+        return '<div class="pr-item" data-i="'+i+'">'+it.label+'</div>';
+      }).join('');
+      Array.prototype.forEach.call(box.querySelectorAll('.pr-item'), function(el){
+        el.addEventListener('mousedown', function(e){ e.preventDefault(); var it=items[+el.getAttribute('data-i')]; pick(it.label, it.lat, it.lon); });
+      });
+    }
+    box.style.display='block';
+  }
+
+  async function apiSearch(q){
+    var providers=[
+      { url:'https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=8&language=en&format=json',
+        parse:function(j){ return (j.results||[]).map(function(g){
+          var parts=[g.name]; if(g.admin1) parts.push(g.admin1); if(g.country) parts.push(g.country);
+          return {label:parts.join(', '), lat:+g.latitude.toFixed(4), lon:+g.longitude.toFixed(4)}; }); } },
+      { url:'https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=8&lang=en',
+        parse:function(j){ return (j.features||[]).map(function(f){
+          var p=f.properties||{}, parts=[p.name]; if(p.state) parts.push(p.state); if(p.country) parts.push(p.country);
+          var c=f.geometry&&f.geometry.coordinates;
+          return c?{label:parts.join(', '), lat:+c[1].toFixed(4), lon:+c[0].toFixed(4)}:null; }).filter(Boolean); } },
+      { url:'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=8',
+        parse:function(j){ return (Array.isArray(j)?j:[]).map(function(n){
+          return {label:String(n.display_name).split(',').slice(0,3).join(','), lat:+parseFloat(n.lat).toFixed(4), lon:+parseFloat(n.lon).toFixed(4)}; }); } }
+    ];
+    for(var i=0;i<providers.length;i++){
+      try{
+        if(ctrl) ctrl.abort();
+        ctrl=new AbortController();
+        var r=await fetch(providers[i].url,{signal:ctrl.signal});
+        if(!r.ok) continue;
+        var out=providers[i].parse(await r.json());
+        if(out.length) return out;
+      }catch(e){}
+    }
+    return [];
+  }
+
+  place.addEventListener('input', function(){
+    var qAtSchedule=place.value;
+    clearTimeout(timer);
+    if(qAtSchedule.trim().length<2){ closeBox(); return; }
+    box.innerHTML='<div class="pr-none">खोजा जा रहा है…</div>'; box.style.display='block';
+    timer=setTimeout(async function(){
+      if(place.value!==qAtSchedule || place.value.trim().length<2) return;
+      var remote=await apiSearch(place.value);
+      if(place.value===qAtSchedule) render(remote);
+    }, 350);
+  });
+  place.addEventListener('blur', function(){ setTimeout(closeBox, 150); });
+  place.addEventListener('focus', function(){ if(box.innerHTML) box.style.display='block'; });
+  document.addEventListener('click', function(e){ if(!e.target.closest('.ephem-place-wrap')) closeBox(); });
+})();
+</script>
+
+<script type="module">
+/* ============ Swiss Ephemeris auto-fill (analysis engine untouched) ============ */
+const EPHEM_CDN = '../vendor/swisseph-browser.js';
+const ephemStatus = document.getElementById('ephem-status');
+const btnEphem = document.getElementById('btn-ephem');
+const ephemError = document.getElementById('ephem-error');
+let SE=null, SEP=null, SEF=null, SEH=null, SEL=null;
+
+function setStatus(t, ok){ ephemStatus.textContent=t; ephemStatus.className=ok?'ok':''; }
+
+try {
+  const m = await import(/* @vite-ignore */EPHEM_CDN);
+  SE = m.SwissEphemeris; SEP = m.Planet; SEF = m.CalculationFlag; SEH = m.HouseSystem; SEL = m.LunarPoint;
+  const swe = new SE();
+  await swe.init();
+  swe.setSiderealMode(m.SiderealMode.Lahiri);
+  window._swe = swe;
+  setStatus('✅ Engine तैयार — जन्म विवरण भरकर "ग्रह स्थिति निकालें व भरें" दबाएं', true);
+  btnEphem.disabled = false;
+} catch(e) {
+  setStatus('⚠️ Engine लोड नहीं हुआ — इंटरनेट चालू करके पेज reload करें', false);
+  btnEphem.disabled = false;
+  btnEphem.textContent = '🔄 पुनः प्रयास करें (पेज reload होगा)';
+  btnEphem.addEventListener('click', ()=>location.reload());
+}
+setTimeout(()=>{ if(btnEphem.disabled) setStatus('⏳ Engine लोड हो रहा है… (नेटवर्क धीमा हो सकता है)', false); }, 45000);
+
+const FLAGS = () => SEF.MoshierEphemeris | SEF.Speed;
+const norm360 = d => ((d % 360) + 360) % 360;
+const signNum = lon => Math.floor(norm360(lon) / 30) + 1; // 1-12
+const angSep = (a,b) => { const d=Math.abs(norm360(a)-norm360(b)); return Math.min(d, 360-d); };
+/* नवमांश राशि: वर्गोत्तम जांच हेतु */
+function navamsaSign(lon){
+  const s = Math.floor(norm360(lon)/30);
+  const pada = Math.floor((norm360(lon)%30)/(30/9));
+  const start = [0,9,6,3][s%4];
+  return (start+pada)%12;
+}
+const AST_ORB = {Chandra:12, Mangal:17, Budh:14, Guru:11, Shukra:10, Shani:15};
+
+btnEphem.addEventListener('click', async ()=>{
+  if(!window._swe) return;
+  ephemError.innerText='';
+  try{
+    const gv=id=>document.getElementById(id).value;
+    /* --- जन्म तारीख: दिन/महीना dropdown + वर्ष manual --- */
+    const day=parseInt(gv('bd-day')), mon=parseInt(gv('bd-month')), Y=parseInt(gv('bd-year'));
+    if(isNaN(day)||isNaN(mon)||isNaN(Y)) throw new Error('जन्म तारीख पूरी भरें (दिन / महीना / वर्ष)।');
+    if(Y<1800||Y>2200) throw new Error('वर्ष 1800–2200 के बीच भरें।');
+    const maxDay=new Date(Y, mon+1, 0).getDate();
+    if(day<1||day>maxDay) throw new Error('इस महीने में '+day+' तारीख नहीं होती।');
+    /* --- जन्म समय: manual HH MM SS + AM/PM --- */
+    const hh=parseInt(gv('bd-hh')), mm=parseInt(gv('bd-mm'));
+    let ss=parseInt(gv('bd-ss')); if(isNaN(ss)||ss<0||ss>59) ss=0;
+    if(isNaN(hh)||hh<1||hh>12) throw new Error('घंटे 1–12 के बीच भरें।');
+    if(isNaN(mm)||mm<0||mm>59) throw new Error('मिनट 0–59 के बीच भरें।');
+    const h24=(hh%12)+(document.getElementById('bd-ampm').dataset.val==='PM'?12:0);
+    /* --- Timezone: manual +/- HH MM (default +5:30 भारत) --- */
+    const tzSign=document.getElementById('tz-sign').dataset.val==='-'?-1:1;
+    const tzH=parseInt(gv('tz-hh')||'0'), tzM=parseInt(gv('tz-mm')||'0');
+    if(isNaN(tzH)||tzH<0||tzH>14||isNaN(tzM)||tzM<0||tzM>59) throw new Error('Timezone घंटे 0–14, मिनट 0–59 भरें।');
+    const tzMin=tzSign*(tzH*60+tzM);
+    /* --- अक्षांश/देशांतर: डिग्री + दिशा + मिनट --- */
+    const dms=(degId,minId,dirId,maxDeg,name)=>{
+      const d=parseFloat(gv(degId)), m=parseFloat(gv(minId)||'0'), dir=document.getElementById(dirId).dataset.val;
+      if(isNaN(d)||d<0||d>maxDeg) throw new Error(name+' डिग्री 0–'+maxDeg+' के बीच भरें।');
+      if(isNaN(m)||m<0||m>=60) throw new Error(name+' मिनट 0–59 के बीच भरें।');
+      let dec=d+m/60; if(dir==='S'||dir==='W') dec=-dec; return dec;
+    };
+    const lat=dms('lat-deg','lat-min','lat-dir',90,'अक्षांश'),
+          lon=dms('lon-deg','lon-min','lon-dir',180,'देशांतर');
+    let utc=new Date(Date.UTC(Y,mon,day,h24,mm,ss)); utc=new Date(utc.getTime()-tzMin*60000);
+    const swe=window._swe;
+    const jd=swe.julianDay(utc.getUTCFullYear(),utc.getUTCMonth()+1,utc.getUTCDate(),
+                           utc.getUTCHours()+utc.getUTCMinutes()/60+utc.getUTCSeconds()/3600);
+    const ayan=swe.getAyanamsa(jd), F=FLAGS();
+    const calc=(body)=>{ const p=swe.calculatePosition(jd,body,F); return {lon:norm360(p.longitude-ayan), retro:p.longitudeSpeed<0}; };
+    const P={
+      Surya:calc(SEP.Sun), Chandra:calc(SEP.Moon), Mangal:calc(SEP.Mars),
+      Budh:calc(SEP.Mercury), Guru:calc(SEP.Jupiter), Shukra:calc(SEP.Venus),
+      Shani:calc(SEP.Saturn), Rahu:calc(SEL.MeanNode)
+    };
+    P.Ketu={lon:norm360(P.Rahu.lon+180), retro:true};
+    const hs=swe.calculateHouses(jd,lat,lon,SEH.Placidus);
+    const lagna=norm360(hs.ascendant-ayan);
+
+    /* Whole-sign bhava (app/chart se match): D1 bhava = rashi offset from lagna rashi */
+    const lagnaRashi=signNum(lagna);  /* 1-12 */
+    const d1house=lon=>(((signNum(lon)-lagnaRashi)%12+12)%12)+1;
+    /* Navamsa lagna -> D9 houses; bhava vargottama = whole-sign D1 bhava == D9 house */
+    const navLagna=navamsaSign(lagna);
+    const d9house=lon=>((((navamsaSign(lon)-navLagna)%12)+12)%12)+1;
+
+    /* 10 नंबर: लग्न, सूर्य...केतु (1-12) */
+    const order=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
+    const nums=[signNum(lagna)].concat(order.map(k=>signNum(P[k].lon)));
+    document.getElementById('rashi-input').value=nums.join(',');
+
+    /* checkboxes reset + auto-fill */
+    const keys=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
+    keys.forEach(k=>{ ['vakri','ast','rv','bv'].forEach(s=>{ const el=document.getElementById(k+'-'+s); if(el) el.checked=false; }); });
+    const sunLon=P.Surya.lon;
+    keys.forEach(k=>{
+      const vk=document.getElementById(k+'-vakri');
+      if(vk && P[k].retro && k!=='Rahu' && k!=='Ketu') vk.checked=true;
+      const as=document.getElementById(k+'-ast');
+      if(as && AST_ORB[k] && angSep(P[k].lon,sunLon)<AST_ORB[k]) as.checked=true;
+      const rv=document.getElementById(k+'-rv');
+      if(rv && navamsaSign(P[k].lon)===Math.floor(P[k].lon/30)) rv.checked=true;
+      const bv=document.getElementById(k+'-bv');
+      if(bv && d1house(P[k].lon)===d9house(P[k].lon)) bv.checked=true;
+    });
+
+    setStatus(`✅ भरा गया: ${nums.join(',')} — विश्लेषण नीचे तैयार है`, true);
+    calculateAstrology();
+    document.getElementById('rashi-input').scrollIntoView({behavior:'smooth',block:'center'});
+  }catch(err){
+    ephemError.innerText='त्रुटि: '+err.message;
+  }
+});
+</script>
+
+<script>
+
+document.getElementById('btn-makecode').addEventListener('click', function(){
+  const err=document.getElementById('ephem-error');
+  err.innerText='';
+  try{
+    const code=makeAstroCode();
+    document.getElementById('astro-code-text').value=code;
+    document.getElementById('code-out').style.display='block';
+  }catch(e){ err.innerText=e.message; }
+});
+document.getElementById('btn-copycode').addEventListener('click', async function(){
+  const t=document.getElementById('astro-code-text');
+  try{ await navigator.clipboard.writeText(t.value); this.textContent='✅ Copied'; }
+  catch(e){ t.select(); document.execCommand('copy'); this.textContent='✅ Copied'; }
+  const b=this; setTimeout(()=>{b.textContent='📋 Copy';},2000);
+});
+/* ============ Astro Code: जन्म विवरण share करने के लिए (सभी tools में same) ============ */
+function makeAstroCode(){
+  const gv=id=>document.getElementById(id).value;
+  const p2=n=>String(n).padStart(2,'0');
+  const day=gv('bd-day'), mon=gv('bd-month'), Y=gv('bd-year');
+  if(!day||!mon||!Y) throw new Error('पहले जन्म तारीख भरें।');
+  const hh=parseInt(gv('bd-hh')), mm=parseInt(gv('bd-mm'));
+  let ss=parseInt(gv('bd-ss')); if(isNaN(ss)||ss<0||ss>59) ss=0;
+  if(isNaN(hh)||hh<1||hh>12) throw new Error('पहले जन्म समय भरें।');
+  if(isNaN(mm)||mm<0||mm>59) throw new Error('पहले जन्म समय भरें।');
+  const h24=(hh%12)+(document.getElementById('bd-ampm').dataset.val==='PM'?12:0);
+  const tzSign=document.getElementById('tz-sign').dataset.val;
+  const tzH=gv('tz-hh'), tzM=gv('tz-mm');
+  const latD=gv('lat-deg'), latM=gv('lat-min')||'0', latDir=document.getElementById('lat-dir').dataset.val;
+  const lonD=gv('lon-deg'), lonM=gv('lon-min')||'0', lonDir=document.getElementById('lon-dir').dataset.val;
+  if(latD===''||lonD==='') throw new Error('पहले अक्षांश/देशांतर भरें।');
+  return 'AS1-'+Y+p2(+mon+1)+p2(day)+'-'+p2(h24)+p2(mm)+p2(ss)+'-'+tzSign+p2(tzH)+p2(tzM)+'-'+p2(latD)+p2(latM)+latDir+'-'+String(lonD).padStart(3,'0')+p2(lonM)+lonDir;
+}
+function applyAstroCode(code){
+  const m=/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/.exec((code||'').trim());
+  if(!m) return 'कोड सही नहीं है — Home page से बना कोड paste करें।';
+  const d8=m[1], t6=m[2], tz=m[3], lat4=m[4], latDir=m[5], lon5=m[6], lonDir=m[7];
+  const Y=+d8.slice(0,4), mo=+d8.slice(4,6), dy=+d8.slice(6,8);
+  if(mo<1||mo>12) return 'कोड में तारीख गलत है।';
+  if(dy<1||dy>new Date(Y,mo,0).getDate()) return 'कोड में तारीख गलत है।';
+  const h24=+t6.slice(0,2), mi=+t6.slice(2,4), se=+t6.slice(4,6);
+  if(h24>23||mi>59||se>59) return 'कोड में समय गलत है।';
+  const tzH=+tz.slice(1,3), tzM=+tz.slice(3,5);
+  if(tzH>14||tzM>59) return 'कोड में timezone गलत है।';
+  const laD=+lat4.slice(0,2), laM=+lat4.slice(2,4), loD=+lon5.slice(0,3), loM=+lon5.slice(3,5);
+  if(laD>90||laM>59||loD>180||loM>59) return 'कोड में अक्षांश/देशांतर गलत है।';
+  const sv=(id,v)=>{document.getElementById(id).value=v;};
+  sv('bd-day',String(dy)); sv('bd-month',String(mo-1)); sv('bd-year',String(Y));
+  sv('bd-hh',String(h24%12===0?12:h24%12)); sv('bd-mm',String(mi).padStart(2,'0')); sv('bd-ss',String(se).padStart(2,'0'));
+  const ap=document.getElementById('bd-ampm'); ap.dataset.val=h24<12?'AM':'PM'; ap.textContent=ap.dataset.val;
+  const ts=document.getElementById('tz-sign'); ts.dataset.val=tz[0]; ts.textContent=tz[0];
+  sv('tz-hh',String(tzH)); sv('tz-mm',String(tzM).padStart(2,'0'));
+  sv('lat-deg',String(laD)); sv('lat-min',String(laM));
+  const ld=document.getElementById('lat-dir'); ld.dataset.val=latDir; ld.textContent=latDir;
+  sv('lon-deg',String(loD)); sv('lon-min',String(loM));
+  const od=document.getElementById('lon-dir'); od.dataset.val=lonDir; od.textContent=lonDir;
+  return null;
+}
+</script>
+
+</body>
+</html>

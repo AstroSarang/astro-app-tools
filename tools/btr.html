@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTR - वर्ग कुंडली विश्लेषक (जन्म समय सुधार)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; line-height: 1.6; padding: 20px; background-color: #f0f2f5; color: #1d2129; margin: 0; }
+        .container { max-width: 950px; margin: 20px auto; background: #ffffff; padding: 35px 40px; border-radius: 10px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
+        h1, h2 { text-align: center; color: #0d3b66; margin-bottom: 25px; }
+        h1 { font-weight: 600; font-size: 1.8em; }
+        h2 { font-size: 1.3em; color: #343a40; border-bottom: 1px solid #eaeaea; padding-bottom: 12px; font-weight: 500; margin-top: 30px;}
+        .form-row { display: flex; gap: 20px; margin-bottom: 18px; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 200px; }
+        label { display: block; margin-bottom: 6px; font-weight: 500; color: #495057; font-size: 0.95em; }
+        select, input[type="text"], input[type="time"] { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background-color: #fdfdfd; font-size: 0.95rem; transition: border-color 0.2s ease; }
+        select:focus, input[type="text"]:focus, input[type="time"]:focus { border-color: #007bff; box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); outline: none; }
+        
+        .input-instruction { padding: 12px 15px; margin-bottom: 20px; border-radius: 6px; background-color: #e6f7ff; border: 1px solid #91d5ff; color: #0050b3; font-size: 0.95em; }
+        .input-instruction strong { color: #d93025; }
+        .input-instruction ul { margin: 8px 0 0; padding-left: 20px; }
+        .input-instruction li { margin-bottom: 5px; }
+
+        .action-buttons { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 25px; margin-bottom: 20px; flex-wrap: wrap; }
+        .action-buttons button { display: block; width: auto; min-width: 150px; padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 1.05rem; font-weight: 500; transition: background-color 0.2s ease; color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .action-buttons button:hover { box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+        #analyze-button { background-color: #1a73e8; }
+        #analyze-button:hover { background-color: #1558b0; }
+        #reset-button { background-color: #dc3545; }
+        #reset-button:hover { background-color: #c82333; }
+        #copy-button { background-color: #28a745; }
+        #copy-button:hover { background-color: #218838; }
+        #download-button { background-color: #6c757d; }
+        #download-button:hover { background-color: #5a6268; }
+
+        #output { margin-top: 25px; padding: 25px; background-color: #fcfcfc; border: 1px solid #e7e7e7; border-radius: 8px; font-size: 1em; color: #333; white-space: pre-wrap; font-family: inherit;}
+        .error-message { color: #d93025; font-weight: bold; }
+        #output-text-for-copy { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>BTR - वर्ग कुंडली विश्लेषक</h1>
+
+    <div class="input-instruction">
+        <strong>निर्देश (BTR के लिए):</strong>
+        <ul>
+            <li>नीचे दिए गए बॉक्स में केवल <strong>9 ग्रहों की राशियाँ</strong> (सूर्य से केतु तक) कॉमा से अलग करके दर्ज करें।</li>
+            <li><strong>समय इनपुट:</strong> पहले लग्न का सटीक समय (घंटे:मिनट:सेकंड) दर्ज करें। टूल इस पहले अंतराल (Time Gap) को पकड़कर स्वतः आगे के लग्नों में लागू कर देगा।</li>
+        </ul>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="varga-chart">वर्ग कुंडली चुनें:</label>
+            <select id="varga-chart">
+                <option value="D1">D1 - राशि कुंडली</option>
+                <option value="D2">D2 - होरा कुंडली</option>
+                <option value="D3">D3 - द्रेष्काण कुंडली</option>
+                <option value="D4">D4 - चतुर्थांश कुंडली</option>
+                <option value="D5">D5 - पंचमांश कुंडली</option>
+                <option value="D6">D6 - षष्ठमांश कुंडली</option>
+                <option value="D7">D7 - सप्तमांश कुंडली</option>
+                <option value="D8">D8 - अष्टमांश कुंडली</option>
+                <option value="D9" selected>D9 - नवमांश कुंडली</option>
+                <option value="D10">D10 - दशमांश कुंडली</option>
+                <option value="D11">D11 - रुद्रांश (एकादशांश) कुंडली</option>
+                <option value="D12">D12 - द्वादशांश कुंडली</option>
+                <option value="D16">D16 - षोडशांश (कलांश) कुंडली</option>
+                <option value="D20">D20 - विशांशा कुंडली</option>
+                <option value="D24">D24 - चतुर्विंशांश (सिद्धांश) कुंडली</option>
+                <option value="D27">D27 - सप्तविंशांश (भांष/नक्षत्रमांश) कुंडली</option>
+                <option value="D30">D30 - त्रिंशांश कुंडली</option>
+                <option value="D40">D40 - खवेदांश (चत्वारिंशांश) कुंडली</option>
+                <option value="D45">D45 - अक्षवेदांश (पञ्चचत्वारिंशांश) कुंडली</option>
+                <option value="D60">D60 - षष्ट्यंश कुंडली</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="first-lagna">पहला संभावित लग्न:</label>
+            <select id="first-lagna">
+                <option value="0">मेष</option>
+                <option value="1">वृषभ</option>
+                <option value="2">मिथुन</option>
+                <option value="3">कर्क</option>
+                <option value="4">सिंह</option>
+                <option value="5">कन्या</option>
+                <option value="6">तुला</option>
+                <option value="7">वृश्चिक</option>
+                <option value="8">धनु</option>
+                <option value="9">मकर</option>
+                <option value="10">कुम्भ</option>
+                <option value="11" selected>मीन</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="num-lagnas">कितने लग्न चेक करने हैं?</label>
+            <select id="num-lagnas">
+                <option value="2">2 बार</option>
+                <option value="3">3 बार</option>
+                <option value="4" selected>4 बार</option>
+                <option value="5">5 बार</option>
+                <option value="6">6 बार</option>
+                <option value="7">7 बार</option>
+                <option value="8">8 बार</option>
+                <option value="9">9 बार</option>
+                <option value="10">10 बार</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- step="1" का प्रयोग ताकि सेकंड्स (Seconds) का विकल्प भी आ जाए -->
+    <div class="form-row">
+        <div class="form-group">
+            <label for="start-time">पहले लग्न का प्रारंभ समय (HH:MM:SS):</label>
+            <input type="time" id="start-time" step="1" value="09:50:00">
+        </div>
+        <div class="form-group">
+            <label for="end-time">पहले लग्न का समाप्ति समय (HH:MM:SS):</label>
+            <input type="time" id="end-time" step="1" value="10:05:00">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="planet-positions-input">9 ग्रहों की राशि संख्या (कॉमा से अलग करके, सूर्य से केतु तक):</label>
+        <input type="text" id="planet-positions-input" placeholder="उदा. 7,7,12,1,9,5,12,11,5">
+    </div>
+    
+    <div class="action-buttons">
+        <button id="analyze-button" onclick="analyzeBTR()">विश्लेषण करें</button>
+        <button id="reset-button" onclick="resetForm()">रीसेट करें</button>
+        <button id="copy-button" onclick="copyOutputToClipboard()" style="display: none;">आउटपुट कॉपी करें</button>
+        <button id="download-button" onclick="downloadOutputAsTxt()" style="display: none;">TXT डाउनलोड करें</button>
+    </div>
+
+    <div id="output">परिणाम यहाँ प्रदर्शित होंगे...</div>
+    <textarea id="output-text-for-copy" readonly></textarea>
+
+</div>
+
+<script>
+    const RASHIS = ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुम्भ', 'मीन'];
+    const PLANETS = { 'Surya': 'सूर्य', 'Chandra': 'चंद्र', 'Mangal': 'मंगल', 'Budh': 'बुध', 'Guru': 'गुरु', 'Shukra': 'शुक्र', 'Shani': 'शनि', 'Rahu': 'राहु', 'Ketu': 'केतु' };
+    const PLANET_KEYS = Object.keys(PLANETS);
+    const RASHI_TO_LORD_MAP = { 0: 'Mangal', 1: 'Shukra', 2: 'Budh', 3: 'Chandra', 4: 'Surya', 5: 'Budh', 6: 'Shukra', 7: 'Mangal', 8: 'Guru', 9: 'Shani', 10: 'Shani', 11: 'Guru' };
+
+    function getOrdinalBhavaName(n) { const nameMap = { 1:'लग्नेश', 2:'द्वितीयेश', 3:'तृतीयेश', 4:'चतुर्थेश', 5:'पंचमेश', 6:'षष्ठेश', 7:'सप्तमेश', 8:'अष्टमेश', 9:'नवमेश', 10:'दशमेश', 11:'एकादशेश', 12:'द्वादशेश'}; return nameMap[n] || `${n}वें भाव का स्वामी`; }
+    function getOrdinal(n) { const nameMap = { 1:'प्रथम', 2:'द्वितीय', 3:'तृतीय', 4:'चतुर्थ', 5:'पंचम', 6:'षष्ठम', 7:'सप्तम', 8:'अष्टम', 9:'नवम', 10:'दशम', 11:'एकादश', 12:'द्वादश'}; return nameMap[n] || n; }
+
+    function rashiToBhava(rashiIndex, lagnaRashiIndex) {
+        return ((rashiIndex - lagnaRashiIndex + 12) % 12) + 1;
+    }
+    
+    function getVargaLordships(planetKey, vargaLagnaRashiIndex) {
+        const lordships = [];
+        for (let rashiIdx = 0; rashiIdx < 12; rashiIdx++) {
+            if (RASHI_TO_LORD_MAP[rashiIdx] === planetKey) {
+                const bhavaInVarga = rashiToBhava(rashiIdx, vargaLagnaRashiIndex);
+                lordships.push(getOrdinalBhavaName(bhavaInVarga));
+            }
+        }
+        return lordships.length > 0 ? lordships.join('/') : '';
+    }
+
+    // सेकंड्स (Seconds) के साथ समय पार्स करने का फंक्शन
+    function parseTimeStr(timeStr) {
+        if (!timeStr) return null;
+        let parts = timeStr.split(':');
+        let h = parseInt(parts[0], 10) || 0;
+        let m = parseInt(parts[1], 10) || 0;
+        let s = parseInt(parts[2], 10) || 0;
+        return new Date(2000, 0, 1, h, m, s);
+    }
+
+    // सेकंड्स के साथ AM/PM फॉर्मेट में समय दिखाने का फंक्शन
+    function formatTimeAMPM(date) {
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        let seconds = date.getSeconds();
+        let ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        hours = hours % 12;
+        hours = hours ? hours : 12; 
+        
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        
+        // आउटपुट: HH:MM:SS AM/PM
+        return hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+    }
+
+    function analyzeBTR() {
+        const vargaChartSelect = document.getElementById('varga-chart');
+        const vargaChartFullName = vargaChartSelect.options[vargaChartSelect.selectedIndex].text; 
+        const vargaChartShortName = vargaChartFullName.split(' - ')[0]; // सिर्फ 'D9', 'D60' आदि निकालने के लिए
+
+        const firstLagnaIndex = parseInt(document.getElementById('first-lagna').value);
+        const numLagnas = parseInt(document.getElementById('num-lagnas').value);
+        const startTimeStr = document.getElementById('start-time').value;
+        const endTimeStr = document.getElementById('end-time').value;
+        const planetInput = document.getElementById('planet-positions-input').value.trim();
+        
+        const outputDiv = document.getElementById('output');
+        const copyButton = document.getElementById('copy-button');
+        const downloadButton = document.getElementById('download-button');
+        
+        outputDiv.innerHTML = '';
+        copyButton.style.display = 'none';
+        downloadButton.style.display = 'none';
+
+        if (!startTimeStr || !endTimeStr) {
+            outputDiv.innerHTML = `<span class="error-message">कृपया प्रारंभ और समाप्ति समय दर्ज करें।</span>`;
+            return;
+        }
+
+        const rashiStrings = planetInput.split(',').map(s => s.trim());
+        if (rashiStrings.length !== 9 || rashiStrings[0] === "") {
+            outputDiv.innerHTML = `<span class="error-message">अमान्य इनपुट। कृपया केवल 9 ग्रहों की राशियाँ (कॉमा से अलग करके) दर्ज करें। (आपने ${rashiStrings.length} संख्याएं दर्ज की हैं)</span>`;
+            return;
+        }
+
+        const planetRashiValues = rashiStrings.map(s => parseInt(s, 10));
+        if (planetRashiValues.some(val => isNaN(val) || val < 1 || val > 12)) {
+            outputDiv.innerHTML = `<span class="error-message">अमान्य राशि संख्या। कृपया केवल 1 से 12 के बीच की संख्याएँ दर्ज करें।</span>`;
+            return;
+        }
+
+        // समय अंतराल (Time Difference) का गणित
+        let startD = parseTimeStr(startTimeStr);
+        let endD = parseTimeStr(endTimeStr);
+        
+        if (endD < startD) {
+            endD.setDate(endD.getDate() + 1); // अगर मध्यरात्रि पार हो
+        }
+        
+        // पहले लग्न में लगा कुल समय (मिलीसेकंड में)
+        let diffMs = endD.getTime() - startD.getTime(); 
+        
+        if(diffMs <= 0) {
+            outputDiv.innerHTML = `<span class="error-message">समाप्ति समय, प्रारंभ समय से आगे का होना चाहिए।</span>`;
+            return;
+        }
+
+        // सभी लग्नों का कुल समय
+        let finalEndD = new Date(startD.getTime() + (numLagnas * diffMs));
+        
+        let outputText = "";
+
+        // हैडर (Header) - सेकंड्स के साथ
+        outputText += `${formatTimeAMPM(startD)} से ${formatTimeAMPM(finalEndD)} इस समय के बीच ${numLagnas} बार ${vargaChartFullName.split(' - ')[1]} मे बदलाव हुआ है।\n\n`;
+
+        // 1. राशियो में ग्रहों की स्थिति (Static block)
+        outputText += `${vargaChartShortName} - ${vargaChartFullName.split(' - ')[1]} में जहाँ ग्रह बैठे हैं वो राशि:\n\n`;
+        
+        const rashiOccupants = Array.from({ length: 12 }, () => []);
+        planetRashiValues.forEach((rashiValue, index) => {
+            const planetKey = PLANET_KEYS[index];
+            rashiOccupants[rashiValue - 1].push(planetKey);
+        });
+
+        for (let rIdx = 0; rIdx < 12; rIdx++) {
+            if (rashiOccupants[rIdx].length > 0) {
+                const planetNames = rashiOccupants[rIdx].map(pKey => PLANETS[pKey]).join(' + ');
+                let line = `${vargaChartShortName} - ${vargaChartFullName.split(' - ')[1]} के ${RASHIS[rIdx]} राशि में: ${planetNames}`;
+                if (rashiOccupants[rIdx].length > 1) { line += ' युति'; }
+                outputText += line + '\n';
+            }
+        }
+        outputText += `\n\n`;
+
+        // 2. लूप (Loop) चलाकर हर लग्न का डेटा निकालना
+        for (let i = 0; i < numLagnas; i++) {
+            let currentLagnaIndex = (firstLagnaIndex + i) % 12;
+            
+            // स्वचालित टाइम गैप एप्लीकेशन (Auto gap application)
+            let currentLagnaStart = new Date(startD.getTime() + i * diffMs);
+            let currentLagnaEnd = new Date(startD.getTime() + (i + 1) * diffMs);
+            
+            outputText += `${RASHIS[currentLagnaIndex]} लग्न - ${formatTimeAMPM(currentLagnaStart)} से ${formatTimeAMPM(currentLagnaEnd)}\n\n`;
+
+            // भावों में ग्रह बिठाना
+            const bhavaOccupants = Array.from({ length: 12 }, () => []);
+            planetRashiValues.forEach((rashiValue, index) => {
+                const pKey = PLANET_KEYS[index];
+                const bhavaValue = rashiToBhava(rashiValue - 1, currentLagnaIndex);
+                bhavaOccupants[bhavaValue - 1].push(pKey);
+            });
+
+            // हर भाव का प्रिंट (केवल जिनमें ग्रह हैं)
+            for (let bIdx = 0; bIdx < 12; bIdx++) {
+                if (bhavaOccupants[bIdx].length > 0) {
+                    const bhavaNum = bIdx + 1;
+                    const rashiInBhava = RASHIS[(currentLagnaIndex + bIdx) % 12];
+                    const planetNamesToShow = bhavaOccupants[bIdx].map(pKey => PLANETS[pKey]).join(' + ');
+                    
+                    let line = `${getOrdinal(bhavaNum)} भाव (${rashiInBhava} राशि) में: ${planetNamesToShow}`;
+                    if (bhavaOccupants[bIdx].length > 1) { line += ' युति'; }
+
+                    // भावेश (Lordships)
+                    const lordshipDetails = [];
+                    bhavaOccupants[bIdx].forEach((pKey) => {
+                        if (pKey !== 'Rahu' && pKey !== 'Ketu') {
+                            const vargaLordship = getVargaLordships(pKey, currentLagnaIndex);
+                            if (vargaLordship) {
+                                lordshipDetails.push(`${PLANETS[pKey]} = ${vargaLordship}`);
+                            }
+                        }
+                    });
+                    
+                    if (lordshipDetails.length > 0) {
+                        line += ` (${lordshipDetails.join('; ')})`;
+                    }
+                    outputText += line + '\n';
+                }
+            }
+            outputText += `\n\n`; // दो लग्नों के बीच का गैप
+        }
+
+        // आउटपुट दिखाना (Text Formatting)
+        outputDiv.textContent = outputText.trim();
+        document.getElementById('output-text-for-copy').value = outputText.trim();
+        
+        copyButton.style.display = 'inline-block';
+        downloadButton.style.display = 'inline-block';
+    }
+    
+    function resetForm() {
+        document.getElementById('planet-positions-input').value = '';
+        document.getElementById('output').textContent = 'परिणाम यहाँ प्रदर्शित होंगे...';
+        document.getElementById('output-text-for-copy').value = '';
+        document.getElementById('copy-button').style.display = 'none';
+        document.getElementById('download-button').style.display = 'none';
+    }
+
+    function copyOutputToClipboard() {
+        const textToCopy = document.getElementById('output-text-for-copy').value;
+        const buttonElement = document.getElementById('copy-button');
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = buttonElement.textContent; buttonElement.textContent = 'कॉपी हुआ!'; setTimeout(() => { buttonElement.textContent = originalText; }, 2000);
+            }).catch(err => { fallbackCopy(textToCopy, buttonElement); });
+        } else { fallbackCopy(textToCopy, buttonElement); }
+    }
+
+    function fallbackCopy(text, buttonElement) {
+        const textArea = document.createElement("textarea"); textArea.value = text;
+        textArea.style.position = "fixed"; document.body.appendChild(textArea);
+        textArea.focus(); textArea.select();
+        try { document.execCommand('copy'); const originalText = buttonElement.textContent; buttonElement.textContent = 'कॉपी हुआ!'; setTimeout(() => { buttonElement.textContent = originalText; }, 2000);
+        } catch (err) {} document.body.removeChild(textArea);
+    }
+    
+    function downloadOutputAsTxt() {
+        const textToDownload = document.getElementById('output-text-for-copy').value;
+        const vargaChartName = document.getElementById('varga-chart').value;
+        const fileName = `BTR_${vargaChartName}_Analysis.txt`;
+        const blob = new Blob([textToDownload], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob); link.download = fileName;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+</script>
+</body>
+</html>

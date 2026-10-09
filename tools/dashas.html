@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<script src="../vendor/swisseph-local.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>दशा कैलकुलेटर v3 (App-Verified)</title>
+<style>
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;padding:15px;background:#f0f2f5;color:#1d2129;margin:0}
+.container{max-width:950px;margin:15px auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 15px rgba(0,0,0,.08)}
+h1{text-align:center;color:#0d3b66;margin:0 0 15px}
+.tab-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px}
+.tab-btn{padding:10px 16px;border:2px solid #0d3b66;border-radius:8px;background:#fff;color:#0d3b66;cursor:pointer;font-size:.95rem;font-weight:600}
+.tab-btn.active{background:#0d3b66;color:#fff}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.ephem{background:#f3e5f5;border:1px solid #ce93d8;border-radius:8px;padding:15px;margin-bottom:20px}
+.ephem h3{margin:0 0 10px;color:#4a148c}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:8px}
+.f{display:flex;flex-direction:column;font-size:.85em;min-width:55px}
+.f input,.f select{padding:6px;border:1px solid #ccc;border-radius:4px;font-size:.95rem;margin-top:3px}
+.grow{flex:1;min-width:180px}
+#btn-ephem{display:block;width:100%;padding:12px;background:#6a1b9a;color:#fff;border:none;border-radius:6px;font-size:1.05rem;font-weight:600;cursor:pointer;margin-top:10px}
+#btn-ephem:disabled{background:#ccc}
+#ephem-status{font-size:.9em;margin:8px 0}
+#ephem-status.ok{color:#2e7d32}
+.current-pill{background:#fff3e0;border:2px solid #ff9800;border-radius:8px;padding:12px;margin:15px 0;font-weight:bold;color:#e65100;text-align:center}
+.current-pill button{margin-left:10px;background:#ff9800;color:#fff;border:none;border-radius:4px;padding:6px 14px;cursor:pointer;font-weight:600}
+.controls{display:flex;gap:10px;justify-content:center;align-items:center;margin:15px 0;flex-wrap:wrap}
+.controls select{padding:8px;border:1px solid #ccc;border-radius:6px}
+.btn{padding:10px 20px;border:none;border-radius:6px;background:#0d3b66;color:#fff;cursor:pointer;font-size:1rem;font-weight:600}
+.btn2{background:#2e7d32}
+.md-header{background:#0d3b66;color:#fff;padding:10px 15px;border-radius:6px;margin:15px 0 8px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.9em}
+th,td{border:1px solid #ddd;padding:6px 8px;text-align:left}
+th{background:#e3f2fd}
+.error{color:#d32f2f;background:#ffebee;padding:10px;border-radius:6px;margin:10px 0}
+.note{font-size:.85em;color:#555;background:#f5f5f5;padding:8px;border-radius:4px;margin:10px 0}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🪐 दशा कैलकुलेटर v3</h1>
+<p style="text-align:center;color:#666;font-size:.9em">App-verified logic • 365.256364 days/year</p>
+
+<!-- Birth Details -->
+<div class="ephem">
+<h3>📥 जन्म विवरण</h3>
+<div class="row">
+<div class="f">Astro Code<input id="astro-code" class="grow" placeholder="AS1-..."></div>
+<button class="btn" onclick="fillFromCode()" style="padding:8px 12px">भरो</button>
+</div>
+<div class="row">
+<div class="f">दिन<select id="bd-day"></select></div>
+<div class="f">महीना<select id="bd-month"></select></div>
+<div class="f">वर्ष<input id="bd-year" type="number" placeholder="1995" style="width:70px"></div>
+<div class="f">घंटा<input id="bd-hh" type="number" min="0" max="23" placeholder="3" style="width:50px"></div>
+<div class="f">मिनट<input id="bd-mm" type="number" min="0" max="59" placeholder="0" style="width:50px"></div>
+<div class="f">AM/PM<select id="bd-ampm"><option>AM</option><option>PM</option></select></div>
+</div>
+<div class="row">
+<div class="f">अक्षांश (Lat)<input id="bd-lat" type="number" step="0.01" placeholder="21.19" style="width:70px"></div>
+<div class="f">देशांतर (Lon)<input id="bd-lon" type="number" step="0.01" placeholder="79.51" style="width:70px"></div>
+<div class="f" style="font-size:.8em;color:#666;justify-content:flex-end">चर दशा के लग्न हेतु</div>
+</div>
+<div id="ephem-status">Swiss Ephemeris लोड हो रहा है...</div>
+<button id="btn-ephem" onclick="calcFromBirth()" disabled>ग्रह स्थिति निकालें व दशा बनाएं</button>
+</div>
+
+<!-- Tabs -->
+<div class="tab-nav">
+<button class="tab-btn active" onclick="switchTab('vimshottari')">विंशोत्तरी</button>
+<button class="tab-btn" onclick="switchTab('yogini')">योगिनी</button>
+<button class="tab-btn" onclick="switchTab('tribhagi')">त्रिभागी</button>
+<button class="tab-btn" onclick="switchTab('ashtottari')">अष्टोत्तरी</button>
+<button class="tab-btn" onclick="switchTab('chara')">चर दशा</button>
+</div>
+
+<!-- Vimshottari -->
+<div id="tab-vimshottari" class="tab-panel active">
+<div id="vimshottari-pill"></div>
+<div class="controls">
+<label>कितनी महादशाएं? <select id="vimshottari-count"><option>3</option><option selected>5</option><option>8</option><option>12</option></select></label>
+<button class="btn" onclick="vimCalc()">गणना करें</button>
+</div>
+<div class="controls">
+<label>डाउनलोड: MD <input id="vimshottari-from" type="number" min="1" value="1" style="width:50px"> से 
+<input id="vimshottari-to" type="number" min="1" value="2" style="width:50px"> तक</label>
+<button class="btn btn2" onclick="downloadTxt('vimshottari')">TXT डाउनलोड</button>
+</div>
+<div id="vimshottari-note" class="note" style="display:none"></div>
+<div id="vimshottari-out"></div>
+</div>
+
+<!-- Yogini -->
+<div id="tab-yogini" class="tab-panel">
+<div id="yogini-pill"></div>
+<div class="controls">
+<label>कितनी महादशाएं? <select id="yogini-count"><option>4</option><option>8</option><option selected>12</option><option>16</option><option>20</option></select></label>
+<button class="btn" onclick="yogCalc()">गणना करें</button>
+</div>
+<div class="controls">
+<label>डाउनलोड: MD <input id="yogini-from" type="number" min="1" value="1" style="width:50px"> से 
+<input id="yogini-to" type="number" min="1" value="2" style="width:50px"> तक</label>
+<button class="btn btn2" onclick="downloadTxt('yogini')">TXT डाउनलोड</button>
+</div>
+<div id="yogini-note" class="note" style="display:none"></div>
+<div id="yogini-out"></div>
+</div>
+
+<!-- Tribhagi -->
+<div id="tab-tribhagi" class="tab-panel">
+<div id="tribhagi-pill"></div>
+<div class="controls">
+<label>कितनी महादशाएं? <select id="tribhagi-count"><option>3</option><option>5</option><option>8</option><option selected>12</option><option>16</option><option>20</option></select></label>
+<button class="btn" onclick="triCalc()">गणना करें</button>
+</div>
+<div class="controls">
+<label>डाउनलोड: MD <input id="tribhagi-from" type="number" min="1" value="1" style="width:50px"> से 
+<input id="tribhagi-to" type="number" min="1" value="2" style="width:50px"> तक</label>
+<button class="btn btn2" onclick="downloadTxt('tribhagi')">TXT डाउनलोड</button>
+</div>
+<div id="tribhagi-note" class="note" style="display:none"></div>
+<div id="tribhagi-out"></div>
+</div>
+
+<!-- Ashtottari -->
+<div id="tab-ashtottari" class="tab-panel">
+<div id="ashtottari-pill"></div>
+<div class="controls">
+<label>कितनी महादशाएं? <select id="ashtottari-count"><option>3</option><option selected>5</option><option>8</option></select></label>
+<button class="btn" onclick="ashCalc()">गणना करें</button>
+</div>
+<div class="controls">
+<label>डाउनलोड: MD <input id="ashtottari-from" type="number" min="1" value="1" style="width:50px"> से 
+<input id="ashtottari-to" type="number" min="1" value="2" style="width:50px"> तक</label>
+<button class="btn btn2" onclick="downloadTxt('ashtottari')">TXT डाउनलोड</button>
+</div>
+<div id="ashtottari-note" class="note" style="display:none"></div>
+<div id="ashtottari-out"></div>
+</div>
+
+<!-- Chara -->
+<div id="tab-chara" class="tab-panel">
+<div id="chara-pill"></div>
+<div class="controls">
+<button class="btn" onclick="charaCalc()">गणना करें</button>
+</div>
+<div class="controls">
+<label>डाउनलोड: MD <input id="chara-from" type="number" min="1" value="1" style="width:50px"> से 
+<input id="chara-to" type="number" min="1" value="2" style="width:50px"> तक</label>
+<button class="btn btn2" onclick="downloadTxt('chara')">TXT डाउनलोड</button>
+</div>
+<div id="chara-note" class="note" style="display:none"></div>
+<div id="chara-out"></div>
+</div>
+
+</div>
+
+<script>
+// ============ DASHA LOGIC (no CDN needed) ============
+const DPY = 365.256364;
+const VIM_YEARS = {Ketu:7, Venus:20, Sun:6, Moon:10, Mars:7, Rahu:18, Jupiter:16, Saturn:19, Mercury:17};
+const VIM_ORDER = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const VIM_HI = {Ketu:'केतु', Venus:'शुक्र', Sun:'सूर्य', Moon:'चंद्र', Mars:'मंगल', Rahu:'राहु', Jupiter:'गुरु', Saturn:'शनि', Mercury:'बुध'};
+const YOG_YEARS = {Mangala:1, Pingala:2, Dhanya:3, Bhramari:4, Bhadrika:5, Ulka:6, Siddha:7, Sankata:8};
+const YOG_ORDER = ['Mangala','Pingala','Dhanya','Bhramari','Bhadrika','Ulka','Siddha','Sankata'];
+const YOG_HI = {Mangala:'मंगला (चंद्र)', Pingala:'पिंगला (सूर्य)', Dhanya:'धान्या (गुरु)', Bhramari:'भ्रामरी (मंगल)', Bhadrika:'भद्रिका (बुध)', Ulka:'उल्का (शनि)', Siddha:'सिद्धा (शुक्र)', Sankata:'संकटा (राहु)'};
+const ASH_YEARS = {Sun:6, Moon:15, Mars:8, Mercury:17, Saturn:10, Jupiter:19, Rahu:12, Venus:21};
+const ASH_ORDER = ['Sun','Moon','Mars','Mercury','Saturn','Jupiter','Rahu','Venus'];
+const ASH_HI = {Sun:'सूर्य', Moon:'चंद्र', Mars:'मंगल', Mercury:'बुध', Saturn:'शनि', Jupiter:'गुरु', Rahu:'राहु', Venus:'शुक्र'};
+const NAKSHATRAS = ['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्व फाल्गुनी','उत्तर फाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्व भाद्रपद','उत्तर भाद्रपद','रेवती'];
+
+let birthData = null;
+let dashaCache = {};
+
+function addDays(d, days) { return new Date(d.getTime() + days * 86400000); }
+function fmtD(d) {
+    const months = ['जन','फर','मार्च','अप्रै','मई','जून','जुल','अग','सित','अक्टू','नव','दिस'];
+    return d.getDate() + '-' + months[d.getMonth()] + '-' + d.getFullYear();
+}
+function firstMdStart(birthDate, remFrac, mdYears) {
+    return addDays(birthDate, -((1 - remFrac) * mdYears * DPY));
+}
+function calcDasha(order, years, cycle, startLord, startDate, count) {
+    const n = order.length;
+    let idx = order.indexOf(startLord);
+    let mdStart = new Date(startDate);
+    const mds = [];
+    const today = new Date(); today.setHours(0,0,0,0);
+    // Calculate at least 'count' MDs, but extend until today is covered (max 100 MDs)
+    let m = 0;
+    while (m < count || (mds.length > 0 && mds[mds.length-1].end < today && m < 100)) {
+        const mdLord = order[(idx + m) % n];
+        const mdDays = years[mdLord] * DPY;
+        const mdEnd = addDays(mdStart, mdDays);
+        const ads = [];
+        const mdPos = order.indexOf(mdLord);
+        let adStart = new Date(mdStart);
+        for (let i = 0; i < n; i++) {
+            const adLord = order[(mdPos + i) % n];
+            const adDays = (mdDays / cycle) * years[adLord];
+            const adEnd = addDays(adStart, adDays);
+            const pds = [];
+            const adPos = order.indexOf(adLord);
+            let pdStart = new Date(adStart);
+            for (let j = 0; j < n; j++) {
+                const pdLord = order[(adPos + j) % n];
+                const pdDays = (adDays / cycle) * years[pdLord];
+                const pdEnd = addDays(pdStart, pdDays);
+                pds.push({lord: pdLord, start: new Date(pdStart), end: new Date(pdEnd)});
+                pdStart = pdEnd;
+            }
+            ads.push({lord: adLord, start: new Date(adStart), end: new Date(adEnd), pds});
+            adStart = adEnd;
+        }
+        mds.push({lord: mdLord, start: new Date(mdStart), end: new Date(mdEnd), ads});
+        mdStart = mdEnd;
+        m++;
+    }
+    return mds;
+}
+function findCurrent(mds) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    for (const md of mds) {
+        if (today >= md.start && today < md.end) {
+            for (const ad of md.ads) {
+                if (today >= ad.start && today < ad.end) {
+                    for (const pd of ad.pds) {
+                        if (today >= pd.start && today < pd.end) return {md, ad, pd};
+                    }
+                    return {md, ad, pd: null};
+                }
+            }
+            return {md, ad: null, pd: null};
+        }
+    }
+    return null;
+}
+function renderDasha(mds, hiMap, mdLabel) {
+    let html = '';
+    mds.forEach((md, mi) => {
+        html += `<div class="md-block">`;
+        html += `<div class="md-header" style="text-align:center">${mi+1}. ${hiMap[md.lord]} ${mdLabel} (${fmtD(md.start)} से ${fmtD(md.end)} तक)</div>`;
+        md.ads.forEach((ad, ai) => {
+            html += `<div style="font-weight:600;margin:12px 0 6px">${ai+1}. ${hiMap[md.lord]} ${mdLabel} में ${hiMap[ad.lord]} अंतर्दशा : ${fmtD(ad.start)} से ${fmtD(ad.end)}</div>`;
+            html += '<table><tr><th>प्रत्यंतर दशा</th><th>प्रारंभ तिथि</th><th>अंतिम तिथि</th></tr>';
+            ad.pds.forEach(pd => {
+                html += `<tr><td>${hiMap[pd.lord]}</td><td>${fmtD(pd.start)}</td><td>${fmtD(pd.end)}</td></tr>`;
+            });
+            html += '</table>';
+        });
+        html += `</div>`;
+    });
+    return html;
+}
+function showPill(prefix, mds, hiMap, mdLabel) {
+    const el = document.getElementById(prefix + '-pill');
+    let cur = findCurrent(mds);
+    // If today not in range, extend calculation until we find it
+    if (!cur && mds.length > 0) {
+        const lastMd = mds[mds.length - 1];
+        const today = new Date(); today.setHours(0,0,0,0);
+        if (today >= lastMd.end) {
+            el.innerHTML = `<div class="note">⚠️ वर्तमान दशा देखने के लिए "कितनी महादशाएं" बढ़ाएं</div>`;
+            dashaCache[prefix] = {mds, cur: null};
+            return;
+        }
+    }
+    dashaCache[prefix] = {mds, cur};
+    if (!cur) { el.innerHTML = ''; return; }
+    let t = `📍 वर्तमान: ${hiMap[cur.md.lord]} ${mdLabel}`;
+    if (cur.ad) t += ` • ${hiMap[cur.ad.lord]} अंतर्दशा`;
+    if (cur.pd) t += ` • ${hiMap[cur.pd.lord]} प्रत्यंतर`;
+    t += ` (${fmtD(cur.md.start)} से)`;
+    el.innerHTML = `<div class="current-pill">${t}<button onclick="startFromCurrent('${prefix}')">वर्तमान से शुरू करें</button></div>`;
+}
+function vimCalc() {
+    const out = document.getElementById('vimshottari-out');
+    if (!birthData) { out.innerHTML = '<div class="error">पहले जन्म विवरण भरें</div>'; return; }
+    const count = parseInt(document.getElementById('vimshottari-count').value);
+    let startLord, startDate;
+    if (window._override) { startLord = window._override.lord; startDate = window._override.date; window._override = null; }
+    else {
+        startLord = VIM_ORDER[birthData.nakIdx % 9];
+        startDate = firstMdStart(birthData.birthDate, birthData.remFrac, VIM_YEARS[startLord]);
+    }
+    const mds = calcDasha(VIM_ORDER, VIM_YEARS, 120, startLord, startDate, count);
+    out.innerHTML = renderDasha(mds, VIM_HI, 'महादशा');
+    showPill('vimshottari', mds, VIM_HI, 'महादशा');
+    const n = document.getElementById('vimshottari-note');
+    n.style.display = 'block';
+    n.textContent = `चंद्र नक्षत्र ${NAKSHATRAS[birthData.nakIdx]} → ${VIM_HI[VIM_ORDER[birthData.nakIdx % 9]]} महादशा (शेष ${(birthData.remFrac*100).toFixed(1)}%)`;
+}
+function yogCalc() {
+    const out = document.getElementById('yogini-out');
+    if (!birthData) { out.innerHTML = '<div class="error">पहले जन्म विवरण भरें</div>'; return; }
+    const count = parseInt(document.getElementById('yogini-count').value);
+    let startLord, startDate;
+    if (window._override) { startLord = window._override.lord; startDate = window._override.date; window._override = null; }
+    else {
+        // PDF verified: Pushya (nakIdx 7) -> Dhanya (index 2). Formula: (nakIdx + 3) % 8
+        startLord = YOG_ORDER[(birthData.nakIdx + 3) % 8];
+        startDate = firstMdStart(birthData.birthDate, birthData.remFrac, YOG_YEARS[startLord]);
+    }
+    const mds = calcDasha(YOG_ORDER, YOG_YEARS, 36, startLord, startDate, count);
+    out.innerHTML = renderDasha(mds, YOG_HI, 'महादशा');
+    showPill('yogini', mds, YOG_HI, 'महादशा');
+}
+function triCalc() {
+    const out = document.getElementById('tribhagi-out');
+    if (!birthData) { out.innerHTML = '<div class="error">पहले जन्म विवरण भरें</div>'; return; }
+    const count = parseInt(document.getElementById('tribhagi-count').value);
+    const triYears = {}; for (const k in VIM_YEARS) triYears[k] = VIM_YEARS[k] / 3;
+    let startLord, startDate;
+    if (window._override) { startLord = window._override.lord; startDate = window._override.date; window._override = null; }
+    else {
+        startLord = VIM_ORDER[birthData.nakIdx % 9];
+        startDate = firstMdStart(birthData.birthDate, birthData.remFrac, triYears[startLord]);
+    }
+    const mds = calcDasha(VIM_ORDER, triYears, 40, startLord, startDate, count);
+    out.innerHTML = renderDasha(mds, VIM_HI, 'महादशा');
+    showPill('tribhagi', mds, VIM_HI, 'महादशा');
+}
+function ashCalc() {
+    const out = document.getElementById('ashtottari-out');
+    if (!birthData) { out.innerHTML = '<div class="error">पहले जन्म विवरण भरें</div>'; return; }
+    const count = parseInt(document.getElementById('ashtottari-count').value);
+    
+    // APK-verified Ashtottari logic (Method 1 only)
+    const ASH_LORDS = ['Sun','Moon','Mars','Mercury','Saturn','Jupiter','Rahu','Venus'];
+    const ASH_YRS = [6, 15, 8, 17, 10, 19, 12, 21];
+    const NAK_TO_LORD = {2:7,3:7,4:7, 5:0,6:0,7:0,8:0, 9:1,10:1,11:1,
+                         12:2,13:2,14:2,15:2, 16:3,17:3,18:3, 19:4,20:4,21:4,
+                         22:5,23:5,24:5, 25:6,26:6,0:6,1:6};
+    const SEG_START = [4000,7200,9600,12800,15200,17600,20000,1600];
+    const SEG_WIDTH = [3200,2400,3200,2400,2400,2400,3200,2400];
+    
+    let startLordIdx, startDate;
+    if (window._override) { 
+        startLordIdx = ASH_LORDS.indexOf(window._override.lord);
+        startDate = window._override.date; 
+        window._override = null; 
+    } else {
+        const nak = birthData.nakIdx;
+        startLordIdx = NAK_TO_LORD[nak];
+        let moonMin = birthData.moonLon * 60;
+        if (moonMin < SEG_START[startLordIdx]) moonMin += 21600;
+        const frac = (moonMin - SEG_START[startLordIdx]) / SEG_WIDTH[startLordIdx];
+        const yrs = ASH_YRS[startLordIdx];
+        startDate = addDays(birthData.birthDate, -(frac * yrs * DPY));
+    }
+    
+    const mds = [];
+    let mdStart = new Date(startDate);
+    let lordIdx = startLordIdx;
+    const todayAsh = new Date(); todayAsh.setHours(0,0,0,0);
+    let mAsh = 0;
+    while (mAsh < count || (mds.length > 0 && mds[mds.length-1].end < todayAsh && mAsh < 100)) {
+        const yrs = ASH_YRS[lordIdx];
+        const mdDays = yrs * DPY;
+        const mdEnd = addDays(mdStart, mdDays);
+        const ads = [];
+        let adStart = new Date(mdStart);
+        for (let i = 0; i < 8; i++) {
+            const adIdx = (lordIdx + i) % 8;
+            const adDays = (mdDays / 108) * ASH_YRS[adIdx];
+            const adEnd = addDays(adStart, adDays);
+            const pds = [];
+            let pdStart = new Date(adStart);
+            for (let j = 0; j < 8; j++) {
+                const pdIdx = (adIdx + j) % 8;
+                const pdDays = (adDays / 108) * ASH_YRS[pdIdx];
+                const pdEnd = addDays(pdStart, pdDays);
+                pds.push({lord: ASH_LORDS[pdIdx], start: new Date(pdStart), end: new Date(pdEnd)});
+                pdStart = pdEnd;
+            }
+            ads.push({lord: ASH_LORDS[adIdx], start: new Date(adStart), end: new Date(adEnd), pds});
+            adStart = adEnd;
+        }
+        mds.push({lord: ASH_LORDS[lordIdx], start: new Date(mdStart), end: new Date(mdEnd), ads});
+        mdStart = mdEnd;
+        lordIdx = (lordIdx + 1) % 8;
+        mAsh++;
+    }
+    
+    out.innerHTML = renderDasha(mds, ASH_HI, 'महादशा');
+    showPill('ashtottari', mds, ASH_HI, 'महादशा');
+}
+const RASHI_HI = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+// KN Rao: traditional lords (Mars for Scorpio, Saturn for Aquarius - NOT Ketu/Rahu)
+// Planet index: 0=Sun,1=Moon,2=Mars,3=Mercury,4=Jupiter,5=Venus,6=Saturn
+// Rashi (0=Mesha): lord planet index
+const KN_LORD = [2, 5, 3, 1, 0, 3, 5, 2, 4, 6, 6, 4];
+
+function charaCalc() {
+    const out = document.getElementById('chara-out');
+    if (!birthData || !birthData.planets) { 
+        out.innerHTML = '<div class="error">पहले जन्म विवरण भरें (सभी ग्रह चाहिए)</div>'; 
+        return; 
+    }
+    try {
+        const lagna = birthData.lagnaRashi;
+        const p = birthData.planets;
+        const pRashi = [p.sun, p.moon, p.mars, p.mercury, p.jupiter, p.venus, p.saturn];
+        
+        // KN Rao years - APK bytecode-verified (not odd/even!)
+        // BACKWARD if rashi in {3,4,5,9,10,11}, else FORWARD
+        // BWD: Karka(3), Simha(4), Kanya(5), Makara(9), Kumbha(10), Meena(11)
+        // FWD: Mesha(0), Vrishabha(1), Mithuna(2), Tula(6), Vrishchika(7), Dhanu(8)
+        // Verified 10/10 on 1995 + 2009 charts
+        const CHARA_BWD = [3, 4, 5, 9, 10, 11];
+        function rashiYears(rashi) {
+            const lord = KN_LORD[rashi];
+            const lordRashi = pRashi[lord];
+            if (lordRashi === rashi) return 12;
+            let count;
+            if (CHARA_BWD.includes(rashi)) {
+                count = (rashi - lordRashi + 12) % 12;  // BACKWARD
+            } else {
+                count = (lordRashi - rashi + 12) % 12;  // FORWARD
+            }
+            if (count === 0) count = 12;
+            return count;
+        }
+        
+        // === GEMINI SPEC: Base Sequence Formula ===
+        // Sequence starts from NEXT/PREVIOUS, NOT the base itself
+        // Forward: (Base + i) % 12, Reverse: (Base - i + 12) % 12, i = 1..12
+        function baseSequence(baseRashi, forward) {
+            const seq = [];
+            for (let i = 1; i <= 12; i++) {
+                seq.push(forward ? (baseRashi + i) % 12 : (((baseRashi - i) % 12) + 12) % 12);
+            }
+            return seq;
+        }
+        
+        // === GEMINI SPEC: PD Direction (Padakrama Rule) - STRICTLY FIXED ===
+        // FORWARD: Aries(0), Leo(4), Virgo(5), Libra(6), Aquarius(10), Pisces(11)
+        // REVERSE: Taurus(1), Gemini(2), Cancer(3), Scorpio(7), Sagittarius(8), Capricorn(9)
+        function pdForward(adRashi) {
+            return [0, 4, 5, 6, 10, 11].includes(adRashi);
+        }
+        
+        // MD direction: APK-verified (method b, instructions 26-37)
+        // FORWARD if lagna in {0,4,5,6,10,11}, else BACKWARD
+        // FWD: Mesha(0), Simha(4), Kanya(5), Tula(6), Kumbha(10), Meena(11)
+        // BWD: Vrishabha(1), Mithuna(2), Karka(3), Vrishchika(7), Dhanu(8), Makara(9)
+        // Verified: 1995 Dhanu(8)->BWD, 2009 Mithuna(2)->BWD, 1968 Mesha(0)->FWD
+        const mdForward = [0, 4, 5, 6, 10, 11].includes(lagna);
+        
+        // Check for override (from "start from current" button)
+        let startRashi, mdStart;
+        if (window._charaOverride) {
+            startRashi = window._charaOverride.rashi;
+            mdStart = new Date(window._charaOverride.date);
+            window._charaOverride = null;
+        } else {
+            startRashi = lagna;
+            mdStart = new Date(birthData.birthDate);
+        }
+        
+        // Generate MD sequence using base formula
+        const mdRashis = baseSequence(startRashi, mdForward).slice(0, 8);
+        // Actually for MDs we want to START from lagna itself, then step
+        // Per spec: "MD sequence simply steps 1 by 1 in the chosen direction"
+        // So first MD is startRashi, then next in direction
+        // Generate 16 MDs (enough to cover current date for old births)
+        const mdList = [startRashi];
+        for (let i = 1; i < 16; i++) {
+            mdList.push(mdForward ? (startRashi + i) % 12 : (((startRashi - i) % 12) + 12) % 12);
+        }
+        
+        const mds = [];
+        let curStart = new Date(mdStart);
+        
+        for (let m = 0; m < mdList.length; m++) {
+            const mdRashi = mdList[m];
+            const years = rashiYears(mdRashi);
+            const mdDays = years * DPY;
+            const mdEnd = addDays(curStart, mdDays);
+            
+            // === AD Sequence: base = MD rashi ===
+            // AD direction: FIXED by MD rashi (same list as PD direction)
+            // FORWARD: Mesha(0), Simha(4), Kanya(5), Tula(6), Kumbha(10), Meena(11)
+            // REVERSE: Vrishabha(1), Mithuna(2), Karka(3), Vrishchika(7), Dhanu(8), Makara(9)
+            // Verified vs old tool: Meena->FWD, Kumbha->FWD, Makara->BWD, Dhanu->BWD, Vrishchika->BWD
+            const adForward = [0, 4, 5, 6, 10, 11].includes(mdRashi);
+            const adRashis = baseSequence(mdRashi, adForward);
+            
+            const ads = [];
+            let adStart = new Date(curStart);
+            for (let i = 0; i < 12; i++) {
+                const adRashi = adRashis[i];
+                const adDays = mdDays / 12;
+                const adEnd = addDays(adStart, adDays);
+                
+                // === PD Sequence: base = AD rashi, direction STRICTLY by Padakrama ===
+                const pdFwd = pdForward(adRashi);
+                const pdRashis = baseSequence(adRashi, pdFwd);
+                
+                const pds = [];
+                let pdStart = new Date(adStart);
+                for (let j = 0; j < 12; j++) {
+                    const pdRashi = pdRashis[j];
+                    const pdDays = adDays / 12;
+                    const pdEnd = addDays(pdStart, pdDays);
+                    pds.push({rashi: pdRashi, start: new Date(pdStart), end: new Date(pdEnd)});
+                    pdStart = pdEnd;
+                }
+                
+                ads.push({rashi: adRashi, start: new Date(adStart), end: new Date(adEnd), pds});
+                adStart = adEnd;
+            }
+            
+            mds.push({rashi: mdRashi, years, start: new Date(curStart), end: new Date(mdEnd), ads});
+            curStart = mdEnd;
+        }
+        
+        // Render in old code format
+        let h = 'जैमिनी चर दशा परिणाम\n';
+        h += '='.repeat(56) + '\n';
+        mds.forEach((md, mi) => {
+            h += '\n' + '='.repeat(56) + '\n';
+            h += `${mi+1}. ${RASHI_HI[md.rashi]} चर महादशा (${fmtD(md.start)} से ${fmtD(md.end)} तक)\n`;
+            h += '='.repeat(56) + '\n';
+            // Also HTML version
+        });
+        // HTML version matching old format
+        let html = '';
+        mds.forEach((md, mi) => {
+            html += `<div class="md-header" style="text-align:center">${mi+1}. ${RASHI_HI[md.rashi]} चर महादशा (${fmtD(md.start)} से ${fmtD(md.end)} तक)</div>`;
+            md.ads.forEach((ad, ai) => {
+                html += `<div style="font-weight:600;margin:12px 0 6px">${ai+1}. ${RASHI_HI[md.rashi]} महादशा में ${RASHI_HI[ad.rashi]} अंतर्दशा : ${fmtD(ad.start)} से ${fmtD(ad.end)}</div>`;
+                html += '<table><tr><th>प्रत्यंतर दशा</th><th>प्रारंभ तिथि</th><th>अंतिम तिथि</th></tr>';
+                ad.pds.forEach(pd => {
+                    html += `<tr><td>${RASHI_HI[pd.rashi]}</td><td>${fmtD(pd.start)}</td><td>${fmtD(pd.end)}</td></tr>`;
+                });
+                html += '</table>';
+            });
+        });
+        out.innerHTML = html;
+        // Store text version for TXT download
+        window._charaText = h;
+        mds.forEach((md, mi) => {
+            const mdName = RASHI_HI[md.rashi] || '???';
+            window._charaText += `\n${'='.repeat(56)}\n${mi+1}. ${mdName} चर महादशा (${fmtD(md.start)} से ${fmtD(md.end)} तक)\n${'='.repeat(56)}\n`;
+            md.ads.forEach((ad, ai) => {
+                const adName = RASHI_HI[ad.rashi] || '???';
+                window._charaText += `\n${ai+1}. ${mdName} महादशा में ${adName} अंतर्दशा : ${fmtD(ad.start)} से ${fmtD(ad.end)}\n`;
+                window._charaText += '-'.repeat(56) + '\n';
+                window._charaText += 'प्रत्यंतर दशा   | प्रारंभ तिथि       | अंतिम तिथि\n';
+                window._charaText += '-'.repeat(56) + '\n';
+                ad.pds.forEach(pd => {
+                    const pdName = RASHI_HI[pd.rashi] || '???';
+                    window._charaText += `${pdName.padEnd(16)}| ${fmtD(pd.start).padEnd(18)}| ${fmtD(pd.end)}\n`;
+                });
+            });
+        });
+        
+        // Pill with "start from current" button
+        const today = new Date(); today.setHours(0,0,0,0);
+        let cur = null;
+        for (const md of mds) {
+            if (today >= md.start && today < md.end) {
+                for (const ad of md.ads) {
+                    if (today >= ad.start && today < ad.end) {
+                        for (const pd of ad.pds) {
+                            if (today >= pd.start && today < pd.end) { cur = {md, ad, pd}; break; }
+                        }
+                        if (!cur) cur = {md, ad, pd: null};
+                        break;
+                    }
+                }
+                if (!cur) cur = {md, ad: null, pd: null};
+                break;
+            }
+        }
+        const pillEl = document.getElementById('chara-pill');
+        window._charaCache = {mds, cur, lagna};
+        if (cur) {
+            let t = `📍 वर्तमान: ${RASHI_HI[cur.md.rashi]} महादशा`;
+            if (cur.ad) t += ` • ${RASHI_HI[cur.ad.rashi]} अंतर्दशा`;
+            if (cur.pd) t += ` • ${RASHI_HI[cur.pd.rashi]} प्रत्यंतर`;
+            t += ` (${fmtD(cur.md.start)} से)`;
+            pillEl.innerHTML = `<div class="current-pill">${t}<button onclick="charaStartFromCurrent()">वर्तमान से शुरू करें</button></div>`;
+        } else {
+            pillEl.innerHTML = '';
+        }
+        
+        const n = document.getElementById('chara-note');
+        n.style.display = 'block';
+        n.textContent = `लग्न ${RASHI_HI[lagna]} से चर दशा (KN Rao Padakrama विधि)`;
+        
+    } catch(e) {
+        out.innerHTML = '<div class="error">त्रुटि: ' + e.message + '</div>';
+    }
+}
+function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+}
+function downloadTxt(prefix) {
+    // Chara uses pre-formatted text matching old code output
+    if (prefix === 'chara' && window._charaText) {
+        let txt = window._charaText;
+        // Respect MD from/to range: split _charaText into per-MD blocks
+        const fromEl = document.getElementById('chara-from');
+        const toEl = document.getElementById('chara-to');
+        if (fromEl && toEl) {
+            const from = parseInt(fromEl.value) || 1;
+            const to = parseInt(toEl.value) || from;
+            // Each DETAILED MD block: opening ===, "N. Rashi चर महादशा (...)", closing ===,
+            // then AD lines. (The summary header at top repeats MD titles without ADs;
+            // require an AD line after the closing === to match only detailed blocks.)
+            const parts = txt.split(/(?=\n={56}\n\d+\. \S+ चर महादशा \([^\n]+\)\n={56}\n\n\d+\. )/);
+            // parts[0] = title + summary list; parts[1..] = detailed MD blocks
+            const header = parts[0] || '';
+            const blocks = parts.slice(1);
+            const sel = blocks.slice(from - 1, to);
+            if (sel.length) txt = header + sel.join('');
+        }
+        const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Chara_Dasha.txt';
+        a.click();
+        return;
+    }
+    const el = document.getElementById(prefix + '-out');
+    if (!el.innerHTML || el.innerHTML.includes('error')) { alert('पहले गणना करें'); return; }
+    
+    // Get from/to range if specified
+    const fromEl = document.getElementById(prefix + '-from');
+    const toEl = document.getElementById(prefix + '-to');
+    let txt;
+    
+    if (fromEl && toEl) {
+        const from = parseInt(fromEl.value) || 1;
+        const to = parseInt(toEl.value) || from;
+        // Extract specific MDs: each MD is wrapped in .md-block containing its header + all AD/PD tables
+        const blocks = el.querySelectorAll('.md-block');
+        let parts = [];
+        for (let i = from - 1; i < Math.min(to, blocks.length); i++) {
+            if (blocks[i]) parts.push(blocks[i].innerText);
+        }
+        txt = parts.join('\n\n');
+        if (!txt) txt = el.innerText;
+    } else {
+        txt = el.innerText;
+    }
+    
+    const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = prefix + '_dasha.txt';
+    a.click();
+}
+function startFromCurrent(prefix) {
+    const rec = dashaCache[prefix];
+    if (!rec || !rec.cur) return;
+    window._override = {lord: rec.cur.md.lord, date: new Date(rec.cur.md.start)};
+    ({vimshottari: vimCalc, yogini: yogCalc, tribhagi: triCalc, ashtottari: ashCalc}[prefix])();
+}
+function charaStartFromCurrent() {
+    const rec = window._charaCache;
+    if (!rec || !rec.cur) return;
+    // For Chara, restart from current MD rashi
+    const curMdRashi = rec.cur.md.rashi;
+    const curMdStart = new Date(rec.cur.md.start);
+    // Store override and recalculate
+    window._charaOverride = {rashi: curMdRashi, date: curMdStart};
+    charaCalc();
+}
+// Test helper (for verification)
+function testSetBirth() {
+    birthData = {birthDate: new Date(1995, 1, 14), moonLon: 101.51, nakIdx: 7, remFrac: 0.3868};
+    vimCalc(); yogCalc(); triCalc(); ashCalc();
+}
+// Init dropdowns
+(function() {
+    const d = document.getElementById('bd-day');
+    for (let i = 1; i <= 31; i++) d.innerHTML += `<option>${i}</option>`;
+    const mo = document.getElementById('bd-month');
+    ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'].forEach((m,i) => mo.innerHTML += `<option value="${i+1}">${m}</option>`);
+})();
+</script>
+
+<script type="module">
+const EPHEM_CDN = '../vendor/swisseph-browser.js';
+let SE = null, SEP = null;
+
+// ============ EPHEMERIS (varga-verified API) ============
+async function calcFromBirth() {
+    const st = document.getElementById('ephem-status');
+    try {
+        if (!window._swe) throw new Error('Ephemeris लोड नहीं हुआ, पेज refresh करें');
+        const swe = window._swe;
+        const day = parseInt(document.getElementById('bd-day').value);
+        const mon = parseInt(document.getElementById('bd-month').value);
+        const yr = parseInt(document.getElementById('bd-year').value);
+        let hh = parseInt(document.getElementById('bd-hh').value || '0');
+        const mm = parseInt(document.getElementById('bd-mm').value || '0');
+        const ampm = document.getElementById('bd-ampm').value;
+        if (ampm === 'PM' && hh < 12) hh += 12;
+        if (ampm === 'AM' && hh === 12) hh = 0;
+        if (!day || !mon || !yr) throw new Error('जन्म तिथि पूरी भरें');
+        
+        const utcMs = Date.UTC(yr, mon-1, day, hh, mm) - (5.5 * 3600000);
+        const ud = new Date(utcMs);
+        const jd = swe.julianDay(ud.getUTCFullYear(), ud.getUTCMonth()+1, ud.getUTCDate(),
+            ud.getUTCHours() + ud.getUTCMinutes()/60);
+        
+        const ayan = swe.getAyanamsa(jd);
+        const norm360 = d => ((d % 360) + 360) % 360;
+        const calcLon = (body) => norm360(swe.calculatePosition(jd, body, 0).longitude - ayan);
+        
+        const moonLon = calcLon(SEP.Moon);
+        const nakSpan = 360/27;
+        const nakIdx = Math.floor(moonLon / nakSpan);
+        const remFrac = (nakSpan - (moonLon % nakSpan)) / nakSpan;
+        
+        // All planets for Chara
+        const pLon = {
+            sun: Math.floor(calcLon(SEP.Sun) / 30),
+            moon: Math.floor(moonLon / 30),
+            mars: Math.floor(calcLon(SEP.Mars) / 30),
+            mercury: Math.floor(calcLon(SEP.Mercury) / 30),
+            jupiter: Math.floor(calcLon(SEP.Jupiter) / 30),
+            venus: Math.floor(calcLon(SEP.Venus) / 30),
+            saturn: Math.floor(calcLon(SEP.Saturn) / 30),
+        };
+        
+        // Lagna - use lat/lon from inputs (default Gondia)
+        const lat = parseFloat(document.getElementById('bd-lat').value) || 21.19;
+        const lon = parseFloat(document.getElementById('bd-lon').value) || 79.51;
+        const hs = swe.calculateHouses(jd, lat, lon, 'P');
+        const lagnaRashi = Math.floor(norm360(hs.ascendant - ayan) / 30);
+        
+        eval(`birthData = {birthDate: new Date(yr, mon-1, day), moonLon: ${moonLon}, nakIdx: ${nakIdx}, remFrac: ${remFrac}, planets: ${JSON.stringify(pLon)}, lagnaRashi: ${lagnaRashi}}`);
+        st.textContent = `✅ चंद्र: ${moonLon.toFixed(2)}° • ${NAKSHATRAS[nakIdx]} • लग्न: ${['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'][lagnaRashi]}`;
+        vimCalc(); yogCalc(); triCalc(); ashCalc(); charaCalc();
+    } catch(e) { st.textContent = 'त्रुटि: ' + e.message; }
+}
+function fillFromCode() {
+    const code = document.getElementById('astro-code').value.trim();
+    // AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W
+    const m = code.match(/^AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-]\d{4})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])/);
+    if (!m) { alert('सही Astro Code डालें'); return; }
+    document.getElementById('bd-year').value = m[1];
+    document.getElementById('bd-month').value = parseInt(m[2]);
+    document.getElementById('bd-day').value = parseInt(m[3]);
+    let hh = parseInt(m[4]);
+    document.getElementById('bd-ampm').value = hh >= 12 ? 'PM' : 'AM';
+    if (hh > 12) hh -= 12; if (hh === 0) hh = 12;
+    document.getElementById('bd-hh').value = hh;
+    document.getElementById('bd-mm').value = m[5];
+    // Lat/Lon: DDMMN -> degrees
+    const lat = parseInt(m[8]) + parseInt(m[9])/60;
+    const lon = parseInt(m[11]) + parseInt(m[12])/60;
+    document.getElementById('bd-lat').value = lat.toFixed(2);
+    document.getElementById('bd-lon').value = lon.toFixed(2);
+}
+// Init ephemeris
+(async function initEphem() {
+    const st = document.getElementById('ephem-status');
+    try {
+        const m = await import(/* @vite-ignore */EPHEM_CDN);
+        SE = m.SwissEphemeris; SEP = m.Planet;
+        const swe = new SE();
+        await swe.init();
+        swe.setSiderealMode(m.SiderealMode.Lahiri);
+        window._swe = swe;
+        window._SEP = SEP;
+        st.textContent = '✅ Swiss Ephemeris तैयार';
+        document.getElementById('btn-ephem').disabled = false;
+    } catch(e) {
+        st.textContent = 'त्रुटि: Ephemeris लोड नहीं हुआ - ' + e.message;
+    }
+})();
+window.calcFromBirth = calcFromBirth;
+window.fillFromCode = fillFromCode;
+</script>
+</body>
+</html>

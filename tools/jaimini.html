@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<script src="../vendor/swisseph-local.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>एडवांस जैमिनी कैलकुलेटर (D1 विश्लेषण + कारकांश + स्वांश)</title>
+    <style>
+        /* --- Styles --- */
+        body { font-family: 'Segoe UI', Roboto, sans-serif; line-height: 1.6; padding: 20px; background-color: #f4f6f8; color: #1d2129; margin: 0; }
+        .container { max-width: 1000px; margin: 20px auto; background: #ffffff; padding: 35px 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
+        h1 { text-align: center; color: #2c3e50; font-weight: 600; border-bottom: 2px solid #ecf0f1; padding-bottom: 15px; margin-bottom: 30px; }
+        h2 { font-size: 1.25em; color: #34495e; margin-bottom: 15px; font-weight: 600; }
+        
+        /* Options Checkbox */
+        .options-row { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; background: #fff8e1; padding: 15px; border-radius: 8px; border: 1px solid #ffe0b2; margin-bottom: 25px;}
+        .chk-label { cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; color: #d35400; font-size: 1.1em;}
+        .chk-label input { transform: scale(1.3); cursor: pointer;}
+        
+        /* Inputs */
+        .input-group { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; }
+        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-family: monospace; font-size: 1rem; }
+        .instruction { font-size: 0.85em; color: #6c757d; margin-top: 6px; display: block; }
+
+        /* Karaka Matrix Table */
+        .matrix-container { overflow-x: auto; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
+        table.karaka-table { width: 100%; border-collapse: collapse; text-align: center; background: #fff; min-width: 600px; }
+        .karaka-table th { background-color: #34495e; color: #fff; padding: 12px; font-size: 0.9em; font-weight: 600; }
+        .karaka-table td { border: 1px solid #e9ecef; padding: 10px; }
+        .planet-row-label { font-weight: 600; background-color: #f8f9fa; color: #2c3e50; text-align: left !important; padding-left: 20px !important; }
+        .karaka-cb { transform: scale(1.4); cursor: pointer; }
+        .karaka-cb:disabled { cursor: not-allowed; opacity: 0.4; filter: grayscale(1); }
+
+        /* Buttons */
+        .main-actions-container { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .btn { padding: 12px 30px; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem; font-weight: bold; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-calc { background-color: #2980b9; }
+        .btn-calc:hover { background-color: #1c6ea4; }
+        .btn-download { background-color: #27ae60; display: none; }
+        .btn-download:hover { background-color: #219653; }
+        
+        /* Output & Errors */
+        .error-message { color: #c0392b; font-weight: bold; background: #fadbd8; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 20px; display: none; }
+        .output-box { margin-top: 30px; padding: 20px; background-color: #fff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .output-title { font-weight: bold; color: #fff; background: #2c3e50; padding: 10px 15px; border-radius: 5px; margin: -20px -20px 20px -20px; }
+        
+        .varga-line { padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95em; }
+        .varga-line span.house-name { font-weight: bold; color: #d35400; width: 220px; display: inline-block; }
+        .varga-line span.rashi-name { font-weight: bold; color: #2980b9; }
+
+        /* D1 House Analysis Styles */
+        .karaka-display { padding: 15px; background-color: #eaf2fa; border: 1px solid #c1d9f0; border-radius: 8px; font-size: 0.95em; line-height: 1.7; margin-bottom: 20px; }
+        .karaka-display strong { color: #0d3b66; font-size: 1.1em; display: block; margin-bottom: 8px; border-bottom: 1px solid #c1d9f0; padding-bottom: 5px;}
+        .house-info { margin-bottom: 20px; padding: 20px; background-color: #fcfcfc; border-radius: 8px; border: 1px solid #e7e7e7; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .house-title { font-weight: 600; font-size: 1.1em; color: #1c2a48; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #f0f0f0; }
+        .section-title { font-weight: bold; color: #555; margin-top: 10px; font-size: 0.9em; }
+        .planet-entry { display: inline-block; margin: 5px 10px 5px 0; padding: 6px 12px; background-color: #eaf2fa; border-radius: 4px; border: 1px solid #c1d9f0; font-weight: 600; color: #1d2129; font-size: 0.9em;}
+        .aspect-info-line { font-size: 0.9em; color: #0056b3; display: block; margin-top: 4px; line-height: 1.5; }
+        .no-info { font-size: 0.9em; color: #888; font-style: italic; }
+        /* --- जन्म विवरण auto-fill --- */
+        .ephem-section { background-color: #fff8e1 !important; border: 1px solid #ffe082 !important; }
+        .ephem-section > label { color: #e65100 !important; }
+        .c2-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .c2-row { display: flex; gap: 6px; align-items: flex-end; flex-wrap: wrap; }
+        .c2-f { display: flex; flex-direction: column; font-size: 0.68em; color: #9c5b00; font-weight: 600; flex: 1 1 50px; min-width: 0; margin-bottom: 0 !important; }
+        .c2-f input, .c2-f select { width: 100%; padding: 6px 4px; font-size: 0.88rem; border: 1px solid #ffcc80; border-radius: 5px; background: #fff; box-sizing: border-box; }
+        .c2-grow { flex: 3 1 150px; }
+        .c2-wrap { position: relative; display: block; }
+        button.c2-btn { padding: 6px 9px; font-size: 0.88rem; flex: 0 0 auto; }
+        .c2-sep { width: 1px; align-self: stretch; background: #ffe0b2; }
+        .c2-dst { font-size: 0.72em; color: #c82333; }
+        #btn-ephem { background-color: #ef6c00; margin-top: 18px; color: #fff; padding: 12px; border: none; border-radius: 6px; font-size: 1.05em; font-weight: bold; cursor: pointer; width: 100%; }
+        #btn-ephem:hover { background-color: #d55a00; }
+        #btn-ephem:disabled { opacity: 0.6; cursor: wait; }
+        #ephem-status { font-size: 0.88em; color: #e65100; margin-bottom: 10px; }
+        #ephem-status.ok { color: #2e7d32; }
+        #place-results { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ffcc80; border-radius: 0 0 5px 5px; max-height: 180px; overflow-y: auto; z-index: 50; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+        .pr-item { padding: 7px 10px; cursor: pointer; font-size: 0.85rem; border-bottom: 1px solid #f5f5f5; }
+        .pr-item:hover { background: #fff8e1; }
+        .pr-none { padding: 8px 10px; font-size: 0.82rem; color: #999; }
+        .error-msg { color: #c62828; font-size: 0.88em; margin-top: 8px; font-weight: 600; }
+        @media (max-width: 520px) { .c2-f input, .c2-f select { font-size: 0.85rem; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>जैमिनी महा-कैलकुलेटर</h1>
+
+    <!-- Swiss Ephemeris Auto-fill Section -->
+    <div class="input-group ephem-section">
+        <label>🔗 Astro Code से भरें <span style="font-weight:normal; font-size:0.85em;">(Home page से copy करें)</span></label>
+        <div class="c2-row">
+            <label class="c2-f c2-grow">Astro Code<span class="c2-wrap"><input type="text" id="astro-code-in" placeholder="AS1-..." autocomplete="off" style="font-family:monospace;"></span></label>
+            <button type="button" id="btn-applycode" class="c2-btn" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:8px 16px; font-weight:bold; cursor:pointer;">📥 भरो</button>
+        </div>
+        <div id="code-error" class="error-msg"></div>
+        <div style="text-align:center; color:#9c5b00; font-size:0.85em; margin:10px 0 4px;">— या manual जन्म विवरण भरें —</div>
+        <label>🪐 जन्म विवरण से ग्रह स्थिति निकालें (Swiss Ephemeris)</label>
+        <div id="ephem-status">⏳ Engine लोड हो रहा है…</div>
+        <div class="c2-grid">
+            <div class="c2-row">
+                <label class="c2-f">दिन<select id="bd-day"><option value="">--</option></select></label>
+                <label class="c2-f">माह<select id="bd-month"><option value="">--</option><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select></label>
+                <label class="c2-f">वर्ष<input type="number" id="bd-year" placeholder="1995"></label>
+                <span class="c2-sep"></span>
+                <label class="c2-f">घंटे<input type="number" id="bd-hh" placeholder="3"></label>
+                <label class="c2-f">मिनट<input type="number" id="bd-mm" placeholder="00"></label>
+                <label class="c2-f">सेकंड<input type="number" id="bd-ss" value="0"></label>
+                <button type="button" class="bd-toggle c2-btn" id="bd-ampm" data-val="AM">AM</button>
+                <span class="c2-sep"></span>
+                <button type="button" class="bd-toggle c2-btn" id="tz-sign" data-val="+">+</button>
+                <label class="c2-f">TZ घंटे<input type="number" id="tz-hh" value="5"></label>
+                <label class="c2-f">मिनट<input type="number" id="tz-mm" value="30"></label>
+            </div>
+            <div class="c2-dst">(Daylight saving (DST) लागू हो तो timezone उसी के अनुसार भरें)</div>
+            <div class="c2-row">
+                <label class="c2-f c2-grow">जन्म स्थान<span class="c2-wrap"><input type="text" id="birth-place" placeholder="शहर English में लिखें" autocomplete="off"><div id="place-results"></div></span></label>
+                <label class="c2-f">अक्षांश°<input type="number" id="lat-deg" placeholder="21"></label>
+                <button type="button" class="bd-toggle c2-btn" id="lat-dir" data-val="N">N</button>
+                <label class="c2-f">मिनट<input type="number" id="lat-min" placeholder="27"></label>
+                <label class="c2-f">देशांतर°<input type="number" id="lon-deg" placeholder="80"></label>
+                <button type="button" class="bd-toggle c2-btn" id="lon-dir" data-val="E">E</button>
+                <label class="c2-f">मिनट<input type="number" id="lon-min" placeholder="11"></label>
+            </div>
+        </div>
+        <button type="button" id="btn-ephem" disabled>🪐 ग्रह स्थिति निकालें व भरें</button>
+        <div class="instruction">बटन दबाते ही D1 + D9 राशि नंबर auto-fill होंगे, 7 चर कारक अपने आप tick होंगे, फिर गणना अपने आप बनेगी। Manual entry भी पहले जैसी चलती रहेगी।</div>
+        <div id="ephem-error" class="error-msg"></div>
+    </div>
+    
+    <!-- Module Selector -->
+    <div class="options-row">
+        <label class="chk-label">
+            <input type="checkbox" id="chk-d1" checked> 1. जैमिनी आरूढ़ एवं भाव विश्लेषण (D1)
+        </label>
+        <label class="chk-label">
+            <input type="checkbox" id="chk-d9" onchange="toggleD9Input()"> 2. कारकांश एवं स्वांश (D9 आधारित)
+        </label>
+    </div>
+
+    <div id="input-error" class="error-message"></div>
+
+    <!-- Inputs -->
+    <div class="input-group" id="d1-section">
+        <label>1. D1 (लग्न कुंडली) की राशि संख्या (1-12):</label>
+        <input type="text" id="rashi-input-d1" placeholder="उदा. 9,11,4,4,10,8,9,11,7,1">
+        <span class="instruction">क्रम: लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु</span>
+    </div>
+
+    <!-- D9 Input -->
+    <div class="input-group" id="d9-section" style="display: none; background-color: #eaf2fa; border-color: #b9d4f1;">
+        <label style="color: #2980b9;">2. D9 (नवमांश कुंडली) की राशि संख्या (1-12):</label>
+        <input type="text" id="rashi-input-d9" placeholder="उदा. 1,7,7,12,1,9,5,12,11,5">
+        <span class="instruction">क्रम: D9 लग्न, सूर्य, चंद्र... (कारकांश और स्वांश के लिए अनिवार्य)</span>
+    </div>
+
+    <!-- Karaka Checkbox Matrix -->
+    <h2>3. जैमिनी चर कारकत्व चुनें:</h2>
+    <div class="matrix-container" id="karaka-matrix-container"></div>
+
+    <!-- Buttons -->
+    <div class="main-actions-container">
+        <button class="btn btn-calc" onclick="calculateAstrology()">गणना करें</button>
+        <button id="download-report-btn" class="btn btn-download" onclick="downloadReport()">रिपोर्ट डाउनलोड करें</button>
+    </div>
+
+    <div id="output-container"></div>
+</div>
+
+<script>
+    // --- Constants ---
+    const RASHIS = ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुम्भ', 'मीन'];
+    const PLANET_KEYS = ['Surya', 'Chandra', 'Mangal', 'Budh', 'Guru', 'Shukra', 'Shani', 'Rahu', 'Ketu'];
+    const PLANETS = { 'Surya': 'सूर्य', 'Chandra': 'चंद्र', 'Mangal': 'मंगल', 'Budh': 'बुध', 'Guru': 'गुरु', 'Shukra': 'शुक्र', 'Shani': 'शनि', 'Rahu': 'राहु', 'Ketu': 'केतु' };
+    const KARAKA_PLANETS = ['Surya', 'Chandra', 'Mangal', 'Budh', 'Guru', 'Shukra', 'Shani'];
+    const CHARA_KARAKAS = ['AK', 'AmK', 'BK', 'MK', 'PK', 'GK', 'DK'];
+    const HINDI_ORDINALS = ['लग्न/पहला भाव', 'द्वितीय भाव', 'तृतीय भाव', 'चतुर्थ भाव', 'पंचम भाव', 'षष्ठ भाव', 'सप्तम भाव', 'अष्टम भाव', 'नवम भाव', 'दशम भाव', 'एकादश भाव', 'द्वादश भाव'];
+    
+    // For D1 Arudha & Aspects Logic
+    const RASHI_LORDS = { 0: 'Mangal', 1: 'Shukra', 2: 'Budh', 3: 'Chandra', 4: 'Surya', 5: 'Budh', 6: 'Shukra', 7: 'Mangal', 8: 'Guru', 9: 'Shani', 10: 'Shani', 11: 'Guru' };
+    const ARUDHA_PADA_NAMES = { 1: 'A1/AL (आरूढ़ लग्न)', 2: 'A2 (धन)', 3: 'A3 (भ्रातृ)', 4: 'A4 (मातृ)', 5: 'A5 (पुत्र)', 6: 'A6 (रोग)', 7: 'A7 (दार)', 8: 'A8 (मृत्यु)', 9: 'A9 (भाग्य)', 10: 'A10 (राज्य)', 11: 'A11 (लाभ)', 12: 'A12/UL (उपपद)' };
+    
+    const RASHI_TYPES = { 0: 'Movable', 1: 'Fixed', 2: 'Dual', 3: 'Movable', 4: 'Fixed', 5: 'Dual', 6: 'Movable', 7: 'Fixed', 8: 'Dual', 9: 'Movable', 10: 'Fixed', 11: 'Dual' };
+    const MOVABLE_RASHIS = [0, 3, 6, 9];
+    const FIXED_RASHIS = [1, 4, 7, 10];
+    const DUAL_RASHIS = [2, 5, 8, 11];
+    
+    const JaiminiAspectingRashisMap = {};
+    const JaiminiAspectedByRashisMap = {};
+    
+    let finalDownloadText = "";
+
+    // Build Aspect Maps on Load
+    for (let i = 0; i < 12; i++) {
+        const aspects = getJaiminiAspects(i); 
+        JaiminiAspectingRashisMap[i] = aspects;
+        aspects.forEach(targetIdx => { 
+            if (!JaiminiAspectedByRashisMap[targetIdx]) JaiminiAspectedByRashisMap[targetIdx] = []; 
+            JaiminiAspectedByRashisMap[targetIdx].push(i); 
+        });
+    }
+
+    function getJaiminiAspects(rashiIndex) {
+        const aspects = new Set();
+        const rashiType = RASHI_TYPES[rashiIndex];
+        if (rashiType === 'Movable') { const adj = (rashiIndex + 1) % 12; FIXED_RASHIS.forEach(r => { if (r !== adj) aspects.add(r); }); } 
+        else if (rashiType === 'Fixed') { const adj = (rashiIndex - 1 + 12) % 12; MOVABLE_RASHIS.forEach(r => { if (r !== adj) aspects.add(r); }); }
+        else if (rashiType === 'Dual') { DUAL_RASHIS.forEach(r => { if (r !== rashiIndex) aspects.add(r); }); }
+        return Array.from(aspects).sort((a, b) => a - b);
+    }
+
+    // --- UI Interactions ---
+    function toggleD9Input() {
+        const d9Section = document.getElementById('d9-section');
+        d9Section.style.display = document.getElementById('chk-d9').checked ? 'block' : 'none';
+    }
+
+    function renderKarakaMatrix() {
+        let html = '<table class="karaka-table"><tr><th>ग्रह \\ कारक</th>';
+        CHARA_KARAKAS.forEach(k => html += `<th>${k}</th>`);
+        html += '</tr>';
+        
+        KARAKA_PLANETS.forEach(p => {
+            html += `<tr><td class="planet-row-label">${PLANETS[p]}</td>`;
+            CHARA_KARAKAS.forEach(k => {
+                html += `<td><input type="checkbox" class="karaka-cb" data-p="${p}" data-k="${k}"></td>`;
+            });
+            html += `</tr>`;
+        });
+        html += '</table>';
+        document.getElementById('karaka-matrix-container').innerHTML = html;
+        document.querySelectorAll('.karaka-cb').forEach(cb => cb.addEventListener('change', updateMatrixLocks));
+    }
+
+    function updateMatrixLocks() {
+        const checkedBoxes = Array.from(document.querySelectorAll('.karaka-cb:checked'));
+        const usedPlanets = checkedBoxes.map(c => c.dataset.p);
+        const usedKarakas = checkedBoxes.map(c => c.dataset.k);
+
+        document.querySelectorAll('.karaka-cb').forEach(cb => {
+            if (!cb.checked) cb.disabled = usedPlanets.includes(cb.dataset.p) || usedKarakas.includes(cb.dataset.k);
+            else cb.disabled = false;
+        });
+    }
+
+    function parseInput(val) {
+        if (!val) return null;
+        let arr = val.split(',').map(s => parseInt(s.trim()));
+        if(arr.length !== 10 || arr.some(isNaN) || arr.some(n => n < 1 || n > 12)) return null;
+        return arr;
+    }
+
+    function normalizeHouse(h) { return ((h - 1 + 12) % 12) + 1; }
+
+    // --- UPDATED DOWNLOAD FUNCTION ---
+    function downloadReport() {
+        if(!finalDownloadText) return;
+
+        let fileName = 'Jaimini_Complete_Report.txt'; // डिफ़ॉल्ट नाम
+        const chkD1 = document.getElementById('chk-d1').checked;
+        const chkD9 = document.getElementById('chk-d9').checked;
+
+        if (chkD1 && chkD9) {
+            fileName = 'Jaimini_Complete_Report.txt';
+        } else if (chkD1 && !chkD9) {
+            fileName = 'Jaimini_Report.txt';
+        } else if (!chkD1 && chkD9) {
+            fileName = 'Karakamsha_Swamsha_Report.txt';
+        }
+
+        const blob = new Blob([finalDownloadText], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        document.body.appendChild(link); 
+        link.click(); 
+        document.body.removeChild(link);
+    }
+
+    // --- Core Calculations ---
+    function calculateAstrology() {
+        const errDiv = document.getElementById('input-error');
+        const outDiv = document.getElementById('output-container');
+        const downloadBtn = document.getElementById('download-report-btn');
+        
+        errDiv.style.display = 'none'; outDiv.innerHTML = ''; finalDownloadText = ""; downloadBtn.style.display = 'none';
+
+        const chkD1 = document.getElementById('chk-d1').checked;
+        const chkD9 = document.getElementById('chk-d9').checked;
+
+        if (!chkD1 && !chkD9) { errDiv.innerHTML = "कृपया कम से कम एक विश्लेषण चुनें।"; errDiv.style.display = 'block'; return; }
+
+        const karakaMap = {};
+        document.querySelectorAll('.karaka-cb:checked').forEach(cb => karakaMap[cb.dataset.k] = cb.dataset.p);
+        if(Object.keys(karakaMap).length !== 7) { errDiv.innerHTML = "कृपया ग्रिड में सभी 7 चर कारकत्व चुनें।"; errDiv.style.display = 'block'; return; }
+
+        const planetToKaraka = {};
+        for(let k in karakaMap) planetToKaraka[karakaMap[k]] = k;
+
+        let d1Arr = null, d9Arr = null;
+        if(chkD1 || chkD9) {
+            d1Arr = parseInput(document.getElementById('rashi-input-d1').value);
+            if(!d1Arr) { errDiv.innerHTML = "D1 (लग्न) की प्रविष्टियां अमान्य हैं।"; errDiv.style.display = 'block'; return; }
+        }
+        if(chkD9) {
+            d9Arr = parseInput(document.getElementById('rashi-input-d9').value);
+            if(!d9Arr) { errDiv.innerHTML = "D9 (नवमांश) की प्रविष्टियां अमान्य हैं।"; errDiv.style.display = 'block'; return; }
+        }
+
+        let htmlOutput = ""; let textOutput = "";
+
+        // ==========================================
+        // MODULE 1: D1 ANALYSIS (Restored)
+        // ==========================================
+        if(chkD1) {
+            let lagnaRashi = d1Arr[0];
+            let lagnaIndex = lagnaRashi - 1;
+            
+            // 1. Karaka List Display
+            let kHtml = `<div class="karaka-display"><strong>चयनित जैमिनी कारकतत्व:</strong>`;
+            let kText = `======== चयनित जैमिनी कारकतत्व ========
+`;
+            CHARA_KARAKAS.forEach(k => {
+                let pKey = karakaMap[k];
+                let pRashi = d1Arr[PLANET_KEYS.indexOf(pKey)+1];
+                let pIdx = pRashi - 1;
+                let hNum = (pRashi - lagnaRashi + 12) % 12 + 1;
+                let line = `${k} : ${PLANETS[pKey]} - भाव ${hNum} (${RASHIS[pIdx]})`;
+                kHtml += `<div>${line}</div>`; kText += line + `
+`;
+            });
+            kHtml += `</div>`; htmlOutput += kHtml; textOutput += kText + `
+`;
+
+            // Setup planets in houses for D1
+            let pInHouseD1 = Array.from({ length: 12 }, () => []);
+            for(let i=1; i<=9; i++) {
+                let hIdx = (d1Arr[i] - lagnaRashi + 12) % 12;
+                pInHouseD1[hIdx].push(PLANET_KEYS[i-1]);
+            }
+
+            // 2. Arudha Padas
+            let arudhaHtml = `<div class="output-box"><div class="output-title">D1 आरूढ़ पद (Arudha Padas)</div>`;
+            let arudhaText = `======== D1 आरूढ़ पद ========
+`;
+            let arudhaByHouse = {};
+
+            for(let h=1; h<=12; h++) {
+                let rashiNum = (lagnaRashi + h - 2) % 12 + 1;
+                let lordKey = RASHI_LORDS[rashiNum-1];
+                let lordRashi = d1Arr[PLANET_KEYS.indexOf(lordKey) + 1];
+                let houseOfLord = (lordRashi - lagnaRashi + 12) % 12 + 1;
+                let steps = (houseOfLord - h + 12) % 12 + 1;
+                
+                let aHouse;
+                if(steps === 1 || steps === 7) aHouse = normalizeHouse(h + 9);
+                else if(steps === 4) aHouse = houseOfLord;
+                else if(steps === 10) aHouse = normalizeHouse(h + 3);
+                else aHouse = normalizeHouse(houseOfLord + steps - 1);
+                
+                let dist = (aHouse - h + 12) % 12 + 1;
+                if(dist === 1 || dist === 7) aHouse = normalizeHouse(aHouse + 9);
+
+                let aRashi = (lagnaRashi + aHouse - 2) % 12 + 1;
+                
+                if(!arudhaByHouse[aHouse]) arudhaByHouse[aHouse] = [];
+                arudhaByHouse[aHouse].push(ARUDHA_PADA_NAMES[h].split(' ')[0]);
+
+                let line = `${ARUDHA_PADA_NAMES[h]} : भाव ${aHouse} (${RASHIS[aRashi-1]})`;
+                arudhaHtml += `<div class="varga-line"><span class="house-name">${ARUDHA_PADA_NAMES[h]}</span> : भाव ${aHouse} (${RASHIS[aRashi-1]})</div>`;
+                arudhaText += line + `
+`;
+            }
+            arudhaHtml += `</div>`; htmlOutput += arudhaHtml; textOutput += arudhaText + `
+`;
+
+            // 3. Complete D1 House Analysis
+            let haHtml = `<div class="output-box" style="background:transparent; border:none; box-shadow:none; padding:0;"><div class="output-title">D1 सम्पूर्ण भाव विश्लेषण (दृष्टि एवं ग्रह)</div>`;
+            let haText = `======== D1 सम्पूर्ण भाव विश्लेषण ========
+`;
+
+            for(let i=0; i<12; i++) {
+                let hNum = i + 1;
+                let rIdx = (lagnaIndex + i) % 12;
+                let rName = RASHIS[rIdx];
+                
+                haHtml += `<div class="house-info"><div class="house-title">भाव ${hNum}: ${rName} राशि</div>`;
+                haText += `
+[भाव ${hNum}: ${rName} राशि]
+`;
+                
+                if(arudhaByHouse[hNum]) {
+                    haHtml += `<div><strong>आरूढ़ पद:</strong> ${arudhaByHouse[hNum].join(', ')}</div>`;
+                    haText += `आरूढ़ पद: ${arudhaByHouse[hNum].join(', ')}
+`;
+                }
+                
+                // Occupants
+                haHtml += `<div class="section-title">स्थित ग्रह:</div>`;
+                let occupants = pInHouseD1[i].map(p => {
+                    let k = planetToKaraka[p];
+                    return k ? `${PLANETS[p]} (${k})` : PLANETS[p];
+                });
+                
+                if(occupants.length > 0) {
+                    haHtml += occupants.map(o => `<span class="planet-entry">${o}</span>`).join('');
+                    haText += `स्थित ग्रह: ${occupants.join(', ')}
+`;
+                } else {
+                    haHtml += `<div class="no-info">कोई ग्रह नहीं</div>`;
+                    haText += `स्थित ग्रह: कोई नहीं
+`;
+                }
+
+                // Aspects Logic Helper
+                const aspectFormatter = (type, aspectsSet) => {
+                    haHtml += `<div class="section-title">${rName} राशि ${type === 'की' ? 'की' : 'पर'} जैमिनी दृष्टि:</div>`;
+                    haText += `${rName} राशि ${type === 'की' ? 'की' : 'पर'} जैमिनी दृष्टि: `;
+                    
+                    if (!aspectsSet || aspectsSet.length === 0) {
+                        haHtml += `<div class="no-info">कोई नहीं</div>`;
+                        haText += `कोई नहीं
+`; return;
+                    }
+                    
+                    let lines = aspectsSet.map(targetRashiIdx => { 
+                        let targetHouse = (targetRashiIdx - lagnaIndex + 12) % 12 + 1; 
+                        let tPlanets = pInHouseD1[targetHouse - 1].length ? pInHouseD1[targetHouse - 1].map(p => PLANETS[p]).join(', ') : 'कोई ग्रह नहीं'; 
+                        return `${RASHIS[targetRashiIdx]} (भाव ${targetHouse}) [${tPlanets}]`; 
+                    });
+                    
+                    haHtml += `<div class="aspect-info-line">${lines.join(' <br> ')}</div>`;
+                    haText += lines.join(' | ') + `
+`;
+                };
+
+                aspectFormatter('की', JaiminiAspectingRashisMap[rIdx]);
+                aspectFormatter('पर', JaiminiAspectedByRashisMap[rIdx]);
+
+                haHtml += `</div>`;
+            }
+            haHtml += `</div>`; htmlOutput += haHtml; textOutput += haText + `
+`;
+        }
+
+        // ==========================================
+        // MODULE 2: D9 KARAKAMSHA & SWAMSHA
+        // ==========================================
+        if(chkD9) {
+            let akPlanetKey = karakaMap['AK'];
+            let akIndex = PLANET_KEYS.indexOf(akPlanetKey) + 1; 
+            let akD9Rashi = d9Arr[akIndex]; // 1 to 12
+            
+            // Helper function with FIXED Math logic: (lagnaRashiIdx + h - 2) % 12 + 1
+            function buildVargaBlock(title, lagnaRashiIdx, planetRashiArray) {
+                let html = `<div class="output-box"><div class="output-title">${title}</div>`;
+                let text = `======== ${title} ========
+`;
+                
+                for(let h=1; h<=12; h++) {
+                    let rashiActual = (lagnaRashiIdx + h - 2) % 12 + 1; 
+                    
+                    let occupants = [];
+                    for(let pIdx=1; pIdx<=9; pIdx++) {
+                        if(planetRashiArray[pIdx] === rashiActual) {
+                            let pKey = PLANET_KEYS[pIdx-1]; 
+                            let kName = planetToKaraka[pKey];
+                            occupants.push(kName ? `${PLANETS[pKey]} (${kName})` : PLANETS[pKey]);
+                        }
+                    }
+                    
+                    let occStr = occupants.length > 0 ? occupants.join(', ') : 'कोई ग्रह नहीं';
+                    let rNameStr = RASHIS[rashiActual-1];
+                    let lineName = `${title.split(' ')[0]} ${HINDI_ORDINALS[h-1]}`;
+                    
+                    html += `<div class="varga-line"><span class="house-name">${lineName}</span> : <span class="rashi-name">${rNameStr}</span> - ${occStr}</div>`;
+                    text += `${lineName} : ${rNameStr} - ${occStr}
+`;
+                }
+                html += `</div>`; return { html, text };
+            }
+
+            // 1. Karakamsha
+            let kmResult = buildVargaBlock("कारकांश कुण्डली (Karakamsha)", akD9Rashi, d1Arr);
+            htmlOutput += kmResult.html; textOutput += kmResult.text + `
+`;
+
+            // 2. Swamsha
+            let swResult = buildVargaBlock("स्वांश कुण्डली (Swamsha)", akD9Rashi, d9Arr);
+            htmlOutput += swResult.html; textOutput += swResult.text + `
+`;
+        }
+
+        outDiv.innerHTML = htmlOutput;
+        finalDownloadText = textOutput.trim();
+        downloadBtn.style.display = 'inline-block';
+    }
+
+    // Initialize Matrix on Load
+    window.onload = function() { renderKarakaMatrix(); };
+</script>
+
+<script>
+/* ============ जन्म स्थान: worldwide live search (astro apps जैसा) ============ */
+(function(){
+  var place=document.getElementById('birth-place'), box=document.getElementById('place-results');
+  var timer=null, ctrl=null;
+
+  /* दिन dropdown (1-31) */
+  (function(){ var s=document.getElementById('bd-day'); for(var d=1; d<=31; d++){ var o=document.createElement('option'); o.value=d; o.textContent=d; s.appendChild(o); } })();
+
+  /* toggle buttons: AM/PM, +/-, N/S, E/W */
+  [['bd-ampm',['AM','PM']],['tz-sign',['+','-']],['lat-dir',['N','S']],['lon-dir',['E','W']]].forEach(function(t){
+    var el=document.getElementById(t[0]), vals=t[1];
+    el.addEventListener('click', function(){ var i=(vals.indexOf(el.dataset.val)+1)%vals.length; el.dataset.val=vals[i]; el.textContent=vals[i]; });
+  });
+
+  function closeBox(){ box.style.display='none'; box.innerHTML=''; }
+  function setDms(dec, isLat){
+    var dir=dec>=0?(isLat?'N':'E'):(isLat?'S':'W');
+    var a=Math.abs(dec), d=Math.floor(a), m=Math.round((a-d)*60);
+    if(m===60){ d+=1; m=0; }
+    document.getElementById(isLat?'lat-deg':'lon-deg').value=d;
+    document.getElementById(isLat?'lat-min':'lon-min').value=m;
+    var dirEl=document.getElementById(isLat?'lat-dir':'lon-dir');
+    dirEl.dataset.val=dir; dirEl.textContent=dir;
+  }
+  function pick(label, la, lo){ clearTimeout(timer); place.value=label; setDms(la,true); setDms(lo,false); closeBox(); }
+
+  function render(items){
+    if(!items.length){ box.innerHTML='<div class="pr-none">कोई शहर नहीं मिला — इंटरनेट जांचें या lat/long manual भरें</div>'; }
+    else{
+      box.innerHTML=items.map(function(it,i){
+        return '<div class="pr-item" data-i="'+i+'">'+it.label+'</div>';
+      }).join('');
+      Array.prototype.forEach.call(box.querySelectorAll('.pr-item'), function(el){
+        el.addEventListener('mousedown', function(e){ e.preventDefault(); var it=items[+el.getAttribute('data-i')]; pick(it.label, it.lat, it.lon); });
+      });
+    }
+    box.style.display='block';
+  }
+
+  async function apiSearch(q){
+    var providers=[
+      { url:'https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=8&language=en&format=json',
+        parse:function(j){ return (j.results||[]).map(function(g){
+          var parts=[g.name]; if(g.admin1) parts.push(g.admin1); if(g.country) parts.push(g.country);
+          return {label:parts.join(', '), lat:+g.latitude.toFixed(4), lon:+g.longitude.toFixed(4)}; }); } },
+      { url:'https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=8&lang=en',
+        parse:function(j){ return (j.features||[]).map(function(f){
+          var p=f.properties||{}, parts=[p.name]; if(p.state) parts.push(p.state); if(p.country) parts.push(p.country);
+          var c=f.geometry&&f.geometry.coordinates;
+          return c?{label:parts.join(', '), lat:+c[1].toFixed(4), lon:+c[0].toFixed(4)}:null; }).filter(Boolean); } },
+      { url:'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=8',
+        parse:function(j){ return (Array.isArray(j)?j:[]).map(function(n){
+          return {label:String(n.display_name).split(',').slice(0,3).join(','), lat:+parseFloat(n.lat).toFixed(4), lon:+parseFloat(n.lon).toFixed(4)}; }); } }
+    ];
+    for(var i=0;i<providers.length;i++){
+      try{
+        if(ctrl) ctrl.abort();
+        ctrl=new AbortController();
+        var r=await fetch(providers[i].url,{signal:ctrl.signal});
+        if(!r.ok) continue;
+        var out=providers[i].parse(await r.json());
+        if(out.length) return out;
+      }catch(e){}
+    }
+    return [];
+  }
+
+  place.addEventListener('input', function(){
+    var qAtSchedule=place.value;
+    clearTimeout(timer);
+    if(qAtSchedule.trim().length<2){ closeBox(); return; }
+    box.innerHTML='<div class="pr-none">खोजा जा रहा है…</div>'; box.style.display='block';
+    timer=setTimeout(async function(){
+      if(place.value!==qAtSchedule || place.value.trim().length<2) return;
+      var remote=await apiSearch(place.value);
+      if(place.value===qAtSchedule) render(remote);
+    }, 350);
+  });
+  place.addEventListener('blur', function(){ setTimeout(closeBox, 150); });
+  place.addEventListener('focus', function(){ if(box.innerHTML) box.style.display='block'; });
+  document.addEventListener('click', function(e){ if(!e.target.closest('.ephem-place-wrap')) closeBox(); });
+})();
+</script>
+
+<script type="module">
+/* ============ Swiss Ephemeris auto-fill (jaimini logic untouched) ============ */
+const EPHEM_CDN = '../vendor/swisseph-browser.js';
+const ephemStatus = document.getElementById('ephem-status');
+const btnEphem = document.getElementById('btn-ephem');
+const ephemError = document.getElementById('ephem-error');
+let SE=null, SEP=null, SEF=null, SEH=null, SEL=null;
+
+function setStatus(t, ok){ ephemStatus.textContent=t; ephemStatus.className=ok?'ok':''; }
+
+try {
+  const m = await import(/* @vite-ignore */EPHEM_CDN);
+  SE = m.SwissEphemeris; SEP = m.Planet; SEF = m.CalculationFlag; SEH = m.HouseSystem; SEL = m.LunarPoint;
+  const swe = new SE();
+  await swe.init();
+  swe.setSiderealMode(m.SiderealMode.Lahiri);
+  window._swe = swe;
+  setStatus('\u2705 Engine \u0924\u0948\u092f\u093e\u0930 \u2014 \u091c\u0928\u094d\u092e \u0935\u093f\u0935\u0930\u0923 \u092d\u0930\u0915\u0930 "ग्रह स्थिति निकालें व भरें" दबाएं', true);
+  btnEphem.disabled = false;
+} catch(e) {
+  setStatus('\u26a0\ufe0f Engine \u0932\u094b\u0921 \u0928\u0939\u0940\u0902 \u0939\u0941\u0906 \u2014 \u0907\u0902\u091f\u0930\u0928\u0947\u091f \u091a\u093e\u0932\u0942 \u0915\u0930\u0915\u0947 \u092a\u0947\u091c reload \u0915\u0930\u0947\u0902', false);
+  btnEphem.disabled = false;
+  btnEphem.textContent = '\uD83D\uDD04 \u092a\u0941\u0928ः \u092a\u094d\u0930\u092f\u093e\u0938 \u0915\u0930\u0947\u0902 (\u092a\u0947\u091c reload \u0939\u094b\u0917\u093e)';
+  btnEphem.addEventListener('click', ()=>location.reload());
+}
+setTimeout(()=>{ if(btnEphem.disabled) setStatus('\u23f3 Engine \u0932\u094b\u0921 \u0939\u094b \u0930\u0939\u093e \u0939\u0948\u2026 (\u0928\u0947\u091f\u0935\u0930\u094d\u0915 \u0927\u0940\u092e\u093e \u0939\u094b \u0938\u0915\u0924\u093e \u0939\u0948)', false); }, 45000);
+
+const FLAGS = () => SEF.MoshierEphemeris | SEF.Speed;
+const norm360 = d => ((d % 360) + 360) % 360;
+const signNum = lon => Math.floor(norm360(lon) / 30) + 1;
+/* \u0928\u0935\u092e\u093e\u0902\u0936 \u0930\u093e\u0936\u093f (1-12) */
+function navamsaNum(lon){
+  const s = Math.floor(norm360(lon)/30);
+  const pada = Math.floor((norm360(lon)%30)/(30/9));
+  const start = [0,9,6,3][s%4];
+  return ((start+pada)%12)+1;
+}
+
+btnEphem.addEventListener('click', async ()=>{
+  if(!window._swe) return;
+  ephemError.innerText='';
+  try{
+    const gv=id=>document.getElementById(id).value;
+    const day=parseInt(gv('bd-day')), mon=parseInt(gv('bd-month')), Y=parseInt(gv('bd-year'));
+    if(isNaN(day)||isNaN(mon)||isNaN(Y)) throw new Error('\u091c\u0928\u094d\u092e \u0924\u093e\u0930\u0940\u0916 \u092a\u0942\u0930\u0940 \u092d\u0930\u0947\u0902 (\u0926\u093f\u0928 / \u092e\u0939\u0940\u0928\u093e / \u0935\u0930\u094d\u0937)।');
+    if(Y<1800||Y>2200) throw new Error('\u0935\u0930\u094d\u0937 1800\u20132200 \u0915\u0947 \u092c\u0940\u091a \u092d\u0930\u0947\u0902।');
+    const maxDay=new Date(Y, mon+1, 0).getDate();
+    if(day<1||day>maxDay) throw new Error('\u0907\u0938 \u092e\u0939\u0940\u0928\u0947 \u092e\u0947\u0902 '+day+' \u0924\u093e\u0930\u0940\u0916 \u0928\u0939\u0940\u0902 \u0939\u094b\u0924\u0940।');
+    const hh=parseInt(gv('bd-hh')), mm=parseInt(gv('bd-mm'));
+    let ss=parseInt(gv('bd-ss')); if(isNaN(ss)||ss<0||ss>59) ss=0;
+    if(isNaN(hh)||hh<1||hh>12) throw new Error('\u0918\u0902\u091f\u0947 1\u201312 \u0915\u0947 \u092c\u0940\u091a \u092d\u0930\u0947\u0902।');
+    if(isNaN(mm)||mm<0||mm>59) throw new Error('\u092e\u093f\u0928\u091f 0\u201359 \u0915\u0947 \u092c\u0940\u091a \u092d\u0930\u0947\u0902।');
+    const h24=(hh%12)+(document.getElementById('bd-ampm').dataset.val==='PM'?12:0);
+    const tzSign=document.getElementById('tz-sign').dataset.val==='-'?-1:1;
+    const tzH=parseInt(gv('tz-hh')||'0'), tzM=parseInt(gv('tz-mm')||'0');
+    if(isNaN(tzH)||tzH<0||tzH>14||isNaN(tzM)||tzM<0||tzM>59) throw new Error('Timezone \u0918\u0902\u091f\u0947 0\u201314, \u092e\u093f\u0928\u091f 0\u201359 \u092d\u0930\u0947\u0902।');
+    const tzMin=tzSign*(tzH*60+tzM);
+    const dms=(degId,minId,dirId,maxDeg,name)=>{
+      const d=parseFloat(gv(degId)), m=parseFloat(gv(minId)||'0'), dir=document.getElementById(dirId).dataset.val;
+      if(isNaN(d)||d<0||d>maxDeg) throw new Error(name+' \u0921\u093f\u0917\u094d\u0930\u0940 0\u2013'+maxDeg+' \u0915\u0947 \u092c\u0940\u091a \u092d\u0930\u0947\u0902।');
+      if(isNaN(m)||m<0||m>=60) throw new Error(name+' \u092e\u093f\u0928\u091f 0\u201359 \u0915\u0947 \u092c\u0940\u091a \u092d\u0930\u0947\u0902।');
+      let dec=d+m/60; if(dir==='S'||dir==='W') dec=-dec; return dec;
+    };
+    const lat=dms('lat-deg','lat-min','lat-dir',90,'\u0905\u0915\u094d\u0937\u093e\u0902\u0936'),
+          lon=dms('lon-deg','lon-min','lon-dir',180,'\u0926\u0947\u0936\u093e\u0902\u0924\u0930');
+    let utc=new Date(Date.UTC(Y,mon,day,h24,mm,ss)); utc=new Date(utc.getTime()-tzMin*60000);
+    const swe=window._swe;
+    const jd=swe.julianDay(utc.getUTCFullYear(),utc.getUTCMonth()+1,utc.getUTCDate(),
+                           utc.getUTCHours()+utc.getUTCMinutes()/60+utc.getUTCSeconds()/3600);
+    const ayan=swe.getAyanamsa(jd), F=FLAGS();
+    const calc=(body)=>norm360(swe.calculatePosition(jd,body,F).longitude-ayan);
+    const order=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
+    const bodyMap={Surya:SEP.Sun,Chandra:SEP.Moon,Mangal:SEP.Mars,Budh:SEP.Mercury,Guru:SEP.Jupiter,Shukra:SEP.Venus,Shani:SEP.Saturn,Rahu:SEL.MeanNode};
+    const L={};
+    order.forEach(k=>{ L[k]=calc(bodyMap[k]); });
+    L.Ketu=norm360(L.Rahu+180);
+    const hs=swe.calculateHouses(jd,lat,lon,SEH.Placidus);
+    const lagna=norm360(hs.ascendant-ayan);
+    const lons=[lagna].concat(order.map(k=>L[k]));
+
+    /* D1: 10 \u0930\u093e\u0936\u093f \u0928\u0902\u092c\u0930 */
+    document.getElementById('rashi-input-d1').value=lons.map(signNum).join(',');
+    /* D9: 10 \u0928\u0935\u092e\u093e\u0902\u0936 \u0930\u093e\u0936\u093f \u0928\u0902\u092c\u0930 */
+    document.getElementById('rashi-input-d9').value=lons.map(navamsaNum).join(',');
+
+    /* \u091a\u0930 \u0915\u093e\u0930\u0915: \u0930\u093e\u0936\u093f \u092e\u0947\u0902 \u0938\u092c\u0938\u0947 \u091c\u094d\u092f\u093e\u0926\u093e \u0905\u0902\u0936 = AK ... \u0938\u092c\u0938\u0947 \u0915\u092e = DK (\u0930\u093e\u0939\u0941/\u0915\u0947\u0924\u0941 \u092c\u093e\u0939\u0930) */
+    const kPlanets=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani'];
+    const kNames=['AK','AmK','BK','MK','PK','GK','DK'];
+    const ranked=kPlanets.slice().sort((a,b)=>((norm360(L[b])%30)-(norm360(L[a])%30)));
+    document.querySelectorAll('.karaka-cb').forEach(cb=>{cb.checked=false;});
+    ranked.forEach((pk,i)=>{
+      const cb=document.querySelector('.karaka-cb[data-p="'+pk+'"][data-k="'+kNames[i]+'"]');
+      if(cb) cb.checked=true;
+    });
+    if(typeof updateMatrixLocks==='function') updateMatrixLocks();
+
+    /* modules auto-check */
+    document.getElementById('chk-d1').checked=true;
+    const chkD9=document.getElementById('chk-d9');
+    if(!chkD9.checked){ chkD9.checked=true; if(typeof toggleD9Input==='function') toggleD9Input(); }
+
+    setStatus('\u2705 \u092d\u0930\u093e \u0917\u092f\u093e \u2014 \u0917\u0923\u0928\u093e \u0928\u0940\u091a\u0947 \u0924\u0948\u092f\u093e\u0930 \u0939\u0948', true);
+    if(typeof calculateAstrology==='function') calculateAstrology();
+    document.getElementById('rashi-input-d1').scrollIntoView({behavior:'smooth',block:'center'});
+  }catch(err){
+    ephemError.innerText=err.message||String(err);
+  }
+});
+</script>
+
+
+<script>
+
+document.getElementById('btn-applycode').addEventListener('click', function(){
+  const err=document.getElementById('code-error');
+  err.innerText='';
+  const msg=applyAstroCode(document.getElementById('astro-code-in').value);
+  if(msg){ err.innerText=msg; return; }
+  const go=function(){ document.getElementById('btn-ephem').click(); };
+  if(window._swe){ go(); }
+  else{
+    err.innerText='\u23f3 Engine \u0932\u094b\u0921 \u0939\u094b \u0930\u0939\u093e \u0939\u0948\u2026 \u0924\u0948\u092f\u093e\u0930 \u0939\u094b\u0924\u0947 \u0939\u0940 \u0917\u0923\u0928\u093e \u0939\u094b\u0917\u0940';
+    const iv=setInterval(function(){ if(window._swe){ clearInterval(iv); err.innerText=''; go(); } }, 500);
+    setTimeout(function(){ clearInterval(iv); }, 60000);
+  }
+});
+/* ============ Astro Code: जन्म विवरण share करने के लिए (सभी tools में same) ============ */
+function makeAstroCode(){
+  const gv=id=>document.getElementById(id).value;
+  const p2=n=>String(n).padStart(2,'0');
+  const day=gv('bd-day'), mon=gv('bd-month'), Y=gv('bd-year');
+  if(!day||!mon||!Y) throw new Error('पहले जन्म तारीख भरें।');
+  const hh=parseInt(gv('bd-hh')), mm=parseInt(gv('bd-mm'));
+  let ss=parseInt(gv('bd-ss')); if(isNaN(ss)||ss<0||ss>59) ss=0;
+  if(isNaN(hh)||hh<1||hh>12) throw new Error('पहले जन्म समय भरें।');
+  if(isNaN(mm)||mm<0||mm>59) throw new Error('पहले जन्म समय भरें।');
+  const h24=(hh%12)+(document.getElementById('bd-ampm').dataset.val==='PM'?12:0);
+  const tzSign=document.getElementById('tz-sign').dataset.val;
+  const tzH=gv('tz-hh'), tzM=gv('tz-mm');
+  const latD=gv('lat-deg'), latM=gv('lat-min')||'0', latDir=document.getElementById('lat-dir').dataset.val;
+  const lonD=gv('lon-deg'), lonM=gv('lon-min')||'0', lonDir=document.getElementById('lon-dir').dataset.val;
+  if(latD===''||lonD==='') throw new Error('पहले अक्षांश/देशांतर भरें।');
+  return 'AS1-'+Y+p2(+mon+1)+p2(day)+'-'+p2(h24)+p2(mm)+p2(ss)+'-'+tzSign+p2(tzH)+p2(tzM)+'-'+p2(latD)+p2(latM)+latDir+'-'+String(lonD).padStart(3,'0')+p2(lonM)+lonDir;
+}
+function applyAstroCode(code){
+  const m=/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/.exec((code||'').trim());
+  if(!m) return 'कोड सही नहीं है — Home page से बना कोड paste करें।';
+  const d8=m[1], t6=m[2], tz=m[3], lat4=m[4], latDir=m[5], lon5=m[6], lonDir=m[7];
+  const Y=+d8.slice(0,4), mo=+d8.slice(4,6), dy=+d8.slice(6,8);
+  if(mo<1||mo>12) return 'कोड में तारीख गलत है।';
+  if(dy<1||dy>new Date(Y,mo,0).getDate()) return 'कोड में तारीख गलत है।';
+  const h24=+t6.slice(0,2), mi=+t6.slice(2,4), se=+t6.slice(4,6);
+  if(h24>23||mi>59||se>59) return 'कोड में समय गलत है।';
+  const tzH=+tz.slice(1,3), tzM=+tz.slice(3,5);
+  if(tzH>14||tzM>59) return 'कोड में timezone गलत है।';
+  const laD=+lat4.slice(0,2), laM=+lat4.slice(2,4), loD=+lon5.slice(0,3), loM=+lon5.slice(3,5);
+  if(laD>90||laM>59||loD>180||loM>59) return 'कोड में अक्षांश/देशांतर गलत है।';
+  const sv=(id,v)=>{document.getElementById(id).value=v;};
+  sv('bd-day',String(dy)); sv('bd-month',String(mo-1)); sv('bd-year',String(Y));
+  sv('bd-hh',String(h24%12===0?12:h24%12)); sv('bd-mm',String(mi).padStart(2,'0')); sv('bd-ss',String(se).padStart(2,'0'));
+  const ap=document.getElementById('bd-ampm'); ap.dataset.val=h24<12?'AM':'PM'; ap.textContent=ap.dataset.val;
+  const ts=document.getElementById('tz-sign'); ts.dataset.val=tz[0]; ts.textContent=tz[0];
+  sv('tz-hh',String(tzH)); sv('tz-mm',String(tzM).padStart(2,'0'));
+  sv('lat-deg',String(laD)); sv('lat-min',String(laM));
+  const ld=document.getElementById('lat-dir'); ld.dataset.val=latDir; ld.textContent=latDir;
+  sv('lon-deg',String(loD)); sv('lon-min',String(loM));
+  const od=document.getElementById('lon-dir'); od.dataset.val=lonDir; od.textContent=lonDir;
+  return null;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<script src="../vendor/swisseph-local.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>वैदिक मुहूर्त सॉफ्टवेयर (मुहूर्त चिंतामणि)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f7f6; color: #2c3e50; margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+        .calculator-container { background-color: #ffffff; padding: 30px 35px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 950px; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #ecf0f1; padding-bottom: 15px; }
+        .header h1 { color: #2c3e50; margin: 0; font-size: 26px; font-weight: 700;}
+        .header p { margin: 5px 0 0; color: #7f8c8d; font-size: 14px; font-weight: 500;}
+        
+        .input-section { display: flex; flex-direction: column; gap: 20px; }
+        .input-group label { font-weight: 600; color: #34495e; font-size: 15px; margin-bottom: 8px; display: block; }
+        select, input[type="date"] { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 14px; background-color: #f8f9fa; box-sizing: border-box; transition: 0.3s; }
+        select:focus, input[type="date"]:focus { outline: none; border-color: #3498db; background-color: #fff; }
+        .dates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 5px; }
+        
+        .button-group { display: flex; gap: 15px; margin-top: 25px; }
+        .calc-button, .reset-button { flex-grow: 1; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; color: white;}
+        .calc-button { background-color: #2980b9; } .calc-button:hover { background-color: #2471a3; }
+        .reset-button { background-color: #e74c3c; } .reset-button:hover { background-color: #c0392b; }
+        .calc-button:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        
+        .loading-container { display: none; text-align: center; margin-top: 30px; padding: 20px; background-color: #fff3e0; border: 1px solid #ffe0b2; border-radius: 8px; color: #d35400; font-weight:600;}
+
+        /* --- Rules Block UI --- */
+        .results-section { margin-top: 35px; display: none; font-size: 15px; color: #2c3e50; }
+        .rules-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 35px; }
+        .rule-box { padding: 15px; border-radius: 8px; font-size: 13.5px; line-height: 1.6; }
+        .rule-shubh { background-color: #e8f5e9; border: 1px solid #a5d6a7; border-left: 5px solid #27ae60; }
+        .rule-varjit { background-color: #fdedec; border: 1px solid #f5b7b1; border-left: 5px solid #e74c3c; }
+        .rule-box h3 { margin: 0 0 10px 0; font-size: 15px; }
+        .rule-shubh h3 { color: #27ae60; } .rule-varjit h3 { color: #c0392b; }
+        .rule-box p { margin: 4px 0; }
+        @media (max-width: 768px) { .rules-container { grid-template-columns: 1fr; } }
+
+        /* --- Daily Card & Table UI --- */
+        .daily-block { margin-bottom: 40px; background: #fff; border: 1px solid #e1e8ed; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .daily-title { background-color: #34495e; color: #fff; padding: 12px 20px; font-size: 16px; font-weight: 600; margin: 0; }
+        
+        .panchang-details { padding: 20px; background-color: #fafbfc; border-bottom: 1px solid #e1e8ed; }
+        .panchang-line { display: flex; align-items: baseline; margin-bottom: 10px; }
+        .panchang-line:last-child { margin-bottom: 0; }
+        .panchang-label { font-weight: 700; width: 70px; color: #34495e; flex-shrink: 0; }
+        .panchang-value { line-height: 1.6; }
+
+        .results-table-wrapper { overflow-x: auto; }
+        .results-table { width: 100%; border-collapse: collapse; background: #fff; }
+        .results-table th, .results-table td { padding: 14px 15px; text-align: center; border-bottom: 1px solid #e1e8ed; font-size: 14px; vertical-align: middle;}
+        .results-table th { background-color: #f4f6f7; color: #2c3e50; font-weight: 700; border-bottom: 2px solid #dcdde1; white-space: nowrap;}
+        .results-table tr:last-child td { border-bottom: none; }
+        .results-table tr:hover { background-color: #fbfdff; }
+
+        .shubh { color: #27ae60; font-weight: 600; }
+        .samanya { color: #f39c12; font-weight: 600; } 
+        .varjit-text { color: #c0392b; font-weight: 700; } 
+        .yoga-text { color: #8e44ad; font-weight: 600; }
+        .warning-text { color: #e74c3c; font-size: 12.5px; font-weight: 600; display: block; margin-top: 5px;}
+        .parihaar-text { color: #27ae60; font-size: 12px; font-weight: 600; display: block; margin-top: 2px;}
+        .score-box { font-weight: 700; font-size: 16px; }
+        .error-box { color: #c0392b; font-weight: 600; padding: 20px; text-align: center;}
+        
+        .final-conclusion-block { margin-top: 40px; background-color: #e8f5e9; border: 2px solid #a5d6a7; color: #1b5e20; padding: 20px; border-radius: 8px; font-size: 16px; font-weight: 600; text-align: center; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.1);}
+    </style>
+</head>
+<body>
+
+<div class="calculator-container">
+    <div class="header">
+        <h1>वैदिक मुहूर्त कैलकुलेटर (मुहूर्त चिंतामणि आधारित)</h1>
+        <h2>(Developed by Astro Sarang)</h2>
+    </div>
+
+    <div class="input-section">
+        <div class="input-group">
+            <label>1. अपना कार्य चुनें:</label>
+            <select id="task-select"></select>
+        </div>
+        
+        <div class="input-group" id="direction-group" style="display: none;">
+            <label>यात्रा की दिशा चुनें (दिशा शूल हेतु):</label>
+            <select id="direction-select">
+                <option value="" disabled selected>-- दिशा चुनें --</option>
+                <option value="पूर्व">पूर्व (East)</option>
+                <option value="पश्चिम">पश्चिम (West)</option>
+                <option value="उत्तर">उत्तर (North)</option>
+                <option value="दक्षिण">दक्षिण (South)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>2. मूल्यांकन के लिए 5 तारीखें (Dates) चुनें:</label>
+            <div class="dates-grid">
+                <input type="date" id="date1"><input type="date" id="date2"><input type="date" id="date3"><input type="date" id="date4"><input type="date" id="date5">
+            </div>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="calc-button" id="calculate-btn">पंचांग एवं शुभता निकालें</button>
+        <button class="reset-button" id="reset-btn">रीसेट करें</button>
+    </div>
+
+    <div class="loading-container" id="loading-container">
+        <div id="loading-status">⏳ Astro Sarang द्वारा लाइव पंचांग डेटा प्राप्त किया जा रहा है, कृपया कुछ सेकंड प्रतीक्षा करे...</div>
+    </div>
+
+    <div class="results-section" id="results-section">
+        <div class="rules-container" id="task-rules"></div>
+        <div id="text-results-container"></div>
+        <div class="final-conclusion-block" id="final-conclusion"></div>
+    </div>
+</div>
+
+<script type="module">
+// Swiss Ephemeris loader (unlimited & free; replaces FreeAstroAPI)
+(async function initSweMuhurat() {
+    try {
+        const m = await import(/* @vite-ignore */'../vendor/swisseph-browser.js');
+        const swe = new m.SwissEphemeris();
+        await swe.init();
+        swe.setSiderealMode(m.SiderealMode.Lahiri);
+        window._swe = swe;
+        window._SEP = m.Planet;
+    } catch (e) {
+        console.error("Swiss Ephemeris load failed:", e);
+    }
+})();
+</script>
+<script>
+(function() {
+    const LAT = 21.1458; const LON = 79.0882; const TZ_STR = "Asia/Kolkata";
+
+    const tasks = ["सगाई (वाग्दान)", "विवाह (पाणिग्रहण)", "गोदभराई (सीमन्तोन्नयन) (7वां महीना)", "नामकरण", "अन्नप्राशन", "मुंडन (चूड़ाकर्म)", "उपनयन (जनेऊ)", "भूमि या संपत्ति क्रय", "भूमि पूजन", "बोरिंग / कूप खनन", "द्वार स्थापन", "गृह प्रवेश", "नया व्यापार आरंभ", "व्यापारिक समझौता", "मशीनरी स्थापना", "वाहन क्रय", "आभूषण क्रय", "देव प्रतिष्ठा", "पूजा यज्ञ / अनुष्ठान", "यात्रा प्रस्थान", "कृषि (बीज बोना)", "शल्य चिकित्सा", "औषध सेवन आरंभ", "मुकदमा दायर करना", "रत्न धारण करना", "व्यापार हेतु विज्ञापन (Advertising)"];
+    const tithi_map = {"प्रतिपदा": 1, "द्वितीया": 2, "तृतीया": 3, "चतुर्थी": 4, "पंचमी": 5, "षष्ठी": 6, "सप्तमी": 7, "अष्टमी": 8, "नवमी": 9, "दशमी": 10, "एकादशी": 11, "द्वादशी": 12, "त्रयोदशी": 13, "चतुर्दशी": 14, "पूर्णिमा": 15, "अमावस्या": 30, "अमावास्या": 30};
+    const tithi_name_map = {1: "प्रतिपदा", 2: "द्वितीया", 3: "तृतीया", 4: "चतुर्थी", 5: "पंचमी", 6: "षष्ठी", 7: "सप्तमी", 8: "अष्टमी", 9: "नवमी", 10: "दशमी", 11: "एकादशी", 12: "द्वादशी", 13: "त्रयोदशी", 14: "चतुर्दशी", 15: "पूर्णिमा", 30: "अमावस्या"};
+
+    const rulesDB = {
+        "सगाई (वाग्दान)": { shubhNak: ["रोहिणी", "मृगशिरा", "मघा", "उत्तरा फाल्गुनी", "हस्त", "स्वाति", "अनुराधा", "मूल", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रेवती", "श्रवण", "धनिष्ठा", "कृत्तिका", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद"], varjitNak: ["अश्विनी", "भरणी", "आर्द्रा", "पुनर्वसु", "पुष्य", "आश्लेषा", "चित्रा", "विशाखा", "ज्येष्ठा", "शतभिषा"], shubhTithi: [2,3,5,7,10,11,13,15,1,6,8,12], varjitTithi: [4,9,14,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार", "शनिवार"] },
+        "विवाह (पाणिग्रहण)": { shubhNak: ["रोहिणी", "मृगशिरा", "मघा", "उत्तरा फाल्गुनी", "हस्त", "स्वाति", "अनुराधा", "मूल", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रेवती"], varjitNak: ["अश्विनी", "भरणी", "कृत्तिका", "आर्द्रा", "पुनर्वसु", "पुष्य", "आश्लेषा", "पूर्वा फाल्गुनी", "चित्रा", "विशाखा", "ज्येष्ठा", "पूर्वाषाढ़ा", "श्रवण", "धनिष्ठा", "शतभिषा", "पूर्वा भाद्रपद"], shubhTithi: [1,2,3,5,6,7,8,10,11,12,13,15], varjitTithi: [4,9,14,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार", "शनिवार"] },
+        "गोदभराई (सीमन्तोन्नयन) (7वां महीना)": { shubhNak: ["मृगशिरा", "पुष्य", "मूल", "श्रवण", "पुनर्वसु", "हस्त", "रोहिणी", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रेवती"], varjitNak: ["अश्विनी", "भरणी", "कृत्तिका", "आर्द्रा", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "चित्रा", "स्वाति", "विशाखा", "अनुराधा", "ज्येष्ठा", "पूर्वाषाढ़ा", "धनिष्ठा", "शतभिषा", "पूर्वा भाद्रपद"], shubhTithi: [1,2,3,5,7,10,11,13,15], varjitTithi: [4,6,8,9,12,14,30], shubhVaar: ["रविवार", "मंगलवार", "गुरुवार"], varjitVaar: ["सोमवार", "बुधवार", "शुक्रवार", "शनिवार"] },
+        "नामकरण": { shubhNak: ["मृगशिरा", "रेवती", "चित्रा", "अनुराधा", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रोहिणी", "हस्त", "अश्विनी", "पुष्य", "अभिजित्", "स्वाति", "पुनर्वसु", "श्रवण", "धनिष्ठा", "शतभिषा"], varjitNak: ["भरणी", "कृत्तिका", "आर्द्रा", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "विशाखा", "ज्येष्ठा", "मूल"], shubhTithi: [1,2,3,5,6,7,10,11,12,13], varjitTithi: [4,9,14,8,30,15], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार", "शनिवार"] },
+        "अन्नप्राशन": { shubhNak: ["रोहिणी", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "मृगशिरा", "रेवती", "चित्रा", "अनुराधा", "हस्त", "अश्विनी", "पुष्य", "अभिजित्", "स्वाति", "पुनर्वसु", "श्रवण", "धनिष्ठा", "शतभिषा"], varjitNak: ["भरणी", "कृत्तिका", "आर्द्रा", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "विशाखा", "ज्येष्ठा", "मूल", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद"], shubhTithi: [2,3,5,7,10,13,15], varjitTithi: [1,4,6,8,9,11,12,14,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार", "शनिवार"] },
+        "मुंडन (चूड़ाकर्म)": { shubhNak: ["अश्विनी", "मृगशिरा", "पुनर्वसु", "पुष्य", "हस्त", "चित्रा", "स्वाति", "श्रवण", "धनिष्ठा", "शतभिषा", "रेवती", "ज्येष्ठा"], varjitNak: ["भरणी", "कृत्तिका", "रोहिणी", "आर्द्रा", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "उत्तरा फाल्गुनी", "विशाखा", "अनुराधा", "मूल", "पूर्वाषाढ़ा", "उत्तराषाढ़ा", "पूर्वा भाद्रपद", "उत्तरा भाद्रपद"], shubhTithi: [2,3,5,7,10,11,13], varjitTithi: [1,4,6,8,9,12,14,30,15], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार", "शनिवार"] },
+        "उपनयन (जनेऊ)": { shubhNak: ["हस्त", "अश्विनी", "पुष्य", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रोहिणी", "आश्लेषा", "स्वाति", "पुनर्वसु", "श्रवण", "धनिष्ठा", "शतभिषा", "मूल", "मृगशिरा", "रेवती", "चित्रा", "अनुराधा", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "आर्द्रा"], varjitNak: ["भरणी", "कृत्तिका", "मघा", "विशाखा", "ज्येष्ठा"], shubhTithi: [2,3,5,10,11,12], varjitTithi: [1,4,6,7,8,9,13,14,15,30], shubhVaar: ["रविवार", "सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["मंगलवार", "शनिवार"] },
+        "भूमि या संपत्ति क्रय": { shubhNak: ["रेवती", "शतभिषा", "अश्विनी", "स्वाति", "श्रवण", "चित्रा", "अनुराधा", "मृगशिरा", "रोहिणी", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "पुष्य", "हस्त"], varjitNak: ["पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "विशाखा", "कृत्तिका", "आश्लेषा", "भरणी"], shubhTithi: [1,2,3,5,6,7,8,10,11,12,13,15], varjitTithi: [4,9,14], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार", "रविवार"], varjitVaar: ["मंगलवार"] },
+        "भूमि पूजन": { shubhNak: ["उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रोहिणी", "मृगशिरा", "चित्रा", "अनुराधा", "रेवती", "शतभिषा", "स्वाति", "धनिष्ठा", "हस्त", "पुष्य"], varjitNak: ["अश्विनी", "भरणी", "कृत्तिका", "आर्द्रा", "पुनर्वसु", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "विशाखा", "ज्येष्ठा", "मूल", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद"], shubhTithi: [2,3,5,6,7,8,10,11,12,13,15], varjitTithi: [1,4,9,14,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"], varjitVaar: ["रविवार", "मंगलवार"] },
+        "बोरिंग / कूप खनन": { shubhNak: ["अनुराधा", "हस्त", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रोहिणी", "धनिष्ठा", "शतभिषा", "मघा", "पूर्वाषाढ़ा", "रेवती", "पुष्य", "मृगशिरा", "मूल", "आश्लेषा", "विशाखा", "कृत्तिका", "पूर्वा फाल्गुनी", "पूर्वा भाद्रपद", "भरणी"], varjitNak: ["अश्विनी", "आर्द्रा", "पुनर्वसु", "चित्रा", "स्वाति", "ज्येष्ठा", "श्रवण"], shubhTithi: [2,3,5,7,10,11,12,13,15], varjitTithi: [4,9,14,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार", "शनिवार"] },
+        "द्वार स्थापन": { shubhNak: ["रोहिणी", "मृगशिरा", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "चित्रा", "अनुराधा", "रेवती"], varjitNak: [], shubhTithi: [2,3,5,6,7,10,11,12], varjitTithi: [1,4,8,9,14,15,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार"] },
+        "गृह प्रवेश": { shubhNak: ["चित्रा", "अनुराधा", "मृगशिरा", "रेवती", "रोहिणी", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद"], varjitNak: ["अश्विनी", "पुष्य", "हस्त", "अभिजित्", "श्रवण", "धनिष्ठा", "शतभिषा", "पुनर्वसु", "स्वाति", "विशाखा", "कृत्तिका", "मूल", "ज्येष्ठा", "आर्द्रा", "आश्लेषा", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "भरणी", "मघा"], shubhTithi: [1,2,3,5,6,7,8,10,11,12,13,15], varjitTithi: [4,9,14,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"], varjitVaar: ["रविवार", "मंगलवार"] },
+        "नया व्यापार आरंभ": { shubhNak: ["अश्विनी", "पुष्य", "हस्त", "चित्रा", "अनुराधा", "मृगशिरा", "रेवती", "रोहिणी", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद"], varjitNak: ["भरणी", "कृत्तिका", "आर्द्रा", "पुनर्वसु", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "विशाखा", "ज्येष्ठा", "मूल", "श्रवण", "धनिष्ठा", "शतभिषा"], shubhTithi: [1,2,3,5,6,7,8,10,11,12,13,15,30], varjitTithi: [4,9,14], shubhVaar: ["रविवार", "सोमवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"], varjitVaar: ["मंगलवार"] },
+        "व्यापारिक समझौता": { shubhNak: ["पुष्य", "अनुराधा", "पूर्वा फाल्गुनी"], varjitNak: ["अश्विनी", "भरणी", "कृत्तिका", "रोहिणी", "मृगशिरा", "आर्द्रा", "पुनर्वसु", "आश्लेषा", "मघा", "उत्तरा फाल्गुनी", "हस्त", "चित्रा", "स्वाति", "विशाखा", "ज्येष्ठा", "मूल", "पूर्वाषाढ़ा", "उत्तराषाढ़ा", "श्रवण", "धनिष्ठा", "शतभिषा", "पूर्वा भाद्रपद", "उत्तरा भाद्रपद", "रेवती"], shubhTithi: [8,12], varjitTithi: [1,2,3,4,5,6,7,9,10,11,13,14,15,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार", "शनिवार"] },
+        "मशीनरी स्थापना": { shubhNak: ["मृगशिरा", "रेवती", "चित्रा", "अनुराधा", "रोहिणी", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "हस्त", "अश्विनी", "पुष्य", "स्वाति", "पुनर्वसु", "श्रवण", "धनिष्ठा", "शतभिषा"], varjitNak: ["पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "भरणी", "मघा", "मूल", "ज्येष्ठा", "आर्द्रा", "आश्लेषा", "कृत्तिका", "विशाखा"], shubhTithi: [1,2,3,5,6,7,10,11,12,13], varjitTithi: [4,9,14,15,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार", "शनिवार"] },
+        "वाहन क्रय": { shubhNak: ["अश्विनी", "पुष्य", "हस्त", "रेवती", "मृगशिरा", "चित्रा", "अनुराधा", "स्वाति", "पुनर्वसु", "श्रवण", "धनिष्ठा", "शतभिषा"], varjitNak: ["भरणी", "कृत्तिका", "रोहिणी", "आर्द्रा", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "उत्तरा फाल्गुनी", "विशाखा", "ज्येष्ठा", "मूल", "पूर्वाषाढ़ा", "उत्तराषाढ़ा", "पूर्वा भाद्रपद", "उत्तरा भाद्रपद"], shubhTithi: [1,2,3,5,6,7,8,10,11,12,13,15], varjitTithi: [4,9,14,30], shubhVaar: ["रविवार", "सोमवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"], varjitVaar: ["मंगलवार"] },
+        "आभूषण क्रय": { shubhNak: ["अश्विनी", "रोहिणी", "मृगशिरा", "पुनर्वसु", "पुष्य", "हस्त", "चित्रा", "स्वाति", "विशाखा", "अनुराधा", "श्रवण", "धनिष्ठा", "शतभिषा", "रेवती", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद"], varjitNak: ["भरणी", "कृत्तिका", "आर्द्रा", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "ज्येष्ठा", "मूल"], shubhTithi: [1,2,3,5,6,7,8,10,11,12,13,15], varjitTithi: [4,9,14,30], shubhVaar: ["रविवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["सोमवार", "मंगलवार", "शनिवार"] },
+        "देव प्रतिष्ठा": { shubhNak: ["मृगशिरा", "रेवती", "चित्रा", "अनुराधा", "हस्त", "अश्विनी", "पुष्य", "अभिजित्", "स्वाति", "पुनर्वसु", "श्रवण", "धनिष्ठा", "शतभिषा", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रोहिणी"], varjitNak: ["भरणी", "कृत्तिका", "आर्द्रा", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "विशाखा", "ज्येष्ठा", "मूल"], shubhTithi: [1,2,3,5,6,7,8,10,11,12,13,15], varjitTithi: [4,9,14], shubhVaar: ["रविवार", "सोमवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"], varjitVaar: ["मंगलवार"] },
+        " पूजा यज्ञ / अनुष्ठान": { shubhNak: ["अश्विनी", "पुष्य", "हस्त", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रोहिणी", "रेवती", "श्रवण", "धनिष्ठा", "शतभिषा", "पुनर्वसु", "स्वाति", "अनुराधा", "मृगशिरा", "चित्रा", "मघा"], varjitNak: ["भरणी", "कृत्तिका", "आर्द्रा", "आश्लेषा", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "विशाखा", "ज्येष्ठा", "मूल"], shubhTithi: [1,2,3,5,6,7,10,11,12,13], varjitTithi: [4,9,14,8,15,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार", "शनिवार"] },
+        "यात्रा प्रस्थान": { shubhNak: ["अश्विनी", "पुनर्वसु", "अनुराधा", "मृगशिरा", "पुष्य", "रेवती", "हस्त", "श्रवण", "धनिष्ठा"], varjitNak: ["भरणी", "कृत्तिका", "रोहिणी", "आर्द्रा", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "उत्तरा फाल्गुनी", "चित्रा", "स्वाति", "विशाखा", "ज्येष्ठा", "मूल", "पूर्वाषाढ़ा", "उत्तराषाढ़ा", "शतभिषा", "पूर्वा भाद्रपद", "उत्तरा भाद्रपद"], shubhTithi: [2,3,5,7,10,11,13], varjitTithi: [4,6,8,9,12,14,15,30], shubhVaar: ["सोमवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार", "रविवार"], varjitVaar: [] },
+        "कृषि (बीज बोना)": { shubhNak: ["अश्विनी", "पुष्य", "हस्त", "चित्रा", "अनुराधा", "मृगशिरा", "रेवती", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रोहिणी", "स्वाति", "धनिष्ठा", "मघा", "मूल"], varjitNak: ["श्रवण", "शतभिषा", "पुनर्वसु", "विशाखा", "भरणी", "कृत्तिका", "आर्द्रा", "आश्लेषा", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "ज्येष्ठा"], shubhTithi: [1,2,3,5,7,8,10,11,12,13,15], varjitTithi: [4,6,9,14,30], shubhVaar: ["सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["रविवार", "मंगलवार", "शनिवार"] },
+        "शल्य चिकित्सा": { shubhNak: ["चित्रा", "स्वाति", "अनुराधा", "ज्येष्ठा", "रोहिणी", "मृगशिरा", "शतभिषा", "अश्विनी", "पुष्य", "हस्त", "अभिजित्", "श्रवण"], varjitNak: ["भरणी", "कृत्तिका", "आर्द्रा", "पुनर्वसु", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "उत्तरा फाल्गुनी", "विशाखा", "मूल", "पूर्वाषाढ़ा", "उत्तराषाढ़ा", "पूर्वा भाद्रपद", "उत्तरा भाद्रपद", "रेवती"], shubhTithi: [2,3,5,6,7,10,11,12,13,15], varjitTithi: [4,9,14,30], shubhVaar: ["रविवार", "मंगलवार", "गुरुवार"], varjitVaar: ["बुधवार", "शनिवार"] },
+        "औषध सेवन आरंभ": { shubhNak: ["अश्विनी", "पुष्य", "हस्त", "चित्रा", "मृगशिरा", "अनुराधा", "रेवती", "श्रवण", "धनिष्ठा", "शतभिषा", "स्वाति", "पुनर्वसु", "मूल"], varjitNak: ["भरणी", "कृत्तिका", "रोहिणी", "आर्द्रा", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "उत्तरा फाल्गुनी", "विशाखा", "ज्येष्ठा", "पूर्वाषाढ़ा", "उत्तराषाढ़ा", "पूर्वा भाद्रपद", "उत्तरा भाद्रपद"], shubhTithi: [1,2,3,5,6,7,8,10,11,12,13,15], varjitTithi: [4,9,14,30], shubhVaar: ["रेविवाद", "सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["मंगलवार", "शनिवार"] },
+        "मुकदमा दायर करना": { shubhNak: ["अश्विनी", "पुष्य", "हस्त", "चित्रा", "पुनर्वसु", "स्वाति", "अनुराधा", "श्रवण", "धनिष्ठा", "शतभिषा", "मूल", "आर्द्रा", "ज्येष्ठा"], varjitNak: ["उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "रोहिणी"], shubhTithi: [2,3,5,7,10,11,13], varjitTithi: [6,8,30], shubhVaar: ["मंगलवार", "गुरुवार", "शनिवार"], varjitVaar: ["रविवार", "सोमवार", "शुक्रवार"] },
+        "रत्न धारण करना": { shubhNak: ["अश्विनी", "रोहिणी", "मृगशिरा", "पुनर्वसु", "पुष्य", "हस्त", "चित्रा", "स्वाति", "विशाखा", "अनुराधा", "श्रवण", "धनिष्ठा", "शतभिषा", "रेवती", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद"], varjitNak: ["मूल", "ज्येष्ठा", "आर्द्रा", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "भरणी"], shubhTithi: [1,2,3,5,6,7,8,10,11,12,13,15], varjitTithi: [4,9,14,30], shubhVaar: ["रविवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["सोमवार", "शनिवार"] },
+        "व्यापार हेतु विज्ञापन (Advertising)": { shubhNak: ["अश्विनी", "पुष्य", "हस्त", "अभिजित्", "स्वाति", "पुनर्वसु", "श्रवण", "धनिष्ठा", "शतभिषा", "मृगशिरा", "रेवती", "चित्रा", "अनुराधा"], varjitNak: ["भरणी", "मघा", "पूर्वा फाल्गुनी", "पूर्वाषाढ़ा", "पूर्वा भाद्रपद", "मूल", "ज्येष्ठा", "आर्द्रा", "आश्लेषा", "कृत्तिका", "विशाखा"], shubhTithi: [2,3,5,6,7,10,11,12,13,15], varjitTithi: [4,9,14,30], shubhVaar: ["रविवार", "सोमवार", "बुधवार", "गुरुवार", "शुक्रवार"], varjitVaar: ["मंगलवार", "शनिवार"] }
+    };
+
+    const special_yogas = {"सर्वार्थ सिद्धि योग": {"रविवार": ["हस्त", "मूल", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद", "पुष्य", "आश्लेषा"], "सोमवार": ["श्रवण", "रोहिणी", "मृगशिरा", "पुष्य", "अनुराधा"], "मंगलवार": ["अश्विनी", "कृत्तिका", "आश्लेषा", "उत्तरा भाद्रपद"], "बुधवार": ["रोहिणी", "अनुराधा", "हस्त", "कृत्तिका", "मृगशिरा"], "गुरुवार": ["रेवती", "अनुराधा", "अश्विनी", "पुनर्वसु", "पुष्य"], "शुक्रवार": ["रेवती", "अनुराधा", "अश्विनी", "पुनर्वसु", "श्रवण"], "शनिवार": ["रोहिणी", "स्वाति", "श्रवण"]}, "अमृत सिद्धि योग": {"रविवार": ["हस्त"], "सोमवार": ["मृगशिरा"], "मंगलवार": ["अश्विनी"], "बुधवार": ["अनुराधा"], "गुरुवार": ["पुष्य"], "शुक्रवार": ["रेवती"], "शनिवार": ["रोहिणी"]}, "गुरु पुष्य योग": {"गुरुवार": ["पुष्य"]}, "रवि पुष्य योग": {"रविवार": ["पुष्य"]}};
+    const translate_map = { "sunday": "रविवार", "monday": "सोमवार", "tuesday": "मंगलवार", "wednesday": "बुधवार", "thursday": "गुरुवार", "friday": "शुक्रवार", "saturday": "शनिवार", "pratipada": "प्रतिपदा", "prathama": "प्रतिपदा", "dvitiya": "द्वितीया", "dwitiya": "द्वितीया", "tritiya": "तृतीया", "chaturthi": "चतुर्थी", "panchami": "पंचमी", "shashthi": "षष्ठी", "shashti": "षष्ठी", "shasti": "षष्ठी", "saptami": "सप्तमी", "ashtami": "अष्टमी", "navami": "नवमी", "dashami": "दशमी", "ekadashi": "एकादशी", "ekadasi": "एकादशी", "dwadashi": "द्वादशी", "dwadasi": "द्वादशी", "trayodashi": "त्रयोदशी", "trayodasi": "त्रयोदशी", "chaturdashi": "चतुर्दशी", "chaturdasi": "चतुर्दशी", "purnima": "पूर्णिमा", "poornima": "पूर्णिमा", "amavasya": "अमावस्या", "ashwini": "अश्विनी", "bharani": "भरणी", "krittika": "कृत्तिका", "krithika": "कृत्तिका", "rohini": "रोहिणी", "mrigashira": "मृगशिरा", "mrigasira": "मृगशिरा", "ardra": "आर्द्रा", "punarvasu": "पुनर्वसु", "pushya": "पुष्य", "ashlesha": "आश्लेषा", "magha": "मघा", "purva phalguni": "पूर्वा फाल्गुनी", "poorva phalguni": "पूर्वा फाल्गुनी", "uttara phalguni": "उत्तरा फाल्गुनी", "hasta": "हस्त", "chitra": "चित्रा", "swati": "स्वाति", "vishakha": "विशाखा", "anuradha": "अनुराधा", "jyeshtha": "ज्येष्ठा", "jyeshta": "ज्येष्ठा", "mula": "मूल", "moola": "मूल", "purva shadha": "पूर्वाषाढ़ा", "poorva ashadha": "पूर्वाषाढ़ा", "uttara shadha": "उत्तराषाढ़ा", "uttara ashadha": "उत्तराषाढ़ा", "shravana": "श्रवण", "shravan": "श्रवण", "dhanishta": "धनिष्ठा", "shatabhisha": "शतभिषा", "purva bhadrapada": "पूर्वा भाद्रपद", "poorva bhadrapada": "पूर्वा भाद्रपद", "purva bhadrapad": "पूर्वा भाद्रपद", "uttara bhadrapada": "उत्तरा भाद्रपद", "uttara bhadrapad": "उत्तरा भाद्रपद", "revati": "रेवती" };
+    function translateToHi(eng) { if(!eng) return ""; let clean = eng.trim().toLowerCase(); return translate_map[clean] || eng; }
+    
+    const seq_tithis = ["प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पंचमी", "षष्ठी", "सप्तमी", "अष्टमी", "नवमी", "दशमी", "एकादशी", "द्वादशी", "त्रयोदशी", "चतुर्दशी", "पूर्णिमा", "प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पंचमी", "षष्ठी", "सप्तमी", "अष्टमी", "नवमी", "दशमी", "एकादशी", "द्वादशी", "त्रयोदशी", "चतुर्दशी", "अमावस्या"];
+    const seq_naks = ["अश्विनी", "भरणी", "कृत्तिका", "रोहिणी", "मृगशिरा", "आर्द्रा", "पुनर्वसु", "पुष्य", "आश्लेषा", "मघा", "पूर्वा फाल्गुनी", "उत्तरा फाल्गुनी", "हस्त", "चित्रा", "स्वाति", "विशाखा", "अनुराधा", "ज्येष्ठा", "मूल", "पूर्वाषाढ़ा", "उत्तराषाढ़ा", "श्रवण", "धनिष्ठा", "शतभिषा", "पूर्वा भाद्रपद", "उत्तरा भाद्रपद", "रेवती"];
+    function getNextTithi(curr) { let idx = seq_tithis.indexOf(curr); return idx !== -1 ? seq_tithis[(idx + 1) % seq_tithis.length] : curr; }
+    function getNextNak(curr) { let idx = seq_naks.indexOf(curr); return idx !== -1 ? seq_naks[(idx + 1) % seq_naks.length] : curr; }
+
+    // --- TIME PARSERS & SENSORS ---
+    function parseTimeObj(tObj) {
+        if (!tObj) return null;
+        if (typeof tObj === 'object') {
+            let h = tObj.hour !== undefined ? tObj.hour : tObj.hours;
+            let m = tObj.minute !== undefined ? tObj.minute : tObj.minutes;
+            if (h !== undefined && m !== undefined) return { h: parseInt(h), m: parseInt(m) };
+        }
+        if (typeof tObj === 'string') {
+            if (tObj.includes('T') || tObj.includes('-')) {
+                let d = new Date(tObj);
+                if (!isNaN(d)) return { h: d.getHours(), m: d.getMinutes() };
+            }
+            let match = tObj.match(/(\d{1,2}):(\d{2})/);
+            if (match) return { h: parseInt(match[1]), m: parseInt(match[2]) };
+        }
+        return null;
+    }
+
+    function extractTime(node) {
+        if (!node) return null;
+        if (node.hour !== undefined && node.minute !== undefined) return { h: parseInt(node.hour), m: parseInt(node.minute) };
+        if (node.end_time && typeof node.end_time === 'object') return extractTime(node.end_time);
+        if (node.endTime && typeof node.endTime === 'object') return extractTime(node.endTime);
+        let str = JSON.stringify(node);
+        let match = str.match(/"(?:end_time|endTime|time)".*?"(\d{1,2}):(\d{2})(?::\d{2})?"/);
+        if (match) return { h: parseInt(match[1]), m: parseInt(match[2]) };
+        match = str.match(/(\d{1,2}):(\d{2}):\d{2}/);
+        if (match) return { h: parseInt(match[1]), m: parseInt(match[2]) };
+        return null;
+    }
+    
+    function toMins(tObj) { if(!tObj) return 9999; let h = tObj.h; if (h < 5) h += 24; return h * 60 + tObj.m; }
+
+    function toSummaryTimeStr(mins) {
+        if(mins === 9999) return "(पूरे दिन)";
+        let h = Math.floor(mins / 60); let m = mins % 60; let isNextDay = h >= 24; if(isNextDay) h -= 24;
+        let period = "रात"; if(h >= 4 && h < 12) period = "सुबह"; else if(h >= 12 && h < 16) period = "दोपहर"; else if(h >= 16 && h < 20) period = "शाम"; else if(h >= 20 || h < 4) period = "देर रात";
+        let h12 = h % 12; h12 = h12 ? h12 : 12;
+        let timeStr = `${period} ${String(h12).padStart(2,'0')}:${String(m).padStart(2,'0')} बजे तक`;
+        if(isNextDay) return `${timeStr} (अगले दिन)`; return timeStr;
+    }
+
+    function toSlotTimeStr(mins) {
+        let h = Math.floor(mins / 60); let m = mins % 60; let period = "रात";
+        if(h >= 4 && h < 12) period = "सुबह"; else if(h >= 12 && h < 16) period = "दोपहर"; else if(h >= 16 && h < 20) period = "शाम";
+        let h12 = h % 12; h12 = h12 ? h12 : 12; return `${period} ${String(h12).padStart(2,'0')}:${String(m).padStart(2,'0')} बजे`;
+    }
+
+    // --- Dynamic Suryabala Helper ---
+    function getSunNakName(sunSign) {
+        if(!sunSign) return "";
+        let signId = sunSign.sign_id;
+        let deg = sunSign.degree;
+        if(signId && deg !== undefined) {
+            let totalLong = (signId - 1) * 30 + deg;
+            let sunNakIdx = Math.floor(totalLong / 13.33333333);
+            return seq_naks[sunNakIdx % 27];
+        }
+        return "";
+    }
+
+    // --- DOM Setup ---
+    const taskSelect = document.getElementById('task-select');
+    const directionGroup = document.getElementById('direction-group');
+    const directionSelect = document.getElementById('direction-select');
+    const calcBtn = document.getElementById('calculate-btn');
+    const container = document.getElementById('text-results-container');
+    const finalConclusion = document.getElementById('final-conclusion');
+    const loadingContainer = document.getElementById('loading-container');
+    const statusDiv = document.getElementById('loading-status');
+    const rulesDiv = document.getElementById('task-rules');
+
+    // Auto-fill consecutive dates: picking date1 fills date2..date5 with next days
+    (function() {
+        const d1 = document.getElementById('date1');
+        if (!d1) return;
+        d1.addEventListener('change', () => {
+            if (!d1.value) return;
+            const parts = d1.value.split('-').map(Number);
+            const base = new Date(parts[0], parts[1] - 1, parts[2]);
+            for (let i = 2; i <= 5; i++) {
+                const el = document.getElementById('date' + i);
+                if (!el) continue;
+                const d = new Date(base);
+                d.setDate(base.getDate() + (i - 1));
+                const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), dd = String(d.getDate()).padStart(2, '0');
+                el.value = `${y}-${m}-${dd}`;
+            }
+        });
+    })();
+
+    let optionsHtml = `<option value="" disabled selected>-- कृपया अपना कार्य चुनें --</option>`;
+    tasks.forEach(t => { optionsHtml += `<option value="${t}">${t}</option>`; });
+    taskSelect.innerHTML = optionsHtml;
+
+    taskSelect.addEventListener('change', (e) => {
+        if(e.target.value === "यात्रा प्रस्थान") directionGroup.style.display = "block";
+        else { directionGroup.style.display = "none"; directionSelect.value = ""; }
+    });
+
+    // --- Swiss Ephemeris based Panchang (replaces FreeAstroAPI; unlimited & free) ---
+    const EPHEM_CDN = '../vendor/swisseph-browser.js';
+    function waitSwe(timeoutMs) {
+        timeoutMs = timeoutMs || 20000;
+        return new Promise(function(resolve, reject) {
+            const t0 = Date.now();
+            (function poll() {
+                if (window._swe && window._SEP) return resolve(window._swe);
+                if (Date.now() - t0 > timeoutMs) return reject(new Error("Swiss Ephemeris लोड नहीं हुआ, पेज refresh करें"));
+                setTimeout(poll, 200);
+            })();
+        });
+    }
+    const _norm360 = d => ((d % 360) + 360) % 360;
+    const TITHI_EN = ["Pratipada","Dwitiya","Tritiya","Chaturthi","Panchami","Shashthi","Saptami","Ashtami","Navami","Dashami","Ekadashi","Dwadashi","Trayodashi","Chaturdashi","Purnima","Pratipada","Dwitiya","Tritiya","Chaturthi","Panchami","Shashthi","Saptami","Ashtami","Navami","Dashami","Ekadashi","Dwadashi","Trayodashi","Chaturdashi","Amavasya"];
+    const NAK_EN = ["Ashwini","Bharani","Krittika","Rohini","Mrigashira","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Purva Shadha","Uttara Shadha","Shravana","Dhanishta","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati"];
+    const KAR_CYCLE = ["Bava","Balava","Kaulava","Taitila","Gara","Vanija","Vishti"];
+    function karanaName(h) {
+        if (h === 0) return "Kimstughna";
+        if (h === 57) return "Shakuni";
+        if (h === 58) return "Chatushpada";
+        if (h === 59) return "Naga";
+        return KAR_CYCLE[(h - 1) % 7];
+    }
+    function sunRiseSetNOAA(yr, mo, da, lat, lng) {
+        const N = Math.floor((Date.UTC(yr, mo - 1, da) - Date.UTC(yr, 0, 1)) / 86400000) + 1;
+        const lngHour = lng / 15;
+        const calc = (isRise) => {
+            const t = N + ((isRise ? 6 : 18) - lngHour) / 24;
+            const M = 0.9856 * t - 3.289;
+            let L = M + 1.916 * Math.sin(M * Math.PI / 180) + 0.020 * Math.sin(2 * M * Math.PI / 180) + 282.634;
+            L = ((L % 360) + 360) % 360;
+            let RA = Math.atan(0.91764 * Math.tan(L * Math.PI / 180)) * 180 / Math.PI;
+            RA = ((RA % 360) + 360) % 360;
+            RA = RA + (Math.floor(L / 90) * 90 - Math.floor(RA / 90) * 90);
+            RA /= 15;
+            const sinDec = 0.39782 * Math.sin(L * Math.PI / 180);
+            const cosDec = Math.cos(Math.asin(sinDec));
+            const cosH = (Math.cos(90.833 * Math.PI / 180) - sinDec * Math.sin(lat * Math.PI / 180)) / (cosDec * Math.cos(lat * Math.PI / 180));
+            if (cosH > 1 || cosH < -1) return null;
+            let H = Math.acos(cosH) * 180 / Math.PI;
+            H = (isRise ? (360 - H) : H) / 15;
+            const T = H + RA - 0.06571 * t - 6.622;
+            return (((T - lngHour) % 24) + 24) % 24 * 60;
+        };
+        const r = calc(true), s = calc(false);
+        if (r === null || s === null) return null;
+        return { rise: (r + 330) % 1440, set: (s + 330) % 1440 }; // IST minutes
+    }
+    // Single-pass scan: finds tithi end, nakshatra end, and karana end times (1-min precision)
+    function scanPanchangEnds(swe, SEP, jd0) {
+        const stepC = 10 / 1440, stepF = 1 / 1440;
+        const keys = (jd) => {
+            const ay = swe.getAyanamsa(jd);
+            const s = _norm360(swe.calculatePosition(jd, SEP.Sun, 0).longitude - ay);
+            const m = _norm360(swe.calculatePosition(jd, SEP.Moon, 0).longitude - ay);
+            const el = _norm360(m - s);
+            return { t: Math.floor(el / 12), n: Math.floor(m / (360 / 27)), k: Math.floor(el / 6) };
+        };
+        const refine = (jdHi, field, oldVal) => {
+            for (let j = 0; j <= 10; j++) {
+                const jdf = jdHi - stepC + j * stepF;
+                if (keys(jdf)[field] !== oldVal) return jdf;
+            }
+            return jdHi;
+        };
+        const start = keys(jd0);
+        const res = { tEndJD: null, nEndJD: null, karanaEnds: [] };
+        let prev = start;
+        for (let i = 1; i <= 320; i++) { // ~53h max
+            const jd = jd0 + i * stepC;
+            const cur = keys(jd);
+            if (res.tEndJD === null && cur.t !== prev.t) res.tEndJD = refine(jd, 't', prev.t);
+            if (res.nEndJD === null && cur.n !== prev.n) res.nEndJD = refine(jd, 'n', prev.n);
+            if (cur.k !== prev.k) {
+                res.karanaEnds.push({ k: prev.k, endJD: refine(jd, 'k', prev.k) });
+            }
+            if (res.tEndJD !== null && res.nEndJD !== null && res.karanaEnds.length >= 4) break;
+            prev = cur;
+        }
+        return { start, res };
+    }
+    // JD -> IST {hour, minute}; jd0 = 5:30 AM IST reference
+    function jdToISThm(jd, jd0) {
+        const totalMins = 330 + (jd - jd0) * 1440;
+        let m = Math.round(totalMins);
+        const h = Math.floor(m / 60) % 24;
+        m = ((m % 60) + 60) % 60;
+        return { hour: h, minute: m };
+    }
+    async function getPanchangSwiss(dateStr) {
+        const [yr, mo, da] = dateStr.split('-').map(Number);
+        try {
+            const swe = await waitSwe();
+            const SEP = window._SEP;
+            const jd0 = swe.julianDay(yr, mo, da, 0); // 0:00 UTC = 5:30 AM IST
+            const ayan = swe.getAyanamsa(jd0);
+            const sunLon = _norm360(swe.calculatePosition(jd0, SEP.Sun, 0).longitude - ayan);
+            const moonLon = _norm360(swe.calculatePosition(jd0, SEP.Moon, 0).longitude - ayan);
+            const elong = _norm360(moonLon - sunLon);
+            const tithiIdx = Math.floor(elong / 12); // 0-29
+            const nakIdx = Math.floor(moonLon / (360 / 27)); // 0-26
+            const karIdx = Math.floor(elong / 6); // 0-59
+            const paksha = tithiIdx < 15 ? "Shukla" : "Krishna";
+
+            const scan = scanPanchangEnds(swe, SEP, jd0);
+            const tEnd = scan.res.tEndJD !== null ? jdToISThm(scan.res.tEndJD, jd0) : null;
+            const nEnd = scan.res.nEndJD !== null ? jdToISThm(scan.res.nEndJD, jd0) : null;
+            const karanas = [{ name: karanaName(karIdx), ...(scan.res.karanaEnds[0] ? jdToISThm(scan.res.karanaEnds[0].endJD, jd0) : {}) }];
+            for (let i = 0; i < Math.min(3, scan.res.karanaEnds.length - 1); i++) {
+                const ke = scan.res.karanaEnds[i + 1];
+                karanas.push({ name: karanaName((karIdx + i + 1) % 60), ...jdToISThm(ke.endJD, jd0) });
+            }
+
+            // Rahu Kalam: standard weekday segment of daytime (sunrise->sunset)/8
+            const ss = sunRiseSetNOAA(yr, mo, da, LAT, LON);
+            const weekday = new Date(yr, mo - 1, da).getDay(); // 0=Sun
+            const RAHU_SEG = { 0: 8, 1: 2, 2: 7, 3: 5, 4: 6, 5: 4, 6: 3 };
+            let rahu_kalam = null;
+            if (ss) {
+                const segLen = (ss.set - ss.rise) / 8;
+                const seg = RAHU_SEG[weekday];
+                const rs = ss.rise + (seg - 1) * segLen, re = ss.rise + seg * segLen;
+                rahu_kalam = {
+                    start: { hour: Math.floor(rs / 60), minute: Math.round(rs % 60) },
+                    end: { hour: Math.floor(re / 60), minute: Math.round(re % 60) }
+                };
+            }
+            const WEEKDAYS_EN = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+            const apiData = {
+                day: { name: WEEKDAYS_EN[weekday] },
+                tithi: Object.assign({ name: TITHI_EN[tithiIdx], paksha: paksha }, tEnd || {}),
+                nakshatra: Object.assign({ name: NAK_EN[nakIdx] }, nEnd || {}),
+                rahu_kalam: rahu_kalam,
+                karanas: karanas,
+                sun_sign: { sign_id: Math.floor(sunLon / 30) + 1, degree: +(sunLon % 30).toFixed(2) }
+            };
+            return { apiData: apiData, rawDate: dateStr };
+        } catch (e) {
+            return { isError: true, error: "Swiss Ephemeris त्रुटि: " + e.message };
+        }
+    }
+
+    function generateAnalysisData(apiData, dateStr) {
+        let var_day = translateToHi(apiData.day ? apiData.day.name : new Date(dateStr).toLocaleDateString('en-US', {weekday: 'long'}));
+        let t1 = translateToHi(apiData.tithi.name); let n1 = translateToHi(apiData.nakshatra.name);
+        let t2 = getNextTithi(t1); let n2 = getNextNak(n1);
+        
+        let p1 = apiData.tithi?.paksha || "Shukla";
+        let p2 = p1;
+        if (t1 === "पूर्णिमा") p2 = "Krishna";
+        if (t1 === "अमावस्या" || t1 === "अमावास्या") p2 = "Shukla";
+
+        let tEndMins = toMins(extractTime(apiData.tithi)); let nEndMins = toMins(extractTime(apiData.nakshatra));
+        
+        let events = [];
+        if(tEndMins < 1440) events.push({ type: 'tithi', mins: tEndMins });
+        if(nEndMins < 1440) events.push({ type: 'nak', mins: nEndMins });
+        events.sort((a, b) => a.mins - b.mins);
+
+        let slots = [];
+        if (events.length === 0) {
+            slots.push({ title: "पूरे दिन", startMins: 360, endMins: 1440, varDay: var_day, tithi: t1, nak: n1, paksha: p1 });
+        } else if (events.length === 1) {
+            let e = events[0];
+            slots.push({ title: `सूर्योदय से - ${toSlotTimeStr(e.mins)} तक`, startMins: 360, endMins: e.mins, varDay: var_day, tithi: t1, nak: n1, paksha: p1 });
+            slots.push({ title: `${toSlotTimeStr(e.mins)} से - अगले सूर्योदय तक`, startMins: e.mins, endMins: 1440, varDay: var_day, tithi: e.type==='tithi' ? t2 : t1, nak: e.type==='nak' ? n2 : n1, paksha: e.type==='tithi' ? p2 : p1 });
+        } else {
+            let e1 = events[0]; let e2 = events[1];
+            slots.push({ title: `सूर्योदय से - ${toSlotTimeStr(e1.mins)} तक`, startMins: 360, endMins: e1.mins, varDay: var_day, tithi: t1, nak: n1, paksha: p1 });
+            slots.push({ title: `${toSlotTimeStr(e1.mins)} से - ${toSlotTimeStr(e2.mins)} तक`, startMins: e1.mins, endMins: e2.mins, varDay: var_day, tithi: e1.type==='tithi' ? t2 : t1, nak: e1.type==='nak' ? n2 : n1, paksha: e1.type==='tithi' ? p2 : p1 });
+            slots.push({ title: `${toSlotTimeStr(e2.mins)} से - अगले सूर्योदय तक`, startMins: e2.mins, endMins: 1440, varDay: var_day, tithi: t2, nak: n2, paksha: p2 });
+        }
+        
+        let rahu = null;
+        if(apiData.rahu_kalam) {
+            let rs = toMins(parseTimeObj(apiData.rahu_kalam.start));
+            let re = toMins(parseTimeObj(apiData.rahu_kalam.end));
+            if(rs !== 9999 && re !== 9999) rahu = { start: rs, end: re, str: `${toSlotTimeStr(rs).replace(' बजे','')} से ${toSlotTimeStr(re)}` };
+        }
+        
+        let bhadra = null;
+        if(apiData.karanas) {
+            apiData.karanas.forEach(k => {
+                if(k.name && (k.name.toLowerCase() === "vishti" || k.name.toLowerCase() === "bhadra")) {
+                    let endMins = toMins(extractTime(k));
+                    if(endMins < 1440) bhadra = { endStr: toSlotTimeStr(endMins) };
+                }
+            });
+        }
+
+        // Fetch Sun Sign for Dwar Sthapan dynamically
+        let sunSign = null;
+        if(apiData.request_time_panchang && apiData.request_time_panchang.sun_sign) {
+            sunSign = apiData.request_time_panchang.sun_sign;
+        } else if(apiData.sun_sign) {
+            sunSign = apiData.sun_sign;
+        }
+
+        return { var_day, t1, n1, t2, n2, tEndMins, nEndMins, slots, rahu, bhadra, sunSign, isError: false };
+    }
+
+    function evaluateState(karya, nak, tithi, varDay, paksha, direction, slotMins, rahu, bhadra, sunSign) {
+        let rules = rulesDB[karya];
+        if(!rules) return { score: 0, nTxt: nak, tTxt: tithi, vTxt: varDay, yTxt: "-" };
+
+        let tNum = tithi_map[tithi];
+        
+        let nScore = 0, tScore = 0, vScore = 0;
+        let isNVarjit = false, isTVarjit = false, isVVarjit = false;
+
+        // --- SPECIFIC SURYABALA MATH FOR DWAR STHAPAN (Suryabala) ---
+        let sunNakPosText = "";
+        if(karya === "द्वार स्थापन" && sunSign) {
+            let signId = sunSign.sign_id;
+            let deg = sunSign.degree;
+            if(signId && deg !== undefined) {
+                let totalLong = (signId - 1) * 30 + deg;
+                let sunNakIdx = Math.floor(totalLong / 13.33333333); // 0 to 26
+                let moonNakIdx = seq_naks.indexOf(nak);
+                
+                if(moonNakIdx !== -1) {
+                    let dist = (moonNakIdx - sunNakIdx + 27) % 27 + 1; // 1 to 27
+                    sunNakPosText = ` (सूर्य से ${dist}वीं स्थिति)`;
+                    
+                    let isShubhDist = [1, 2, 3, 4, 13, 14, 15, 16, 17, 18, 19, 20, 24, 25, 26, 27].includes(dist);
+                    let isVarjitDist = [5, 6, 7, 8, 9, 10, 11, 12, 21, 22, 23].includes(dist);
+                    
+                    if(isVarjitDist) { nScore = -50; isNVarjit = true; }
+                    else if(isShubhDist) { nScore = 50; }
+                }
+            }
+        } else {
+            // General Nakshatra Calculation for other tasks
+            if(rules.varjitNak.includes(nak)) { nScore = -50; isNVarjit = true; }
+            else if(rules.shubhNak.includes(nak)) { nScore = 50; }
+        }
+
+        // 2. Tithi (-35 / +35) + Paksha Logic
+        let effTVarjit = rules.varjitTithi.includes(tNum);
+        let effTShubh = rules.shubhTithi.includes(tNum);
+
+        if(karya === "यात्रा प्रस्थान") {
+            if(tNum === 1 && paksha === "Shukla") { effTVarjit = true; effTShubh = false; }
+            if(tNum === 1 && paksha === "Krishna") { effTVarjit = false; effTShubh = true; }
+        }
+        if(karya === "देव प्रतिष्ठा" && paksha === "Krishna") { effTVarjit = true; effTShubh = false; }
+
+        if(effTVarjit) { tScore = -35; isTVarjit = true; }
+        else if(effTShubh) { tScore = 35; }
+
+        // 3. Vaar (-15 / +15) + Disha Shool
+        let effVVarjit = rules.varjitVaar.includes(varDay);
+        let effVShubh = rules.shubhVaar.includes(varDay);
+
+        if(karya === "यात्रा प्रस्थान" && direction) {
+            if(direction === "पूर्व" && ["सोमवार", "शनिवार"].includes(varDay)) { effVVarjit = true; effVShubh = false; }
+            if(direction === "दक्षिण" && ["गुरुवार"].includes(varDay)) { effVVarjit = true; effVShubh = false; }
+            if(direction === "पश्चिम" && ["रविवार", "शुक्रवार"].includes(varDay)) { effVVarjit = true; effVShubh = false; }
+            if(direction === "उत्तर" && ["मंगलवार", "बुधवार"].includes(varDay)) { effVVarjit = true; effVShubh = false; }
+        }
+        if(karya === "रत्न धारण करना") { effVShubh = rules.shubhVaar.includes(varDay); effVVarjit = rules.varjitVaar.includes(varDay); }
+
+        if(effVVarjit) { vScore = -15; isVVarjit = true; }
+        else if(effVShubh) { vScore = 15; }
+
+        // Yogas
+        let yogas = [];
+        for (const y in special_yogas) { if (special_yogas[y][varDay]?.includes(nak)) yogas.push(y); }
+        let tk = ["रविवार", "मंगलवार", "शनिवार"].includes(varDay) && ["द्वितीया", "सप्तमी", "द्वादशी"].includes(tithi);
+        if(tk && ["कृत्तिका", "पुनर्वसु", "विशाखा", "उत्तरा फाल्गुनी", "उत्तराषाढ़ा", "उत्तरा भाद्रपद"].includes(nak)) yogas.push("त्रिपुष्कर योग");
+        if(tk && ["मृगशिरा", "चित्रा", "धनिष्ठा"].includes(nak)) yogas.push("द्विपुष्कर योग");
+
+        let hasYoga = yogas.length > 0;
+        let doshParihaarApplied = false;
+
+        // DOSH PARIHAAR
+        if(hasYoga) {
+            if(isTVarjit) { tScore = 0; doshParihaarApplied = true; }
+            if(isVVarjit) { vScore = 0; doshParihaarApplied = true; }
+        }
+
+        let rawScore = nScore + tScore + vScore;
+        let finalScore = rawScore < 0 ? 0 : rawScore;
+        if(isNVarjit) finalScore = 0;
+
+        let fTxt = (txt, isS, isV, extra = "") => {
+            if(isV) return `<span class="varjit-text">${txt}${extra} (वर्जित)</span>`;
+            if(isS) return `<span class="shubh">${txt}${extra} (शुभ)</span>`;
+            return `<span class="samanya">${txt}${extra} (सामान्य)</span>`;
+        };
+
+        let yTxtFinal = hasYoga ? yogas.join(', ') : "-";
+        if(doshParihaarApplied) yTxtFinal += `<br><span class="parihaar-text">(दोष परिहार)</span>`;
+
+        if(finalScore >= 50 && slotMins) {
+            let warns = [];
+            if(rahu && Math.max(slotMins.startMins, rahu.start) < Math.min(slotMins.endMins, rahu.end)) {
+                warns.push(`राहुकाल: ${rahu.str}`);
+            }
+            if(bhadra && slotMins.startMins < 1440) {
+                warns.push(`भद्रा दोष: ${bhadra.endStr} तक`);
+            }
+            if(warns.length > 0) yTxtFinal += `<br><span class="warning-text">⚠️ (${warns.join(' | ')})</span>`;
+        }
+
+        return { score: finalScore, nTxt: fTxt(nak + " नक्षत्र", nScore>0, isNVarjit, sunNakPosText), tTxt: fTxt(tithi + " तिथि", tScore>0, isTVarjit), vTxt: fTxt(varDay, vScore>0, isVVarjit), yTxt: yTxtFinal };
+    }
+
+    // --- Main Calculation Core (Safe Loop) ---
+    calcBtn.addEventListener('click', async () => {
+        const karya = taskSelect.value;
+        if(!karya) return alert("कृपया पहले अपना कार्य चुनें!");
+        
+        const direction = directionSelect.value;
+        if(karya === "यात्रा प्रस्थान" && !direction) return alert("कृपया यात्रा की दिशा चुनें!");
+
+        let dates = [];
+        for(let i=1; i<=5; i++) { let v = document.getElementById(`date${i}`).value; if(v) dates.push(v); }
+        if(!dates.length) return alert("कृपया कम से कम एक तारीख चुनें!");
+
+        calcBtn.disabled = true; container.innerHTML = ""; finalConclusion.innerHTML = "";
+        document.getElementById('results-section').style.display = 'none';
+        loadingContainer.style.display = 'block'; statusDiv.innerHTML = "";
+
+        // UI Rules Box (Dual Format)
+        let rDB = rulesDB[karya];
+        let tNames = rDB.shubhTithi.map(t => tithi_name_map[t]).join(', ');
+        let vNames = rDB.varjitTithi.map(t => tithi_name_map[t]).join(', ');
+        
+        let shubhNakText = rDB.shubhNak.join(', ');
+        let varjitNakText = rDB.varjitNak.join(', ') || "कोई नहीं";
+        
+        if(karya === "द्वार स्थापन") {
+            shubhNakText = "सूर्य नक्षत्र से गिनने पर: प्रारम्भ के 4 नक्षत्र (1-4), 13वें से 20वें तक के 8 नक्षत्र (13-20), और 24वें से 27वें तक के 4 नक्षत्र (24-27)।";
+            varjitNakText = "सूर्य नक्षत्र से गिनने पर: 5वें से 12वें तक के 8 नक्षत्र (5-12), और 21वें, 22वें, 23वें नक्षत्र (21-23)।";
+        }
+
+        let extraRuleHtml = "";
+        if(karya === "यात्रा प्रस्थान") extraRuleHtml = `<p><strong>विशेष (दिशा शूल):</strong> पूर्व (सोम, शनि), दक्षिण (गुरु), पश्चिम (रवि, शुक्र), उत्तर (मंगल, बुध) वर्जित हैं। शुक्ल प्रतिपदा वर्जित, कृष्ण प्रतिपदा शुभ।</p>`;
+        if(karya === "रत्न धारण करना") extraRuleHtml = `<p><strong>विशेष:</strong> रवि (माणिक्य), सोम (मोती), मंगल (मूंगा), बुध (पन्ना), गुरु (पुखराज), शुक्र (हीरा/ओपल), शनि (नीलम/गोमेद/लहसुनिया) हेतु शुभ है।</p>`;
+        if(karya === "देव प्रतिष्ठा") extraRuleHtml = `<p><strong>विशेष:</strong> सम्पूर्ण कृष्ण पक्ष वर्जित है।</p>`;
+
+        rulesDiv.innerHTML = `
+            <div class="rule-box rule-shubh">
+                <h3>✔ शुभ नियम ('${karya}')</h3>
+                <p><strong>नक्षत्र:</strong> ${shubhNakText}</p>
+                <p><strong>तिथियां:</strong> ${tNames || "-"}</p>
+                <p><strong>वार:</strong> ${rDB.shubhVaar.join(', ') || "-"}</p>
+            </div>
+            <div class="rule-box rule-varjit">
+                <h3>✖ वर्जित/निषेध नियम</h3>
+                <p><strong>नक्षत्र:</strong> ${varjitNakText}</p>
+                <p><strong>तिथियां:</strong> ${vNames || "कोई नहीं"}</p>
+                <p><strong>वार:</strong> ${rDB.varjitVaar.join(', ') || "कोई नहीं"}</p>
+                ${extraRuleHtml}
+            </div>
+        `;
+
+        let grandBestScore = -1;
+        let grandBestText = [];
+
+        for(let i=0; i<dates.length; i++) {
+            let fDate = "अज्ञात";
+            try {
+                let dObj = new Date(dates[i]);
+                fDate = `${String(dObj.getDate()).padStart(2,'0')}-${String(dObj.getMonth()+1).padStart(2,'0')}-${dObj.getFullYear()}`;
+                statusDiv.innerHTML = `<p>⏳ ${fDate} का विश्लेषण जारी, कृपया कुछ सेकंड प्रतीक्षा करे...</p>`;
+                
+                let req = await getPanchangSwiss(dates[i]);
+                
+                let html = `<div class="daily-block"><h2 class="daily-title">तारीख: ${fDate} का पंचांग :</h2>`;
+
+                if(req.isError) {
+                    html += `<div class="error-box">त्रुटि: ${req.error}</div></div>`;
+                    container.innerHTML += html; continue;
+                }
+
+                let data = generateAnalysisData(req.apiData, req.rawDate);
+
+                let getBaseStat = (arrV, arrS, val) => arrV.includes(val) ? 'वर्जित' : (arrS.includes(val) ? 'शुभ' : 'सामान्य');
+                let vStat = getBaseStat(rDB.varjitVaar, rDB.shubhVaar, data.var_day);
+                let t1Stat = getBaseStat(rDB.varjitTithi, rDB.shubhTithi, tithi_map[data.t1]);
+                
+                let n1Stat = getBaseStat(rDB.varjitNak, rDB.shubhNak, data.n1);
+                // Exception for Dwar Sthapan: Nakshatra status depends on dynamic math, calculated inside evaluateState
+                if(karya === "द्वार स्थापन" && data.sunSign) {
+                    let sNak = getSunNakName(data.sunSign);
+                    if(sNak) {
+                        let sunNakIdx = seq_naks.indexOf(sNak);
+                        let moonNakIdx = seq_naks.indexOf(data.n1);
+                        if(sunNakIdx !== -1 && moonNakIdx !== -1) {
+                            let dist = (moonNakIdx - sunNakIdx + 27) % 27 + 1;
+                            n1Stat = [5,6,7,8,9,10,11,12,21,22,23].includes(dist) ? 'वर्जित' : ([1,2,3,4,13,14,15,16,17,18,19,20,24,25,26,27].includes(dist) ? 'शुभ' : 'सामान्य');
+                        }
+                    }
+                }
+
+                let formatBase = (txt, stat) => `<span class="${stat==='शुभ'?'shubh':(stat==='वर्जित'?'varjit-text':'samanya')}">${txt} (${stat})</span>`;
+
+                let vSpan = formatBase(data.var_day, vStat);
+                let tStr = formatBase(data.t1, t1Stat);
+                if(data.tEndMins !== 9999) {
+                    let t2Stat = getBaseStat(rDB.varjitTithi, rDB.shubhTithi, tithi_map[data.t2]);
+                    if(rDB.varjitTithi.includes(tithi_map[data.t2])) t2Stat = 'वर्जित';
+                    tStr += ` ${toSummaryTimeStr(data.tEndMins)}, उसके बाद ${formatBase(data.t2, t2Stat)}`;
+                } else { tStr += ` (पूरे दिन)`; }
+
+                let nStr = formatBase(data.n1, n1Stat);
+                if(data.nEndMins !== 9999) {
+                    let n2Stat = getBaseStat(rDB.varjitNak, rDB.shubhNak, data.n2);
+                    if(karya === "द्वार स्थापन" && data.sunSign) {
+                        let sNak = getSunNakName(data.sunSign);
+                        let sunNakIdx = seq_naks.indexOf(sNak);
+                        let moonNakIdx = seq_naks.indexOf(data.n2);
+                        if(sunNakIdx !== -1 && moonNakIdx !== -1) {
+                            let dist = (moonNakIdx - sunNakIdx + 27) % 27 + 1;
+                            n2Stat = [5,6,7,8,9,10,11,12,21,22,23].includes(dist) ? 'वर्जित' : ([1,2,3,4,13,14,15,16,17,18,19,20,24,25,26,27].includes(dist) ? 'शुभ' : 'सामान्य');
+                        }
+                    } else {
+                        if(rDB.varjitNak.includes(data.n2)) n2Stat = 'वर्जित';
+                    }
+                    nStr += ` ${toSummaryTimeStr(data.nEndMins)}, उसके बाद ${formatBase(data.n2, n2Stat)}`;
+                } else { nStr += ` (पूरे दिन)`; }
+
+                let sunNakLine = "";
+                if(karya === "द्वार स्थापन" && data.sunSign) {
+                    let sNak = getSunNakName(data.sunSign);
+                    if(sNak) {
+                        sunNakLine = `<div class="panchang-line"><span class="panchang-label">सूर्य गोचर:</span> <span class="panchang-value"><span class="shubh">${sNak} नक्षत्र में</span></span></div>`;
+                    }
+                }
+
+                html += `<div class="panchang-details">
+                    <div class="panchang-line"><span class="panchang-label">वार:</span> <span class="panchang-value">${vSpan}</span></div>
+                    <div class="panchang-line"><span class="panchang-label">तिथि:</span> <span class="panchang-value">${tStr}</span></div>
+                    <div class="panchang-line"><span class="panchang-label">नक्षत्र:</span> <span class="panchang-value">${nStr}</span></div>
+                    ${sunNakLine}
+                </div>`;
+
+                html += `<div class="results-table-wrapper"><table class="results-table">
+                        <thead><tr><th>समय-खंड</th><th>नक्षत्र</th><th>तिथि</th><th>वार</th><th>शुभता (%)</th><th>विशेष योग / चेतावनी</th></tr></thead><tbody>`;
+                
+                data.slots.forEach(slot => {
+                    let ev = evaluateState(karya, slot.nak, slot.tithi, slot.varDay, slot.paksha, direction, slot, data.rahu, data.bhadra, data.sunSign);
+                    html += `<tr>
+                        <td style="font-weight:600; white-space:nowrap;">${slot.title}</td>
+                        <td>${ev.nTxt}</td><td>${ev.tTxt}</td><td>${ev.vTxt}</td>
+                        <td><span class="score-box" style="color: ${ev.score >= 85 ? '#27ae60' : (ev.score >= 50 ? '#f39c12' : '#c0392b')}">${ev.score}%</span></td>
+                        <td>${ev.yTxt}</td>
+                    </tr>`;
+                    
+                    // Fixed Colon replacement bug (.replace(':', '')) in the Grand Best label logic
+                    let cleanTitle = slot.title.trim().replace('से - ', '').replace(/:$/, '');
+                    let slotFullTitle = `${fDate} (${cleanTitle})`;
+                    if(ev.score > grandBestScore) { grandBestScore = ev.score; grandBestText = [slotFullTitle]; }
+                    else if(ev.score === grandBestScore && ev.score > 0) { grandBestText.push(slotFullTitle); }
+                });
+
+                html += `</tbody></table></div></div>`;
+                container.innerHTML += html;
+
+            } catch (globalErr) {
+                console.error("Critical Loop Error:", globalErr);
+                let html = `<div class="daily-block"><h2 class="daily-title">तारीख: ${fDate}</h2>`;
+                html += `<div class="error-box">सॉफ्टवेयर त्रुटि: डेटा को प्रोसेस नहीं किया जा सका। (${globalErr.message})</div></div>`;
+                container.innerHTML += html;
+            }
+            if(i < dates.length - 1) await new Promise(r => setTimeout(r, 1200));
+        }
+
+        loadingContainer.style.display = 'none'; calcBtn.disabled = false;
+
+        if(grandBestScore > 0) {
+            finalConclusion.innerHTML = `अंतिम निष्कर्ष : आपके द्वारा चुनी गयी तारीखों मे से, <strong>${grandBestText.join(', ')}</strong> सबसे शुभ <strong>(${grandBestScore}%)</strong> हैं।`;
+        } else {
+            finalConclusion.innerHTML = "चुनी गई तारीखों में से कोई भी शुभ डेट/समय नहीं मिला। (या सभी वर्जित हैं)";
+        }
+        document.getElementById('results-section').style.display = 'block';
+        document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // Soft Reset Function (Fixes white-flash bug)
+    document.getElementById('reset-btn').addEventListener('click', () => {
+        taskSelect.selectedIndex = 0;
+        directionGroup.style.display = 'none'; directionSelect.value = '';
+        for(let i=1; i<=5; i++) document.getElementById(`date${i}`).value = '';
+        document.getElementById('results-section').style.display = 'none';
+        loadingContainer.style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+})();
+</script>
+
+</body>
+</html>

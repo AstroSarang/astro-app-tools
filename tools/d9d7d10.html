@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<script src="../vendor/swisseph-local.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>वर्ग स्क्रीनशॉट टूल (D7/D9/D10) — Astro Sarang</title>
+<script src="../vendor/html2canvas.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Noto Sans Devanagari', 'Mangal', sans-serif; background: #f4f6f8; color: #222; margin: 0; padding: 16px; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { text-align: center; font-size: 1.35rem; color: #1a3a5c; margin: 8px 0 4px; }
+  .sub { text-align: center; color: #666; font-size: .85rem; margin-bottom: 14px; }
+  .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 14px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+  .card h3 { margin: 0 0 10px; font-size: 1rem; color: #1a3a5c; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  input[type=text] { flex: 1; min-width: 220px; padding: 9px 10px; font-size: .95rem; border: 1px solid #ccc; border-radius: 6px; }
+  button { padding: 9px 18px; font-size: .95rem; border: none; border-radius: 6px; cursor: pointer; }
+  .btn-go { background: #1a73e8; color: #fff; }
+  .btn-go:disabled { background: #9db8dd; cursor: not-allowed; }
+  .btn-shot { background: #2e7d32; color: #fff; }
+  .varga-btns { display: flex; gap: 8px; margin-top: 10px; }
+  .varga-btns button { flex: 1; background: #e8eef5; color: #1a3a5c; font-weight: 600; }
+  .varga-btns button.active { background: #1a73e8; color: #fff; }
+  #ephem-status { font-size: .85rem; color: #555; margin-top: 8px; }
+  .err { color: #c62828; font-size: .9rem; margin-top: 8px; }
+
+  /* ---- screenshot tables (English, app-like) ---- */
+  #varga-tables { background: #fff; }
+  .tbl-title { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; font-size: 1.05rem; color: #222; padding: 12px 14px 6px; }
+  table.shot { width: 100%; border-collapse: collapse; font-family: Georgia, 'Times New Roman', serif; }
+  table.shot th { text-align: left; font-weight: 700; color: #333; border-bottom: 2px solid #ddd; padding: 8px 10px; font-size: .92rem; }
+  table.shot td { border-bottom: 1px solid #e8e8e8; padding: 9px 10px; font-size: .92rem; color: #333; vertical-align: top; }
+  table.shot tr:last-child td { border-bottom: none; }
+  .bhava-num { color: #333; }
+  @media (max-width: 520px) {
+    table.shot th, table.shot td { padding: 7px 6px; font-size: .82rem; }
+    .tbl-title { font-size: .95rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>📸 वर्ग स्क्रीनशॉट टूल</h1>
+  <div class="sub">D7 / D9 / D10 — ग्रह स्थिति व भाव सारणी (ऐप जैसी)</div>
+
+  <div class="card">
+    <h3>1️⃣ Astro Code डालें</h3>
+    <div class="row">
+      <input type="text" id="astro-code" placeholder="AS1-19950214-030000-+0530-2119N-07951E">
+      <button class="btn-go" id="btn-ephem" onclick="fillFromCode()" disabled>📥 भरो व गणना करें</button>
+    </div>
+    <div id="ephem-status">Swiss Ephemeris लोड हो रहा है…</div>
+    <div class="err" id="err-msg" style="display:none"></div>
+  </div>
+
+  <div class="card" id="varga-card" style="display:none">
+    <h3>2️⃣ वर्ग चुनें</h3>
+    <div class="varga-btns">
+      <button id="vb-D7" onclick="selectVarga('D7')">D-7<br><small>सप्तमांश</small></button>
+      <button id="vb-D9" class="active" onclick="selectVarga('D9')">D-9<br><small>नवमांश</small></button>
+      <button id="vb-D10" onclick="selectVarga('D10')">D-10<br><small>दशमांश</small></button>
+    </div>
+  </div>
+
+  <div class="card" id="out-card" style="display:none; padding: 0; overflow: hidden;">
+    <div id="varga-tables">
+      <div class="tbl-title" id="t1-title">Planetary Positions for Navamsha (D-9)</div>
+      <table class="shot" id="t1">
+        <thead><tr><th>Planet</th><th>Degree</th><th>Rashi</th><th>Nakshatra</th><th>Paad</th></tr></thead>
+        <tbody id="t1-body"></tbody>
+      </table>
+      <div class="tbl-title" id="t2-title" style="padding-top:14px">Bhava [Equal Houses] details for (D-9)</div>
+      <table class="shot" id="t2">
+        <thead><tr><th>Bhava</th><th>Bhava Start</th><th>Bhava Cusp</th></tr></thead>
+        <tbody id="t2-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" id="shot-card" style="display:none; text-align:center">
+    <button class="btn-shot" onclick="takeScreenshot()">📸 स्क्रीनशॉट लें (PNG डाउनलोड)</button>
+    <div style="font-size:.8rem;color:#666;margin-top:6px">दोनों tables एक ही PNG में आएँगी</div>
+  </div>
+
+</div>
+
+<script type="module">
+const EPHEM_CDN = '../vendor/swisseph-browser.js';
+let SE = null, SEP = null, SEH = null, SEL = null;
+
+/* ---------------- constants ---------------- */
+const RASHI_EN = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const NAK_EN = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Aridra','Punarvasu','Pushyami','Ashlesha','Makha','P.Phalguni','U.Phalguni','Hasta','Chitta','Swati','Vishakha','Anuradha','Jyeshta','Moola','P.Ashadha','U.Ashadha','Shravana','Dhanishta','Shatabhisha','P.Bhadrapada','U.Bhadrapada','Revati'];
+const PLANETS = [
+  {key:'Lagna', en:'Lagna'},
+  {key:'Sun', en:'Sun'}, {key:'Moon', en:'Moon'}, {key:'Mars', en:'Mars'},
+  {key:'Mercury', en:'Mercury'}, {key:'Jupiter', en:'Jupiter'}, {key:'Venus', en:'Venus'},
+  {key:'Saturn', en:'Saturn'}, {key:'Rahu', en:'Rahu'}, {key:'Ketu', en:'Ketu'}
+];
+const VARGA_NAMES = { D7:'Saptamsha', D9:'Navamsha', D10:'Dashamsha' };
+const VARGA_N = { D7:7, D9:9, D10:10 };
+
+let currentVarga = 'D9';
+let vargaData = null; // {lons:[10 sidereal], speeds:[10]}
+
+const norm360 = d => ((d % 360) + 360) % 360;
+
+/* ---------------- varga engine (APK-verified, from varga-merged-v1) ---------------- */
+function vargaSign(lon, varga) {
+    const L = norm360(lon);
+    const s = Math.floor(L / 30);
+    const d = L % 30;
+    const isOdd = (s % 2 === 0);
+    const elem = s % 4;
+    let pada;
+    switch (varga) {
+        case 'D7': pada = Math.floor(d / (30/7)); return (isOdd ? (s + pada) : (s + 6 + pada)) % 12;
+        case 'D9': pada = Math.floor(d / (30/9)); return ([0,9,6,3][elem] + pada) % 12;
+        case 'D10': pada = Math.floor(d / 3); return (isOdd ? (s + pada) : (s + 8 + pada)) % 12;
+        default: return s;
+    }
+}
+/* varga longitude (absolute 0-360 within varga chart) */
+function vargaAbsLon(lon, varga) {
+    const n = VARGA_N[varga];
+    const L = norm360(lon);
+    const d = L % 30;
+    const vsign = vargaSign(lon, varga);
+    const degInVarga = (d % (30/n)) * n;
+    return vsign * 30 + degInVarga;
+}
+function nakPaad(absLon) {
+    const span = 360/27;
+    const L = norm360(absLon);
+    const idx = Math.floor(L / span) % 27;
+    const rem = L % span;
+    const paad = Math.min(4, Math.floor(rem / (span/4)) + 1);
+    return { nak: NAK_EN[idx], paad };
+}
+function fmtDMS(deg) {
+    deg = Math.max(0, Math.min(29.999999, deg));
+    let D = Math.floor(deg);
+    let mF = (deg - D) * 60;
+    let M = Math.floor(mF);
+    let S = Math.round((mF - M) * 60);
+    if (S === 60) { S = 0; M++; }
+    if (M === 60) { M = 0; D++; if (D === 30) D = 29; }
+    const p2 = x => String(x).padStart(2,'0');
+    return D + ':' + p2(M) + ':' + p2(S);
+}
+
+/* ---------------- astro code ---------------- */
+function parseAstroCode(code) {
+    const m = code.trim().match(/^AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-])(\d{2})(\d{2})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])$/);
+    if (!m) return null;
+    const tzMin = (m[7]==='-'?-1:1) * (parseInt(m[8])*60 + parseInt(m[9]));
+    let lat = parseInt(m[10]) + parseInt(m[11])/60; if (m[12]==='S') lat = -lat;
+    let lon = parseInt(m[13]) + parseInt(m[14])/60; if (m[15]==='W') lon = -lon;
+    return {
+        y: parseInt(m[1]), mon: parseInt(m[2]), day: parseInt(m[3]),
+        hh: parseInt(m[4]), mm: parseInt(m[5]), ss: parseInt(m[6]),
+        tzMin, lat, lon
+    };
+}
+
+function showErr(msg) {
+    const e = document.getElementById('err-msg');
+    e.style.display = 'block'; e.textContent = msg;
+}
+function clearErr() { document.getElementById('err-msg').style.display = 'none'; }
+
+function fillFromCode() {
+    clearErr();
+    try {
+        const bc = parseAstroCode(document.getElementById('astro-code').value);
+        if (!bc) throw new Error('सही Astro Code डालें (AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W)');
+        if (!window._swe) throw new Error('Ephemeris लोड नहीं हुआ — पेज refresh करें');
+        const swe = window._swe;
+
+        // local birth time -> UTC using code's timezone
+        let utc = new Date(Date.UTC(bc.y, bc.mon-1, bc.day, bc.hh, bc.mm, bc.ss));
+        utc = new Date(utc.getTime() - bc.tzMin*60000);
+        const jd = swe.julianDay(utc.getUTCFullYear(), utc.getUTCMonth()+1, utc.getUTCDate(),
+                                 utc.getUTCHours() + utc.getUTCMinutes()/60 + utc.getUTCSeconds()/3600);
+        const ayan = swe.getAyanamsa(jd);
+        const calc = (body) => {
+            const p = swe.calculatePosition(jd, body, 0);
+            return { lon: norm360(p.longitude - ayan), speed: p.longitudeSpeed || 0 };
+        };
+        const order = [SEP.Sun, SEP.Moon, SEP.Mars, SEP.Mercury, SEP.Jupiter, SEP.Venus, SEP.Saturn];
+        const keys = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+        const lons = {}, speeds = {};
+        keys.forEach((k,i) => { const r = calc(order[i]); lons[k] = r.lon; speeds[k] = r.speed; });
+        // Rahu (mean node), Ketu opposite
+        const rn = calc(SEL.MeanNode);
+        lons.Rahu = rn.lon; speeds.Rahu = rn.speed;
+        lons.Ketu = norm360(rn.lon + 180); speeds.Ketu = rn.speed;
+        // Lagna (Placidus ascendant, sidereal)
+        const hs = swe.calculateHouses(jd, bc.lat, bc.lon, SEH.Placidus);
+        lons.Lagna = norm360(hs.ascendant - ayan); speeds.Lagna = 0;
+
+        const lonArr = PLANETS.map(p => lons[p.key]);
+        const spdArr = PLANETS.map(p => speeds[p.key]);
+        vargaData = { lons: lonArr, speeds: spdArr };
+
+        document.getElementById('varga-card').style.display = 'block';
+        document.getElementById('out-card').style.display = 'block';
+        document.getElementById('shot-card').style.display = 'block';
+        renderVarga();
+        document.getElementById('ephem-status').textContent =
+            '✅ गणना तैयार — लग्न: ' + RASHI_EN[Math.floor(lons.Lagna/30)] + ' • चंद्र: ' + RASHI_EN[Math.floor(lons.Moon/30)];
+    } catch(e) { showErr('त्रुटि: ' + e.message); }
+}
+
+function selectVarga(v) {
+    currentVarga = v;
+    ['D7','D9','D10'].forEach(x => document.getElementById('vb-'+x).classList.toggle('active', x===v));
+    renderVarga();
+}
+
+function renderVarga() {
+    if (!vargaData) return;
+    const v = currentVarga;
+    const vName = VARGA_NAMES[v];
+
+    /* ---- Table 1: planetary positions ---- */
+    let h1 = '';
+    PLANETS.forEach((p, i) => {
+        const vabs = vargaAbsLon(vargaData.lons[i], v);
+        const rashi = Math.floor(vabs/30) % 12;
+        const deg = vabs % 30;
+        const np = nakPaad(vabs);
+        let retro = '';
+        if (p.key !== 'Lagna') {
+            const sp = vargaData.speeds[i];
+            if (p.key === 'Rahu' || p.key === 'Ketu' || sp < 0) retro = '<br>(R)';
+        }
+        h1 += `<tr><td>${p.en}${retro}</td><td>${fmtDMS(deg)}</td><td>${RASHI_EN[rashi]}</td><td>${np.nak}</td><td>${np.paad}</td></tr>`;
+    });
+    document.getElementById('t1-body').innerHTML = h1;
+    document.getElementById('t1-title').textContent = `Planetary Positions for ${vName} (${v.replace('D','D-')})`;
+
+    /* ---- Table 2: bhava equal houses ---- */
+    const lagnaV = vargaAbsLon(vargaData.lons[0], v);
+    let h2 = '';
+    for (let b = 1; b <= 12; b++) {
+        const cuspAbs = lagnaV + (b-1)*30;
+        const cuspDeg = norm360(cuspAbs) % 30;
+        const cuspRashi = Math.floor(norm360(cuspAbs)/30) % 12;
+        const cuspNP = nakPaad(cuspAbs);
+        // Bhava Start: nakshatra at (cusp - 15°), as in app
+        const startAbs = norm360(cuspAbs - 15);
+        const startRashi = Math.floor(startAbs/30) % 12;
+        const startNP = nakPaad(startAbs);
+        h2 += `<tr><td class="bhava-num">${b}</td><td>(${RASHI_EN[startRashi]} - ${startNP.nak})</td>` +
+              `<td>${fmtDMS(cuspDeg)}<br>(${RASHI_EN[cuspRashi]} - ${cuspNP.nak})</td></tr>`;
+    }
+    document.getElementById('t2-body').innerHTML = h2;
+    document.getElementById('t2-title').textContent = `Bhava [Equal Houses] details for (${v.replace('D','D-')})`;
+}
+
+function takeScreenshot() {
+    const el = document.getElementById('varga-tables');
+    if (!el || !document.getElementById('t1-body').innerHTML) { alert('पहले गणना करें'); return; }
+    if (typeof html2canvas === 'undefined') { alert('स्क्रीनशॉट library लोड नहीं हुई — इंटरनेट चालू करके पेज reload करें'); return; }
+    html2canvas(el, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+        const a = document.createElement('a');
+        a.download = 'Varga_' + currentVarga + '_tables.png';
+        a.href = canvas.toDataURL('image/png');
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }).catch(() => alert('स्क्रीनशॉट नहीं बन पाया'));
+}
+
+/* ---------------- ephemeris init ---------------- */
+(async function initEphem() {
+    const st = document.getElementById('ephem-status');
+    try {
+        const m = await import(/* @vite-ignore */EPHEM_CDN);
+        SE = m.SwissEphemeris; SEP = m.Planet; SEH = m.HouseSystem; SEL = m.LunarPoint;
+        const swe = new SE();
+        await swe.init();
+        swe.setSiderealMode(m.SiderealMode.Lahiri);
+        window._swe = swe; window._SEP = SEP;
+        st.textContent = '✅ Swiss Ephemeris तैयार — Astro Code डालें';
+        document.getElementById('btn-ephem').disabled = false;
+    } catch(e) {
+        st.textContent = 'त्रुटि: Ephemeris लोड नहीं हुआ — ' + e.message;
+    }
+})();
+
+window.fillFromCode = fillFromCode;
+window.selectVarga = selectVarga;
+window.takeScreenshot = takeScreenshot;
+</script>
+</body>
+</html>

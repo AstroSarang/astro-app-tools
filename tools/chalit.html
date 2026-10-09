@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<script src="../vendor/swisseph-local.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>भाव चलित+पुष्कर/मृत्यु भाव कैलकुलेटर</title>
+    <script src="../vendor/html2canvas.min.js"></script>
+    <style>
+        /* --- Styles --- */
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; padding: 20px; background: #f4f6f8; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        h1 { text-align: center; color: #283593; margin-bottom: 25px; border-bottom: 3px solid #e8eaf6; padding-bottom: 10px; font-size: 1.8em;}
+        
+        /* Inputs */
+        .input-section { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; background: #e8eaf6; padding: 20px; border-radius: 8px; border: 1px solid #c5cae9; }
+        label { font-weight: 600; color: #1a237e; display: block; margin-bottom: 5px; }
+        input[type="text"] { width: 100%; padding: 10px; border: 1px solid #9fa8da; border-radius: 4px; font-family: monospace; font-size: 1rem; }
+        
+        .mc-container { display: flex; gap: 15px; }
+        .instruction { font-size: 0.85em; color: #555; margin-top: 5px; }
+
+        /* Options Grid */
+        .options-row { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; background: #fff8e1; padding: 15px; border-radius: 5px; border: 1px solid #ffe0b2; margin-bottom: 20px;}
+        .chk-label { cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: bold; color: #d35400; font-size: 1.1em;}
+        .chk-label input { transform: scale(1.2); }
+        .chk-label:hover { color: #2980b9; }
+
+        /* Buttons */
+        .btn-group { display: flex; gap: 15px; margin-top: 10px; }
+        button { padding: 12px; border: none; border-radius: 6px; font-size: 1.05em; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-calc { background: #304ffe; color: white; flex: 2; }
+        .btn-calc:hover { background: #0026ca; }
+        .btn-reset { background: #d32f2f; color: white; flex: 1; }
+        .btn-reset:hover { background: #b71c1c; }
+        
+        .btn-download { background: #2e7d32; color: white; padding: 6px 12px; font-size: 0.85em; margin-top: 10px; display: inline-block; border-radius: 4px; }
+        .btn-download:hover { background: #1b5e20; }
+        .btn-screenshot { background: #6a1b9a; color: white; padding: 6px 12px; font-size: 0.85em; margin-top: 10px; margin-left: 8px; display: inline-block; border-radius: 4px; }
+        .btn-screenshot:hover { background: #4a148c; }
+
+        /* Output Boxes */
+        .output-section { margin-top: 30px; }
+        .result-box { margin-bottom: 30px; border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        
+        h3 { background: #3949ab; color: white; padding: 10px 15px; border-radius: 4px 4px 0 0; margin: -15px -15px 15px -15px; font-size: 1.1em; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; margin-bottom: 10px;}
+        th, td { padding: 8px 10px; border: 1px solid #e0e0e0; text-align: center; }
+        th { background: #f5f5f5; color: #333; font-weight: 700; border-bottom: 2px solid #ccc; }
+        td:first-child { text-align: left; font-weight: 500;}
+        tr:nth-child(even) { background-color: #fafafa; }
+        
+        .group-header { background: #e8eaf6 !important; color: #1a237e !important; text-transform: uppercase; font-size: 0.85em; }
+
+        /* Status Texts & Badges */
+        .status-change { color: #c0392b; font-weight: bold; }
+        .status-same { color: #27ae60; font-weight: bold; opacity: 0.8; }
+        .v-yes { color: #27ae60; font-weight: bold; background-color: #e8f5e9; }
+        .v-no { color: #ddd; }
+        .yes { color: #2e7d32; font-weight: bold; background: #e8f5e9; padding: 2px 6px; border-radius: 4px; }
+        .no { color: #c62828; opacity: 0.7; }
+        
+        /* Conclusion Section Styles */
+        .conclusion-text { font-family: 'Segoe UI', sans-serif; line-height: 1.8; color: #2c3e50; font-size: 0.95em; white-space: pre-line; margin-top: -10px;}
+        .conclusion-sub { font-weight: bold; color: #d35400; margin-top: 15px; display: block; text-decoration: underline; }
+        .conclusion-sub-sub { font-weight: bold; color: #2980b9; margin-top: 10px; display: block; }
+        
+        .error { color: red; text-align: center; display: none; background: #ffebee; padding: 10px; margin-top: 10px; border-radius: 4px; border: 1px solid #ffcdd2; font-weight: bold;}
+        /* --- जन्म विवरण auto-fill (v6 जैसा) --- */
+        .ephem-section { background-color: #fff8e1; border: 1px solid #ffe082; }
+        .ephem-section > label { color: #e65100; }
+        .c2-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .c2-row { display: flex; gap: 6px; align-items: flex-end; flex-wrap: wrap; }
+        .c2-f { display: flex; flex-direction: column; font-size: 0.68em; color: #9c5b00; font-weight: 600; flex: 1 1 50px; min-width: 0; }
+        .c2-f input, .c2-f select { width: 100%; padding: 6px 4px; font-size: 0.88rem; border: 1px solid #ffcc80; border-radius: 5px; background: #fff; box-sizing: border-box; }
+        .c2-grow { flex: 3 1 150px; }
+        .c2-wrap { position: relative; display: block; }
+        button.c2-btn { padding: 6px 9px; font-size: 0.88rem; flex: 0 0 auto; }
+        .c2-sep { width: 1px; align-self: stretch; background: #ffe0b2; }
+        .c2-dst { font-size: 0.72em; color: #c82333; }
+        #btn-ephem { background-color: #ef6c00; margin-top: 18px; }
+        #btn-ephem:hover { background-color: #d55a00; }
+        #ephem-status { font-size: 0.88em; color: #e65100; margin-bottom: 10px; }
+        #ephem-status.ok { color: #2e7d32; }
+        #place-results { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ffcc80; border-radius: 0 0 5px 5px; max-height: 180px; overflow-y: auto; z-index: 50; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+        .pr-item { padding: 7px 10px; cursor: pointer; font-size: 0.85rem; border-bottom: 1px solid #f5f5f5; }
+        .pr-item:hover { background: #fff8e1; }
+        .pr-none { padding: 8px 10px; font-size: 0.82rem; color: #999; }
+        .error-msg { color: #c62828; font-size: 0.88em; margin-top: 8px; font-weight: 600; }
+        /* --- चलित output सुधार: summary + highlight --- */
+        .chalit-summary { background: #e8eaf6; border: 1px solid #c5cae9; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; font-size: 0.98em; color: #1a237e; }
+        tr.changed { background-color: #fff8e1 !important; }
+        /* --- pill summary (पुष्कर) --- */
+        .pill-summary { margin: 2px 0 14px 0; font-size: 0.95em; line-height: 2.2; }
+        .pill-summary .pill-cat { font-weight: 700; color: #bf360c; margin-right: 4px; }
+        .pill { display: inline-block; padding: 2px 12px; border-radius: 20px; font-weight: 600; margin: 2px 4px; font-size: 0.9em; white-space: nowrap; }
+        .pill-pn { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .pill-pb { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+        .pill-mb { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+        @media (max-width: 520px) { .c2-f input, .c2-f select { font-size: 0.85rem; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>भाव चलित+पुष्कर/मृत्यु भाव कैलकुलेटर</h1>
+
+    <!-- Swiss Ephemeris Auto-fill Section -->
+    <div class="input-section ephem-section">
+        <label>🔗 Astro Code से भरें <span style="font-weight:normal; font-size:0.85em;">(Home page से copy करें)</span></label>
+        <div class="c2-row">
+            <label class="c2-f c2-grow">Astro Code<span class="c2-wrap"><input type="text" id="astro-code-in" placeholder="AS1-..." autocomplete="off" style="font-family:monospace;"></span></label>
+            <button type="button" id="btn-applycode" class="c2-btn" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:8px 16px; font-weight:bold; cursor:pointer;">📥 भरो</button>
+        </div>
+        <div id="code-error" class="error-msg"></div>
+        <div style="text-align:center; color:#9c5b00; font-size:0.85em; margin:10px 0 4px;">— या manual जन्म विवरण भरें —</div>
+        <label>🪐 जन्म विवरण से ग्रह स्थिति निकालें (Swiss Ephemeris)</label>
+        <div id="ephem-status">⏳ Engine लोड हो रहा है…</div>
+        <div class="c2-grid">
+            <div class="c2-row">
+                <label class="c2-f">दिन<select id="bd-day"><option value="">--</option></select></label>
+                <label class="c2-f">माह<select id="bd-month"><option value="">--</option><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select></label>
+                <label class="c2-f">वर्ष<input type="number" id="bd-year" placeholder="1995"></label>
+                <span class="c2-sep"></span>
+                <label class="c2-f">घंटे<input type="number" id="bd-hh" placeholder="3"></label>
+                <label class="c2-f">मिनट<input type="number" id="bd-mm" placeholder="00"></label>
+                <label class="c2-f">सेकंड<input type="number" id="bd-ss" value="0"></label>
+                <button type="button" class="bd-toggle c2-btn" id="bd-ampm" data-val="AM">AM</button>
+                <span class="c2-sep"></span>
+                <button type="button" class="bd-toggle c2-btn" id="tz-sign" data-val="+">+</button>
+                <label class="c2-f">TZ घंटे<input type="number" id="tz-hh" value="5"></label>
+                <label class="c2-f">मिनट<input type="number" id="tz-mm" value="30"></label>
+            </div>
+            <div class="c2-dst">(Daylight saving (DST) लागू हो तो timezone उसी के अनुसार भरें)</div>
+            <div class="c2-row">
+                <label class="c2-f c2-grow">जन्म स्थान<span class="c2-wrap"><input type="text" id="birth-place" placeholder="शहर English में लिखें" autocomplete="off"><div id="place-results"></div></span></label>
+                <label class="c2-f">अक्षांश°<input type="number" id="lat-deg" placeholder="21"></label>
+                <button type="button" class="bd-toggle c2-btn" id="lat-dir" data-val="N">N</button>
+                <label class="c2-f">मिनट<input type="number" id="lat-min" placeholder="27"></label>
+                <label class="c2-f">देशांतर°<input type="number" id="lon-deg" placeholder="80"></label>
+                <button type="button" class="bd-toggle c2-btn" id="lon-dir" data-val="E">E</button>
+                <label class="c2-f">मिनट<input type="number" id="lon-min" placeholder="11"></label>
+            </div>
+        </div>
+        <button type="button" id="btn-ephem" disabled>🪐 ग्रह स्थिति निकालें व भरें</button>
+        <div class="instruction">बटन दबाते ही 10 राशि नंबर + अंश (DD:MM:SS) + MC नीचे auto-fill होंगे, फिर गणना अपने आप बनेगी। Manual entry भी पहले जैसी चलती रहेगी।</div>
+        <div id="ephem-error" class="error-msg"></div>
+    </div>
+
+    <!-- Inputs -->
+    <div class="input-section">
+        <div>
+            <label>1. राशि संख्या (1-12) [क्रम: लग्न, सूर्य... केतु]:</label>
+            <input type="text" id="rashi-input" placeholder="उदा. 9, 11, 4, 4, 10, 8, 9, 11, 7, 1">
+        </div>
+        <div>
+            <label>2. अंश (DD:MM:SS) [क्रम: लग्न, सूर्य... केतु]:</label>
+            <input type="text" id="degree-input" placeholder="उदा. 02:53:00, 00:55:00, 11:30:00...">
+        </div>
+        <div>
+            <label>3. दशम भाव (MC) स्थिति [अनिवार्य]:</label>
+            <div class="mc-container">
+                <input type="text" id="mc-rashi" placeholder="राशि (उदा. 6)" style="width: 30%;">
+                <input type="text" id="mc-degree" placeholder="अंश (उदा. 12:55:17)" style="width: 70%;">
+            </div>
+            <div class="instruction">नोट: श्रीपति भाव चलित और भावों की सटीक स्थिति (PN/PB) के लिए MC आवश्यक है।</div>
+        </div>
+    </div>
+
+    <!-- Checkboxes for Modules -->
+    <div class="options-row">
+        <label class="chk-label"><input type="checkbox" id="chk-chalit" checked> 1. भाव चलित (D1)</label>
+        <label class="chk-label"><input type="checkbox" id="chk-pnpmmb" checked> 2. पुष्कर / मृत्यु भाग</label>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-calc" onclick="calculateAll()">गणना करें</button>
+        <button class="btn-reset" onclick="resetFields()">रीसेट करें</button>
+    </div>
+    
+    <div id="error-msg" class="error"></div>
+    <div id="output" class="output-section"></div>
+</div>
+
+<script>
+    // --- Constants ---
+    const PLANETS = ['Lagna', 'Surya', 'Chandra', 'Mangal', 'Budh', 'Guru', 'Shukra', 'Shani', 'Rahu', 'Ketu'];
+    const RASHIS = ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुम्भ', 'मीन'];
+    
+    // PN-PB-MB Data
+    const PN_RULES = {
+        'Fire': [[20, 23.333], [26.666, 30]],
+        'Earth': [[6.666, 10], [13.333, 16.666]],
+        'Air': [[16.666, 20], [23.333, 26.666]],
+        'Water': [[0, 3.333], [6.666, 10]]
+    };
+    const PB_POINTS = [21, 14, 18, 8, 19, 9, 24, 11, 23, 14, 19, 9];
+    const MB_TABLE = [
+        [1,  20, 8,  19, 15, 19, 28, 10, 14, 8 ],  // 1: मेष
+        [9,  9,  25, 28, 14, 29, 15, 4,  13, 18],  // 2: वृषभ
+        [22, 12, 22, 25, 13, 12, 11, 7,  12, 20],  // 3: मिथुन
+        [22, 6,  22, 23, 12, 27, 17, 9,  11, 10],  // 4: कर्क
+        [25, 8,  21, 29, 8,  6,  10, 12, 24, 21],  // 5: सिंह
+        [2,  24, 1,  28, 18, 4,  13, 16, 23, 22],  // 6: कन्या
+        [4,  16, 4,  14, 20, 13, 4,  3,  22, 23],  // 7: तुला
+        [23, 17, 23, 21, 10, 10, 6,  18, 21, 24],  // 8: वृश्चिक
+        [18, 22, 18, 2,  21, 17, 27, 28, 10, 11],  // 9: धनु
+        [20, 2,  20, 15, 22, 11, 12, 14, 20, 12],  // 10: मकर
+        [24, 3,  20, 11, 7,  15, 29, 13, 18, 13],  // 11: कुम्भ
+        [10, 23, 10, 6,  5,  28, 19, 15, 8,  14]   // 12: मीन
+    ];
+
+    // --- Helpers ---
+    function parseDMS(s) {
+        if(!s) return 0;
+        let p = s.trim().split(':');
+        return (parseFloat(p[0])||0) + (parseFloat(p[1])||0)/60 + (parseFloat(p[2])||0)/3600;
+    }
+    
+    function toDMS(d) {
+        let deg = Math.floor(d);
+        let m = Math.floor((d - deg)*60);
+        let s = Math.round(((d - deg)*60 - m)*60);
+        if(s===60) { s=0; m++; }
+        if(m===60) { m=0; deg++; }
+        return `${String(deg).padStart(2,'0')}°${String(m).padStart(2,'0')}'`;
+    }
+
+    function normalize(d) { return (d % 360 + 360) % 360; }
+    function getAbs(rashi, dms) { return ((rashi-1)*30) + parseDMS(dms); }
+    function getRashiIdx(abs) { return Math.floor(abs/30) % 12; }
+    function getDegInRashi(abs) { return abs % 30; }
+
+    function resetFields() {
+        document.querySelectorAll('input[type="text"]').forEach(i => i.value = '');
+        document.getElementById('output').innerHTML = '';
+        document.getElementById('error-msg').style.display = 'none';
+    }
+
+    function takeScreenshot(){
+        let el = document.getElementById('pnpmmb-tables');
+        if(!el){ alert('पहले गणना करें'); return; }
+        if(typeof html2canvas === 'undefined'){ alert('स्क्रीनशॉट library लोड नहीं हुई — इंटरनेट चालू करके पेज reload करें'); return; }
+        html2canvas(el, {scale: 2, backgroundColor: '#ffffff'}).then(canvas => {
+            let a = document.createElement('a');
+            a.download = 'Pushkar_2A_2B.png';
+            a.href = canvas.toDataURL('image/png');
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }).catch(err => { alert('स्क्रीनशॉट नहीं बन पाया'); });
+    }
+
+    function downloadTxt(elementId, filename) {
+        let el = document.getElementById(elementId);
+        if(!el) return;
+        let text = el.innerText.replace(/\t/g, ' ').trim();
+        let element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    // --- Core Logic Functions ---
+    
+    // 1. Sripati Bhava Logic (Used for both Chalit & PN/PB)
+    function getSripatiCusps(lagnaAbs, mcAbs) {
+        let H1 = lagnaAbs; let H10 = mcAbs;
+        let H7 = normalize(lagnaAbs + 180); let H4 = normalize(mcAbs + 180);
+        
+        let arc1_4 = normalize(H4 - H1);
+        let H2 = normalize(H1 + (arc1_4 / 3)); let H3 = normalize(H1 + (2 * arc1_4 / 3));
+        let arc4_7 = normalize(H7 - H4);
+        let H5 = normalize(H4 + (arc4_7 / 3)); let H6 = normalize(H4 + (2 * arc4_7 / 3));
+        let arc7_10 = normalize(H10 - H7);
+        let H8 = normalize(H7 + (arc7_10 / 3)); let H9 = normalize(H7 + (2 * arc7_10 / 3));
+        let arc10_1 = normalize(H1 - H10);
+        let H11 = normalize(H10 + (arc10_1 / 3)); let H12 = normalize(H10 + (2 * arc10_1 / 3));
+        
+        const mids = [0, H1, H2, H3, H4, H5, H6, H7, H8, H9, H10, H11, H12];
+        let sandhis = [];
+        for(let i=1; i<=12; i++) {
+            let prev = (i === 1) ? 12 : i-1;
+            let dist = normalize(mids[i] - mids[prev]);
+            sandhis[i] = normalize(mids[prev] + (dist / 2));
+        }
+        return { mids, sandhis };
+    }
+
+    function getChalitHouse(planetAbs, sandhis) {
+        for(let i=1; i<=12; i++) {
+            let start = sandhis[i];
+            let end = (i===12)?sandhis[1]:sandhis[i+1];
+            let startToPlanet = normalize(planetAbs - start);
+            let startToEnd = normalize(end - start);
+            if (startToPlanet >= 0 && startToPlanet < startToEnd) return i;
+        }
+        return 1;
+    }
+
+    // 2. PN-PB-MB Logic
+    function getPNStatus(rashiIdx, deg) {
+        let rem = rashiIdx % 4;
+        let type = (rem===0)?'Fire': (rem===1)?'Earth': (rem===2)?'Air': 'Water';
+        for(let r of PN_RULES[type]) {
+            if(deg >= r[0] && deg <= r[1]) return { is: true, text: "Yes" };
+        }
+        return { is: false, text: "No" };
+    }
+    function getPBStatus(rashiIdx, deg) {
+        let target = PB_POINTS[rashiIdx];
+        if(Math.abs(deg - target) <= 1.0) return { is: true, text: `Yes (${target}°)` };
+        return { is: false, text: "No" };
+    }
+    function getMBStatus(planetIdx, rashiIdx, deg) {
+        let target = MB_TABLE[rashiIdx][planetIdx];
+        if(Math.abs(deg - target) <= 1.0) return { is: true, text: `Yes (${target}°)` };
+        return { is: false, text: "No" };
+    }
+    function joinList(list) { return list.length > 0 ? list.join(", ") : "कोई नहीं"; }
+
+
+    // --- Main Execution ---
+    function calculateAll() {
+        let rStr = document.getElementById('rashi-input').value;
+        let dStr = document.getElementById('degree-input').value;
+        let mcR = document.getElementById('mc-rashi').value;
+        let mcD = document.getElementById('mc-degree').value;
+        let out = document.getElementById('output');
+        let err = document.getElementById('error-msg');
+        
+        out.innerHTML = ''; err.style.display = 'none';
+
+        // Validation
+        if(!rStr || !dStr || !mcR || !mcD) { 
+            err.innerText = "कृपया सभी बॉक्स भरें (MC सहित)।"; err.style.display='block'; return; 
+        }
+        let rArr = rStr.split(',').map(x=>parseInt(x.trim()));
+        let dArr = dStr.split(',').map(x=>x.trim());
+        if(rArr.length !== 10 || dArr.length !== 10) { 
+            err.innerText = "ग्रहों की संख्या 10 (लग्न से केतु तक) होनी चाहिए।"; err.style.display='block'; return; 
+        }
+
+        // Data Preparation
+        let planets = [];
+        let lagnaAbs = 0;
+        for(let i=0; i<10; i++) {
+            let abs = getAbs(rArr[i], dArr[i]);
+            if(i===0) lagnaAbs = abs;
+            planets.push({ 
+                idx: i, name: PLANETS[i], r: rArr[i], d: dArr[i], 
+                abs: abs, rIdx: rArr[i]-1, degInRashi: getDegInRashi(abs)
+            });
+        }
+        let mcAbs = getAbs(parseInt(mcR), mcD);
+        let sripatiHouses = getSripatiCusps(lagnaAbs, mcAbs);
+
+        // ==========================================
+        // MODULE 1: CHALIT
+        // ==========================================
+        if(document.getElementById('chk-chalit').checked) {
+            let rows = [];
+            let fwd = [], back = [], same = [];
+            for(let i=1; i<10; i++) {
+                let p = planets[i];
+                let d1H = ((p.r - rArr[0] + 12) % 12) + 1;
+                let chalitH = getChalitHouse(p.abs, sripatiHouses.sandhis);
+                let st = 'same';
+                if(d1H !== chalitH) {
+                    if ((d1H===12 && chalitH===1) || (chalitH > d1H && !(d1H===1 && chalitH===12))) st = 'fwd';
+                    else st = 'back';
+                }
+                if(st==='fwd') fwd.push(p.name); else if(st==='back') back.push(p.name); else same.push(p.name);
+                rows.push({p:p, d1H:d1H, chalitH:chalitH, st:st});
+            }
+            let sumParts = [`<b>${fwd.length+back.length} \u0917\u094d\u0930\u0939 \u092c\u0926\u0932\u0947</b>`];
+            if(fwd.length) sumParts.push(`\u2192 \u0906\u0917\u0947: ${fwd.join(', ')}`);
+            if(back.length) sumParts.push(`\u2190 \u092a\u0940\u091b\u0947: ${back.join(', ')}`);
+            if(same.length) sumParts.push(`\u0938\u094d\u0925\u093f\u0930: ${same.join(', ')}`);
+            let html = `<div class="result-box" id="chalit-section"><h3>1. \u092d\u093e\u0935 \u091a\u0932\u093f\u0924 (D1 - \u0936\u094d\u0930\u0940\u092a\u0924\u093f)</h3>
+                        <div class="chalit-summary">\uD83D\uDD04 ${sumParts.join(' &nbsp;|&nbsp; ')}</div>
+                        <table><tr><th>\u0917\u094d\u0930\u0939</th><th>D1 \u0938\u094d\u0925\u093f\u0924\u093f (\u0930\u093e\u0936\u093f)</th><th>\u091a\u0932\u093f\u0924 \u092d\u093e\u0935</th><th>\u092c\u0926\u0932\u093e\u0935</th></tr>`;
+            rows.forEach(r => {
+                let status, cls, trCls='';
+                if(r.st==='fwd'){ status='\u2192 \u0906\u0917\u0947 \u092c\u0922\u093c\u093e'; cls='status-change'; trCls=' class="changed"'; }
+                else if(r.st==='back'){ status='\u2190 \u092a\u0940\u091b\u0947 \u0917\u092f\u093e'; cls='status-change'; trCls=' class="changed"'; }
+                else { status='\u0938\u094d\u0925\u093f\u0930'; cls='status-same'; }
+                html += `<tr${trCls}><td>${r.p.name} (${r.p.d})</td><td>${r.d1H} \u0935\u093e\u0902 (${RASHIS[r.p.rIdx]})</td><td><b>${r.chalitH} \u0935\u093e\u0902</b></td><td class="${cls}">${status}</td></tr>`;
+            });
+            html += `</table><button class="btn-download" onclick="downloadTxt('chalit-section', 'Chalit_Report.txt')">\u091a\u0932\u093f\u0924 \u0930\u093f\u092a\u094b\u0930\u094d\u091f \u0921\u093e\u0909\u0928\u0932\u094b\u0921 \u0915\u0930\u0947\u0902</button></div>`;
+            out.innerHTML += html;
+        }
+
+        // ==========================================
+        // MODULE 2: PN-PB-MB
+        // ==========================================
+        if(document.getElementById('chk-pnpmmb').checked) {
+            
+            // Arrays for conclusion
+            let c_P_PN = [], c_P_PB = [], c_P_Both = [], c_P_MB = [];
+            let c_HM_PN = [], c_HM_PB = [], c_HM_Both = [];
+            let c_HS_PN = [], c_HS_PB = [], c_HS_Both = [];
+            let c_HI_PN = [], c_HI_PB = [], c_HI_Both = [];
+
+            let html = `<div id="pnpmmb-section"><div id="pnpmmb-tables">`;
+            let rowsA = '';
+            
+            // Planets logic
+            planets.forEach(p => {
+                let pn = getPNStatus(p.rIdx, p.degInRashi);
+                let pb = getPBStatus(p.rIdx, p.degInRashi);
+                let mb = getMBStatus(p.idx, p.rIdx, p.degInRashi);
+
+                if(pn.is) c_P_PN.push(p.name);
+                if(pb.is) c_P_PB.push(p.name);
+                if(pn.is && pb.is) c_P_Both.push(p.name);
+                if(mb.is) c_P_MB.push(p.name);
+
+                rowsA += `<tr><td><b>${p.name}</b></td><td>${RASHIS[p.rIdx]} - ${toDMS(p.degInRashi)}</td>
+                    <td><span class="${pn.is?'yes':'no'}">${pn.text}</span></td>
+                    <td><span class="${pb.is?'yes':'no'}">${pb.text}</span></td>
+                    <td><span class="${mb.is?'yes':'no'}">${mb.text}</span></td></tr>`;
+            });
+            // pill summary
+            let pills = [];
+            if(c_P_PN.length) pills.push(`<span class="pill pill-pn">पुष्कर नवांश: ${c_P_PN.join(', ')}</span>`);
+            if(c_P_PB.length) pills.push(`<span class="pill pill-pb">पुष्कर भाग: ${c_P_PB.join(', ')}</span>`);
+            if(c_P_MB.length) pills.push(`<span class="pill pill-mb">मृत्यु भाग: ${c_P_MB.join(', ')}</span>`);
+            let pillHtml = pills.length ? `<div class="pill-summary"><span class="pill-cat">✨ पुष्कर सार:</span>${pills.join('')}</div>` : '';
+            html += `<div class="result-box"><h3>2. A) ग्रहों की पुष्कर एवं मृत्यु भाग स्थिति</h3>${pillHtml}
+                <table><tr><th>ग्रह</th><th>राशि - डिग्री</th><th>PN (पुष्कर नवांश)</th><th>PB (पुष्कर भाग)</th><th>MB (मृत्यु भाग)</th></tr>${rowsA}</table></div>`;
+
+            // Houses logic
+            html += `<div class="result-box"><h3>2. B) भावों की पुष्कर स्थिति (Cusp & Sandhi)</h3>
+            <table>
+                <tr><th rowspan="2" style="width:50px;">भाव</th><th colspan="3" class="group-header">भाव प्रारंभ (Sandhi)</th><th colspan="3" class="group-header">भाव मध्य (Cusp)</th></tr>
+                <tr><th>राशि - डिग्री</th><th>PN</th><th>PB</th><th>राशि - डिग्री</th><th>PN</th><th>PB</th></tr>`;
+
+            for(let i=1; i<=12; i++) {
+                let sAbs = sripatiHouses.sandhis[i];
+                let sR = getRashiIdx(sAbs); let sD = getDegInRashi(sAbs);
+                let sPN = getPNStatus(sR, sD); let sPB = getPBStatus(sR, sD);
+                
+                let mAbs = sripatiHouses.mids[i];
+                let mR = getRashiIdx(mAbs); let mD = getDegInRashi(mAbs);
+                let mPN = getPNStatus(mR, mD); let mPB = getPBStatus(mR, mD);
+
+                if(mPN.is) c_HM_PN.push(i);
+                if(mPB.is) c_HM_PB.push(i);
+                if(mPN.is && mPB.is) c_HM_Both.push(i);
+
+                if(sPN.is) c_HS_PN.push(i);
+                if(sPB.is) c_HS_PB.push(i);
+                if(sPN.is && sPB.is) c_HS_Both.push(i);
+
+                if(sPN.is && mPN.is) c_HI_PN.push(i);
+                if(sPB.is && mPB.is) c_HI_PB.push(i);
+                if((sPN.is && sPB.is) && (mPN.is && mPB.is)) c_HI_Both.push(i);
+
+                html += `<tr><td><b>${i}</b></td>
+                    <td>${RASHIS[sR]} - ${toDMS(sD)}</td><td><span class="${sPN.is?'yes':'no'}">${sPN.text}</span></td><td><span class="${sPB.is?'yes':'no'}">${sPB.text}</span></td>
+                    <td>${RASHIS[mR]} - ${toDMS(mD)}</td><td><span class="${mPN.is?'yes':'no'}">${mPN.text}</span></td><td><span class="${mPB.is?'yes':'no'}">${mPB.text}</span></td></tr>`;
+            }
+                        html += `</table></div></div>
+            <button class="btn-screenshot" onclick="takeScreenshot()">📸 स्क्रीनशॉट लें (2A + 2B)</button>`;  // Conclusion
+            html += `<div class="result-box">
+                <h3>2. C) निष्कर्ष (Final Report)</h3>
+                <div class="conclusion-text">
+                    <span class="conclusion-sub">1] ग्रहों की स्थिति :</span>
+                    ${joinList(c_P_PN)} पुष्कर नवांश (PN) में है।
+                    ${joinList(c_P_PB)} पुष्कर भाग (PB) में है।
+                    ${joinList(c_P_Both)} पुष्कर नवांश (PN) और पुष्कर भाग (PB) दोनो में है।
+                    
+                    ${joinList(c_P_MB)} मृत्यु भाग (MB) में है।
+
+                    <span class="conclusion-sub">2] भावों की स्थिति :</span>
+                    
+                    <span class="conclusion-sub-sub">भाव मध्य :</span>
+                    भाव मध्य से ${joinList(c_HM_PN)} वां भाव पुष्कर नवांश (PN) में है।
+                    भाव मध्य से ${joinList(c_HM_PB)} वां भाव पुष्कर भाग (PB) में है।
+                    भाव मध्य से ${joinList(c_HM_Both)} वां भाव पुष्कर नवांश (PN) और पुष्कर भाग (PB) दोनो में है।
+
+                    <span class="conclusion-sub-sub">भाव प्रारंभ :</span>
+                    भाव प्रारंभ से ${joinList(c_HS_PN)} वां भाव पुष्कर नवांश (PN) में है।
+                    भाव प्रारंभ से ${joinList(c_HS_PB)} वां भाव पुष्कर भाग (PB) में है।
+                    भाव प्रारंभ से ${joinList(c_HS_Both)} वां भाव पुष्कर नवांश (PN) और पुष्कर भाग (PB) दोनो में है।
+
+                    <span class="conclusion-sub">3] भाव मध्य और भाव प्रारंभ (दोनो) :</span>
+                    ${joinList(c_HI_PN)} वां भाव (मध्य एवं प्रारंभ) पुष्कर नवांश (PN) में है।
+                    ${joinList(c_HI_PB)} वां भाव (मध्य एवं प्रारंभ) पुष्कर भाग (PB) में है।
+                    ${joinList(c_HI_Both)} वां भाव (मध्य एवं प्रारंभ) पुष्कर नवांश (PN) और पुष्कर भाग (PB) दोनो में है।
+                </div>
+                <br>
+                <button class="btn-download" onclick="downloadTxt('pnpmmb-section', 'PN_PB_MB_Report.txt')">पुष्कर/मृत्यु भाग रिपोर्ट डाउनलोड करें</button>
+            </div></div>`; // End of pnpmmb-section
+
+            out.innerHTML += html;
+        }
+    }
+</script>
+
+<script>
+/* ============ जन्म स्थान: worldwide live search (astro apps जैसा) ============ */
+(function(){
+  var place=document.getElementById('birth-place'), box=document.getElementById('place-results');
+  var timer=null, ctrl=null;
+
+  /* दिन dropdown (1-31) */
+  (function(){ var s=document.getElementById('bd-day'); for(var d=1; d<=31; d++){ var o=document.createElement('option'); o.value=d; o.textContent=d; s.appendChild(o); } })();
+
+  /* toggle buttons: AM/PM, +/-, N/S, E/W */
+  [['bd-ampm',['AM','PM']],['tz-sign',['+','-']],['lat-dir',['N','S']],['lon-dir',['E','W']]].forEach(function(t){
+    var el=document.getElementById(t[0]), vals=t[1];
+    el.addEventListener('click', function(){ var i=(vals.indexOf(el.dataset.val)+1)%vals.length; el.dataset.val=vals[i]; el.textContent=vals[i]; });
+  });
+
+  function closeBox(){ box.style.display='none'; box.innerHTML=''; }
+  function setDms(dec, isLat){
+    var dir=dec>=0?(isLat?'N':'E'):(isLat?'S':'W');
+    var a=Math.abs(dec), d=Math.floor(a), m=Math.round((a-d)*60);
+    if(m===60){ d+=1; m=0; }
+    document.getElementById(isLat?'lat-deg':'lon-deg').value=d;
+    document.getElementById(isLat?'lat-min':'lon-min').value=m;
+    var dirEl=document.getElementById(isLat?'lat-dir':'lon-dir');
+    dirEl.dataset.val=dir; dirEl.textContent=dir;
+  }
+  function pick(label, la, lo){ clearTimeout(timer); place.value=label; setDms(la,true); setDms(lo,false); closeBox(); }
+
+  function render(items){
+    if(!items.length){ box.innerHTML='<div class="pr-none">कोई शहर नहीं मिला — इंटरनेट जांचें या lat/long manual भरें</div>'; }
+    else{
+      box.innerHTML=items.map(function(it,i){
+        return '<div class="pr-item" data-i="'+i+'">'+it.label+'</div>';
+      }).join('');
+      Array.prototype.forEach.call(box.querySelectorAll('.pr-item'), function(el){
+        el.addEventListener('mousedown', function(e){ e.preventDefault(); var it=items[+el.getAttribute('data-i')]; pick(it.label, it.lat, it.lon); });
+      });
+    }
+    box.style.display='block';
+  }
+
+  async function apiSearch(q){
+    var providers=[
+      { url:'https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=8&language=en&format=json',
+        parse:function(j){ return (j.results||[]).map(function(g){
+          var parts=[g.name]; if(g.admin1) parts.push(g.admin1); if(g.country) parts.push(g.country);
+          return {label:parts.join(', '), lat:+g.latitude.toFixed(4), lon:+g.longitude.toFixed(4)}; }); } },
+      { url:'https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=8&lang=en',
+        parse:function(j){ return (j.features||[]).map(function(f){
+          var p=f.properties||{}, parts=[p.name]; if(p.state) parts.push(p.state); if(p.country) parts.push(p.country);
+          var c=f.geometry&&f.geometry.coordinates;
+          return c?{label:parts.join(', '), lat:+c[1].toFixed(4), lon:+c[0].toFixed(4)}:null; }).filter(Boolean); } },
+      { url:'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=8',
+        parse:function(j){ return (Array.isArray(j)?j:[]).map(function(n){
+          return {label:String(n.display_name).split(',').slice(0,3).join(','), lat:+parseFloat(n.lat).toFixed(4), lon:+parseFloat(n.lon).toFixed(4)}; }); } }
+    ];
+    for(var i=0;i<providers.length;i++){
+      try{
+        if(ctrl) ctrl.abort();
+        ctrl=new AbortController();
+        var r=await fetch(providers[i].url,{signal:ctrl.signal});
+        if(!r.ok) continue;
+        var out=providers[i].parse(await r.json());
+        if(out.length) return out;
+      }catch(e){}
+    }
+    return [];
+  }
+
+  place.addEventListener('input', function(){
+    var qAtSchedule=place.value;
+    clearTimeout(timer);
+    if(qAtSchedule.trim().length<2){ closeBox(); return; }
+    box.innerHTML='<div class="pr-none">खोजा जा रहा है…</div>'; box.style.display='block';
+    timer=setTimeout(async function(){
+      if(place.value!==qAtSchedule || place.value.trim().length<2) return;
+      var remote=await apiSearch(place.value);
+      if(place.value===qAtSchedule) render(remote);
+    }, 350);
+  });
+  place.addEventListener('blur', function(){ setTimeout(closeBox, 150); });
+  place.addEventListener('focus', function(){ if(box.innerHTML) box.style.display='block'; });
+  document.addEventListener('click', function(e){ if(!e.target.closest('.ephem-place-wrap')) closeBox(); });
+})();
+</script>
+
+<script type="module">
+/* ============ Swiss Ephemeris auto-fill (chalit logic untouched) ============ */
+const EPHEM_CDN = '../vendor/swisseph-browser.js';
+const ephemStatus = document.getElementById('ephem-status');
+const btnEphem = document.getElementById('btn-ephem');
+const ephemError = document.getElementById('ephem-error');
+let SE=null, SEP=null, SEF=null, SEH=null, SEL=null;
+
+function setStatus(t, ok){ ephemStatus.textContent=t; ephemStatus.className=ok?'ok':''; }
+
+try {
+  const m = await import(/* @vite-ignore */EPHEM_CDN);
+  SE = m.SwissEphemeris; SEP = m.Planet; SEF = m.CalculationFlag; SEH = m.HouseSystem; SEL = m.LunarPoint;
+  const swe = new SE();
+  await swe.init();
+  swe.setSiderealMode(m.SiderealMode.Lahiri);
+  window._swe = swe;
+  setStatus('\u2705 Engine \u0924\u0948\u092f\u093e\u0930 \u2014 \u091c\u0928\u094d\u092e \u0935\u093f\u0935\u0930\u0923 \u092d\u0930\u0915\u0930 "ग्रह स्थिति निकालें व भरें" दबाएं', true);
+  btnEphem.disabled = false;
+} catch(e) {
+  setStatus('\u26a0\ufe0f Engine \u0932\u094b\u0921 \u0928\u0939\u0940\u0902 \u0939\u0941\u0906 \u2014 \u0907\u0902\u091f\u0930\u0928\u0947\u091f \u091a\u093e\u0932\u0942 \u0915\u0930\u0915\u0947 \u092a\u0947\u091c reload \u0915\u0930\u0947\u0902', false);
+  btnEphem.disabled = false;
+  btnEphem.textContent = '\uD83D\uDD04 \u092a\u0941\u0928ः \u092a\u094d\u0930\u092f\u093e\u0938 \u0915\u0930\u0947\u0902 (\u092a\u0947\u091c reload \u0939\u094b\u0917\u093e)';
+  btnEphem.addEventListener('click', ()=>location.reload());
+}
+setTimeout(()=>{ if(btnEphem.disabled) setStatus('\u23f3 Engine \u0932\u094b\u0921 \u0939\u094b \u0930\u0939\u093e \u0939\u0948\u2026 (\u0928\u0947\u091f\u0935\u0930\u094d\u0915 \u0927\u0940\u092e\u093e \u0939\u094b \u0938\u0915\u0924\u093e \u0939\u0948)', false); }, 45000);
+
+const FLAGS = () => SEF.MoshierEphemeris | SEF.Speed;
+const norm360 = d => ((d % 360) + 360) % 360;
+const signNum = lon => Math.floor(norm360(lon) / 30) + 1; // 1-12
+/* राशि के अंदर का अंश -> DD:MM:SS */
+function toDMSinput(lon){
+  const d = norm360(lon) % 30;
+  let deg = Math.floor(d);
+  let mnt = Math.floor((d - deg) * 60);
+  let sec = Math.round(((d - deg) * 60 - mnt) * 60);
+  if (sec === 60) { sec = 0; mnt++; }
+  if (mnt === 60) { mnt = 0; deg++; }
+  return String(deg).padStart(2,'0') + ':' + String(mnt).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+}
+
+btnEphem.addEventListener('click', async ()=>{
+  if(!window._swe) return;
+  ephemError.innerText='';
+  try{
+    const gv=id=>document.getElementById(id).value;
+    const day=parseInt(gv('bd-day')), mon=parseInt(gv('bd-month')), Y=parseInt(gv('bd-year'));
+    if(isNaN(day)||isNaN(mon)||isNaN(Y)) throw new Error('\u091c\u0928\u094d\u092e \u0924\u093e\u0930\u0940\u0916 \u092a\u0942\u0930\u0940 \u092d\u0930\u0947\u0902 (\u0926\u093f\u0928 / \u092e\u0939\u0940\u0928\u093e / \u0935\u0930\u094d\u0937)।');
+    if(Y<1800||Y>2200) throw new Error('\u0935\u0930\u094d\u0937 1800\u20132200 \u0915\u0947 \u092c\u0940\u091a \u092d\u0930\u0947\u0902।');
+    const maxDay=new Date(Y, mon+1, 0).getDate();
+    if(day<1||day>maxDay) throw new Error('\u0907\u0938 \u092e\u0939\u0940\u0928\u0947 \u092e\u0947\u0902 '+day+' \u0924\u093e\u0930\u0940\u0916 \u0928\u0939\u0940\u0902 \u0939\u094b\u0924\u0940।');
+    const hh=parseInt(gv('bd-hh')), mm=parseInt(gv('bd-mm'));
+    let ss=parseInt(gv('bd-ss')); if(isNaN(ss)||ss<0||ss>59) ss=0;
+    if(isNaN(hh)||hh<1||hh>12) throw new Error('\u0918\u0902\u091f\u0947 1\u201312 \u0915\u0947 \u092c\u0940\u091a \u092d\u0930\u0947\u0902।');
+    if(isNaN(mm)||mm<0||mm>59) throw new Error('\u092e\u093f\u0928\u091f 0\u201359 \u0915\u0947 \u092c\u0940\u091a \u092d\u0930\u0947\u0902।');
+    const h24=(hh%12)+(document.getElementById('bd-ampm').dataset.val==='PM'?12:0);
+    const tzSign=document.getElementById('tz-sign').dataset.val==='-'?-1:1;
+    const tzH=parseInt(gv('tz-hh')||'0'), tzM=parseInt(gv('tz-mm')||'0');
+    if(isNaN(tzH)||tzH<0||tzH>14||isNaN(tzM)||tzM<0||tzM>59) throw new Error('Timezone \u0918\u0902\u091f\u0947 0\u201314, \u092e\u093f\u0928\u091f 0\u201359 \u092d\u0930\u0947\u0902।');
+    const tzMin=tzSign*(tzH*60+tzM);
+    const dms=(degId,minId,dirId,maxDeg,name)=>{
+      const d=parseFloat(gv(degId)), m=parseFloat(gv(minId)||'0'), dir=document.getElementById(dirId).dataset.val;
+      if(isNaN(d)||d<0||d>maxDeg) throw new Error(name+' \u0921\u093f\u0917\u094d\u0930\u0940 0\u2013'+maxDeg+' \u0915\u0947 \u092c\u0940\u091a \u092d\u0930\u0947\u0902।');
+      if(isNaN(m)||m<0||m>=60) throw new Error(name+' \u092e\u093f\u0928\u091f 0\u201359 \u0915\u0947 \u092c\u0940\u091a \u092d\u0930\u0947\u0902।');
+      let dec=d+m/60; if(dir==='S'||dir==='W') dec=-dec; return dec;
+    };
+    const lat=dms('lat-deg','lat-min','lat-dir',90,'\u0905\u0915\u094d\u0937\u093e\u0902\u0936'),
+          lon=dms('lon-deg','lon-min','lon-dir',180,'\u0926\u0947\u0936\u093e\u0902\u0924\u0930');
+    let utc=new Date(Date.UTC(Y,mon,day,h24,mm,ss)); utc=new Date(utc.getTime()-tzMin*60000);
+    const swe=window._swe;
+    const jd=swe.julianDay(utc.getUTCFullYear(),utc.getUTCMonth()+1,utc.getUTCDate(),
+                           utc.getUTCHours()+utc.getUTCMinutes()/60+utc.getUTCSeconds()/3600);
+    const ayan=swe.getAyanamsa(jd), F=FLAGS();
+    const calc=(body)=>{ const p=swe.calculatePosition(jd,body,F); return norm360(p.longitude-ayan); };
+    const order=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
+    const bodyMap={Surya:SEP.Sun,Chandra:SEP.Moon,Mangal:SEP.Mars,Budh:SEP.Mercury,Guru:SEP.Jupiter,Shukra:SEP.Venus,Shani:SEP.Saturn,Rahu:SEL.MeanNode};
+    const L={};
+    order.forEach(k=>{ L[k]=calc(bodyMap[k]); });
+    L.Ketu=norm360(L.Rahu+180);
+    const hs=swe.calculateHouses(jd,lat,lon,SEH.Placidus);
+    const lagna=norm360(hs.ascendant-ayan);
+    const mc=norm360(hs.mc-ayan);
+
+    /* 10 नंबर: लग्न, सूर्य...केतु (1-12) */
+    const lons=[lagna].concat(order.map(k=>L[k]));
+    const nums=lons.map(signNum);
+    document.getElementById('rashi-input').value=nums.join(',');
+    /* 10 अंश: DD:MM:SS (राशि के अंदर) */
+    document.getElementById('degree-input').value=lons.map(toDMSinput).join(',');
+    /* MC */
+    document.getElementById('mc-rashi').value=signNum(mc);
+    document.getElementById('mc-degree').value=toDMSinput(mc);
+
+    setStatus('\u2705 \u092d\u0930\u093e \u0917\u092f\u093e: '+nums.join(',')+' \u2014 \u0917\u0923\u0928\u093e \u0928\u0940\u091a\u0947 \u0924\u0948\u092f\u093e\u0930 \u0939\u0948', true);
+    calculateAll();
+    document.getElementById('rashi-input').scrollIntoView({behavior:'smooth',block:'center'});
+  }catch(err){
+    ephemError.innerText=err.message||String(err);
+  }
+});
+</script>
+
+
+<script>
+
+document.getElementById('btn-applycode').addEventListener('click', function(){
+  const err=document.getElementById('code-error');
+  err.innerText='';
+  const msg=applyAstroCode(document.getElementById('astro-code-in').value);
+  if(msg){ err.innerText=msg; return; }
+  const go=function(){ document.getElementById('btn-ephem').click(); };
+  if(window._swe){ go(); }
+  else{
+    err.innerText='\u23f3 Engine \u0932\u094b\u0921 \u0939\u094b \u0930\u0939\u093e \u0939\u0948\u2026 \u0924\u0948\u092f\u093e\u0930 \u0939\u094b\u0924\u0947 \u0939\u0940 \u0917\u0923\u0928\u093e \u0939\u094b\u0917\u0940';
+    const iv=setInterval(function(){ if(window._swe){ clearInterval(iv); err.innerText=''; go(); } }, 500);
+    setTimeout(function(){ clearInterval(iv); }, 60000);
+  }
+});
+/* ============ Astro Code: जन्म विवरण share करने के लिए (सभी tools में same) ============ */
+function makeAstroCode(){
+  const gv=id=>document.getElementById(id).value;
+  const p2=n=>String(n).padStart(2,'0');
+  const day=gv('bd-day'), mon=gv('bd-month'), Y=gv('bd-year');
+  if(!day||!mon||!Y) throw new Error('पहले जन्म तारीख भरें।');
+  const hh=parseInt(gv('bd-hh')), mm=parseInt(gv('bd-mm'));
+  let ss=parseInt(gv('bd-ss')); if(isNaN(ss)||ss<0||ss>59) ss=0;
+  if(isNaN(hh)||hh<1||hh>12) throw new Error('पहले जन्म समय भरें।');
+  if(isNaN(mm)||mm<0||mm>59) throw new Error('पहले जन्म समय भरें।');
+  const h24=(hh%12)+(document.getElementById('bd-ampm').dataset.val==='PM'?12:0);
+  const tzSign=document.getElementById('tz-sign').dataset.val;
+  const tzH=gv('tz-hh'), tzM=gv('tz-mm');
+  const latD=gv('lat-deg'), latM=gv('lat-min')||'0', latDir=document.getElementById('lat-dir').dataset.val;
+  const lonD=gv('lon-deg'), lonM=gv('lon-min')||'0', lonDir=document.getElementById('lon-dir').dataset.val;
+  if(latD===''||lonD==='') throw new Error('पहले अक्षांश/देशांतर भरें।');
+  return 'AS1-'+Y+p2(+mon+1)+p2(day)+'-'+p2(h24)+p2(mm)+p2(ss)+'-'+tzSign+p2(tzH)+p2(tzM)+'-'+p2(latD)+p2(latM)+latDir+'-'+String(lonD).padStart(3,'0')+p2(lonM)+lonDir;
+}
+function applyAstroCode(code){
+  const m=/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/.exec((code||'').trim());
+  if(!m) return 'कोड सही नहीं है — Home page से बना कोड paste करें।';
+  const d8=m[1], t6=m[2], tz=m[3], lat4=m[4], latDir=m[5], lon5=m[6], lonDir=m[7];
+  const Y=+d8.slice(0,4), mo=+d8.slice(4,6), dy=+d8.slice(6,8);
+  if(mo<1||mo>12) return 'कोड में तारीख गलत है।';
+  if(dy<1||dy>new Date(Y,mo,0).getDate()) return 'कोड में तारीख गलत है।';
+  const h24=+t6.slice(0,2), mi=+t6.slice(2,4), se=+t6.slice(4,6);
+  if(h24>23||mi>59||se>59) return 'कोड में समय गलत है।';
+  const tzH=+tz.slice(1,3), tzM=+tz.slice(3,5);
+  if(tzH>14||tzM>59) return 'कोड में timezone गलत है।';
+  const laD=+lat4.slice(0,2), laM=+lat4.slice(2,4), loD=+lon5.slice(0,3), loM=+lon5.slice(3,5);
+  if(laD>90||laM>59||loD>180||loM>59) return 'कोड में अक्षांश/देशांतर गलत है।';
+  const sv=(id,v)=>{document.getElementById(id).value=v;};
+  sv('bd-day',String(dy)); sv('bd-month',String(mo-1)); sv('bd-year',String(Y));
+  sv('bd-hh',String(h24%12===0?12:h24%12)); sv('bd-mm',String(mi).padStart(2,'0')); sv('bd-ss',String(se).padStart(2,'0'));
+  const ap=document.getElementById('bd-ampm'); ap.dataset.val=h24<12?'AM':'PM'; ap.textContent=ap.dataset.val;
+  const ts=document.getElementById('tz-sign'); ts.dataset.val=tz[0]; ts.textContent=tz[0];
+  sv('tz-hh',String(tzH)); sv('tz-mm',String(tzM).padStart(2,'0'));
+  sv('lat-deg',String(laD)); sv('lat-min',String(laM));
+  const ld=document.getElementById('lat-dir'); ld.dataset.val=latDir; ld.textContent=latDir;
+  sv('lon-deg',String(loD)); sv('lon-min',String(loM));
+  const od=document.getElementById('lon-dir'); od.dataset.val=lonDir; od.textContent=lonDir;
+  return null;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<script src="../vendor/swisseph-local.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔯 KP ज्योतिष महा-कैलकुलेटर v26</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Noto Sans Devanagari', sans-serif; background: #f5f5f5; margin: 0; padding: 16px; color: #222; }
+  .container { max-width: 1000px; margin: 0 auto; }
+  h1 { text-align: center; color: #6a1b9a; font-size: 22px; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: #666; font-size: 13px; margin-bottom: 16px; }
+  .card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .card h2 { font-size: 16px; color: #6a1b9a; margin: 0 0 10px 0; border-bottom: 2px solid #e1bee7; padding-bottom: 6px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 10px; }
+  .field { display: flex; flex-direction: column; }
+  .field label { font-size: 12px; color: #666; margin-bottom: 3px; }
+  .field input, .field select { padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; }
+  .btn { background: #6a1b9a; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; font-family: inherit; }
+  .btn:hover { background: #4a148c; }
+  .btn:disabled { background: #ccc; cursor: default; }
+  .btn-green { background: #2e7d32; }
+  .btn-green:hover { background: #1b5e20; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+  th { background: #6a1b9a; color: #fff; padding: 8px 6px; text-align: center; font-size: 12px; }
+  td { border: 1px solid #ddd; padding: 6px; text-align: center; }
+  tr:nth-child(even) { background: #fafafa; }
+  .ruling { background: #f3e5f5; border-radius: 8px; padding: 12px; margin-top: 12px; font-size: 14px; }
+  .ruling b { color: #6a1b9a; }
+  .note { font-size: 12px; color: #888; margin-top: 8px; }
+  .status { font-size: 13px; color: #666; margin: 8px 0; }
+  .astro-code-row { display: flex; gap: 8px; align-items: end; }
+  .astro-code-row input { flex: 1; }
+  /* v6 Verdict styles */
+  .vtabs { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+  .vtab { padding: 10px 18px; border-radius: 8px; background: #e1bee7; cursor: pointer; font-weight: bold; font-size: 14px; border: none; font-family: inherit; }
+  .vtab.active { background: #6a1b9a; color: #fff; }
+  .vtab-timing { background: #ff9800 !important; color: #fff !important; }
+  .vtab-timing.active { background: #e65100 !important; }
+  .vsec { font-size: 14px; color: #444; font-weight: bold; margin: 14px 0 8px 0; border-bottom: 2px solid #e1bee7; padding-bottom: 4px; }
+  .card { background: #fff; border-radius: 10px; padding: 12px; margin: 10px 0; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+  .card h3 { margin: 0 0 8px; color: #6a1b9a; border-bottom: 2px solid #e8d5f2; padding-bottom: 6px; font-size: 15px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; align-items: center; }
+  .pill { background: #f3e8fd; border: 1px solid #c9a0e8; border-radius: 20px; padding: 4px 12px; font-size: 14px; }
+  .etabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+  .vitem { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+  .vhead { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; font-weight: bold; }
+  .badge { padding: 3px 12px; border-radius: 12px; font-weight: bold; font-size: 12.5px; white-space: nowrap; }
+  .b-green { background: #c8e6c9; color: #1b5e20; }
+  .b-yellow { background: #fff9c4; color: #f57f00; }
+  .b-red { background: #ffcdd2; color: #c62828; }
+  .b-blue { background: #bbdefb; color: #0d47a1; }
+  .b-gray { background: #e0e0e0; color: #424242; }
+  .vdesc { font-size: 12px; color: #666; margin-top: 6px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🔯 KP ज्योतिष महा-कैलकुलेटर v26</h1>
+  <div class="subtitle">Krishnamurti Paddhati — Planets, Cusps, Significators + Event Verdicts (App-verified)</div>
+
+  <div class="card">
+    <h2>📥 Astro Code / जन्म विवरण</h2>
+    <div class="astro-code-row">
+      <div class="field" style="flex:1">
+        <label>Astro Code (AS1-...)</label>
+        <input type="text" id="astroCode" placeholder="AS1-...">
+      </div>
+      <button class="btn" id="btnFillCode">📥 भरो</button>
+    </div>
+    <div class="status" id="ephemStatus">⏳ Swiss Ephemeris लोड हो रहा है...</div>
+  </div>
+
+  <div class="card">
+    <h2>📅 जन्म विवरण (Manual)</h2>
+    <div class="row">
+      <div class="field"><label>दिन</label><input type="number" id="dd" min="1" max="31" placeholder="DD" style="width:60px"></div>
+      <div class="field"><label>महीना</label><input type="number" id="mm" min="1" max="12" placeholder="MM" style="width:60px"></div>
+      <div class="field"><label>साल</label><input type="number" id="yy" min="1900" max="2100" placeholder="YYYY" style="width:80px"></div>
+      <div class="field"><label>घंटा</label><input type="number" id="hh" min="0" max="23" placeholder="HH" style="width:60px"></div>
+      <div class="field"><label>मिनट</label><input type="number" id="mi" min="0" max="59" placeholder="MM" style="width:60px"></div>
+      <div class="field"><label>सेकंड</label><input type="number" id="ss" min="0" max="59" placeholder="SS" style="width:60px"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>अक्षांश (Lat °)</label><input type="number" id="lat" step="0.01" placeholder="Lat" style="width:90px"></div>
+      <div class="field"><label>देशांतर (Lon °)</label><input type="number" id="lon" step="0.01" placeholder="Lon" style="width:90px"></div>
+      <div class="field"><label>Timezone</label><input type="text" id="tz" placeholder="+5:30" style="width:80px"></div>
+    </div>
+    <div class="row">
+      <button class="btn" id="btnCalc" disabled>🔯 KP गणना करो</button>
+      <button class="btn btn-green" id="btnTxt" disabled>📄 TXT डाउनलोड</button>
+    </div>
+  </div>
+
+  <div id="results" style="display:none;">
+    <div class="mode-toggle" style="display:flex;justify-content:center;margin:16px 0">
+      <div style="display:flex;border:3px solid #1976d2;border-radius:12px;overflow:hidden">
+        <button class="mode-btn active" data-mode="kptables" style="padding:12px 20px;border:none;font-size:15px;font-weight:bold;cursor:pointer;background:#1976d2;color:#fff">📊 KP विश्लेषण</button>
+        <button class="mode-btn" data-mode="verdicts" style="padding:12px 20px;border:none;font-size:15px;font-weight:bold;cursor:pointer;background:#e3f2fd;color:#1976d2">🎯 Events Verdicts</button>
+        <button class="mode-btn" data-mode="timing" style="padding:12px 20px;border:none;font-size:15px;font-weight:bold;cursor:pointer;background:#e3f2fd;color:#1976d2">⏰ Time Qualification</button>
+      </div>
+    </div>
+    <div id="mode-verdicts" style="display:none">
+    <div class="card">
+      <h2>🎯 Events Verdicts</h2>
+      <div class="vtabs">
+        <button class="vtab active" data-vtab="vivah">💒 विवाह</button>
+        <button class="vtab" data-vtab="santan">👶 संतान</button>
+        <button class="vtab" data-vtab="career">💼 करियर</button>
+        <button class="vtab" data-vtab="dhan">💰 धन</button>
+        <button class="vtab" data-vtab="shiksha">📚 शिक्षा</button>
+        <button class="vtab" data-vtab="videsh">✈️ विदेश</button>
+        <button class="vtab" data-vtab="swasthya">🏥 स्वास्थ्य</button>
+        <button class="vtab" data-vtab="court">⚖️ कोर्ट</button>
+        <button class="vtab" data-vtab="vahan">🚗 वाहन</button>
+      </div>
+      <div id="verdictContent"></div>
+      <div class="note">⚠️ ये quick verdicts हैं — detailed analysis के लिए Gemini prompts use करें</div>
+    </div>
+    </div>
+    <div id="mode-timing" style="display:none">
+    <div class="card">
+      <h2>⏰ Time Qualification</h2>
+      <div id="timingContent"></div>
+    </div>
+    </div>
+    <div id="mode-kptables">
+    <div class="card">
+      <h2>🪐 KP Planet Positions (KP Ayanamsa)</h2>
+      <div id="planetTable"></div>
+      <div class="note">RL=Rashi Lord, NL=Nakshatra Lord, SL=Sub Lord, SSL=Sub-Sub Lord</div>
+    </div>
+    <div class="card">
+      <h2>🏠 KP Placidus Bhava Details</h2>
+      <div id="bhavaTable"></div>
+      <div class="ruling" id="rulingPlanets"></div>
+    </div>
+    <div class="card">
+      <h2>📊 KP Planet Significators</h2>
+      <div id="planetSigTable"></div>
+      <div class="note">A: NL के घर में | B: ग्रह जिस भाव में | C: NL के स्वामित्व वाले भाव | D: ग्रह के स्वामित्व वाले भाव</div>
+    </div>
+    <div class="card">
+      <h2>📊 KP House Significators</h2>
+      <div id="houseSigTable"></div>
+      <div class="note">1: भाववासियों के नक्षत्र में (9 ग्रह) | 2: भाव में स्थित | 3: भावेश के नक्षत्र में (9 ग्रह) | 4: भावेश</div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+const EPHEM_CDN = '../vendor/swisseph-browser.js';
+let swe = null, SEP = null, SLP = null, SID_MODE_LAHIRI = 1;
+
+// Constants
+const RASHI_NAMES = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+const RASHI_EN = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const GRAHA_NAMES = ['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि','राहु','केतु'];
+const GRAHA_SHORT = ['Su','Mo','Ma','Me','Ju','Ve','Sa','Ra','Ke'];
+const SIGN_LORD = ['Ma','Ve','Me','Mo','Su','Me','Ve','Ma','Ju','Sa','Sa','Ju']; // Aries..Pisces
+const NAK_NAMES = ['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वभाद्रपद','उत्तरभाद्रपद','रेवती'];
+const NAK_LORDS = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const VIM_YEARS = {Ke:7, Ve:20, Su:6, Mo:10, Ma:7, Ra:18, Ju:16, Sa:19, Me:17};
+const VIM_ORDER = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const KP_AYA_OFFSET = 5 + 26.22/60; // 5'26.22" less than Lahiri (arcminutes)
+
+let lastResults = null;
+
+// Init
+(async function(){
+  const st = document.getElementById('ephemStatus');
+  try {
+    const m = await import(/* @vite-ignore */EPHEM_CDN);
+    swe = new m.SwissEphemeris();
+    await swe.init();
+    SEP = m.Planet;
+    SLP = m.LunarPoint;
+    try { SID_MODE_LAHIRI = m.SiderealMode.Lahiri; } catch(e) { SID_MODE_LAHIRI = 1; }
+    st.textContent = '✅ Swiss Ephemeris तैयार (KP Ayanamsa)';
+    document.getElementById('btnCalc').disabled = false;
+  } catch(e) {
+    st.textContent = '❌ Ephemeris लोड नहीं हुआ: ' + e.message;
+  }
+})();
+
+function parseAstroCode(code) {
+  // AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN/S-DDDMME/W
+  const m = code.trim().match(/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/i);
+  if(!m) return null;
+  return {
+    yy: +m[1].slice(0,4), mm: +m[1].slice(4,6), dd: +m[1].slice(6,8),
+    hh: +m[2].slice(0,2), mi: +m[2].slice(2,4), ss: +m[2].slice(4,6),
+    tz: m[3].slice(0,3) + ':' + m[3].slice(3),
+    lat: (+m[4].slice(0,2) + (+m[4].slice(2))/60) * (m[5].toUpperCase()==='S' ? -1 : 1),
+    lon: (+m[6].slice(0,3) + (+m[6].slice(3))/60) * (m[7].toUpperCase()==='W' ? -1 : 1)
+  };
+}
+
+document.getElementById('btnFillCode').addEventListener('click', () => {
+  const p = parseAstroCode(document.getElementById('astroCode').value);
+  if(!p){ alert('❌ गलत Astro Code format'); return; }
+  document.getElementById('dd').value = p.dd;
+  document.getElementById('mm').value = p.mm;
+  document.getElementById('yy').value = p.yy;
+  document.getElementById('hh').value = p.hh;
+  document.getElementById('mi').value = p.mi;
+  document.getElementById('ss').value = p.ss;
+  document.getElementById('lat').value = p.lat.toFixed(2);
+  document.getElementById('lon').value = p.lon.toFixed(2);
+  document.getElementById('tz').value = p.tz;
+  // Auto-click calculate after Astro Code fill
+  document.getElementById('btnCalc').click();
+});
+
+function toJulian(yy, mm, dd, hh, mi, ss, tzStr) {
+  const m = tzStr.match(/([+-])(\d+):(\d+)/);
+  const tzH = (+m[2] + (+m[3])/60) * (m[1]==='-' ? -1 : 1);
+  const utcH = hh + mi/60 + ss/3600 - tzH;
+  // Julian day calc
+  let y = yy, mo = mm;
+  if(mo <= 2){ y--; mo += 12; }
+  const A = Math.floor(y/100), B = 2 - A + Math.floor(A/4);
+  const jd = Math.floor(365.25*(y+4716)) + Math.floor(30.6001*(mo+1)) + dd + B - 1524.5 + utcH/24;
+  return jd;
+}
+
+function getSubLords(nakIdx) {
+  const total = 800.0, start = nakIdx % 9;
+  const res = []; let pos = 0;
+  for(let i=0; i<9; i++){
+    const lord = VIM_ORDER[(start+i)%9];
+    const w = VIM_YEARS[lord]/120*total;
+    res.push({lord, s:pos, e:pos+w}); pos += w;
+  }
+  return res;
+}
+
+function getLords(absMin, nakIdx) {
+  // absMin: absolute minutes, nakIdx: 0-26
+  const nakStart = nakIdx * 800;
+  const din = absMin - nakStart;
+  const subs = getSubLords(nakIdx);
+  for(const sub of subs){
+    if(sub.s <= din && din < sub.e){
+      const si = VIM_ORDER.indexOf(sub.lord);
+      const wtot = sub.e - sub.s;
+      let pos = sub.s;
+      for(let i=0; i<9; i++){
+        const ssl = VIM_ORDER[(si+i)%9];
+        const w = VIM_YEARS[ssl]/120*wtot;
+        if(pos <= din && din < pos+w) return {sl: sub.lord, ssl};
+        pos += w;
+      }
+    }
+  }
+  return {sl:'?', ssl:'?'};
+}
+
+function fmtDeg(absDeg) {
+  const r = Math.floor(absDeg/30)%12;
+  const d = absDeg % 30;
+  const dd = Math.floor(d), mm = Math.floor((d-dd)*60);
+  let ss = Math.round(((d-dd)*60-mm)*60);
+  let m2 = mm, d2 = dd;
+  if(ss===60){ ss=0; m2++; } if(m2===60){ m2=0; d2++; }
+  return `${d2}:${String(m2).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+}
+
+document.getElementById('btnCalc').addEventListener('click', async () => {
+  if(!swe){ alert('Ephemeris तैयार नहीं'); return; }
+  const dd=+document.getElementById('dd').value, mm=+document.getElementById('mm').value,
+        yy=+document.getElementById('yy').value, hh=+document.getElementById('hh').value,
+        mi=+document.getElementById('mi').value, ss=+document.getElementById('ss').value,
+        lat=+document.getElementById('lat').value, lon=+document.getElementById('lon').value,
+        tz=document.getElementById('tz').value;
+  const jd = toJulian(yy,mm,dd,hh,mi,ss,tz);
+
+  // KP Ayanamsa = Lahiri - 5'26.22"
+  swe.setSiderealMode(SID_MODE_LAHIRI);
+  const lahiriAya = swe.getAyanamsa(jd);
+  const kpAya = lahiriAya - KP_AYA_OFFSET/60;
+
+  // Planet longitudes (tropical -> KP sidereal)
+  const PLANETS = [SEP.Sun, SEP.Moon, SEP.Mars, SEP.Mercury, SEP.Jupiter, SEP.Venus, SEP.Saturn, SLP.MeanNode];
+  const pData = [];
+  for(let i=0; i<8; i++){
+    const pos = swe.calculatePosition(jd, PLANETS[i]);
+    const trop = pos.longitude;
+    const sid = ((trop - kpAya) % 360 + 360) % 360;
+    pData.push({trop, sid, retro: pos.speedLongitude < 0});
+  }
+  // Rahu/Ketu
+  const rahuSid = pData[7].sid;
+  const ketuSid = (rahuSid + 180) % 360;
+  pData.push({trop:0, sid:ketuSid, retro:true});
+
+  // Cusps (Placidus, tropical -> KP sidereal) with DEBUG
+  let hs = null;
+  try {
+    hs = swe.calculateHouses(jd, lat, lon, 'P');
+  } catch(e) {
+    console.error('calculateHouses failed:', e);
+    alert('House calculation failed: ' + e.message);
+    return;
+  }
+  console.log('houses raw:', hs.houses);
+  console.log('ascendant raw:', hs.ascendant);
+  const cusps = [];
+  let housesArr = (hs && (hs.cusps || hs.houses)) || [];
+  if(housesArr.length < 12){
+    alert('House data invalid. Got ' + housesArr.length + ' cusps.');
+    return;
+  }
+  // hs.cusps[0] is cusp12, hs.cusps[1] is cusp1 -> rotate left by 1
+  // Verify: hs.cusps[1] should equal ascendant
+  const ascCheck = ((housesArr[1] - kpAya) % 360 + 360) % 360;
+  const ascSid = ((hs.ascendant - kpAya) % 360 + 360) % 360;
+  let rotated = housesArr;
+  if(Math.abs(ascCheck - ascSid) < 1.0){
+    // Confirmed: index 1 is cusp 1, rotate
+    rotated = housesArr.slice(1).concat([housesArr[0]]);
+  }
+  for(let i=0; i<12; i++){
+    const c = ((rotated[i] - kpAya) % 360 + 360) % 360;
+    cusps.push(c);
+  }
+  console.log('cusps sidereal:', cusps.map(c=>c.toFixed(2)));
+  const ascTrop = (hs && hs.ascendant !== undefined) ? hs.ascendant : (housesArr[0] || 0);
+  const lagnaSid = ((ascTrop - kpAya) % 360 + 360) % 360;
+  console.log('lagna sidereal:', lagnaSid.toFixed(2));
+
+  // Build planet info with lords
+  const allBodies = [];
+  // Lagna first
+  allBodies.push({name:'लग्न', short:'Lg', sid:lagnaSid, isLagna:true});
+  const pNames = ['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि','राहु','केतु'];
+  const pShort = ['Su','Mo','Ma','Me','Ju','Ve','Sa','Ra','Ke'];
+  for(let i=0; i<9; i++){
+    const sid = i<7 ? pData[i].sid : (i===7 ? rahuSid : ketuSid);
+    allBodies.push({name:pNames[i], short:pShort[i], sid, retro: i<8 ? pData[Math.min(i,7)].retro : true});
+  }
+
+  for(const b of allBodies){
+    const rashi = Math.floor(b.sid/30)%12;
+    const nakIdx = Math.floor(b.sid/(360/27))%27;
+    const absMin = b.sid*60;
+    const {sl, ssl} = getLords(absMin, nakIdx);
+    const pada = Math.floor((absMin - nakIdx*800)/200)+1;
+    b.rashi=rashi; b.nakIdx=nakIdx; b.pada=pada;
+    b.rl = SIGN_LORD[rashi]; b.nl = NAK_LORDS[nakIdx]; b.sl=sl; b.ssl=ssl;
+  }
+
+  // House occupation (Placidus)
+  function houseOf(lon){
+    for(let i=0; i<12; i++){
+      const c1=cusps[i], c2=cusps[(i+1)%12];
+      const l=((lon%360)+360)%360;
+      if(c1<c2){ if(c1<=l&&l<c2) return i+1; }
+      else { if(l>=c1||l<c2) return i+1; }
+    }
+    return 1;
+  }
+  function houseOwner(h){
+    return SIGN_LORD[Math.floor(cusps[h-1]/30)%12];
+  }
+  const planetsOnly = allBodies.slice(1); // exclude lagna
+  for(const p of planetsOnly) p.house = houseOf(p.sid);
+
+  // Planet significators
+  const pSig = planetsOnly.map(p => {
+    const nl = p.nl;
+    // Level-A: house occupied by NL
+    const nlPlanet = planetsOnly.find(x => x.short===nl);
+    const lvlA = nlPlanet ? nlPlanet.house : '-';
+    // Level-B: house occupied by planet
+    const lvlB = p.house;
+    // Level-C: houses owned by NL
+    const lvlC = [];
+    for(let h=1; h<=12; h++) if(houseOwner(h)===nl) lvlC.push(h);
+    // Level-D: houses owned by planet
+    const lvlD = [];
+    for(let h=1; h<=12; h++) if(houseOwner(h)===p.short) lvlD.push(h);
+    return {name:p.name, short:p.short, a:lvlA, b:lvlB, c:lvlC.join(', ')||'-', d:lvlD.join(', ')||'-'};
+  });
+
+  // House significators (verified 48/48 on 4 charts)
+  // L1: traditional planets whose NL = occupant itself
+  // L2: occupants | L3: traditional planets whose NL = owner itself | L4: owner
+  const TRAD_SHORT = ['Su','Mo','Ma','Me','Ju','Ve','Sa','Ra','Ke'];
+  const hSig = [];
+  for(let h=1; h<=12; h++){
+    const owner = houseOwner(h);
+    const occupants = planetsOnly.filter(p=>p.house===h).map(p=>p.short);
+    // Level-1
+    const l1set = new Set();
+    for(const occ of occupants){
+      if(!TRAD_SHORT.includes(occ)) continue;
+      for(const p of planetsOnly){
+        if(TRAD_SHORT.includes(p.short) && p.nl===occ) l1set.add(p.short);
+      }
+    }
+    // Level-3
+    const l3set = new Set();
+    if(TRAD_SHORT.includes(owner)){
+      for(const p of planetsOnly){
+        if(TRAD_SHORT.includes(p.short) && p.nl===owner) l3set.add(p.short);
+      }
+    }
+    const order = p => TRAD_SHORT.indexOf(p);
+    hSig.push({h,
+      l1:[...l1set].sort((a,b)=>order(a)-order(b)).join(', ')||'-',
+      l2:occupants.join(', ')||'-',
+      l3:[...l3set].sort((a,b)=>order(a)-order(b)).join(', ')||'-',
+      l4:owner});
+  }
+
+  // Cusp lords
+  const cuspData = cusps.map((c,i)=>{
+    const rashi=Math.floor(c/30)%12, nakIdx=Math.floor(c/(360/27))%27;
+    const {sl,ssl}=getLords(c*60, nakIdx);
+    const pada=Math.floor((c*60-nakIdx*800)/200)+1;
+    return {bhava:i+1, cusp:c, rashi, nakIdx, pada, rl:SIGN_LORD[rashi], nl:NAK_LORDS[nakIdx], sl, ssl};
+  });
+
+  // Ruling planets
+  const moonSid = planetsOnly[1].sid;
+  const dayNames=['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
+  const jsDate = new Date(Date.UTC(yy,mm-1,dd,hh,mi,ss));
+  // Adjust for timezone to get local day
+  const tzH = parseInt(tz.slice(1,3)) + parseInt(tz.slice(4))/60;
+  const localMs = jsDate.getTime() + (tzH*3600*1000) - (hh*3600+mi*60+ss)*1000 + (hh*3600+mi*60+ss)*1000;
+  const localDate = new Date(jsDate.getTime() + tzH*3600000);
+  const dayLord = ['Su','Mo','Ma','Me','Ju','Ve','Sa'][localDate.getUTCDay()];
+  const dayHindi = {Su:'रविवार',Mo:'सोमवार',Ma:'मंगलवार',Me:'बुधवार',Ju:'गुरुवार',Ve:'शुक्रवार',Sa:'शनिवार'}[dayLord];
+
+  lastResults = {allBodies, cuspData, pSig, hSig, ruling:{lagnaRL:allBodies[0].rl, lagnaNL:allBodies[0].nl, moonRL:SIGN_LORD[Math.floor(moonSid/30)%12], moonNL:NAK_LORDS[Math.floor(moonSid/(360/27))%27], day:dayHindi, dayLord}, kpAya, jd};
+
+  renderTables();
+  document.getElementById('results').style.display='block';
+  document.getElementById('btnTxt').disabled=false;
+  switchMode('kptables');
+});
+
+// ===== v6: Event Verdict Logic =====
+const PLANET_HINDI = {Su:'सूर्य',Mo:'चंद्र',Ma:'मंगल',Me:'बुध',Ju:'गुरु',Ve:'शुक्र',Sa:'शनि',Ra:'राहु',Ke:'केतु'};
+const PLANET_NATURE = {Su:'प्रभावशाली, नेतृत्व',Mo:'भावुक, कोमल',Ma:'साहसी, ऊर्जावान',Me:'बुद्धिमान, चंचल',Ju:'ज्ञानी, उदार',Ve:'सुंदर, रोमांटिक',Sa:'गंभीर, धैर्यवान',Ra:'असामान्य, महत्वाकांक्षी',Ke:'आध्यात्मिक, रहस्यमय'};
+const PROF_NATURE = {Su:'प्रशासन, सरकार',Mo:'जनसंपर्क, सेवा',Ma:'पुलिस, सेना, इंजीनियरिंग',Me:'व्यापार, हिसाब, संचार',Ju:'शिक्षा, न्याय, वित्त',Ve:'कला, विलासिता',Sa:'श्रम, सेवा, मेहनत',Ra:'तकनीक, विदेश',Ke:'अनुसंधान, गुप्त विद्या'};
+
+function sigHouses(pShort){
+  const {pSig} = lastResults;
+  const ps = pSig.find(x=>x.short===pShort);
+  const s = new Set();
+  if(!ps) return s;
+  if(ps.a!=='-') s.add(parseInt(ps.a));
+  s.add(ps.b);
+  if(ps.c!=='-') ps.c.split(',').forEach(h=>s.add(parseInt(h.trim())));
+  if(ps.d!=='-') ps.d.split(',').forEach(h=>s.add(parseInt(h.trim())));
+  return s;
+}
+function cslOf(h){ return lastResults.cuspData[h-1].sl; }
+// Loophole 3+4: SL के Strong (A,B) vs Weak (C,D) levels
+function getSlLevels(pShort){
+  const {pSig} = lastResults;
+  const ps = pSig.find(x=>x.short===pShort);
+  const str = new Set(), wk = new Set();
+  if(!ps) return {str, wk};
+  if(ps.a!=='-') str.add(parseInt(ps.a));
+  str.add(ps.b);
+  if(ps.c!=='-') ps.c.split(',').forEach(h=>wk.add(parseInt(h.trim())));
+  if(ps.d!=='-') ps.d.split(',').forEach(h=>wk.add(parseInt(h.trim())));
+  return {str, wk};
+}
+// Universal helper: किसी भी CSL के SL की Strong/Weak info string
+function getSlStringFor(cslShort){
+  const {allBodies} = lastResults;
+  const cslData = allBodies.find(x=>x.short===cslShort);
+  if(!cslData || !cslData.sl) return '';
+  const slPlanet = cslData.sl;
+  const {str, wk} = getSlLevels(slPlanet);
+  const strTxt = [...str].join(',');
+  const wkTxt = [...wk].join(',');
+  return ` | SL ${PLANET_HINDI[slPlanet]} → [Str: ${strTxt||'-'} | Wk: ${wkTxt||'-'}]`;
+}
+// SL Boss Rule: neg भावों के आधार पर badge/desc addon
+function getSlAddon(cslShort, neg){
+  const {allBodies} = lastResults;
+  const cslData = allBodies.find(x=>x.short===cslShort);
+  if(!cslData || !cslData.sl) return {badge:'', text:''};
+  const slPlanet = cslData.sl;
+  const {str, wk} = getSlLevels(slPlanet);
+  const slStrNeg = neg.filter(h=>str.has(h));
+  const slWkNeg = neg.filter(h=>wk.has(h));
+  const slInfo = getSlStringFor(cslShort);
+  if(slStrNeg.length>0){
+    return {badge:' 🔴 (SL से भारी बाधा)', text:`${slInfo} → SL प्रबल रूप से [${slStrNeg.join(',')}] दे रहा है, काम अंतिम समय में बिगड़ सकता है`};
+  } else if(slWkNeg.length>0){
+    return {badge:' ⚠️ (SL से रुकावट)', text:`${slInfo} → SL कमजोर रूप से [${slWkNeg.join(',')}] दे रहा है, काम बनेगा पर बदलाव/देरी के साथ`};
+  }
+  return {badge:'', text:`${slInfo} → SL अनुकूल है`};
+}
+function planetNL(pShort){
+  const p = lastResults.allBodies.find(x=>x.short===pShort);
+  return p ? p.nl : null;
+}
+function vItem(label, badgeCls, badgeTxt, desc){
+  return `<div class="vitem"><div class="vhead"><span>${label}</span><span class="badge ${badgeCls}">${badgeTxt}</span></div><div class="vdesc">${desc}</div></div>`;
+}
+function promiseVerdict(csl, pos, neg, cslName){
+  const sig = sigHouses(csl);
+  const posHit = pos.filter(h=>sig.has(h));
+  const negHit = neg.filter(h=>sig.has(h));
+  const slA = getSlAddon(csl, neg);
+  if(negHit.length>=2) return vItem('वादा','b-red','❌ बाधा'+slA.badge,`${cslName} ${PLANET_HINDI[csl]} है → ${negHit.join(', ')} भाव signify करता है (नकारात्मक भाव) → इस क्षेत्र में बाधा की संभावना${slA.text}`);
+  if(posHit.length===pos.length) return vItem('वादा','b-green','✅ प्रबल'+slA.badge,`${cslName} ${PLANET_HINDI[csl]} है → ${pos.join(', ')} सभी मुख्य भाव signify करता है → प्रबल योग${slA.text}`);
+  if(posHit.length>=Math.ceil(pos.length/2)) return vItem('वादा','b-yellow','⚠️ मध्यम'+slA.badge,`${cslName} ${PLANET_HINDI[csl]} है → ${posHit.join(', ')} भाव signify करता है → मध्यम संभावना${slA.text}`);
+  return vItem('वादा','b-red','❌ कमजोर'+slA.badge,`${cslName} ${PLANET_HINDI[csl]} है → मुख्य भाव signify नहीं करता → इस क्षेत्र के योग कमजोर${slA.text}`);
+}
+
+// Ribbon: 2 अलग ribbons - CSL (RL/NL/SL) पहले, फिर significators
+const RIBBON_HOUSES = {
+  vivah: {label:'विवाह', houses:[[7,'विवाह'],[2,'कुटुंब'],[11,'लाभ']]},
+  vivah2: {label:'दूसरा विवाह', houses:[[9,'दूसरा विवाह'],[2,'धन'],[11,'लाभ']]},
+  santan: {label:'संतान', houses:[[5,'संतान'],[2,'धन'],[11,'लाभ']]},
+  career: {label:'करियर', houses:[[10,'करियर'],[6,'नौकरी'],[2,'धन'],[11,'लाभ']]},
+  dhan: {label:'धन', houses:[[2,'धन'],[6,'सेवा'],[11,'लाभ']]},
+  shiksha: {label:'शिक्षा', houses:[[9,'उच्च शिक्षा'],[4,'शिक्षा'],[11,'लाभ']]},
+  videsh: {label:'विदेश', houses:[[12,'विदेश'],[9,'लंबी यात्रा'],[3,'छोटी यात्रा']]},
+  swasthya: {label:'स्वास्थ्य', houses:[[6,'रोग'],[8,'आयु'],[12,'अस्पताल']]},
+  court: {label:'कोर्ट', houses:[[6,'विवाद'],[11,'जीत'],[12,'हानि']]},
+  vahan: {label:'वाहन', houses:[[4,'वाहन'],[11,'लाभ'],[12,'खर्च']]},
+};
+function sigNames(s){
+  if(!s || s==='-') return '—';
+  return s.split(',').map(x=>PLANET_HINDI[x.trim()]||x.trim()).join(', ');
+}
+function planetHouses(pShort){
+  const sig = sigHouses(pShort);
+  const arr = [...sig].sort((a,b)=>a-b);
+  return arr.length ? `(${arr.join(', ')})` : '(—)';
+}
+function buildRibbon(evKey){
+  const {hSig, allBodies} = lastResults;
+  const cfg = RIBBON_HOUSES[evKey];
+  if(!cfg) return '';
+  let h = '';
+  // Ribbon 2 (purple): CSL boxes FIRST with RL/NL/SL
+  h += `<div style="background:linear-gradient(135deg,#f3e5f5,#e1bee7);border:2px solid #7b1fa2;border-radius:10px;padding:12px;margin:10px 0">`;
+  h += `<h3 style="margin:0 0 10px;color:#4a148c">🟪 CSL विवरण — ${cfg.label} के लिए</h3>`;
+  h += `<div style="display:flex;gap:8px;flex-wrap:wrap">`;
+  for(const [hs, hname] of cfg.houses){
+    const csl = cslOf(hs);
+    const cslBody = allBodies.find(x=>x.short===csl);
+    const cslRL = cslBody ? cslBody.rl : null;
+    const cslNL = cslBody ? cslBody.nl : null;
+    const cslSL = cslBody ? cslBody.sl : null;
+    h += `<div style="background:#fff;border-radius:8px;padding:10px;flex:1;min-width:150px;text-align:center;border:2px solid #ce93d8">`;
+    h += `<div style="font-size:12px;color:#666">${hs}वें का CSL</div>`;
+    h += `<div style="font-size:20px;font-weight:bold;color:#4a148c">${PLANET_HINDI[csl]||csl} <span style="font-size:13px;color:#666;font-weight:normal">${planetHouses(csl)}</span></div>`;
+    h += `<div style="font-size:13px;color:#333;margin-top:6px;line-height:1.8;text-align:left">`;
+    h += `<b style="color:#4a148c">RL:</b> ${cslRL?(PLANET_HINDI[cslRL]||cslRL):'—'} <span style="color:#666;font-size:12px">${cslRL?planetHouses(cslRL):''}</span><br>`;
+    h += `<b style="color:#4a148c">NL:</b> ${cslNL?(PLANET_HINDI[cslNL]||cslNL):'—'} <span style="color:#666;font-size:12px">${cslNL?planetHouses(cslNL):''}</span><br>`;
+    h += `<b style="color:#4a148c">SL:</b> ${cslSL?(PLANET_HINDI[cslSL]||cslSL):'—'} <span style="color:#666;font-size:12px">${cslSL?planetHouses(cslSL):''}</span>`;
+    h += `</div></div>`;
+  }
+  h += `</div></div>`;
+  // Ribbon 1 (blue): significators BELOW
+  h += `<div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:2px solid #1976d2;border-radius:10px;padding:12px;margin:10px 0">`;
+  h += `<h3 style="margin:0 0 10px;color:#0d47a1">🟦 भाव सिग्निफिकेटर्स — ${cfg.label} के लिए</h3>`;
+  for(const [hs, hname] of cfg.houses){
+    const sig = hSig.find(x=>x.h===hs);
+    h += `<div style="background:#fff;border-radius:8px;padding:8px;margin:8px 0">`;
+    h += `<b style="font-size:14px">${hs}वां भाव (${hname})</b>`;
+    if(sig){
+      h += `<div style="font-size:13px;margin:4px 0">`;
+      h += `<span style="display:inline-block;min-width:24px;font-weight:bold;color:#fff;border-radius:4px;text-align:center;padding:1px 6px;margin-right:4px;font-size:12px;background:#2e7d32">A</span> ${sigNames(sig.l1)} `;
+      h += `<span style="display:inline-block;min-width:24px;font-weight:bold;color:#fff;border-radius:4px;text-align:center;padding:1px 6px;margin-right:4px;font-size:12px;background:#558b2f">B</span> ${sigNames(sig.l2)} `;
+      h += `<span style="display:inline-block;min-width:24px;font-weight:bold;color:#fff;border-radius:4px;text-align:center;padding:1px 6px;margin-right:4px;font-size:12px;background:#f9a825">C</span> ${sigNames(sig.l3)} `;
+      h += `<span style="display:inline-block;min-width:24px;font-weight:bold;color:#fff;border-radius:4px;text-align:center;padding:1px 6px;margin-right:4px;font-size:12px;background:#e65100">D</span> ${sigNames(sig.l4)}`;
+      h += `</div>`;
+    }
+    h += `</div>`;
+  }
+  h += `</div>`;
+  return h;
+}
+function buildVerdicts(){
+  const V = {};
+  // ===== विवाह =====
+  let csl7 = cslOf(7), sig7 = sigHouses(csl7);
+  let hv = '';
+  hv += promiseVerdict(csl7, [2,7,11], [1,6,8,10,12], '7th CSL').replace('वादा','विवाह का वादा');
+  // देरी
+  let delayReason = [], delay=false;
+  if(csl7==='Sa'){ delay=true; delayReason.push('7th CSL स्वयं शनि है'); }
+  if(planetNL(csl7)==='Sa'){ delay=true; delayReason.push(`${PLANET_HINDI[csl7]} शनि के नक्षत्र में है`); }
+  if(sig7.has(8)){ delay=true; delayReason.push('8वां भाव signify करता है'); }
+  if(sig7.has(12)){ delay=true; delayReason.push('12वां भाव signify करता है (विरक्ति/दूरी)'); }
+  if([1,6,10].some(h=>sig7.has(h))){ delay=true; delayReason.push('1, 6, 10 में से कोई भाव signify करता है'); }
+  hv += vItem('विवाह में देरी', delay?'b-yellow':'b-green', delay?'⚠️ देरी संभव':'✅ सामान्य', (delayReason.length?delayReason.join('; ') + ' → विवाह में विलंब की संभावना':`7th CSL ${PLANET_HINDI[csl7]} है → शनि या 8वें भाव से कोई संबंध नहीं → विवाह समय पर होने की संभावना`) + getSlStringFor(csl7));
+  // जीवनसाथी प्रकृति
+  hv += vItem('जीवनसाथी की प्रकृति','b-blue',PLANET_NATURE[csl7],`7th CSL ${PLANET_HINDI[csl7]} है → ${PLANET_HINDI[csl7]} ग्रह की प्रकृति के अनुसार जीवनसाथी ${PLANET_NATURE[csl7]} स्वभाव का होगा`);
+  // अलगाव (8वां + 12वां भाव भी)
+  const sepHit = [1,6,10].filter(h=>sig7.has(h));
+  const sep8 = sig7.has(8);
+  const csl11s = cslOf(11);
+  const sig11s = sigHouses(csl11s);
+  const sep12 = sig7.has(12) || sig11s.has(12);
+  let sepExtra = [];
+  if(sep8) sepExtra.push('8वां (तनाव)');
+  if(sep12) sepExtra.push('12वां');
+  const sepExt = sepExtra.length ? ` + ${sepExtra.join(', ')}` : '';
+  const sepScore = sepHit.length + (sep8?1:0) + (sep12?1:0);
+  let sV, sC, sD;
+  if(sepScore>=3){ sV='🔴 उच्च'; sC='b-red'; sD=`7th CSL ${PLANET_HINDI[csl7]} है → ${sepHit.join(', ')} भाव signify करता है${sepExt} → अलगाव/तलाक का प्रबल योग`; }
+  else if(sepHit.length>=2){ sV='🔴 उच्च'; sC='b-red'; sD=`7th CSL ${PLANET_HINDI[csl7]} है → ${sepHit.join(', ')} भाव signify करता है${sepExt} → अलगाव/तलाक का प्रबल योग`; }
+  else if(sepScore>=1){ sV='🟡 मध्यम'; sC='b-yellow'; sD=`7th CSL ${PLANET_HINDI[csl7]} है → ${sepHit.join(', ')||'मुख्य भाव नहीं'}${sepExt?sepExt+' भाव signify करता है':''} → मतभेद/तनाव संभव`; }
+  else { sV='🟢 कम'; sC='b-green'; sD=`7th CSL ${PLANET_HINDI[csl7]} है → 1, 6, 10 में से 2+ भाव signify नहीं करता → विवाह स्थिर रहने की संभावना`; }
+  hv += vItem('अलगाव का खतरा', sC, sV, sD + getSlStringFor(csl7));
+  // Love vs Arranged (deep connection)
+  let csl5 = cslOf(5), sig5 = sigHouses(csl5);
+  const love5 = [7,11].some(h=>sig5.has(h));
+  const love7 = sig7.has(5);
+  const p7 = lastResults.allBodies.find(x=>x.short===csl7);
+  const p5 = lastResults.allBodies.find(x=>x.short===csl5);
+  const directC = (csl7===csl5) || (p7&&p7.nl===csl5) || (p5&&p5.nl===csl7);
+  const shNL = p7&&p5&&p7.nl===p5.nl;
+  const parvNL = (p7&&p5&&p7.nl===csl5&&p5.nl===csl7);
+  const parvSL = (p7&&p5&&p7.sl===csl5&&p5.sl===csl7);
+  const parv = parvNL || parvSL;
+  const deepC = directC || shNL || parv;
+  let lV, lD;
+  const cTxtFull = parvNL?` दोनों के बीच नक्षत्र परिवर्तन भी है`:parvSL?` दोनों के बीच उप-नक्षत्र परिवर्तन भी है`:shNL?` दोनों का नक्षत्र स्वामी ${PLANET_HINDI[p7.nl]} एक ही है`:directC?` दोनों के बीच सीधा संबंध है (एक का NL दूसरा है)`:'';
+  if((love5&&love7)||(deepC&&love5)){ lV='💕 Love'; lD=`5th CSL ${PLANET_HINDI[csl5]} है → 7, 11 भाव signify करता है; 7th CSL ${PLANET_HINDI[csl7]} है → 5वां भाव signify करता है${cTxtFull?'।'+cTxtFull:''} → प्रेम विवाह की प्रबल संभावना`; }
+  else if(!love5&&!love7&&!deepC){ lV='🏠 Arranged'; lD=`5th CSL ${PLANET_HINDI[csl5]} है → 7, 11 भाव signify नहीं करता; 7th CSL ${PLANET_HINDI[csl7]} है → 5वां भाव signify नहीं करता; दोनों के बीच कोई गहरा संबंध नहीं → व्यवस्थित विवाह की संभावना`; }
+  else { lV='💛 Mixed'; lD=`5th CSL ${PLANET_HINDI[csl5]} है → ${love5?'7, 11 भाव signify करता है':'7, 11 भाव signify नहीं करता'}; 7th CSL ${PLANET_HINDI[csl7]} है → ${love7?'5वां भाव signify करता है':'5वां भाव signify नहीं करता'}${cTxtFull?'।'+cTxtFull:''} → Love-Arranged दोनों की संभावना`; }
+  hv += vItem('विवाह का प्रकार','b-blue', lV, lD);
+  hv += '<div class="vsec">💒💒 दूसरा विवाह</div>';
+  hv += buildRibbon('vivah2');
+  const qHit = [1,6,8,10].filter(h=>sig7.has(h));
+  hv += vItem('पहले विवाह की गुणवत्ता', qHit.length>=2?'b-red':(qHit.length===1?'b-yellow':'b-green'), qHit.length>=2?'🔴 खराब':(qHit.length===1?'🟡 मध्यम':'🟢 अच्छी'), qHit.length?`7th CSL ${PLANET_HINDI[csl7]} है → ${qHit.join(', ')} भाव signify करता है (अलगाव/क्लेश योग) → पहले विवाह में कठिनाई`:`7th CSL ${PLANET_HINDI[csl7]} है → अलगाव के भाव (1, 6, 8, 10) signify नहीं करता → पहला विवाह स्थिर रहने की संभावना`);
+  let csl9 = cslOf(9);
+  // Dual sign/planet check for 2nd marriage
+  const csl9P = lastResults.allBodies.find(x=>x.short===csl9);
+  const csl9R = csl9P ? csl9P.rashi : -1;
+  const isDualR = [2,5,8,11].includes(csl9R); // Mithun,Kanya,Dhanu,Meen
+  const isDualP = (csl9==='Me'||csl9==='Ju');
+  const inMeNak = (planetNL(csl9)==='Me');
+  const dualOk = isDualR||isDualP||inMeNak;
+  // 2nd CSL support
+  const csl2sm = cslOf(2);
+  const sig2sm = sigHouses(csl2sm);
+  const sup2 = [2,9,11].some(h=>sig2sm.has(h));
+  // Correct houses: pos=[2,9,11], neg=[1,8,10]
+  const sig9 = sigHouses(csl9);
+  const smPos = [2,9,11].filter(h=>sig9.has(h));
+  const smNeg = [1,8,10].filter(h=>sig9.has(h));
+  let smV, smC, smD;
+  const dualTxt = dualOk?'द्विस्वभाव ✓':'द्विस्वभाव ✗';
+  const sup2Txt = sup2?'2nd CSL समर्थन ✓':'2nd CSL ✗';
+  if(smNeg.length>=2){ smV='❌ बाधा'; smC='b-red'; smD=`9th CSL ${PLANET_HINDI[csl9]} है → ${smNeg.join(', ')} भाव signify करता है (नकारात्मक); ${dualTxt} → दूसरे विवाह में बाधा`; }
+  else if(smPos.length===3&&dualOk){ smV='✅ प्रबल'; smC='b-green'; smD=`9th CSL ${PLANET_HINDI[csl9]} है → 2, 9, 11 भाव signify करता है; ${dualTxt}; ${sup2Txt} → दूसरे विवाह का प्रबल योग`; }
+  else if(smPos.length>=2){ smV='⚠️ मध्यम'; smC='b-yellow'; smD=`9th CSL ${PLANET_HINDI[csl9]} है → ${smPos.join(', ')} भाव signify करता है; ${dualTxt} → दूसरे विवाह की मध्यम संभावना`; }
+  else { smV='❌ कमजोर'; smC='b-red'; smD=`9th CSL ${PLANET_HINDI[csl9]} है → 2, 9, 11 में से ${smPos.length} भाव signify करता है; ${dualTxt} → दूसरे विवाह के योग कमजोर`; }
+  hv += vItem('दूसरे विवाह का वादा', smC, smV, smD + getSlStringFor(csl9));
+  hv += vItem('दूसरे जीवनसाथी की प्रकृति','b-blue',PLANET_NATURE[csl9],`9th CSL ${PLANET_HINDI[csl9]} है → ${PLANET_HINDI[csl9]} ग्रह की प्रकृति के अनुसार दूसरा जीवनसाथी ${PLANET_NATURE[csl9]} स्वभाव का होगा`);
+  V.vivah = buildRibbon('vivah') + hv;
+
+  // ===== संतान =====
+  let csl5s = cslOf(5), sig5s = sigHouses(csl5s);
+  let hs = '';
+  hs += promiseVerdict(csl5s, [2,5,11], [1,4,10], '5th CSL').replace('वादा','संतान का वादा');
+  const ivfHit = [4,8,12].filter(h=>sig5s.has(h));
+  const hasPos = [2,5,11].some(h=>sig5s.has(h));
+  hs += vItem('IVF / दत्तक ग्रहण', (ivfHit.length>=2&&hasPos)?'b-yellow':'b-green', (ivfHit.length>=2&&hasPos)?'⚠️ संभावना':'✅ सामान्य', (ivfHit.length?`5th CSL ${PLANET_HINDI[csl5s]} है → ${ivfHit.join(', ')} भाव signify करता है → IVF/दत्तक ग्रहण की संभावना`:`5th CSL ${PLANET_HINDI[csl5s]} है → 4, 8, 12 में से 2+ भाव signify नहीं करता → सामान्य संतान योग`) + getSlStringFor(csl5s));
+  V.santan = buildRibbon('santan') + hs;
+
+  // ===== करियर =====
+  let hc = '';
+  // 1] करियर का वादा A/B/C
+  hc += '<div class="vsec">1] करियर का वादा</div>';
+  let csl10 = cslOf(10);
+  hc += promiseVerdict(csl10, [2,6,10,11], [5,8,12], '10th CSL').replace('वादा','A] समग्र करियर');
+  let csl6 = cslOf(6);
+  hc += promiseVerdict(csl6, [2,6,10,11], [1,5,9,12], '6th CSL').replace('वादा','B] नौकरी का वादा');
+  hc += promiseVerdict(csl7, [2,7,10,11], [5,8,12], '7th CSL').replace('वादा','C] व्यापार का वादा');
+  // 2] पेशे की प्रकृति A/B/C
+  hc += '<div class="vsec">2] पेशे की प्रकृति</div>';
+  hc += vItem('A] समग्र पेशा','b-blue',PROF_NATURE[csl10],`10th CSL ${PLANET_HINDI[csl10]} है → ${PLANET_HINDI[csl10]} ग्रह के अनुसार ${PROF_NATURE[csl10]} क्षेत्र में सफलता`);
+  hc += vItem('B] नौकरी की प्रकृति','b-blue',PROF_NATURE[csl6],`6th CSL ${PLANET_HINDI[csl6]} है → ${PLANET_HINDI[csl6]} ग्रह के अनुसार ${PROF_NATURE[csl6]} क्षेत्र की नौकरी उपयुक्त`);
+  hc += vItem('C] व्यापार की प्रकृति','b-blue',PROF_NATURE[csl7],`7th CSL ${PLANET_HINDI[csl7]} है → ${PLANET_HINDI[csl7]} ग्रह के अनुसार ${PROF_NATURE[csl7]} क्षेत्र का व्यापार उपयुक्त`);
+  // 4] सरकारी नौकरी A/B/C
+  hc += '<div class="vsec">4] सरकारी नौकरी</div>';
+  const sunP = lastResults.allBodies.find(x=>x.short==='Su');
+  const monP = lastResults.allBodies.find(x=>x.short==='Mo');
+  const revLink = (sunP&&(sunP.nl===csl10||sunP.rl===csl10)) || (monP&&(monP.nl===csl10||monP.rl===csl10));
+  const sunLink10 = (csl10==='Su'||planetNL(csl10)==='Su'||planetNL(csl10)==='Mo'||revLink);
+  const sig10 = sigHouses(csl10);
+  const govt10 = sunLink10 && [2,6,10,11].some(h=>sig10.has(h));
+  let g10d;
+  if(csl10==='Su') g10d=`10th CSL स्वयं सूर्य है`;
+  else if(revLink) g10d=`सूर्य/चंद्र का नक्षत्र/राशि स्वामी ${PLANET_HINDI[csl10]} है (रिवर्स संबंध ✓)`;
+  else if(planetNL(csl10)==='Su'||planetNL(csl10)==='Mo') g10d=`10th CSL ${PLANET_HINDI[csl10]} है → इसका नक्षत्र स्वामी सूर्य/चंद्र है`;
+  else g10d=`10th CSL ${PLANET_HINDI[csl10]} है → सूर्य/चंद्र से कोई संबंध नहीं`;
+  hc += vItem('A] 10th CSL', govt10?'b-green':'b-yellow', govt10?'✅ सूर्य से जुड़ा':'⚠️ आंशिक', g10d + (govt10?' → सरकारी नौकरी का योग':' → पूर्ण सरकारी योग नहीं') + getSlStringFor(csl10));
+  const sunLink6 = (csl6==='Su'||csl6==='Sa'||planetNL(csl6)==='Su'||planetNL(csl6)==='Sa');
+  const sig6 = sigHouses(csl6);
+  const govt6 = sunLink6 && [2,6,10,11].some(h=>sig6.has(h));
+  hc += vItem('B] 6th CSL', govt6?'b-green':'b-yellow', govt6?'✅ अनुकूल':'⚠️ आंशिक', (sunLink6?`6th CSL ${PLANET_HINDI[csl6]} है → सूर्य/शनि से संबंध रखता है → सेवा/नौकरी में सफलता`:`6th CSL ${PLANET_HINDI[csl6]} है → सूर्य/शनि से कोई संबंध नहीं → सरकारी नौकरी में बाधा`) + getSlStringFor(csl6));
+  let govtFinal, govtCls, govtDesc;
+  // Mars/Jupiter influence (police/army/education/judiciary) → state govt
+  const mjInf = ['Ma','Ju'].includes(csl10) || ['Ma','Ju'].includes(csl6) || ['Ma','Ju'].includes(planetNL(csl10)) || ['Ma','Ju'].includes(planetNL(csl6));
+  // Rahu/Ketu/Mercury → private sector
+  const rkmInf = ['Ra','Ke','Me'].includes(csl10) || ['Ra','Ke','Me'].includes(csl6) || ['Ra','Ke','Me'].includes(planetNL(csl10)) || ['Ra','Ke','Me'].includes(planetNL(csl6));
+  const mjTxt = mjInf ? ` मंगल/गुरु का प्रभाव है (${PLANET_HINDI[['Ma','Ju'].includes(csl10)?csl10:['Ma','Ju'].includes(csl6)?csl6:['Ma','Ju'].includes(planetNL(csl10))?planetNL(csl10):planetNL(csl6)]}) → पुलिस/सेना/शिक्षा/न्याय क्षेत्र` : '';
+  const rkmTxt = rkmInf ? ` राहु/केतु/बुध का प्रभाव है → प्राइवेट/MNC में सफलता` : '';
+  if(govt10&&govt6){ govtFinal='✅ उच्च सरकारी'; govtCls='b-green'; govtDesc='10th और 6th दोनों CSL सूर्य से जुड़े हैं + 2, 6, 10, 11 भाव signify करते हैं → उच्च सरकारी नौकरी का प्रबल योग'; }
+  else if(govt10||govt6){ govtFinal='🏛️ PSU / राज्य सरकार'; govtCls='b-blue'; govtDesc=`सूर्य का आंशिक प्रभाव है${mjTxt} → राज्य सरकार या PSU में नौकरी की संभावना`; }
+  else if(mjInf){ govtFinal='🏛️ PSU / राज्य सरकार'; govtCls='b-blue'; govtDesc=`सूर्य से सीधा संबंध नहीं, लेकिन${mjTxt} → राज्य सरकार/PSU की संभावना`; }
+  else { govtFinal='🏢 Private / MNC'; govtCls='b-gray'; govtDesc=`10th और 6th CSL का सूर्य/चंद्र से कोई संबंध नहीं${rkmTxt||' → प्राइवेट सेक्टर/MNC में सफलता की संभावना'}`; }
+  hc += vItem('C] Final', govtCls, govtFinal, govtDesc);
+  hc += '<div class="note">3] पदोन्नति का समय — Dasha system आने पर add होगा</div>';
+
+  // ===== धन (Wealth) — करियर/धन tab में =====
+  V.career = buildRibbon('career') + hc;
+
+  // ===== धन (Wealth) =====
+  let hw = '';
+  hw += '<div class="vsec">💰 धन और संपत्ति</div>';
+  let csl2 = cslOf(2);
+  hw += promiseVerdict(csl2, [2,6,11], [5,8,12], '2nd CSL').replace('वादा','A] धन का वादा');
+  // Share Market: 5th + 8th CSL
+  let csl8 = cslOf(8);
+  let sig8 = sigHouses(csl8);
+  const sm5 = [2,11].filter(h=>sig5.has(h));
+  const sm8 = [2,11].filter(h=>sig8.has(h));
+  const rahuInf = (csl5==='Ra'||csl8==='Ra'||planetNL(csl5)==='Ra'||planetNL(csl8)==='Ra');
+  let smTxt, smCls, smDesc;
+  if((sm5.length>=1||sm8.length>=1)){
+    smTxt = rahuInf?'✅ प्रबल (राहु)':'✅ संभावना'; smCls = 'b-green';
+    smDesc = `5th CSL ${PLANET_HINDI[csl5]} है → ${sm5.join(', ')||'2, 11 नहीं'}; 8th CSL ${PLANET_HINDI[csl8]} है → ${sm8.join(', ')||'2, 11 नहीं'}${rahuInf?'। राहु का प्रभाव है → बड़ा लाभ संभव':'। राहु का विशेष प्रभाव नहीं'}`;
+  } else { smTxt='❌ कमजोर'; smCls='b-red'; smDesc=`5th CSL ${PLANET_HINDI[csl5]} और 8th CSL ${PLANET_HINDI[csl8]} → 2, 11 भाव signify नहीं करते → शेयर/सट्टे से हानि की संभावना, बचें`; }
+  hw += vItem('B] शेयर/सट्टा', smCls, smTxt, smDesc + getSlStringFor(csl5));
+  // Property: 4th CSL
+  let csl4 = cslOf(4), sig4 = sigHouses(csl4);
+  const propPos = [4,11,12].filter(h=>sig4.has(h));
+  const propNeg = [3,5,10].filter(h=>sig4.has(h));
+  const landInf = (csl4==='Ma'||csl4==='Sa'||planetNL(csl4)==='Ma'||planetNL(csl4)==='Sa');
+  let prTxt, prCls, prDesc;
+  if(propNeg.length>=2){ prTxt='❌ बाधा'; prCls='b-red'; prDesc=`4th CSL ${PLANET_HINDI[csl4]} है → ${propNeg.join(', ')} भाव signify करता है (नकारात्मक) → संपत्ति में बाधा/विवाद`; }
+  else if(propPos.length>=2){ prTxt='✅ प्रबल'; prCls='b-green'; prDesc=`4th CSL ${PLANET_HINDI[csl4]} है → ${propPos.join(', ')} भाव signify करता है${landInf?'। मंगल/शनि का प्रभाव है → जमीन/निर्माण से लाभ':''} → मकान/संपत्ति का प्रबल योग`; }
+  else if(propPos.length>=1){ prTxt='⚠️ मध्यम'; prCls='b-yellow'; prDesc=`4th CSL ${PLANET_HINDI[csl4]} है → ${propPos.join(', ')} भाव signify करता है → संपत्ति की मध्यम संभावना`; }
+  else { prTxt='❌ कमजोर'; prCls='b-red'; prDesc=`4th CSL ${PLANET_HINDI[csl4]} है → 4, 11, 12 में से कोई भाव signify नहीं करता → संपत्ति के योग कमजोर`; }
+  hw += vItem('C] मकान/संपत्ति', prCls, prTxt, prDesc + getSlStringFor(csl4));
+  V.dhan = buildRibbon('dhan') + hw;
+
+  // ===== शिक्षा/विदेश =====
+  let he = '';
+  he += '<div class="vsec">📚 शिक्षा</div>';
+  let csl9e = cslOf(9), sig9e = sigHouses(csl9e);
+  const eduPos = [9,11].filter(h=>sig9e.has(h));
+  const eduNeg = [3,8].filter(h=>sig9e.has(h));
+  const wisInf = (csl9e==='Ju'||csl9e==='Me'||planetNL(csl9e)==='Ju'||planetNL(csl9e)==='Me');
+  let edTxt, edCls, edDesc;
+  if(eduNeg.length>=1&&eduPos.length===0){ edTxt='❌ बाधा'; edCls='b-red'; edDesc=`9th CSL ${PLANET_HINDI[csl9e]} है → ${eduNeg.join(', ')} भाव signify करता है (रुकावट) → उच्च शिक्षा में बाधा`; }
+  else if(eduPos.length===2){ edTxt='✅ प्रबल'; edCls='b-green'; edDesc=`9th CSL ${PLANET_HINDI[csl9e]} है → 9, 11 भाव signify करता है${wisInf?'। गुरु/बुध का प्रभाव है → ज्ञान/विद्या में सफलता':''} → उच्च शिक्षा का प्रबल योग`; }
+  else if(eduPos.length===1){ edTxt='⚠️ मध्यम'; edCls='b-yellow'; edDesc=`9th CSL ${PLANET_HINDI[csl9e]} है → ${eduPos.join(', ')} भाव signify करता है → उच्च शिक्षा की मध्यम संभावना`; }
+  else { edTxt='❌ कमजोर'; edCls='b-red'; edDesc=`9th CSL ${PLANET_HINDI[csl9e]} है → 9, 11 में से कोई भाव signify नहीं करता → उच्च शिक्षा के योग कमजोर`; }
+  he += vItem('A] उच्च शिक्षा', edCls, edTxt, edDesc + getSlStringFor(csl9e));
+  // Competitive: 4th or 9th CSL → 6,11
+  const comp4 = [6,11].filter(h=>sig4.has(h));
+  const comp9 = [6,11].filter(h=>sig9e.has(h));
+  let cpTxt, cpCls, cpDesc;
+  if(comp4.length===2||comp9.length===2){ cpTxt='✅ प्रबल'; cpCls='b-green'; cpDesc=`${comp4.length===2?'4th':'9th'} CSL ${PLANET_HINDI[comp4.length===2?csl4:csl9e]} है → 6, 11 भाव signify करता है (प्रतियोगिता + सफलता) → प्रतियोगी परीक्षा में सफलता का प्रबल योग`; }
+  else if(comp4.length>=1||comp9.length>=1){ cpTxt='⚠️ मध्यम'; cpCls='b-yellow'; cpDesc=`4th CSL ${PLANET_HINDI[csl4]} है → ${comp4.join(', ')||'6, 11 नहीं'}; 9th CSL ${PLANET_HINDI[csl9e]} है → ${comp9.join(', ')||'6, 11 नहीं'} → आंशिक योग, मेहनत से सफलता`; }
+  else { cpTxt='❌ कमजोर'; cpCls='b-red'; cpDesc=`4th CSL ${PLANET_HINDI[csl4]} और 9th CSL ${PLANET_HINDI[csl9e]} → 6, 11 भाव signify नहीं करते → प्रतियोगी परीक्षा में कठिनाई`; }
+  he += vItem('B] प्रतियोगी परीक्षा', cpCls, cpTxt, cpDesc + getSlStringFor(csl9e));
+
+  V.shiksha = buildRibbon('shiksha') + he;
+
+  // ===== विदेश (Foreign) =====
+  let hf = '';
+  hf += '<div class="vsec">✈️ विदेश यात्रा और निवास</div>';
+  let csl3 = cslOf(3), sig3 = sigHouses(csl3);
+  const tr3 = [3,9,12].filter(h=>sig3.has(h));
+  const tr9 = [3,9,12].filter(h=>sig9e.has(h));
+  let ftTxt, ftCls, ftDesc;
+  const trAll = [...new Set([...tr3,...tr9])].join(', ');
+  if(tr3.length>=2||tr9.length>=2){ ftTxt='✅ प्रबल'; ftCls='b-green'; ftDesc=`3rd CSL ${PLANET_HINDI[csl3]} है → ${tr3.join(', ')||'मुख्य भाव नहीं'}; 9th CSL ${PLANET_HINDI[csl9e]} है → ${tr9.join(', ')||'मुख्य भाव नहीं'} → घर से दूर लंबी यात्रा/विदेश का प्रबल योग`; }
+  else if(tr3.length>=1||tr9.length>=1){ ftTxt='⚠️ मध्यम'; ftCls='b-yellow'; ftDesc=`3rd CSL ${PLANET_HINDI[csl3]} है → ${tr3.join(', ')||'3, 9, 12 नहीं'}; 9th CSL ${PLANET_HINDI[csl9e]} है → ${tr9.join(', ')||'3, 9, 12 नहीं'} → विदेश यात्रा की मध्यम संभावना`; }
+  else { ftTxt='❌ कमजोर'; ftCls='b-red'; ftDesc=`3rd CSL ${PLANET_HINDI[csl3]} और 9th CSL ${PLANET_HINDI[csl9e]} → 3, 9, 12 भाव signify नहीं करते → विदेश यात्रा के योग कमजोर`; }
+  hf += vItem('A] विदेश यात्रा', ftCls, ftTxt, ftDesc + getSlStringFor(csl3));
+  // Settlement: 12th CSL → 3,9,12 AND 4th CSL → 3,12 + Rahu
+  let csl12 = cslOf(12), sig12 = sigHouses(csl12);
+  const st12 = [3,9,12].filter(h=>sig12.has(h));
+  const st4 = [3,12].filter(h=>sig4.has(h));
+  const rahuSet = (csl12==='Ra'||csl4==='Ra'||planetNL(csl12)==='Ra');
+  let psTxt, psCls, psDesc;
+  if(st12.length>=2&&st4.length>=1){ psTxt=rahuSet?'✅ प्रबल (राहु)':'✅ संभावना'; psCls='b-green'; psDesc=`12th CSL ${PLANET_HINDI[csl12]} है → ${st12.join(', ')} भाव signify करता है; 4th CSL ${PLANET_HINDI[csl4]} है → ${st4.join(', ')} भाव signify करता है${rahuSet?'। राहु का प्रभाव है → विदेश में बसने का प्रबल योग':' → विदेश में स्थायी निवास की संभावना'}`; }
+  else { psTxt='❌ कमजोर'; psCls='b-red'; psDesc=`12th CSL ${PLANET_HINDI[csl12]} है → ${st12.join(', ')||'मुख्य भाव नहीं'}; 4th CSL ${PLANET_HINDI[csl4]} है → ${st4.join(', ')||'मुख्य भाव नहीं'} → विदेश में स्थायी निवास के योग कमजोर`; }
+  hf += vItem('B] विदेश में PR/निवास', psCls, psTxt, psDesc + getSlStringFor(csl12));
+  V.videsh = buildRibbon('videsh') + hf;
+
+  // ===== स्वास्थ्य/विवाद =====
+  let hh = '';
+  hh += '<div class="vsec">🏥 स्वास्थ्य</div>';
+  const disPos = [6,8,12].filter(h=>sig6.has(h));
+  const recPos = [5,11].filter(h=>sig6.has(h));
+  let dsTxt, dsCls, dsDesc;
+  if(disPos.length>=2){ dsTxt='⚠️ रोग योग'; dsCls='b-yellow'; dsDesc=`6th CSL ${PLANET_HINDI[csl6]} है → ${disPos.join(', ')} भाव signify करता है → रोग/बीमारी की संभावना, स्वास्थ्य का ध्यान रखें`; }
+  else if(recPos.length>=1){ dsTxt='✅ रोगमुक्ति'; dsCls='b-green'; dsDesc=`6th CSL ${PLANET_HINDI[csl6]} है → ${recPos.join(', ')} भाव signify करता है (5वां = 6ठे का 12वां → रोग का अंत) → रोग से मुक्ति की संभावना`; }
+  else { dsTxt='✅ सामान्य'; dsCls='b-green'; dsDesc=`6th CSL ${PLANET_HINDI[csl6]} है → 6, 8, 12 में से 2 से कम भाव signify करता है → स्वास्थ्य सामान्य रहने की संभावना`; }
+  hh += vItem('A] बीमारी का वादा', dsCls, dsTxt, dsDesc + getSlStringFor(csl6));
+  // Surgery: 8th CSL → 12 + Mars/Ketu
+  const sur12 = sig8.has(12);
+  const surInf = (csl8==='Ma'||csl8==='Ke'||planetNL(csl8)==='Ma'||planetNL(csl8)==='Ke');
+  hh += vItem('B] सर्जरी/अस्पताल', (sur12?'b-yellow':'b-green'), sur12?'⚠️ संभावना':'✅ सामान्य', (sur12?`8th CSL ${PLANET_HINDI[csl8]} है → 12वां भाव signify करता है${surInf?'। मंगल/केतु का प्रभाव है → सर्जरी/ऑपरेशन की संभावना':''}`:`8th CSL ${PLANET_HINDI[csl8]} है → 12वां भाव signify नहीं करता → सर्जरी के योग नहीं`) + getSlStringFor(csl8));
+
+  V.swasthya = buildRibbon('swasthya') + hh;
+
+  // ===== कोर्ट (Court) =====
+  let hc2 = '';
+  hc2 += '<div class="vsec">⚖️ कोर्ट केस</div>';
+  const litPos = [6,8,12].filter(h=>sig6.has(h));
+  hc2 += vItem('A] मुकदमे का योग', litPos.length>=2?'b-yellow':'b-green', litPos.length>=2?'⚠️ योग है':'✅ नहीं', (litPos.length?`6th CSL ${PLANET_HINDI[csl6]} है → ${litPos.join(', ')} भाव signify करता है → कोर्ट-कचहरी/विवाद की संभावना`:`6th CSL ${PLANET_HINDI[csl6]} है → 6, 8, 12 में से 2+ भाव signify नहीं करता → मुकदमे के योग नहीं`) + getSlStringFor(csl6));
+  const winH = [1,6,11].filter(h=>sig6.has(h));
+  const lossH = [5,8,12].filter(h=>sig6.has(h));
+  let wlTxt, wlCls, wlDesc;
+  if(winH.length>=2){ wlTxt='✅ जीत'; wlCls='b-green'; wlDesc=`6th CSL ${PLANET_HINDI[csl6]} है → ${winH.join(', ')} भाव signify करता है (इच्छापूर्ति के भाव) → मुकदमे में जीत की संभावना`; }
+  else if(lossH.length>=2){ wlTxt='❌ हार'; wlCls='b-red'; wlDesc=`6th CSL ${PLANET_HINDI[csl6]} है → ${lossH.join(', ')} भाव signify करता है (प्रतिद्वंद्वी का लाभ) → मुकदमे में हार की संभावना`; }
+  else { wlTxt='⚖️ अनिश्चित'; wlCls='b-yellow'; wlDesc=`6th CSL ${PLANET_HINDI[csl6]} है → जीत (1, 6, 11) या हार (5, 8, 12) के स्पष्ट भाव signify नहीं करता → परिणाम अनिश्चित, दशा पर निर्भर`; }
+  hc2 += vItem('B] जीत/हार', wlCls, wlTxt, wlDesc + getSlStringFor(csl6));
+
+  V.court = buildRibbon('court') + hc2;
+
+  // ===== वाहन (Vehicle) =====
+  let hv3 = '';
+  hv3 += '<div class="vsec">🚗 वाहन</div>';
+  const vehPos = [4,11,12].filter(h=>sig4.has(h));
+  const venInf = (csl4==='Ve'||planetNL(csl4)==='Ve');
+  let vhTxt, vhCls, vhDesc;
+  if(vehPos.length>=2){ vhTxt='✅ प्रबल'; vhCls='b-green'; vhDesc=`4th CSL ${PLANET_HINDI[csl4]} है → ${vehPos.join(', ')} भाव signify करता है${venInf?'। शुक्र का प्रभाव है → वाहन सुख मिलेगा':''} → वाहन खरीदने का प्रबल योग`; }
+  else if(vehPos.length===1){ vhTxt='⚠️ मध्यम'; vhCls='b-yellow'; vhDesc=`4th CSL ${PLANET_HINDI[csl4]} है → ${vehPos.join(', ')} भाव signify करता है${venInf?'। शुक्र का प्रभाव भी है':''} → वाहन की मध्यम संभावना`; }
+  else { vhTxt='❌ कमजोर'; vhCls='b-red'; vhDesc=`4th CSL ${PLANET_HINDI[csl4]} है → 4, 11, 12 में से कोई भाव signify नहीं करता → वाहन खरीदने के योग कमजोर`; }
+  hv3 += vItem('A] वाहन खरीदना', vhCls, vhTxt, vhDesc + getSlStringFor(csl4));
+  const accH = [4,8,12].filter(h=>sig8.has(h));
+  const accInf = ['Ma','Sa','Ra'].includes(csl8)||['Ma','Sa','Ra'].includes(planetNL(csl8));
+  hv3 += vItem('B] दुर्घटना', accH.length>=2?'b-yellow':'b-green', accH.length>=2?'⚠️ सावधान':'✅ सामान्य', (accH.length?`8th CSL ${PLANET_HINDI[csl8]} है → ${accH.join(', ')} भाव signify करता है${accInf?'। मंगल/शनि/राहु का प्रभाव है → वाहन चलाते समय विशेष सावधानी रखें':''}`:`8th CSL ${PLANET_HINDI[csl8]} है → 4, 8, 12 में से 2+ भाव signify नहीं करता → दुर्घटना के विशेष योग नहीं`) + getSlStringFor(csl8));
+  V.vahan = buildRibbon('vahan') + hv3;
+
+  lastResults.verdicts = V;
+  return V;
+}
+
+// ===== ⏰ समय Tab (Timing) =====
+const EVENT_HOUSES = {
+  vivah: {label:'💒 विवाह', houses:[2,7,11], transit:['Ju','Sa'], ribbon:'vivah'},
+  career: {label:'💼 करियर', houses:[2,6,10,11], transit:['Ju','Sa'], ribbon:'career'},
+  santan: {label:'👶 संतान', houses:[2,5,11], transit:['Ju','Su'], ribbon:'santan'},
+  vivah2: {label:'💒💒 दूसरा विवाह', houses:[2,9,11], transit:['Ju','Sa'], ribbon:'vivah2'},
+};
+let activeTimingEvent = 'vivah';
+let timingSelDate = null; // null = today
+let timingPeriodYrs = 7;
+
+function calcDashaTimeline(){
+  const {allBodies, jd} = lastResults;
+  const moon = allBodies.find(x=>x.short==='Mo');
+  const nakIdx = moon.nakIdx;
+  const nakLord = NAK_LORDS[nakIdx];
+  const nakStart = nakIdx * (360/27);
+  const traversed = (moon.sid - nakStart) / (360/27);
+  const balance = 1 - traversed;
+  const mdBalanceYears = VIM_YEARS[nakLord] * balance;
+  // MD start (before birth)
+  const mdStartJD = jd - (VIM_YEARS[nakLord] - mdBalanceYears) * 365.25;
+  const timeline = [];
+  let mdIdx = VIM_ORDER.indexOf(nakLord);
+  let mdStart = mdStartJD;
+  const endLimit = jd + 60*365.25;
+  let iter = 0;
+  while(mdStart < endLimit && iter < 12){
+    const mdLord = VIM_ORDER[mdIdx];
+    const mdTotal = VIM_YEARS[mdLord];
+    const mdEnd = mdStart + mdTotal * 365.25;
+    // ADs start from MD lord
+    const adStartIdx = VIM_ORDER.indexOf(mdLord);
+    let adCur = mdStart;
+    for(let i=0; i<9; i++){
+      const adLord = VIM_ORDER[(adStartIdx+i)%9];
+      const adYears = mdTotal * VIM_YEARS[adLord] / 120;
+      const adEnd = adCur + adYears * 365.25;
+      if(adEnd > jd - 365 && adCur < endLimit){
+        timeline.push({md:mdLord, ad:adLord, start:adCur, end:adEnd});
+      }
+      adCur = adEnd;
+    }
+    mdStart = mdEnd;
+    mdIdx = (mdIdx+1)%9;
+    iter++;
+  }
+  return timeline;
+}
+
+function jdToDate(jd){
+  // Convert Julian date to DD MMM YYYY
+  const z = Math.floor(jd + 0.5), f = (jd + 0.5) - z;
+  let a = z;
+  if(z >= 2299161){ const al = Math.floor((z-1867216.25)/36524.25); a = z + 1 + al - Math.floor(al/4); }
+  const b = a + 1524, c = Math.floor((b-122.1)/365.25), d = Math.floor(365.25*c), e = Math.floor((b-d)/30.6001);
+  const day = b - d - Math.floor(30.6001*e) + f;
+  const mon = e < 14 ? e-1 : e-13;
+  const yr = mon > 2 ? c-4716 : c-4715;
+  const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${Math.floor(day)} ${MN[mon-1]} ${yr}`;
+}
+
+function isQualified(planet, houses){
+  const sig = sigHouses(planet);
+  return houses.some(h=>sig.has(h));
+}
+
+function qualBadge(planet, houses){
+  return isQualified(planet, houses) ? '<span class="badge b-green">✓</span>' : '<span class="badge b-red">✗</span>';
+}
+function qualReason(planet, houses){
+  const sig = sigHouses(planet);
+  const hit = houses.filter(h=>sig.has(h));
+  if(hit.length) return `${PLANET_HINDI[planet]} → ${hit.join(',')} भाव signify करता है`;
+  return `${PLANET_HINDI[planet]} → ${houses.join(',')} में से कोई भाव signify नहीं करता`;
+}
+
+// Transit: planet sidereal rashi for a given JD
+function transitRashi(jd, pShort){
+  if(!swe) return -1;
+  const pmap = {Su:SEP.Sun, Mo:SEP.Moon, Ma:SEP.Mars, Me:SEP.Mercury, Ju:SEP.Jupiter, Ve:SEP.Venus, Sa:SEP.Saturn};
+  swe.setSiderealMode(SID_MODE_LAHIRI);
+  const lahiriAya = swe.getAyanamsa(jd);
+  const kpAya = lahiriAya - KP_AYA_OFFSET/60;
+  let sid;
+  if(pShort==='Ra'){ const pos = swe.calculatePosition(jd, SLP.MeanNode); sid = ((pos.longitude - kpAya)%360+360)%360; }
+  else { const pos = swe.calculatePosition(jd, pmap[pShort]); sid = ((pos.longitude - kpAya)%360+360)%360; }
+  return Math.floor(sid/30)%12;
+}
+
+function buildTiming(){
+  const {allBodies, ruling} = lastResults;
+  const lagnaRashi = RASHI_NAMES[allBodies[0].rashi];
+  const moonBody = allBodies.find(x=>x.short==='Mo');
+  const moonRashi = RASHI_NAMES[moonBody.rashi];
+  const baseDate = timingSelDate || new Date();
+  const baseJD = toJulian(baseDate.getFullYear(), baseDate.getMonth()+1, baseDate.getDate(), 12, 0, 0, '+05:30');
+  const today = baseDate;
+  const todayJD = baseJD;
+  const timeline = calcDashaTimeline();
+  // Current MD/AD
+  const cur = timeline.find(t=>todayJD>=t.start && todayJD<t.end);
+  let h = '';
+  // Snapshot
+  h += `<div class="card"><h3>📍 कुंडली Snapshot</h3><div class="row"><span class="pill">लग्न राशि: <b>${lagnaRashi}</b></span><span class="pill">चंद्र राशि: <b>${moonRashi}</b></span><span class="pill">तारीख: <input type="date" id="timingDate" value="${today.toISOString().slice(0,10)}"></span><span class="pill">अवधि: <select id="timingPeriod" style="padding:4px;border-radius:6px">${[1,3,5,7,10].map(y=>`<option value="${y}"${timingPeriodYrs===y?' selected':''}>${y} साल</option>`).join('')}</select></span></div>`;
+  // Event tabs
+  h += `<h3 style="margin-top:12px">🎯 Event चुनो</h3><div class="etabs" style="display:flex;gap:6px;flex-wrap:wrap">`;
+  for(const k of Object.keys(EVENT_HOUSES)){
+    const e = EVENT_HOUSES[k];
+    const act = activeTimingEvent===k;
+    h += `<button class="etab" data-tev="${k}" style="padding:6px 14px;border-radius:20px;border:2px solid #7b2d8b;background:${act?'#7b2d8b':'#fff'};color:${act?'#fff':'#333'};cursor:pointer;font-weight:bold">${e.label}</button>`;
+  }
+  h += `</div></div>`;
+  // Ribbon for selected event
+  const tevCfg = EVENT_HOUSES[activeTimingEvent];
+  if(tevCfg && tevCfg.ribbon){
+    h += buildRibbon(tevCfg.ribbon);
+  }
+  // Current dasha
+  if(cur){
+    h += `<div class="card"><h3>🕐 वर्तमान दशा (MD / AD)</h3><table><tr><th>दशा</th><th>स्वामी</th><th>अवधि</th><th>💒 विवाह</th><th>💼 करियर</th><th>👶 संतान</th></tr>`;
+    const evs = [['vivah','विवाह'],['career','करियर'],['santan','संतान']];
+    let row = `<tr style="background:#d4f7d4"><td><b>MD-AD</b></td><td><b>${PLANET_HINDI[cur.md]} - ${PLANET_HINDI[cur.ad]}</b></td><td>${jdToDate(cur.start)} – ${jdToDate(cur.end)}</td>`;
+    for(const [ek] of evs){ row += `<td>${qualBadge(cur.md, EVENT_HOUSES[ek].houses)} ${qualBadge(cur.ad, EVENT_HOUSES[ek].houses)}</td>`; }
+    h += row + `</tr></table><div style="font-size:12px;margin-top:6px">पहला ✓ = MD lord, दूसरा ✓ = AD lord</div></div>`;
+  }
+  // Timeline - selected period (with gochar per MD)
+  const endJD = todayJD + timingPeriodYrs*365.25;
+  const upcoming = timeline.filter(t=>t.end>todayJD && t.start<endJD);
+  const e = EVENT_HOUSES[activeTimingEvent];
+  h += `<div class="card"><h3>📅 आगामी दशा — अगले ${timingPeriodYrs} साल</h3><table><tr><th>MD</th><th>AD</th><th>अवधि</th><th>योग्यता</th><th>🪐 गोचर (MD अवधि में)</th></tr>`;
+  for(const t of upcoming.slice(0,60)){
+    const mdSig = sigHouses(t.md), adSig = sigHouses(t.ad);
+    const hitSet = new Set();
+    for(const hh of e.houses){ if(mdSig.has(hh)||adSig.has(hh)) hitSet.add(hh); }
+    const hitCount = hitSet.size, total = e.houses.length;
+    let grade, rowBg, badge;
+    if(hitCount===total){ grade='प्रबल'; rowBg='#a5d6a7'; badge='<span class="badge b-green">✓ प्रबल</span>'; }
+    else if(hitCount>=Math.ceil(total/2)){ grade='मध्यम'; rowBg='#d4f7d4'; badge='<span class="badge b-green">✓ मध्यम</span>'; }
+    else if(hitCount>=1){ grade='क्षीण'; rowBg='#fff9c4'; badge='<span class="badge b-yellow">✓ क्षीण</span>'; }
+    else { grade=''; rowBg=''; badge='<span class="badge b-red">✗ Unqualified</span>'; }
+    let qDesc;
+    if(hitCount>0){
+      const reasons = [];
+      const mdHit = e.houses.filter(hh=>mdSig.has(hh));
+      const adHit = e.houses.filter(hh=>adSig.has(hh));
+      if(mdHit.length) reasons.push(`MD ${PLANET_HINDI[t.md]} → ${mdHit.join(',')}`);
+      if(adHit.length) reasons.push(`AD ${PLANET_HINDI[t.ad]} → ${adHit.join(',')}`);
+      qDesc = reasons.join('; ') + ` → ${grade}`;
+    } else {
+      qDesc = `MD ${PLANET_HINDI[t.md]} → कोई नहीं; AD ${PLANET_HINDI[t.ad]} → कोई नहीं`;
+    }
+    // Gochar during this MD (midpoint) - clear reasons + grading
+    const midJD = (t.start + t.end)/2;
+    let gocharTxt = '', gocharHit = 0;
+    for(const tp of e.transit){
+      const trR = transitRashi(midJD, tp);
+      const rashiName = trR>=0?RASHI_NAMES[trR]:'?';
+      let eff = [];
+      for(const hs of e.houses){
+        const cuspRashi = lastResults.cuspData[hs-1].rashi;
+        const diff = (cuspRashi - trR + 12)%12;
+        if(diff===0) eff.push(`${hs}वें भाव पर युति`);
+        else if([4,6,8].includes(diff)) eff.push(`${hs}वें भाव पर दृष्टि`);
+      }
+      if(eff.length) gocharHit++;
+      const reason = eff.length ? `${eff.join(', ')} डाल रहा है — सहायक` : `भावों (${e.houses.join(',')}) पर कोई प्रभाव नहीं`;
+      gocharTxt += `<b>${PLANET_HINDI[tp]}</b> ${rashiName} में → ${reason}<br>`;
+    }
+    const gocharGrade = gocharHit===e.transit.length ? '<span class="badge b-green">✓ प्रबल</span>' : gocharHit>0 ? '<span class="badge b-yellow">✓ मध्यम</span>' : '<span class="badge b-red">✗ क्षीण</span>';
+    gocharTxt = gocharGrade + '<br>' + gocharTxt;
+    h += `<tr${rowBg?` style="background:${rowBg};font-weight:bold"`:''}><td>${PLANET_HINDI[t.md]}</td><td>${PLANET_HINDI[t.ad]}</td><td>${jdToDate(t.start)} – ${jdToDate(t.end)}</td><td>${badge}<br><span style="font-size:11px">${qDesc}</span></td><td style="font-size:11px">${gocharTxt}</td></tr>`;
+  }
+  h += `</table></div>`;
+  // Gochar summary card (current positions only)
+  const trJu = transitRashi(todayJD, 'Ju'), trSa = transitRashi(todayJD, 'Sa'), trSu = transitRashi(todayJD, 'Su');
+  h += `<div class="card"><h3>🪐 गोचर <span style="font-size:12px;font-weight:normal">(${e.label} के लिए, वर्तमान)</span></h3>`;
+  const trMap = {Ju:trJu, Sa:trSa, Su:trSu};
+  let gocharGood = 0, gocharTotal = 0;
+  for(const tp of e.transit){
+    const rashi = trMap[tp]>=0?RASHI_NAMES[trMap[tp]]:'?';
+    let eff = [];
+    for(const hs of e.houses){
+      const cuspRashi = lastResults.cuspData[hs-1].rashi;
+      const diff = (cuspRashi - trMap[tp] + 12)%12;
+      if(diff===0) eff.push(`${hs}वें भाव पर युति`);
+      else if([4,6,8].includes(diff)) eff.push(`${hs}वें भाव पर दृष्टि`);
+    }
+    gocharTotal++;
+    if(eff.length) gocharGood++;
+    const icon = eff.length?'✅':'❌';
+    h += `<div style="padding:8px;border-bottom:1px solid #eee">${icon} <b>${PLANET_HINDI[tp]}</b> अभी <b>${rashi}</b> में है → ${eff.length?eff.join(', ')+' डाल रहा है':'इन भावों ('+e.houses.join(',')+') पर कोई प्रभाव नहीं'}</div>`;
+  }
+  const gocharVerdict = gocharGood===gocharTotal ? '✅ <b>गोचर अनुकूल</b> — सभी ग्रह सहायक' : gocharGood>0 ? '⚠️ <b>गोचर आंशिक</b> — कुछ ग्रह सहायक' : '❌ <b>गोचर प्रतिकूल</b> — कोई ग्रह सहायक नहीं';
+  h += `<div style="margin-top:10px;padding:10px;background:#f5f5f5;border-radius:8px">${gocharVerdict}</div>`;
+  h += `<div style="font-size:12px;margin-top:6px">Double transit: दोनों ग्रह अनुकूल हों तो प्रबल योग बनता है</div></div>`;
+  // TXT download
+  h += `<div class="card"><button class="btn" id="btnTimingTxt" style="padding:10px 20px;background:#6a1b9a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold">📥 Timing TXT डाउनलोड</button></div>`;
+  return h;
+}
+
+let activeVTab = 'vivah';
+let activeMode = 'kptables';
+function switchMode(mode){
+  activeMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>{
+    const act = b.dataset.mode===mode;
+    b.classList.toggle('active', act);
+    b.style.background = act ? '#1976d2' : '#e3f2fd';
+    b.style.color = act ? '#fff' : '#1976d2';
+  });
+  document.getElementById('mode-kptables').style.display = mode==='kptables'?'block':'none';
+  document.getElementById('mode-verdicts').style.display = mode==='verdicts'?'block':'none';
+  document.getElementById('mode-timing').style.display = mode==='timing'?'block':'none';
+  if(mode==='verdicts') renderVerdicts();
+  if(mode==='timing') renderTiming();
+}
+function renderTiming(){
+  document.getElementById('timingContent').innerHTML = buildTiming();
+  document.querySelectorAll('[data-tev]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      activeTimingEvent = b.dataset.tev;
+      renderTiming();
+    });
+  });
+  const td = document.getElementById('timingDate');
+  if(td) td.addEventListener('change', ()=>{
+    const v = td.value;
+    timingSelDate = v ? new Date(v+'T12:00:00') : null;
+    renderTiming();
+  });
+  const tp = document.getElementById('timingPeriod');
+  if(tp) tp.addEventListener('change', ()=>{
+    timingPeriodYrs = parseInt(tp.value)||7;
+    renderTiming();
+  });
+  const gd = null; // gochar uses main timing date now
+  const bt = document.getElementById('btnTimingTxt');
+  if(bt) bt.addEventListener('click', downloadTimingTxt);
+}
+function renderVerdicts(){
+  const V = buildVerdicts();
+  document.getElementById('verdictContent').innerHTML = V[activeVTab] || '';
+  document.querySelectorAll('.vtab').forEach(b=>{
+    b.classList.toggle('active', b.dataset.vtab===activeVTab);
+  });
+}
+// Mode buttons
+document.querySelectorAll('.mode-btn').forEach(b=>{
+  b.addEventListener('click', ()=>switchMode(b.dataset.mode));
+});
+
+function downloadTimingTxt(){
+  const {allBodies} = lastResults;
+  const moon = allBodies.find(x=>x.short==='Mo');
+  let t = 'KP TIMING ANALYSIS\n==================\n\n';
+  t += `लग्न राशि: ${RASHI_NAMES[allBodies[0].rashi]}\n`;
+  t += `चंद्र राशि: ${RASHI_NAMES[moon.rashi]}\n\n`;
+  const today = new Date();
+  const todayJD = toJulian(today.getFullYear(), today.getMonth()+1, today.getDate(), 12, 0, 0, '+05:30');
+  const timeline = calcDashaTimeline();
+  const cur = timeline.find(x=>todayJD>=x.start && todayJD<x.end);
+  if(cur) t += `वर्तमान: ${PLANET_HINDI[cur.md]} MD - ${PLANET_HINDI[cur.ad]} AD (${jdToDate(cur.start)} - ${jdToDate(cur.end)})\n\n`;
+  t += 'आगामी 7 साल:\n';
+  const endJD = todayJD + 7*365.25;
+  for(const x of timeline.filter(x=>x.end>todayJD && x.start<endJD).slice(0,40)){
+    const qs = [];
+    for(const ek of Object.keys(EVENT_HOUSES)){
+      const e = EVENT_HOUSES[ek];
+      if(isQualified(x.md, e.houses)||isQualified(x.ad, e.houses)) qs.push(e.label);
+    }
+    t += `${PLANET_HINDI[x.md]}-${PLANET_HINDI[x.ad]}: ${jdToDate(x.start)} - ${jdToDate(x.end)} ${qs.length?'['+qs.join(', ')+']':''}\n`;
+  }
+  const blob = new Blob([t], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'KP-Timing.txt';
+  a.click();
+}
+document.querySelectorAll('.vtab').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    activeVTab = b.dataset.vtab;
+    renderVerdicts();
+  });
+});
+
+function renderTables(){
+  const {allBodies, cuspData, pSig, hSig, ruling} = lastResults;
+  // Planet table
+  let h='<table><tr><th>Planet</th><th>RL</th><th>NL</th><th>SL</th><th>SSL</th><th>Degree</th><th>Rashi</th><th>Nakshatra</th><th>Paada</th></tr>';
+  for(const b of allBodies){
+    h+=`<tr><td><b>${b.name}</b></td><td>${b.rl}</td><td>${b.nl}</td><td>${b.sl}</td><td>${b.ssl}</td><td>${fmtDeg(b.sid)}</td><td>${RASHI_NAMES[b.rashi]}</td><td>${NAK_NAMES[b.nakIdx]}</td><td>${b.pada}</td></tr>`;
+  }
+  document.getElementById('planetTable').innerHTML=h+'</table>';
+
+  // Bhava table
+  h='<table><tr><th>Bhava</th><th>RL</th><th>NL</th><th>SL</th><th>SSL</th><th>Cusp</th><th>Rashi</th><th>Nakshatra</th><th>Paada</th></tr>';
+  for(const c of cuspData){
+    h+=`<tr><td><b>${c.bhava}</b></td><td>${c.rl}</td><td>${c.nl}</td><td>${c.sl}</td><td>${c.ssl}</td><td>${fmtDeg(c.cusp)}</td><td>${RASHI_NAMES[c.rashi]}</td><td>${NAK_NAMES[c.nakIdx]}</td><td>${c.pada}</td></tr>`;
+  }
+  document.getElementById('bhavaTable').innerHTML=h+'</table>';
+  document.getElementById('rulingPlanets').innerHTML=`<b>Ruling Planets:</b> लग्न RL: ${ruling.lagnaRL} | लग्न NL: ${ruling.lagnaNL} | चंद्र RL: ${ruling.moonRL} | चंद्र NL: ${ruling.moonNL} | वार: ${ruling.day}`;
+
+  // Planet significators
+  h='<table><tr><th>Planet</th><th>Level-A</th><th>Level-B</th><th>Level-C</th><th>Level-D</th></tr>';
+  for(const s of pSig) h+=`<tr><td><b>${s.name}</b></td><td>${s.a}</td><td>${s.b}</td><td>${s.c}</td><td>${s.d}</td></tr>`;
+  document.getElementById('planetSigTable').innerHTML=h+'</table>';
+
+  // House significators (all 4 levels verified)
+  h='<table><tr><th>House</th><th>Level-1</th><th>Level-2</th><th>Level-3</th><th>Level-4</th></tr>';
+  for(const s of hSig) h+=`<tr><td><b>${s.h}</b></td><td>${s.l1}</td><td>${s.l2}</td><td>${s.l3}</td><td>${s.l4}</td></tr>`;
+  document.getElementById('houseSigTable').innerHTML=h+'</table>';
+}
+
+document.getElementById('btnTxt').addEventListener('click', ()=>{
+  if(!lastResults) return;
+  const {allBodies, cuspData, pSig, hSig, ruling, verdicts} = lastResults;
+  let t='KP JYOTISH DETAILS v6\n====================\n\n';
+  if(verdicts){
+    t+='EVENT VERDICTS\n--------------\n';
+    for(const [k,label] of [['vivah','VIVAH'],['santan','SANTAN'],['career','CAREER'],['dhan','DHAN'],['shiksha','SHIKSHA'],['videsh','VIDESH'],['swasthya','SWASTHYA'],['court','COURT'],['vahan','VAHAN']]){
+      t+=`\n== ${label} ==\n`;
+      const div=document.createElement('div'); div.innerHTML=verdicts[k];
+      div.childNodes.forEach(n=>{
+        if(n.classList && n.classList.contains('vsec')) t+=`-- ${n.innerText} --\n`;
+        if(n.classList && n.classList.contains('vitem')){
+          const head=n.querySelector('.vhead').innerText.replace(/\n/g,' : ');
+          const desc=n.querySelector('.vdesc').innerText;
+          t+=`${head}\n  ${desc}\n`;
+        }
+      });
+    }
+    t+='\n';
+  }
+  t+='PLANET POSITIONS (KP Ayanamsa)\n';
+  t+='Planet | RL | NL | SL | SSL | Degree | Rashi | Nakshatra | Paada\n';
+  for(const b of allBodies) t+=`${b.name} | ${b.rl} | ${b.nl} | ${b.sl} | ${b.ssl} | ${fmtDeg(b.sid)} | ${RASHI_EN[b.rashi]} | ${b.pada}\n`;
+  t+='\nPLACIDUS BHAVA\nBhava | RL | NL | SL | SSL | Cusp\n';
+  for(const c of cuspData) t+=`${c.bhava} | ${c.rl} | ${c.nl} | ${c.sl} | ${c.ssl} | ${fmtDeg(c.cusp)}\n`;
+  t+=`\nRULING PLANETS: Lagna RL=${ruling.lagnaRL}, Lagna NL=${ruling.lagnaNL}, Moon RL=${ruling.moonRL}, Moon NL=${ruling.moonNL}, Day=${ruling.day}\n`;
+  t+='\nPLANET SIGNIFICATORS (A/B/C/D)\n';
+  for(const s of pSig) t+=`${s.name}: ${s.a} | ${s.b} | ${s.c} | ${s.d}\n`;
+  t+='\nHOUSE SIGNIFICATORS (1/2/3/4)\n';
+  for(const s of hSig) t+=`House ${s.h}: ${s.l1} | ${s.l2} | ${s.l3} | ${s.l4}\n`;
+  const blob=new Blob([t],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='KP_Details.txt'; a.click();
+});
+</script>
+</body>
+</html>

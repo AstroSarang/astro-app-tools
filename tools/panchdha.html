@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>पंचधा मैत्री कैलकुलेटर</title>
+    <style>
+        :root {
+            --primary-color: #d35400; /* Saffron/Orange */
+            --secondary-color: #f39c12;
+            --bg-color: #fdf5e6;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--primary-color);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .input-sections {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .section {
+            flex: 1;
+            min-width: 300px;
+            background: #fff8f0;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid #e0d4c5;
+        }
+
+        .section h2 {
+            text-align: center;
+            color: #8e44ad; /* Purple for mystique */
+            margin-top: 0;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .section.girl h2 {
+            color: #c0392b; /* Red for girl section */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            background: #fff;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 25px;
+            justify-content: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        .btn-calc { background-color: var(--primary-color); color: white; }
+        .btn-calc:hover { background-color: #a04000; }
+
+        .btn-reset { background-color: #7f8c8d; color: white; }
+        .btn-reset:hover { background-color: #616a6b; }
+
+        .btn-copy { background-color: #27ae60; color: white; }
+        .btn-copy:hover { background-color: #219150; }
+
+        .btn-down { background-color: #2980b9; color: white; }
+        .btn-down:hover { background-color: #21618c; }
+
+        #result-area {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: var(--border-radius);
+            border: 1px dashed #ccc;
+            white-space: pre-wrap; /* Maintains formatting */
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.05em;
+            line-height: 1.6;
+            display: none; /* Hidden by default */
+        }
+
+        .result-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .btn-group {
+                flex-direction: column;
+            }
+            button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>पंचधा मैत्री कैलकुलेटर</h1>
+
+    <div class="input-sections">
+        <!-- Boy Section -->
+        <div class="section boy">
+            <h2>वर (लड़का)</h2>
+            <div class="form-group">
+                <label>1. लग्न चुनें (Lagna)</label>
+                <select id="boyLagna">
+                    <option value="">-- चुनें --</option>
+                    <option value="1">मेष (Aries)</option>
+                    <option value="2">वृषभ (Taurus)</option>
+                    <option value="3">मिथुन (Gemini)</option>
+                    <option value="4">कर्क (Cancer)</option>
+                    <option value="5">सिंह (Leo)</option>
+                    <option value="6">कन्या (Virgo)</option>
+                    <option value="7">तुला (Libra)</option>
+                    <option value="8">वृश्चिक (Scorpio)</option>
+                    <option value="9">धनु (Sagittarius)</option>
+                    <option value="10">मकर (Capricorn)</option>
+                    <option value="11">कुंभ (Aquarius)</option>
+                    <option value="12">मीन (Pisces)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>2. लग्नेश किस भाव में है?</label>
+                <select id="boyLagneshHouse">
+                    <option value="1">प्रथम भाव (1st House)</option>
+                    <option value="2">द्वितीय भाव (2nd House)</option>
+                    <option value="3">तृतीय भाव (3rd House)</option>
+                    <option value="4">चतुर्थ भाव (4th House)</option>
+                    <option value="5">पंचम भाव (5th House)</option>
+                    <option value="6">षष्ठ भाव (6th House)</option>
+                    <option value="7">सप्तम भाव (7th House)</option>
+                    <option value="8">अष्टम भाव (8th House)</option>
+                    <option value="9">नवम भाव (9th House)</option>
+                    <option value="10">दशम भाव (10th House)</option>
+                    <option value="11">एकादश भाव (11th House)</option>
+                    <option value="12">द्वादश भाव (12th House)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>3. सप्तमेश किस भाव में है?</label>
+                <select id="boySaptameshHouse">
+                    <option value="1">प्रथम भाव (1st House)</option>
+                    <option value="2">द्वितीय भाव (2nd House)</option>
+                    <option value="3">तृतीय भाव (3rd House)</option>
+                    <option value="4">चतुर्थ भाव (4th House)</option>
+                    <option value="5">पंचम भाव (5th House)</option>
+                    <option value="6">षष्ठ भाव (6th House)</option>
+                    <option value="7">सप्तम भाव (7th House)</option>
+                    <option value="8">अष्टम भाव (8th House)</option>
+                    <option value="9">नवम भाव (9th House)</option>
+                    <option value="10">दशम भाव (10th House)</option>
+                    <option value="11">एकादश भाव (11th House)</option>
+                    <option value="12">द्वादश भाव (12th House)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Girl Section -->
+        <div class="section girl">
+            <h2>वधु (लड़की)</h2>
+            <div class="form-group">
+                <label>1. लग्न चुनें (Lagna)</label>
+                <select id="girlLagna">
+                    <option value="">-- चुनें --</option>
+                    <option value="1">मेष (Aries)</option>
+                    <option value="2">वृषभ (Taurus)</option>
+                    <option value="3">मिथुन (Gemini)</option>
+                    <option value="4">कर्क (Cancer)</option>
+                    <option value="5">सिंह (Leo)</option>
+                    <option value="6">कन्या (Virgo)</option>
+                    <option value="7">तुला (Libra)</option>
+                    <option value="8">वृश्चिक (Scorpio)</option>
+                    <option value="9">धनु (Sagittarius)</option>
+                    <option value="10">मकर (Capricorn)</option>
+                    <option value="11">कुंभ (Aquarius)</option>
+                    <option value="12">मीन (Pisces)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>2. लग्नेश किस भाव में है?</label>
+                <select id="girlLagneshHouse">
+                    <option value="1">प्रथम भाव (1st House)</option>
+                    <option value="2">द्वितीय भाव (2nd House)</option>
+                    <option value="3">तृतीय भाव (3rd House)</option>
+                    <option value="4">चतुर्थ भाव (4th House)</option>
+                    <option value="5">पंचम भाव (5th House)</option>
+                    <option value="6">षष्ठ भाव (6th House)</option>
+                    <option value="7">सप्तम भाव (7th House)</option>
+                    <option value="8">अष्टम भाव (8th House)</option>
+                    <option value="9">नवम भाव (9th House)</option>
+                    <option value="10">दशम भाव (10th House)</option>
+                    <option value="11">एकादश भाव (11th House)</option>
+                    <option value="12">द्वादश भाव (12th House)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>3. सप्तमेश किस भाव में है?</label>
+                <select id="girlSaptameshHouse">
+                    <option value="1">प्रथम भाव (1st House)</option>
+                    <option value="2">द्वितीय भाव (2nd House)</option>
+                    <option value="3">तृतीय भाव (3rd House)</option>
+                    <option value="4">चतुर्थ भाव (4th House)</option>
+                    <option value="5">पंचम भाव (5th House)</option>
+                    <option value="6">षष्ठ भाव (6th House)</option>
+                    <option value="7">सप्तम भाव (7th House)</option>
+                    <option value="8">अष्टम भाव (8th House)</option>
+                    <option value="9">नवम भाव (9th House)</option>
+                    <option value="10">दशम भाव (10th House)</option>
+                    <option value="11">एकादश भाव (11th House)</option>
+                    <option value="12">द्वादश भाव (12th House)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-calc" onclick="calculatePanchadha()">गणना करें (Calculate)</button>
+        <button class="btn-reset" onclick="resetForm()">रिसेट करें (Reset)</button>
+        <button class="btn-copy" onclick="copyAnalysis()">विश्लेषण कॉपी करें (Copy)</button>
+        <button class="btn-down" onclick="downloadTxt()">TXT डाउनलोड करें</button>
+    </div>
+
+    <div id="result-area"></div>
+</div>
+
+<script>
+    // ज्योतिष डेटा
+    const signs = {
+        1: { name: "मेष", lord: "मंगल" },
+        2: { name: "वृषभ", lord: "शुक्र" },
+        3: { name: "मिथुन", lord: "बुध" },
+        4: { name: "कर्क", lord: "चन्द्र" },
+        5: { name: "सिंह", lord: "सूर्य" },
+        6: { name: "कन्या", lord: "बुध" },
+        7: { name: "तुला", lord: "शुक्र" },
+        8: { name: "वृश्चिक", lord: "मंगल" },
+        9: { name: "धनु", lord: "गुरु" },
+        10: { name: "मकर", lord: "शनि" },
+        11: { name: "कुंभ", lord: "शनि" },
+        12: { name: "मीन", lord: "गुरु" }
+    };
+
+    // नैसर्गिक मैत्री चक्र (ग्रह A ग्रह B को क्या मानता है)
+    // 1=Friend, 0=Neutral, -1=Enemy
+    const naturalMaitri = {
+        "सूर्य": { "चन्द्र": 1, "मंगल": 1, "गुरु": 1, "बुध": 0, "शुक्र": -1, "शनि": -1, "सूर्य": 0 },
+        "चन्द्र": { "सूर्य": 1, "बुध": 1, "मंगल": 0, "गुरु": 0, "शुक्र": 0, "शनि": 0, "चन्द्र": 0 },
+        "मंगल": { "सूर्य": 1, "चन्द्र": 1, "गुरु": 1, "शुक्र": 0, "शनि": 0, "बुध": -1, "मंगल": 0 },
+        "बुध": { "सूर्य": 1, "शुक्र": 1, "मंगल": 0, "गुरु": 0, "शनि": 0, "चन्द्र": -1, "बुध": 0 },
+        "गुरु": { "सूर्य": 1, "चन्द्र": 1, "मंगल": 1, "शनि": 0, "बुध": -1, "शुक्र": -1, "गुरु": 0 },
+        "शुक्र": { "बुध": 1, "शनि": 1, "मंगल": 0, "गुरु": 0, "सूर्य": -1, "चन्द्र": -1, "शुक्र": 0 },
+        "शनि": { "बुध": 1, "शुक्र": 1, "गुरु": 0, "सूर्य": -1, "चन्द्र": -1, "मंगल": -1, "शनि": 0 }
+    };
+
+    const hindiNumbers = ["शून्य", "प्रथम", "द्वितीय", "तृतीय", "चतुर्थ", "पंचम", "षष्ठ", "सप्तम", "अष्टम", "नवम", "दशम", "एकादश", "द्वादश"];
+
+    function getRelationText(score) {
+        if (score === 1) return "मित्र";
+        if (score === 0) return "सम";
+        if (score === -1) return "शत्रु";
+        return "त्रुटि";
+    }
+
+    function calculateIndividual(lagnaId, lagneshHouse, saptameshHouse, personType) {
+        if (!lagnaId) return null;
+
+        lagnaId = parseInt(lagnaId);
+        lagneshHouse = parseInt(lagneshHouse);
+        saptameshHouse = parseInt(saptameshHouse);
+
+        // 1. Determine Lords
+        const lagnaName = signs[lagnaId].name;
+        const lagnesh = signs[lagnaId].lord;
+        
+        // Saptamesh is Lord of the 7th sign from Lagna
+        let saptamSignId = (lagnaId + 6) % 12;
+        if (saptamSignId === 0) saptamSignId = 12;
+        const saptamesh = signs[saptamSignId].lord;
+
+        // 2. Naisargik Maitri (How Lagnesh treats Saptamesh)
+        let nScore = 0;
+        if (lagnesh !== saptamesh) {
+            nScore = naturalMaitri[lagnesh][saptamesh];
+        }
+        const naisargikStr = `नैसर्गिक ${getRelationText(nScore)}`;
+
+        // 3. Tatkalik Maitri
+        // Formula: Count from Lagnesh to Saptamesh
+        let distance = (saptameshHouse - lagneshHouse);
+        if (distance < 0) distance += 12;
+        distance = distance + 1; // Inclusive count standard in astrology usually, but for distance logic:
+        // Logic: Planets in 2, 3, 4, 10, 11, 12 from planet A are friends.
+        
+        // Let's use pure distance (1-based index)
+        // Example: Lagnesh in 1, Saptamesh in 3. Distance = 3-1 = 2 positions away? No, 1->2->3 is 3rd house from it.
+        // Let's calculate "House from Lagnesh"
+        let posFromLagnesh = (saptameshHouse - lagneshHouse + 1);
+        if (posFromLagnesh <= 0) posFromLagnesh += 12;
+
+        let isTatkalikFriend = false;
+        if ([2, 3, 4, 10, 11, 12].includes(posFromLagnesh)) {
+            isTatkalikFriend = true;
+        }
+
+        let tScore = isTatkalikFriend ? 1 : -1;
+        // If same planet, standard texts say neutral or ignore, but here logic applies to placement
+        if (lagnesh === saptamesh) tScore = 1; // Simplification or same placement logic
+
+        const tatkalikStr = isTatkalikFriend ? "तत्कालीन मित्र" : "तत्कालीन शत्रु";
+        
+        // Hindi House text
+        const lagneshHouseTxt = hindiNumbers[lagneshHouse] + " भाव";
+        const saptameshHouseTxt = hindiNumbers[saptameshHouse] + " भाव";
+        const distanceTxt = `लग्नेश से सप्तमेश ${hindiNumbers[posFromLagnesh]} भाव मे`;
+
+        // 4. Panchadha Result
+        let totalScore = nScore + tScore;
+        let finalResult = "";
+        
+        if (totalScore === 2) finalResult = "अधि-मित्र";
+        else if (totalScore === 1) finalResult = "मित्र";
+        else if (totalScore === 0) finalResult = "सम";
+        else if (totalScore === -1) finalResult = "शत्रु";
+        else if (totalScore === -2) finalResult = "अधि-शत्रु";
+
+        return {
+            lagna: lagnaName,
+            lagnesh: lagnesh,
+            saptamesh: saptamesh,
+            lHouse: lagneshHouseTxt,
+            sHouse: saptameshHouseTxt,
+            nResult: naisargikStr,
+            tResult: tatkalikStr,
+            distText: distanceTxt,
+            final: finalResult,
+            score: totalScore // For final analysis
+        };
+    }
+
+    function calculatePanchadha() {
+        const boyLagna = document.getElementById('boyLagna').value;
+        const boyLHouse = document.getElementById('boyLagneshHouse').value;
+        const boySHouse = document.getElementById('boySaptameshHouse').value;
+
+        const girlLagna = document.getElementById('girlLagna').value;
+        const girlLHouse = document.getElementById('girlLagneshHouse').value;
+        const girlSHouse = document.getElementById('girlSaptameshHouse').value;
+
+        if(!boyLagna || !girlLagna) {
+            alert("कृपया लड़के और लड़की दोनों का लग्न चुनें।");
+            return;
+        }
+
+        const boyData = calculateIndividual(boyLagna, boyLHouse, boySHouse, "लड़के");
+        const girlData = calculateIndividual(girlLagna, girlLHouse, girlSHouse, "लड़की");
+
+        // Generate Output String
+        let output = "";
+
+        // Boy Output
+        output += `लड़के का लग्न ${boyData.lagna} :\n\n`;
+        output += `● लग्नेश ${boyData.lagnesh} + सप्तमेश ${boyData.saptamesh} = ${boyData.nResult}\n`;
+        output += `● लग्नेश ${boyData.lagnesh} (${boyData.lHouse}) + सप्तमेश ${boyData.saptamesh} (${boyData.sHouse}) ${boyData.distText} = ${boyData.tResult}\n\n`;
+        output += `पंचधा मैत्री परिणाम : ${boyData.nResult.split(' ')[1]} + ${boyData.tResult} = ${boyData.final}\n\n`;
+        output += "----------------------------------------\n\n";
+
+        // Girl Output
+        output += `लड़की का लग्न ${girlData.lagna} :\n\n`;
+        output += `● लग्नेश ${girlData.lagnesh} + सप्तमेश ${girlData.saptamesh} = ${girlData.nResult}\n`;
+        output += `● लग्नेश ${girlData.lagnesh} (${girlData.lHouse}) + सप्तमेश ${girlData.saptamesh} (${girlData.sHouse}) ${girlData.distText} = ${girlData.tResult}\n\n`;
+        output += `पंचधा मैत्री परिणाम : ${girlData.nResult.split(' ')[1]} + ${girlData.tResult} = ${girlData.final}\n\n`;
+        output += "----------------------------------------\n\n";
+
+        // Final Analysis Logic
+        // Score Mapping: AdhiMitra(2), Mitra(1), Sama(0), Shatru(-1), AdhiShatru(-2)
+        // Let's create a combined interpretation
+        const bScore = boyData.score;
+        const gScore = girlData.score;
+        const combinedScore = bScore + gScore;
+
+        let conclusion = "";
+        
+        // Logic for final text based on user prompt style
+        if (bScore >= 0 && gScore >= 0) {
+            conclusion = "चूंकि दोनों तरफ से मित्रता या सम भाव है, इसलिए इसे ज्योतिषीय भाषा में 'सद्भावपूर्ण एवं श्रेष्ठ संबंध' माना जाएगा। विवाह के लिए यह स्थिति उत्तम है।";
+        } else if ((bScore >= 0 && gScore < 0) || (bScore < 0 && gScore >= 0)) {
+            conclusion = "चूंकि एक तरफ से सकारात्मक और दूसरी तरफ से नकारात्मक भाव आ रहा है, इसलिए इसे 'मध्यम संबंध' माना जाएगा। आपसी सामंजस्य बिठाने की आवश्यकता होगी।";
+        } else {
+            conclusion = "चूंकि दोनों तरफ से शत्रुता या नकारात्मक भाव आ रहा है, इसलिए इसे ज्योतिषीय भाषा में 'कठिन संबंध' माना जा सकता है। कुंडली मिलान के अन्य पक्षों (जैसे गुण मिलान, नाड़ी) को भी देखना अनिवार्य है।";
+        }
+        
+        // Special case from user prompt
+        if ((boyData.final === "मित्र" && girlData.final === "सम") || (boyData.final === "सम" && girlData.final === "मित्र")) {
+             conclusion = "चूंकि एक तरफ से 'मित्रता' और दूसरी तरफ से 'सम' भाव आ रहा है, इसलिए इसे ज्योतिषीय भाषा में 'सद्भावपूर्ण संबंध' माना जाएगा।";
+        }
+
+        output += `वैवाहिक दृष्टिकोण से दोनों का अंतिम विश्लेषण : ${conclusion}`;
+
+        const resDiv = document.getElementById('result-area');
+        resDiv.innerHTML = output;
+        resDiv.style.display = "block";
+    }
+
+    function resetForm() {
+        document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+        document.getElementById('result-area').style.display = "none";
+        document.getElementById('result-area').innerHTML = "";
+    }
+
+    function copyAnalysis() {
+        const text = document.getElementById('result-area').innerText;
+        if(!text) { alert("पहले गणना करें!"); return; }
+        navigator.clipboard.writeText(text).then(() => {
+            alert("विश्लेषण कॉपी कर लिया गया है!");
+        });
+    }
+
+    function downloadTxt() {
+        const text = document.getElementById('result-area').innerText;
+        if(!text) { alert("पहले गणना करें!"); return; }
+        
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        const anchor = document.createElement("a");
+        anchor.href = URL.createObjectURL(blob);
+        anchor.download = "Panchadha_Maitri_Analysis.txt";
+        anchor.click();
+        URL.revokeObjectURL(anchor.href);
+    }
+</script>
+
+</body>
+</html>

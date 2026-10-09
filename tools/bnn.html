@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<script src="../vendor/swisseph-local.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNN + योग-दोष महा-कैलकुलेटर</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; line-height: 1.6; padding: 20px; background-color: #f0f2f5; color: #1d2129; margin: 0; }
+        .container { max-width: 950px; margin: 20px auto; background: #ffffff; padding: 35px 40px; border-radius: 10px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
+        h1, h2 { text-align: center; color: #0d3b66; margin-bottom: 30px; }
+        h1 { font-weight: 600; }
+        h2 { font-size: 1.4em; color: #343a40; border-bottom: 1px solid #eaeaea; padding-bottom: 12px; font-weight: 500; }
+
+        /* Mode Toggle */
+        .mode-toggle { display: flex; justify-content: center; gap: 0; margin-bottom: 25px; border: 2px solid #1a73e8; border-radius: 8px; overflow: hidden; max-width: 560px; margin-left: auto; margin-right: auto; }
+        .mode-toggle button { flex: 1; padding: 12px 20px; border: none; background: #fff; color: #1a73e8; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .mode-toggle button.active { background: #1a73e8; color: #fff; }
+        .mode-toggle button:not(.active):hover { background: #e8f0fe; }
+
+        /* Birth/Ephemeris Section */
+        .ephem-section { background-color: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        .ephem-section > label { color: #e65100; font-weight: 600; display: block; margin-bottom: 8px; }
+        .c2-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .c2-row { display: flex; gap: 6px; align-items: flex-end; flex-wrap: wrap; }
+        .c2-f { display: flex; flex-direction: column; font-size: 0.68em; color: #9c5b00; font-weight: 600; flex: 1 1 50px; min-width: 0; }
+        .c2-f input, .c2-f select { width: 100%; padding: 6px 4px; font-size: 0.88rem; border: 1px solid #ffcc80; border-radius: 5px; background: #fff; box-sizing: border-box; }
+        .c2-grow { flex: 3 1 150px; }
+        .c2-wrap { position: relative; display: block; }
+        button.c2-btn { padding: 6px 9px; font-size: 0.88rem; flex: 0 0 auto; border: 1px solid #ffcc80; border-radius: 5px; background: #fff; cursor: pointer; }
+        .c2-sep { width: 1px; align-self: stretch; background: #ffe0b2; }
+        .c2-dst { font-size: 0.72em; color: #c82333; }
+        #btn-ephem { background-color: #ef6c00; color: #fff; margin-top: 18px; padding: 10px 20px; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; }
+        #btn-ephem:hover { background-color: #d55a00; }
+        #btn-ephem:disabled { background-color: #ccc; cursor: not-allowed; }
+        #ephem-status { font-size: 0.88em; color: #e65100; margin-bottom: 10px; }
+        #ephem-status.ok { color: #2e7d32; }
+        #place-results { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ffcc80; border-radius: 0 0 5px 5px; max-height: 180px; overflow-y: auto; z-index: 50; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+        .pr-item { padding: 7px 10px; cursor: pointer; font-size: 0.85rem; border-bottom: 1px solid #f5f5f5; }
+        .pr-item:hover { background: #fff8e1; }
+        .pr-none { padding: 8px 10px; font-size: 0.82rem; color: #999; }
+        .error-msg { color: #c62828; font-size: 0.88em; margin-top: 8px; font-weight: 600; }
+        .instruction { font-size: 0.85em; color: #555; margin-top: 5px; }
+
+        /* Shared form styles */
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: #495057; font-size: 0.95em; }
+        input[type="text"].num-input { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background-color: #fdfdfd; font-size: 0.95rem; }
+        .info-box { background-color: #fffbe6; border: 1px solid #ffe58f; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .input-section { background-color: #e3f2fd; padding: 20px; border-radius: 8px; border: 1px solid #bbdefb; margin-bottom: 20px; }
+        .input-section label { font-weight: bold; color: #0d47a1; display: block; margin-bottom: 8px; }
+        .input-section input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; }
+        .error-message { color: red; font-weight: bold; margin-bottom: 10px; text-align: center; }
+
+        button.big-btn { display: block; width: auto; min-width: 150px; margin: 20px auto 0 auto; padding: 12px 30px; background-color: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.05rem; font-weight: 500; }
+        button.big-btn:hover { background-color: #1558b0; }
+        .button-group { display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .download-button { font-size: 0.95rem; padding: 10px 20px; margin-top: 10px; margin-bottom: 5px; min-width: 140px; background-color: #28a745; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+        .download-button:hover { background-color: #218838; }
+        .input-btn-group { display: flex; gap: 10px; justify-content: center; margin: 20px auto; flex-wrap: wrap; }
+        .calc-btn { background-color: #1976d2; padding: 12px 25px; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1rem; }
+        .calc-btn:hover { background-color: #1565c0; }
+        .reset-btn { background-color: #d32f2f; padding: 12px 25px; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1rem; }
+        .reset-btn:hover { background-color: #b71c1c; }
+        .action-btn-group { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .action-btn { padding: 8px 16px; font-size: 0.9rem; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; color: #333; }
+        .copy-btn { background-color: #f0f0f0; }
+        .dl-btn { background-color: #4caf50; color: white; border: none; }
+
+        /* BNN output */
+        .output-section { margin-top: 35px; padding: 10px; background-color: #f0f2f5; border: none; border-radius: 8px; font-size: 1em; color: #333; }
+        .planet-analysis-info { margin-bottom: 20px; padding: 20px 25px; background-color: #ffffff; border-radius: 8px; border: 1px solid #e7e7e7; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .planet-analysis-info:last-child { margin-bottom: 0; }
+        .planet-title { font-weight: 600; font-size: 1.2em; color: #1c2a48; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0; }
+        .section-title { font-weight: 600; color: #d35400; margin-top: 15px; margin-bottom: 8px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.5px; }
+        ul.planet-list { list-style: none; padding: 0; margin: 0; }
+        ul.planet-list li { margin-bottom: 5px; padding: 8px 12px; background-color: #f9f9f9; border-left: 3px solid #1a73e8; border-radius: 4px; font-size: 0.95em; color: #333; }
+        .no-planets-info { font-size: 0.9em; color: #6c757d; margin-top: 5px; padding: 10px 15px; background-color: #f9f9f9; border: 1px solid #eee; border-radius: 4px; font-style: italic; }
+
+        /* Yoga-Dosha output */
+        .output-box { margin-top: 30px; border-top: 2px solid #333; padding-top: 20px; }
+        .report-section { margin-bottom: 30px; }
+        .section-header { font-size: 1.3em; font-weight: bold; text-decoration: underline; margin-bottom: 15px; color: #000; text-transform: uppercase; }
+        .yoga-list { list-style-type: decimal; padding-left: 20px; }
+        .yoga-list li { margin-bottom: 8px; }
+        .yoga-name { font-weight: bold; cursor: pointer; color: #1d4ed8; }
+        .yoga-name:hover { text-decoration: underline; }
+        .yoga-detail { font-size: 0.88em; color: #555; background: #f9fafb; border-left: 3px solid #93c5fd; padding: 6px 10px; border-radius: 4px; margin-top: 5px; font-weight: normal; }
+        .yoga-badge { display: inline-block; font-size: 0.72em; padding: 2px 9px; border-radius: 12px; margin: 0 4px 0 8px; font-weight: 700; vertical-align: middle; }
+        .b-प्रबल { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .b-मध्यम { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .b-सामान्य { background: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; }
+        .parihara { color: #166534; font-weight: 600; display: block; margin-top: 3px; font-size: 0.92em; }
+        .yd-dashboard { background: linear-gradient(135deg, #fff7ed, #fef3c7); border: 2px solid #fbbf24; border-radius: 10px; padding: 15px 20px; margin-bottom: 18px; text-align: center; font-size: 1.15em; }
+        .yd-top3 { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 15px; margin-bottom: 18px; font-size: 0.95em; }
+        .yd-filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+        .yd-filters button { padding: 7px 14px; border-radius: 20px; border: 1px solid #93c5fd; background: #eff6ff; color: #1d4ed8; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
+        .yd-filters button.active { background: #1d4ed8; color: #fff; }
+        .yd-filters button:hover { background: #dbeafe; }
+        .yd-filters button.active:hover { background: #1e40af; }
+
+        @media (max-width: 520px) {
+            .c2-f input, .c2-f select { font-size: 0.85rem; }
+            .container { padding: 20px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🕉️ BNN + योग-दोष महा-कैलकुलेटर</h1>
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+        <button id="mode1-btn" class="active" onclick="switchMode(1)">🕉️ भृगु नंदी नाड़ी</button>
+        <button id="mode2-btn" onclick="switchMode(2)">✨ योग-दोष रिपोर्ट</button>
+    </div>
+
+    <!-- Shared: Astro Code + Birth Details -->
+    <div class="ephem-section">
+        <label>🔗 Astro Code से भरें <span style="font-weight:normal; font-size:0.85em;">(Home page से copy करें)</span></label>
+        <div class="c2-row">
+            <label class="c2-f c2-grow">Astro Code<span class="c2-wrap"><input type="text" id="astro-code-in" placeholder="AS1-..." autocomplete="off" style="font-family:monospace;"></span></label>
+            <button type="button" id="btn-applycode" class="c2-btn" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:8px 16px; font-weight:bold; cursor:pointer;">📥 भरो</button>
+        </div>
+        <div id="code-error" class="error-msg"></div>
+        <div style="text-align:center; color:#9c5b00; font-size:0.85em; margin:10px 0 4px;">— या manual जन्म विवरण भरें —</div>
+        <label>🪐 जन्म विवरण से ग्रह स्थिति निकालें (Swiss Ephemeris)</label>
+        <div id="ephem-status">⏳ Engine लोड हो रहा है…</div>
+        <div class="c2-grid">
+            <div class="c2-row">
+                <label class="c2-f">दिन<select id="bd-day"><option value="">--</option></select></label>
+                <label class="c2-f">माह<select id="bd-month"><option value="">--</option><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select></label>
+                <label class="c2-f">वर्ष<input type="number" id="bd-year" placeholder="1995"></label>
+                <span class="c2-sep"></span>
+                <label class="c2-f">घंटे<input type="number" id="bd-hh" placeholder="3"></label>
+                <label class="c2-f">मिनट<input type="number" id="bd-mm" placeholder="00"></label>
+                <label class="c2-f">सेकंड<input type="number" id="bd-ss" value="0"></label>
+                <button type="button" class="c2-btn" id="bd-ampm" data-val="AM">AM</button>
+                <span class="c2-sep"></span>
+                <button type="button" class="c2-btn" id="tz-sign" data-val="+">+</button>
+                <label class="c2-f">TZ घंटे<input type="number" id="tz-hh" value="5"></label>
+                <label class="c2-f">मिनट<input type="number" id="tz-mm" value="30"></label>
+            </div>
+            <div class="c2-dst">(Daylight saving (DST) लागू हो तो timezone उसी के अनुसार भरें)</div>
+            <div class="c2-row">
+                <label class="c2-f c2-grow">जन्म स्थान<span class="c2-wrap"><input type="text" id="birth-place" placeholder="शहर English में लिखें" autocomplete="off"><div id="place-results"></div></span></label>
+                <label class="c2-f">अक्षांश°<input type="number" id="lat-deg" placeholder="21"></label>
+                <button type="button" class="c2-btn" id="lat-dir" data-val="N">N</button>
+                <label class="c2-f">मिनट<input type="number" id="lat-min" placeholder="27"></label>
+                <label class="c2-f">देशांतर°<input type="number" id="lon-deg" placeholder="80"></label>
+                <button type="button" class="c2-btn" id="lon-dir" data-val="E">E</button>
+                <label class="c2-f">मिनट<input type="number" id="lon-min" placeholder="11"></label>
+            </div>
+        </div>
+        <button type="button" id="btn-ephem" disabled>🪐 ग्रह स्थिति निकालें व भरें</button>
+        <div class="instruction">बटन दबाते ही D1 (लग्न + 9 ग्रह) के नंबर दोनों modes में auto-fill होंगे, फिर गणना अपने आप बनेगी। Manual entry भी पहले जैसी चलती रहेगी।</div>
+        <div id="ephem-error" class="error-msg"></div>
+    </div>
+
+    <!-- ============ MODE 1: BNN (original logic unchanged) ============ -->
+    <div id="mode1-panel">
+        <h2>लग्न और ग्रहों की राशिगत स्थिति:</h2>
+        <div class="info-box">
+            <strong>निर्देश:</strong> नीचे दिए गए बॉक्स में पहले <strong>लग्न</strong> और उसके बाद सभी 9 ग्रहों की <strong>राशि संख्या (1-12)</strong> कॉमा (,) से अलग करके दर्ज करें। (कुल 10 संख्याएँ)
+            <ul style="margin: 10px 0 0 20px; padding: 0;">
+                <li><strong>क्रम अनिवार्य है:</strong> लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु।</li>
+                <li><strong>उदाहरण:</strong> 1,5,10,1,3,11,9,7,2,8 (यहाँ 1 मेष लग्न है)</li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label for="bnn-rashi-input">लग्न और 9 ग्रहों की राशि संख्या (कॉमा से अलग करके):</label>
+            <input type="text" class="num-input" id="bnn-rashi-input" placeholder="उदा. 1,5,10,1,3,11,9,7,2,8">
+        </div>
+        <div id="bnn-input-error" class="error-message" style="margin-bottom: 20px;"></div>
+
+        <button class="big-btn" onclick="bnnCalculate()">गणना करें</button>
+        <div id="bnn-output">
+            <div id="bnn-planet-analysis-output"></div>
+        </div>
+    </div>
+
+    <!-- ============ MODE 2: Yoga-Dosha (v15.4 + new features) ============ -->
+    <div id="mode2-panel" style="display:none;">
+        <h2 style="border:none;">वैदिक ज्योतिष: विस्तृत योग-दोष रिपोर्ट</h2>
+        <div class="input-section">
+            <label for="yd-rashi-input">लग्न और 9 ग्रहों की राशि संख्या (1-12) कॉमा से अलग करके:</label>
+            <input type="text" id="yd-rashi-input" placeholder="उदा. 1,5,10,1,3,11,9,7,2,8">
+            <div class="instruction">क्रम: 1.लग्न, 2.सूर्य, 3.चंद्र, 4.मंगल, 5.बुध, 6.गुरु, 7.शुक्र, 8.शनि, 9.राहु, 10.केतु</div>
+            <div id="yd-error-display" class="error-msg"></div>
+        </div>
+
+        <div class="input-btn-group">
+            <button class="calc-btn" onclick="ydGenerate()">गणना करें</button>
+            <button class="reset-btn" onclick="ydReset()">रिसेट (Reset)</button>
+        </div>
+
+        <div id="yd-output-area" style="display:none;">
+            <div class="action-btn-group">
+                <button class="action-btn copy-btn" onclick="ydCopy()">रिपोर्ट कॉपी करें</button>
+                <button class="action-btn dl-btn" onclick="ydDownload()">TXT डाउनलोड करें</button>
+            </div>
+            <div id="yd-report-content" class="output-box"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ============ Mode Toggle ============ */
+var currentMode = 1;
+function switchMode(m) {
+    currentMode = m;
+    document.getElementById('mode1-btn').classList.toggle('active', m === 1);
+    document.getElementById('mode2-btn').classList.toggle('active', m === 2);
+    document.getElementById('mode1-panel').style.display = m === 1 ? 'block' : 'none';
+    document.getElementById('mode2-panel').style.display = m === 2 ? 'block' : 'none';
+}
+</script>
+
+<script>
+/* ============ जन्म स्थान: worldwide live search ============ */
+(function(){
+  var place=document.getElementById('birth-place'), box=document.getElementById('place-results');
+  var timer=null, ctrl=null;
+  (function(){ var s=document.getElementById('bd-day'); for(var d=1; d<=31; d++){ var o=document.createElement('option'); o.value=d; o.textContent=d; s.appendChild(o); } })();
+  [['bd-ampm',['AM','PM']],['tz-sign',['+','-']],['lat-dir',['N','S']],['lon-dir',['E','W']]].forEach(function(t){
+    var el=document.getElementById(t[0]), vals=t[1];
+    el.addEventListener('click', function(){ var i=(vals.indexOf(el.dataset.val)+1)%vals.length; el.dataset.val=vals[i]; el.textContent=vals[i]; });
+  });
+  function closeBox(){ box.style.display='none'; box.innerHTML=''; }
+  function setDms(dec, isLat){
+    var dir=dec>=0?(isLat?'N':'E'):(isLat?'S':'W');
+    var a=Math.abs(dec), d=Math.floor(a), m=Math.round((a-d)*60);
+    if(m===60){ d+=1; m=0; }
+    document.getElementById(isLat?'lat-deg':'lon-deg').value=d;
+    document.getElementById(isLat?'lat-min':'lon-min').value=m;
+    var dirEl=document.getElementById(isLat?'lat-dir':'lon-dir');
+    dirEl.dataset.val=dir; dirEl.textContent=dir;
+  }
+  function pick(label, la, lo){ clearTimeout(timer); place.value=label; setDms(la,true); setDms(lo,false); closeBox(); }
+  function render(items){
+    if(!items.length){ box.innerHTML='<div class="pr-none">कोई शहर नहीं मिला — इंटरनेट जांचें या lat/long manual भरें</div>'; }
+    else{
+      box.innerHTML=items.map(function(it,i){ return '<div class="pr-item" data-i="'+i+'">'+it.label+'</div>'; }).join('');
+      Array.prototype.forEach.call(box.querySelectorAll('.pr-item'), function(el){
+        el.addEventListener('mousedown', function(e){ e.preventDefault(); var it=items[+el.getAttribute('data-i')]; pick(it.label, it.lat, it.lon); });
+      });
+    }
+    box.style.display='block';
+  }
+  async function apiSearch(q){
+    var providers=[
+      { url:'https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=8&language=en&format=json',
+        parse:function(j){ return (j.results||[]).map(function(g){
+          var parts=[g.name]; if(g.admin1) parts.push(g.admin1); if(g.country) parts.push(g.country);
+          return {label:parts.join(', '), lat:+g.latitude.toFixed(4), lon:+g.longitude.toFixed(4)}; }); } },
+      { url:'https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=8&lang=en',
+        parse:function(j){ return (j.features||[]).map(function(f){
+          var p=f.properties||{}, parts=[p.name]; if(p.state) parts.push(p.state); if(p.country) parts.push(p.country);
+          var c=f.geometry&&f.geometry.coordinates;
+          return c?{label:parts.join(', '), lat:+c[1].toFixed(4), lon:+c[0].toFixed(4)}:null; }).filter(Boolean); } },
+      { url:'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=8',
+        parse:function(j){ return (Array.isArray(j)?j:[]).map(function(n){
+          return {label:String(n.display_name).split(',').slice(0,3).join(','), lat:+parseFloat(n.lat).toFixed(4), lon:+parseFloat(n.lon).toFixed(4)}; }); } }
+    ];
+    for(var i=0;i<providers.length;i++){
+      try{
+        if(ctrl) ctrl.abort();
+        ctrl=new AbortController();
+        var r=await fetch(providers[i].url,{signal:ctrl.signal});
+        if(!r.ok) continue;
+        var out=providers[i].parse(await r.json());
+        if(out.length) return out;
+      }catch(e){}
+    }
+    return [];
+  }
+  place.addEventListener('input', function(){
+    var qAtSchedule=place.value;
+    clearTimeout(timer);
+    if(qAtSchedule.trim().length<2){ closeBox(); return; }
+    box.innerHTML='<div class="pr-none">खोजा जा रहा है…</div>'; box.style.display='block';
+    timer=setTimeout(async function(){
+      if(place.value!==qAtSchedule || place.value.trim().length<2) return;
+      var remote=await apiSearch(place.value);
+      if(place.value===qAtSchedule) render(remote);
+    }, 350);
+  });
+  place.addEventListener('blur', function(){ setTimeout(closeBox, 150); });
+  place.addEventListener('focus', function(){ if(box.innerHTML) box.style.display='block'; });
+})();
+</script>
+
+<script type="module">
+/* ============ Swiss Ephemeris auto-fill (shared) ============ */
+const EPHEM_CDN = '../vendor/swisseph-browser.js';
+const ephemStatus = document.getElementById('ephem-status');
+const btnEphem = document.getElementById('btn-ephem');
+const ephemError = document.getElementById('ephem-error');
+let SE=null, SEP=null, SEF=null, SEH=null, SEL=null;
+
+function setStatus(t, ok){ ephemStatus.textContent=t; ephemStatus.className=ok?'ok':''; }
+
+try {
+  const m = await import(/* @vite-ignore */EPHEM_CDN);
+  SE = m.SwissEphemeris; SEP = m.Planet; SEF = m.CalculationFlag; SEH = m.HouseSystem; SEL = m.LunarPoint;
+  const swe = new SE();
+  await swe.init();
+  swe.setSiderealMode(m.SiderealMode.Lahiri);
+  window._swe = swe;
+  setStatus('✅ Engine तैयार — जन्म विवरण भरकर "ग्रह स्थिति निकालें व भरें" दबाएं', true);
+  btnEphem.disabled = false;
+} catch(e) {
+  setStatus('⚠️ Engine लोड नहीं हुआ — इंटरनेट चालू करके पेज reload करें', false);
+  btnEphem.disabled = false;
+  btnEphem.textContent = '🔄 पुनः प्रयास करें (पेज reload होगा)';
+  btnEphem.addEventListener('click', ()=>location.reload());
+}
+setTimeout(()=>{ if(btnEphem.disabled) setStatus('⏳ Engine लोड हो रहा है… (नेटवर्क धीमा हो सकता है)', false); }, 45000);
+
+const FLAGS = () => SEF.MoshierEphemeris | SEF.Speed;
+const norm360 = d => ((d % 360) + 360) % 360;
+const signNum = lon => Math.floor(norm360(lon) / 30) + 1;
+
+btnEphem.addEventListener('click', async ()=>{
+  if(!window._swe) return;
+  ephemError.innerText='';
+  try{
+    const gv=id=>document.getElementById(id).value;
+    const day=parseInt(gv('bd-day')), mon=parseInt(gv('bd-month')), Y=parseInt(gv('bd-year'));
+    if(isNaN(day)||isNaN(mon)||isNaN(Y)) throw new Error('जन्म तारीख पूरी भरें (दिन / महीना / वर्ष)।');
+    if(Y<1800||Y>2200) throw new Error('वर्ष 1800–2200 के बीच भरें।');
+    const maxDay=new Date(Y, mon+1, 0).getDate();
+    if(day<1||day>maxDay) throw new Error('इस महीने में '+day+' तारीख नहीं होती।');
+    const hh=parseInt(gv('bd-hh')), mm=parseInt(gv('bd-mm'));
+    let ss=parseInt(gv('bd-ss')); if(isNaN(ss)||ss<0||ss>59) ss=0;
+    if(isNaN(hh)||hh<1||hh>12) throw new Error('घंटे 1–12 के बीच भरें।');
+    if(isNaN(mm)||mm<0||mm>59) throw new Error('मिनट 0–59 के बीच भरें।');
+    const h24=(hh%12)+(document.getElementById('bd-ampm').dataset.val==='PM'?12:0);
+    const tzSign=document.getElementById('tz-sign').dataset.val==='-'?-1:1;
+    const tzH=parseInt(gv('tz-hh')||'0'), tzM=parseInt(gv('tz-mm')||'0');
+    if(isNaN(tzH)||tzH<0||tzH>14||isNaN(tzM)||tzM<0||tzM>59) throw new Error('Timezone घंटे 0–14, मिनट 0–59 भरें।');
+    const tzMin=tzSign*(tzH*60+tzM);
+    const dms=(degId,minId,dirId,maxDeg,name)=>{
+      const d=parseFloat(gv(degId)), m=parseFloat(gv(minId)||'0'), dir=document.getElementById(dirId).dataset.val;
+      if(isNaN(d)||d<0||d>maxDeg) throw new Error(name+' डिग्री 0–'+maxDeg+' के बीच भरें।');
+      if(isNaN(m)||m<0||m>=60) throw new Error(name+' मिनट 0–59 के बीच भरें।');
+      let dec=d+m/60; if(dir==='S'||dir==='W') dec=-dec; return dec;
+    };
+    const lat=dms('lat-deg','lat-min','lat-dir',90,'अक्षांश'),
+          lon=dms('lon-deg','lon-min','lon-dir',180,'देशांतर');
+    let utc=new Date(Date.UTC(Y,mon,day,h24,mm,ss)); utc=new Date(utc.getTime()-tzMin*60000);
+    const swe=window._swe;
+    const jd=swe.julianDay(utc.getUTCFullYear(),utc.getUTCMonth()+1,utc.getUTCDate(),
+                           utc.getUTCHours()+utc.getUTCMinutes()/60+utc.getUTCSeconds()/3600);
+    const ayan=swe.getAyanamsa(jd), F=FLAGS();
+    const calc=(body)=>{ const p=swe.calculatePosition(jd,body,F); return norm360(p.longitude-ayan); };
+    const order=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
+    const bodyMap={Surya:SEP.Sun,Chandra:SEP.Moon,Mangal:SEP.Mars,Budh:SEP.Mercury,Guru:SEP.Jupiter,Shukra:SEP.Venus,Shani:SEP.Saturn,Rahu:SEL.MeanNode};
+    const L={};
+    order.forEach(k=>{ L[k]=calc(bodyMap[k]); });
+    L.Ketu=norm360(L.Rahu+180);
+    const hs=swe.calculateHouses(jd,lat,lon,SEH.Placidus);
+    const lagna=norm360(hs.ascendant-ayan);
+
+    /* Store 10 sidereal longitudes: Lagna + 9 planets (degrees) */
+    const lons10=[lagna].concat(order.map(k=>L[k]));
+    window._ydLons = lons10;
+    /* Day/night for Mahabhagya: Sun in houses 7-12 = above horizon = day */
+    const sunHouse=Math.floor(norm360(L.Surya-lagna)/30)+1;
+    window._ydIsDay = sunHouse>=7 && sunHouse<=12;
+
+    /* Fill D1 rashi numbers in both modes + auto-run current mode */
+    const d1nums = lons10.map(signNum);
+    document.getElementById('bnn-rashi-input').value = d1nums.join(',');
+    document.getElementById('yd-rashi-input').value = d1nums.join(',');
+    if (window.currentMode === 2) { window.ydGenerate(); setStatus('✅ भरा गया: D1 नंबर — योग-दोष गणना तैयार है', true); }
+    else { window.bnnCalculate(); setStatus('✅ भरा गया: D1 नंबर — BNN गणना तैयार है', true); }
+  }catch(err){
+    ephemError.innerText=err.message||String(err);
+  }
+});
+</script>
+
+<script>
+/* ============ Astro Code (सभी tools में same) ============ */
+document.getElementById('btn-applycode').addEventListener('click', function(){
+  const err=document.getElementById('code-error');
+  err.innerText='';
+  const msg=applyAstroCode(document.getElementById('astro-code-in').value);
+  if(msg){ err.innerText=msg; return; }
+  const go=function(){ document.getElementById('btn-ephem').click(); };
+  if(window._swe){ go(); }
+  else{
+    err.innerText='⏳ Engine लोड हो रहा है… तैयार होते ही गणना होगी';
+    const iv=setInterval(function(){ if(window._swe){ clearInterval(iv); err.innerText=''; go(); } }, 500);
+    setTimeout(function(){ clearInterval(iv); }, 60000);
+  }
+});
+function makeAstroCode(){
+  const gv=id=>document.getElementById(id).value;
+  const p2=n=>String(n).padStart(2,'0');
+  const day=gv('bd-day'), mon=gv('bd-month'), Y=gv('bd-year');
+  if(!day||!mon||!Y) throw new Error('पहले जन्म तारीख भरें।');
+  const hh=parseInt(gv('bd-hh')), mm=parseInt(gv('bd-mm'));
+  let ss=parseInt(gv('bd-ss')); if(isNaN(ss)||ss<0||ss>59) ss=0;
+  if(isNaN(hh)||hh<1||hh>12) throw new Error('पहले जन्म समय भरें।');
+  if(isNaN(mm)||mm<0||mm>59) throw new Error('पहले जन्म समय भरें।');
+  const h24=(hh%12)+(document.getElementById('bd-ampm').dataset.val==='PM'?12:0);
+  const tzSign=document.getElementById('tz-sign').dataset.val;
+  const tzH=gv('tz-hh'), tzM=gv('tz-mm');
+  const latD=gv('lat-deg'), latM=gv('lat-min')||'0', latDir=document.getElementById('lat-dir').dataset.val;
+  const lonD=gv('lon-deg'), lonM=gv('lon-min')||'0', lonDir=document.getElementById('lon-dir').dataset.val;
+  if(latD===''||lonD==='') throw new Error('पहले अक्षांश/देशांतर भरें।');
+  return 'AS1-'+Y+p2(+mon+1)+p2(day)+'-'+p2(h24)+p2(mm)+p2(ss)+'-'+tzSign+p2(tzH)+p2(tzM)+'-'+p2(latD)+p2(latM)+latDir+'-'+String(lonD).padStart(3,'0')+p2(lonM)+lonDir;
+}
+function applyAstroCode(code){
+  const m=/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/.exec((code||'').trim());
+  if(!m) return 'कोड सही नहीं है — Home page से बना कोड paste करें।';
+  const d8=m[1], t6=m[2], tz=m[3], lat4=m[4], latDir=m[5], lon5=m[6], lonDir=m[7];
+  const Y=+d8.slice(0,4), mo=+d8.slice(4,6), dy=+d8.slice(6,8);
+  if(mo<1||mo>12) return 'कोड में तारीख गलत है।';
+  if(dy<1||dy>new Date(Y,mo,0).getDate()) return 'कोड में तारीख गलत है।';
+  const h24=+t6.slice(0,2), mi=+t6.slice(2,4), se=+t6.slice(4,6);
+  if(h24>23||mi>59||se>59) return 'कोड में समय गलत है।';
+  const tzH=+tz.slice(1,3), tzM=+tz.slice(3,5);
+  if(tzH>14||tzM>59) return 'कोड में timezone गलत है।';
+  const laD=+lat4.slice(0,2), laM=+lat4.slice(2,4), loD=+lon5.slice(0,3), loM=+lon5.slice(3,5);
+  if(laD>90||laM>59||loD>180||loM>59) return 'कोड में अक्षांश/देशांतर गलत है।';
+  const sv=(id,v)=>{document.getElementById(id).value=v;};
+  sv('bd-day',String(dy)); sv('bd-month',String(mo-1)); sv('bd-year',String(Y));
+  sv('bd-hh',String(h24%12===0?12:h24%12)); sv('bd-mm',String(mi).padStart(2,'0')); sv('bd-ss',String(se).padStart(2,'0'));
+  const ap=document.getElementById('bd-ampm'); ap.dataset.val=h24<12?'AM':'PM'; ap.textContent=ap.dataset.val;
+  const ts=document.getElementById('tz-sign'); ts.dataset.val=tz[0]; ts.textContent=tz[0];
+  sv('tz-hh',String(tzH)); sv('tz-mm',String(tzM).padStart(2,'0'));
+  sv('lat-deg',String(laD)); sv('lat-min',String(laM));
+  const ld=document.getElementById('lat-dir'); ld.dataset.val=latDir; ld.textContent=latDir;
+  sv('lon-deg',String(loD)); sv('lon-min',String(loM));
+  const od=document.getElementById('lon-dir'); od.dataset.val=lonDir; od.textContent=lonDir;
+  return null;
+}
+</script>
+
+<script>
+/* ============ MODE 1: BNN (original bnn-v1 logic, IDs namespaced) ============ */
+(function(){
+    // --- Constants ---
+    const RASHIS = ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुम्भ', 'मीन'];
+    const PLANETS = { 'Surya': 'सूर्य', 'Chandra': 'चंद्र', 'Mangal': 'मंगल', 'Budh': 'बुध', 'Guru': 'गुरु', 'Shukra': 'शुक्र', 'Shani': 'शनि', 'Rahu': 'राहु', 'Ketu': 'केतु' };
+    const PLANET_KEYS = Object.keys(PLANETS);
+    const DISPLAY_ORDER_PLANET_KEYS = ['Guru', 'Shukra', 'Budh', 'Chandra', 'Surya', 'Shani', 'Mangal', 'Rahu', 'Ketu'];
+
+    // --- Helper Functions ---
+    function getOrdinalRashiName(houseNumber) {
+        const ordinalNames = { 1: 'पहली', 2: 'दूसरी', 3: 'तीसरी', 4: 'चौथी', 5: 'पांचवीं', 6: 'छठी', 7: 'सातवीं', 8: 'आठवीं', 9: 'नौवीं', 10: 'दसवीं', 11: 'ग्यारहवीं', 12: 'बारहवीं' };
+        return ordinalNames[houseNumber] || `${houseNumber}वीं`;
+    }
+
+    // Function to Download TXT
+    function downloadAsTxt(filename, textContent) {
+        if (!textContent) return;
+        const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    function htmlToPlainText(elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) return "";
+        let lines = [];
+        function processNode(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const textContent = node.textContent.trim().replace(/\s+/g, ' ');
+                if (textContent && lines.length > 0) {
+                    lines[lines.length - 1] += (lines[lines.length - 1].endsWith(' ') ? '' : ' ') + textContent;
+                } else if (textContent) { lines.push(textContent); }
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                if (tagName === 'div' && node.classList.contains('planet-title')) {
+                    if (lines.length > 0 && lines[lines.length - 1].trim().length > 0) lines.push('');
+                    lines.push(node.textContent.trim());
+                    lines.push('--------------------');
+                } else if (tagName === 'div' && node.classList.contains('section-title')) {
+                    if (lines.length > 0 && lines[lines.length - 1].trim().length > 0) lines.push('');
+                    lines.push(node.textContent.trim());
+                } else if (tagName === 'div' && node.classList.contains('no-planets-info')) {
+                    lines.push(`- ${node.textContent.trim()}`);
+                } else if (tagName === 'li') {
+                    lines.push(`- ${node.textContent.trim()}`);
+                } else if (tagName !== 'button') { node.childNodes.forEach(processNode); }
+            }
+        }
+        processNode(element);
+        return lines.join('\n').replace(/\n\s*\n/g, '\n\n').trim();
+    }
+
+    // --- Main Calculation Function ---
+    function calculateAstrology() {
+        const planetAnalysisOutputDiv = document.getElementById('bnn-planet-analysis-output');
+        const inputErrorDiv = document.getElementById('bnn-input-error');
+        planetAnalysisOutputDiv.innerHTML = ''; inputErrorDiv.innerHTML = '';
+
+        const rashiInputString = document.getElementById('bnn-rashi-input').value.trim();
+        if (!rashiInputString) { inputErrorDiv.innerHTML = 'कृपया लग्न और ग्रहों की राशि संख्या दर्ज करें।'; return; }
+        const numbersStr = rashiInputString.split(',');
+        if (numbersStr.length !== 10) { inputErrorDiv.innerHTML = `त्रुटि: आपको 10 संख्याएँ दर्ज करनी होंगी, आपने ${numbersStr.length} दर्ज की हैं।`; return; }
+        const numbers = numbersStr.map(s => parseInt(s.trim(), 10));
+        if (numbers.some(isNaN)) { inputErrorDiv.innerHTML = 'त्रुटि: कृपया केवल संख्याएँ और कॉमा का उपयोग करें।'; return; }
+        if (numbers.some(n => n < 1 || n > 12)) { inputErrorDiv.innerHTML = 'त्रुटि: सभी राशि संख्याएँ 1 और 12 के बीच होनी चाहिए।'; return; }
+
+        const planetRashiMap = {};
+        const inputPlanetKeys = ['Surya', 'Chandra', 'Mangal', 'Budh', 'Guru', 'Shukra', 'Shani', 'Rahu', 'Ketu'];
+        inputPlanetKeys.forEach((key, index) => {
+            planetRashiMap[key] = numbers[index + 1] - 1;
+        });
+
+        planetAnalysisOutputDiv.innerHTML = `<div style="text-align:center; padding: 30px; color: #555;">गणना की जा रही है...</div>`;
+        let planetOutputHTML = '';
+
+        DISPLAY_ORDER_PLANET_KEYS.forEach(currentPlanetKey => {
+            const currentPlanetName = PLANETS[currentPlanetKey];
+            const currentPlanetRashiIndex = planetRashiMap[currentPlanetKey];
+            const currentPlanetRashiName = RASHIS[currentPlanetRashiIndex];
+
+            // Relation Arrays
+            const conjunctions = [], twoTwelveRelations = [], trineRelations = [], samSaptakRelations = [];
+            const allCategorizedPlanets = new Set();
+
+            PLANET_KEYS.forEach(targetPlanetKey => {
+                if (currentPlanetKey === targetPlanetKey) return;
+
+                const targetPlanetRashiIndex = planetRashiMap[targetPlanetKey];
+                const diff = (targetPlanetRashiIndex - currentPlanetRashiIndex + 12) % 12;
+
+                // 1. Conjunction (युति)
+                if (diff === 0) {
+                    conjunctions.push(targetPlanetKey);
+                    allCategorizedPlanets.add(targetPlanetKey);
+                }
+                // 2. 2-12 Relation
+                else if (diff === 1 || diff === 11) {
+                    twoTwelveRelations.push(targetPlanetKey);
+                    allCategorizedPlanets.add(targetPlanetKey);
+                }
+                // 3. Trine (1-5-9) (0 is already handled in conjunction)
+                else if (diff === 4 || diff === 8) {
+                    trineRelations.push(targetPlanetKey);
+                    allCategorizedPlanets.add(targetPlanetKey);
+                }
+                // 4. Sam Saptak (7th Aspect) - NEW LOGIC
+                else if (diff === 6) {
+                    samSaptakRelations.push(targetPlanetKey);
+                    allCategorizedPlanets.add(targetPlanetKey);
+                }
+            });
+
+            // 5. Other relations
+            const otherRelations = PLANET_KEYS.filter(pKey => pKey !== currentPlanetKey && !allCategorizedPlanets.has(pKey));
+
+            planetOutputHTML += `<div class="planet-analysis-info">`;
+            planetOutputHTML += `<div class="planet-title">${currentPlanetName} (${currentPlanetRashiName} राशि में)</div>`;
+
+            // Added Sam Saptak to the sections
+            const sections = [
+                { title: 'युति में ग्रह:', planets: conjunctions },
+                { title: '2-12 संबंध में ग्रह (दूसरी/बारहवीं राशि में):', planets: twoTwelveRelations },
+                { title: 'त्रिकोण (1-5-9) संबंध में ग्रह:', planets: trineRelations },
+                { title: 'सम सप्तक संबंध (सातवीं राशि में बैठे ग्रह):', planets: samSaptakRelations },
+                { title: 'अन्य संबंध में ग्रह:', planets: otherRelations }
+            ];
+
+            sections.forEach(section => {
+                planetOutputHTML += `<div class="section-title">${section.title}</div>`;
+                if (section.planets.length > 0) {
+                    section.planets.sort((a, b) => DISPLAY_ORDER_PLANET_KEYS.indexOf(a) - DISPLAY_ORDER_PLANET_KEYS.indexOf(b));
+                    planetOutputHTML += `<ul class="planet-list">`;
+                    section.planets.forEach(pKey => {
+                        let detail = '';
+                        const diff = (planetRashiMap[pKey] - currentPlanetRashiIndex + 12) % 12;
+
+                        if (section.title.includes('2-12')) { detail = (diff === 1) ? 'दूसरी राशि में' : 'बारहवीं राशि में'; }
+                        else if (section.title.includes('त्रिकोण')) {
+                            if (diff === 4) detail = 'पांचवीं राशि में';
+                            else if (diff === 8) detail = 'नौवीं राशि में';
+                        }
+                        else if (section.title.includes('सम सप्तक')) { detail = 'सातवीं राशि में'; }
+                        else if (section.title.includes('अन्य')) { detail = `${getOrdinalRashiName(diff + 1)} राशि में`; }
+
+                        planetOutputHTML += `<li>${PLANETS[pKey]}${detail ? ` (${detail})` : ''}</li>`;
+                    });
+                    planetOutputHTML += `</ul>`;
+                } else { planetOutputHTML += `<div class="no-planets-info">कोई नहीं</div>`; }
+            });
+            planetOutputHTML += `</div>`;
+        });
+
+        planetAnalysisOutputDiv.innerHTML = `<div class="output-section">
+                                                <div class="button-group">
+                                                    <button class="download-button" onclick="bnnDownloadAsTxt('BNN_Analysis.txt', bnnHtmlToPlainText('bnn-planet-analysis-content'))">पूरी BNN रिपोर्ट डाउनलोड करें</button>
+                                                </div>
+                                                <div id="bnn-planet-analysis-content" style="margin-top:15px;">${planetOutputHTML}</div>
+                                           </div>`;
+    }
+
+    // Expose for toggle/ephemeris + inline onclick
+    window.bnnCalculate = calculateAstrology;
+    window.bnnDownloadAsTxt = downloadAsTxt;
+    window.bnnHtmlToPlainText = htmlToPlainText;
+})();
+</script>
+
+<script>
+/* ============ MODE 2: Yoga-Dosha (v15.4 base + new features) ============ */
+(function(){
+    // --- Constants (original v15.4) ---
+    const RASHI_LORDS = ['Mangal', 'Shukra', 'Budh', 'Chandra', 'Surya', 'Budh', 'Shukra', 'Mangal', 'Guru', 'Shani', 'Shani', 'Guru'];
+    const PLANET_NAMES = ['लग्न', 'सूर्य', 'चंद्र', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि', 'राहु', 'केतु'];
+    const PLANET_KEYS = ['Lagna', 'Surya', 'Chandra', 'Mangal', 'Budh', 'Guru', 'Shukra', 'Shani', 'Rahu', 'Ketu'];
+    const EXALTATION = { 'Surya': 0, 'Chandra': 1, 'Mangal': 9, 'Budh': 5, 'Guru': 3, 'Shukra': 11, 'Shani': 6 };
+    const OWN_SIGNS = { 'Surya': [4], 'Chandra': [3], 'Mangal': [0, 7], 'Budh': [2, 5], 'Guru': [8, 11], 'Shukra': [1, 6], 'Shani': [9, 10] };
+    const FRIENDS = {
+        'Surya': ['Chandra', 'Mangal', 'Guru'], 'Chandra': ['Surya', 'Budh'], 'Mangal': ['Surya', 'Chandra', 'Guru'],
+        'Budh': ['Surya', 'Shukra'], 'Guru': ['Surya', 'Chandra', 'Mangal'], 'Shukra': ['Budh', 'Shani'], 'Shani': ['Budh', 'Shukra']
+    };
+    const MALEFICS = ['Surya', 'Mangal', 'Shani', 'Rahu', 'Ketu'];
+    const BENEFICS = ['Guru', 'Shukra', 'Budh', 'Chandra'];
+    const PLANETS_NO_NODES = ['Surya', 'Chandra', 'Mangal', 'Budh', 'Guru', 'Shukra', 'Shani'];
+    const KAALSARP_TYPES = {1:'अनंत',2:'कुलिक',3:'वासुकि',4:'शंखपाल',5:'पद्म',6:'महापद्म',7:'तक्षक',8:'कर्कोटक',9:'शंखचूड़',10:'घातक',11:'विषधर',12:'शेषनाग'};
+
+    // --- Yoga details (tap-to-expand) ---
+    const YOGA_DETAILS = {
+        'बुधादित्य योग':'सूर्य-बुध की युति से बुद्धि, विद्या, लेखन और प्रशासनिक सफलता मिलती है।',
+        'त्रिलोचन योग':'सूर्य-चंद्र-मंगल के त्रिकोण संबंध से साहस, नेतृत्व और निर्णय क्षमता बढ़ती है।',
+        'गजकेसरी योग':'चंद्र से केंद्र में गुरु — मान-सम्मान, धन, बुद्धिमत्ता और स्थायी प्रतिष्ठा।',
+        'पंच महापुरुष':'संबंधित ग्रह के कारकत्वों में श्रेष्ठता, राजसी सुख और विशेष प्रतिभा।',
+        'परिवर्तन योग':'दो ग्रहों की राशि-अदला-बदली से दोनों भावों का बल कई गुना बढ़ जाता है।',
+        'सरस्वती योग':'बुध-गुरु-शुक्र की शुभ स्थिति से विद्या, संगीत-कला और शास्त्र ज्ञान में श्रेष्ठता।',
+        'केंद्र-त्रिकोण राजयोग':'केंद्र-त्रिकोण स्वामियों के संबंध से पद, प्रतिष्ठा और जीवन में बड़ी सफलता।',
+        'धर्म-कर्माधिपति योग':'भाग्येश-कर्मेश का योग — भाग्य का पूर्ण सहयोग और करियर में उन्नति।',
+        'लक्ष्मी नारायण योग':'बुध-शुक्र युति से बुद्धि, वाणी, धन और भौतिक सुख।',
+        'भृगु-मंगल योग':'मंगल-शुक्र युति से ऊर्जा और आकर्षण; कला, प्रेम और भोग में रुचि।',
+        'हर्ष योग':'विपरीत राजयोग — शत्रु, रोग और कर्ज पर विजय; संघर्ष के बाद सफलता।',
+        'सरल योग':'विपरीत राजयोग — आकस्मिक संकटों से रक्षा और अचानक लाभ।',
+        'विमल योग':'विपरीत राजयोग — खर्च पर नियंत्रण, आध्यात्मिक उन्नति और शुद्ध चरित्र।',
+        'नीचभंग राजयोग':'नीच ग्रह का दोष भंग होकर राजयोग जैसा शुभ फल देने लगता है।',
+        'धन योग':'धन भावों के स्वामियों के संबंध से आर्थिक समृद्धि और संचय।',
+        'भारती योग':'विद्या, वाणी और बुद्धि के बल पर धन लाभ।',
+        'वसुमति योग':'शुभ ग्रह उपचय भावों में — निरंतर उन्नति और वैभव।',
+        'उभयचरी योग':'सूर्य के दोनों ओर ग्रह — आत्मबल, प्रभाव और संतुलित व्यक्तित्व।',
+        'वेशि योग':'सूर्य से दूसरे भाव में ग्रह — वाणी और धन में विशेषता।',
+        'वासि योग':'सूर्य से बारहवें भाव में ग्रह — गुप्त सहयोग और परोपकार।',
+        'दुरुधरा योग':'चंद्र के दोनों ओर ग्रह — मनोबल, संपन्नता और सभी सुख।',
+        'सुनफा योग':'चंद्र से दूसरे भाव में ग्रह — धन संचय और कुटुंब सुख।',
+        'अनफा योग':'चंद्र से बारहवें भाव में ग्रह — त्याग, दान और आध्यात्मिक सुख।',
+        'चंद्राधि योग':'चंद्र से 6-8 में शुभ ग्रह — शत्रुओं पर विजय, निरोगता और सुख।',
+        'गौरी योग':'बली चंद्र पर गुरु की दृष्टि — सौभाग्य, सुंदरता और सुखी दांपत्य।',
+        'अमल योग':'दशम में शुभ ग्रह — निर्मल कीर्ति और समाज में सम्मान।',
+        'शुभ कर्तरी योग':'लग्न के दोनों ओर शुभ ग्रह — जीवन में सुरक्षा कवच जैसा।',
+        'लग्न मल्लिका योग':'लग्न से लगातार भावों में ग्रह — व्यक्तित्व में निरंतरता और प्रभाव।',
+        'ग्रह (धन) मल्लिका योग':'धन भाव से निरंतरता — आर्थिक स्थिरता।',
+        'चतुरसागर योग':'चारों केंद्र में ग्रह — सर्वांगीण सफलता और व्यापक प्रभाव।',
+        'पर्वता योग':'लग्नेश केंद्र में — स्थिर उन्नति और अचल संपत्ति।',
+        'पुष्कल योग':'लग्नेश-चंद्रेश का बल — धन, सम्मान और राजसी सुख।',
+        'शंख योग':'पंचमेश-षष्ठेश केंद्र में — बुद्धि से शत्रुओं पर विजय।',
+        'पारिजात योग':'लग्नेश का स्वामी केंद्र/त्रिकोण में — वंश वृद्धि और सुख-समृद्धि।',
+        'लक्ष्मी योग':'नवमेश बलवान + शुक्र बली — प्रचुर धन और वैभव।',
+        'मृदंग योग':'लग्नेश का उच्चेश केंद्र में — प्रसिद्धि और उच्च पद।',
+        'केदार योग':'7 ग्रह 4 राशियों में — विशेष जीवन धारा और एकाग्रता।',
+        'शूल योग':'7 ग्रह 3 राशियों में — तीव्र स्वभाव और लक्ष्य-भेदिता।',
+        'युग योग':'7 ग्रह 2 राशियों में — असाधारण एकाग्रता।',
+        'गोल योग':'7 ग्रह 1 राशि में — अत्यंत विशेष और दुर्लभ स्थिति।',
+        'चामर योग':'लग्नेश उच्च का केंद्र में — राजसी सम्मान, दीर्घायु और प्रतिष्ठा।',
+        'महाभाग्य योग':'सूर्य-चंद्र-लग्न की शुभ स्थिति से महा सौभाग्य और ऐश्वर्य।',
+        'चंद्र-मंगल योग':'चंद्र-मंगल युति से धन, साहस, अचल संपत्ति और उद्यमशीलता।',
+        'गुरु-मंगल योग':'गुरु-मंगल युति से पराक्रम, धार्मिक उन्नति और नेतृत्व।',
+        'महालक्ष्मी योग':'नवमेश + बली शुक्र — अपार धन-संपदा और वैभव।',
+        'श्रीनाथ योग':'सप्तमेश दशम में, दशमेश नवम में — जीवनसाथी से भाग्योदय।',
+        'दामिनी योग':'7 ग्रह 6 राशियों में (नभस) — धन, प्रसिद्धि, उदारता और विद्वता।',
+        'लग्न-अधि योग':'लग्न से 6-8 में शुभ ग्रह — प्रसिद्धि, विद्या और सुख-सुविधा।',
+        'राज संबंध योग':'चर कारकों का शुभ संबंध — राजा/शासक वर्ग से संबंध और लाभ।',
+        'काहल योग':'चतुर्थेश के बल से नेतृत्व, पराक्रम और सेनापतित्व के गुण।'
+    };
+    function yogaDetail(name){
+        if(YOGA_DETAILS[name]) return YOGA_DETAILS[name];
+        const base=name.split('(')[0].trim();
+        return YOGA_DETAILS[base]||'';
+    }
+
+    // --- Helpers (original v15.4) ---
+    function normalizeHouse(h) { return ((h - 1 + 12) % 12) + 1; }
+    function getHouseNum(rIdx, lIdx) { return normalizeHouse(rIdx - lIdx + 1); }
+    function isKendra(h) { return [1, 4, 7, 10].includes(h); }
+    function isTrikona(h) { return [1, 5, 9].includes(h); }
+    function isUpachaya(h) { return [3, 6, 10, 11].includes(h); }
+    function isTrik(h) { return [6, 8, 12].includes(h); }
+    function isBali(pKey, rIdx) {
+        if(EXALTATION[pKey] === rIdx) return true;
+        if(OWN_SIGNS[pKey] && OWN_SIGNS[pKey].includes(rIdx)) return true;
+        return false;
+    }
+    function getConnection(p1Key, p2Key, p1House, p2House, p1Rashi, p2Rashi) {
+        if (p1House === p2House) return "युति";
+        if (Math.abs(p1House - p2House) === 6) return "समसप्तक दृष्टि";
+        if(['Rahu','Ketu'].includes(p1Key) || ['Rahu','Ketu'].includes(p2Key)) return null;
+        const p1Owner = RASHI_LORDS[p1Rashi];
+        const p2Owner = RASHI_LORDS[p2Rashi];
+        if (p1Owner === p2Key && p2Owner === p1Key) return "राशि परिवर्तन";
+        return null;
+    }
+    const norm360 = d => ((d % 360) + 360) % 360;
+    function angDiff(a, b){ let d=Math.abs(norm360(a)-norm360(b))%360; return d>180?360-d:d; }
+
+    // --- Structured yoga/dosha collectors (rendered later) ---
+    let yogas=[], doshas=[], pInfoG=null;
+    function yogaStrength(pl){
+        if(!pl||!pl.length||!pInfoG) return 'सामान्य';
+        if(pl.some(p=>pInfoG[p]&&pInfoG[p].isBali)) return 'प्रबल';
+        if(pl.some(p=>pInfoG[p]&&(isKendra(pInfoG[p].house)||isTrikona(pInfoG[p].house)))) return 'मध्यम';
+        return 'सामान्य';
+    }
+    function addYoga(name, desc, cat, planets){ yogas.push({name, desc, cat, str: yogaStrength(planets||[])}); }
+    function addDosha(name, desc, parihara){ doshas.push({name, desc, parihara: parihara||null}); }
+
+    // --- Chara Karaka (for Raja Sambandha, needs ephemeris degrees) ---
+    function charaKarakas(){
+        if(!window._ydLons) return null;
+        const keys=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani'];
+        const arr=keys.map((k,i)=>({k, deg: norm360(window._ydLons[i+1])%30}));
+        arr.sort((a,b)=>b.deg-a.deg);
+        return {AK:arr[0].k, AmK:arr[1].k};
+    }
+
+    // --- Main Function ---
+    function generateReport() {
+        try {
+            const inputStr = document.getElementById('yd-rashi-input').value.trim();
+            const errDiv = document.getElementById('yd-error-display');
+            const outputArea = document.getElementById('yd-output-area');
+            const reportContent = document.getElementById('yd-report-content');
+
+            errDiv.innerText = '';
+            reportContent.innerHTML = '';
+            outputArea.style.display = 'none';
+            yogas=[]; doshas=[];
+
+            if (!inputStr) { errDiv.innerText = 'कृपया डेटा दर्ज करें।'; return; }
+            const numbers = inputStr.split(',').map(s => parseInt(s.trim()));
+            if (numbers.length !== 10 || numbers.some(isNaN) || numbers.some(n => n<1 || n>12)) {
+                errDiv.innerText = 'त्रुटि: 10 वैध संख्याएँ (1-12) दर्ज करें।'; return;
+            }
+
+            const lagnaRashi = numbers[0] - 1;
+            const pInfo = {};
+            const houseLords = {};
+            const planetsInHouse = Array.from({length: 13}, () => []);
+            pInfoG = pInfo;
+
+            PLANET_KEYS.slice(1).forEach((key, i) => {
+                const rVal = numbers[i+1];
+                const rIdx = rVal - 1;
+                const h = getHouseNum(rIdx, lagnaRashi);
+                pInfo[key] = { rashiIdx: rIdx, house: h, isBali: isBali(key, rIdx) };
+                planetsInHouse[h].push(key);
+            });
+
+            for(let h=1; h<=12; h++) {
+                const rIdx = (lagnaRashi + h - 1) % 12;
+                houseLords[h] = RASHI_LORDS[rIdx];
+            }
+
+            // --- SECTION 1: NATURE ---
+            const natureList = [];
+            const lagnaNatureBadhaka = [1,4,7,10].includes(lagnaRashi+1) ? 11 : ([2,5,8,11].includes(lagnaRashi+1) ? 9 : 7);
+
+            PLANETS_NO_NODES.forEach(p => {
+                let roles = [];
+                const ownedHouses = [];
+                for(let h=1; h<=12; h++) if(houseLords[h] === p) ownedHouses.push(h);
+
+                const ownsKendra = ownedHouses.some(h => [1,4,7,10].includes(h));
+                const ownsTrikonaStrict = ownedHouses.some(h => [5,9].includes(h));
+
+                if(ownsKendra && ownsTrikonaStrict) {
+                    roles.push("योगकारक (केंद्र और त्रिकोण का स्वामी)");
+                }
+
+                const maraka = ownedHouses.filter(h => h===2 || h===7);
+                if(maraka.length > 0) roles.push(`मारक (भाव ${maraka.join(', ')} का स्वामी)`);
+                if(ownedHouses.includes(lagnaNatureBadhaka)) roles.push(`बाधक (भाव ${lagnaNatureBadhaka} का स्वामी)`);
+
+                if(roles.length > 0) {
+                    natureList.push(`<strong>${PLANET_NAMES[PLANET_KEYS.indexOf(p)]}:</strong> ${roles.join(', ')}`);
+                }
+            });
+
+            // --- SECTION 2: YOGAS ---
+            const moonH = pInfo['Chandra'].house;
+            const guruH = pInfo['Guru'].house;
+
+            // 0. Budhaditya Yoga
+            if(pInfo['Surya'].house === pInfo['Budh'].house) {
+                addYoga('बुधादित्य योग', `सूर्य और बुध की युति भाव ${pInfo['Surya'].house} में।`, 'सूर्य योग', ['Surya','Budh']);
+            }
+
+            // 0B. Trilochan Yoga
+            const rS = pInfo['Surya'].rashiIdx;
+            const rM = pInfo['Chandra'].rashiIdx;
+            const rMa = pInfo['Mangal'].rashiIdx;
+            if((rS % 4 === rM % 4) && (rM % 4 === rMa % 4)) {
+                if(rS !== rM || rM !== rMa) {
+                     addYoga('त्रिलोचन योग', 'सूर्य, चंद्र और मंगल एक-दूसरे से त्रिकोण (1-5-9) में स्थित हैं।', 'अन्य', ['Surya','Chandra','Mangal']);
+                }
+            }
+
+            // 1. Gajakesari
+            const relGuru = normalizeHouse(guruH - moonH + 1);
+            if([1,4,7,10].includes(relGuru)) addYoga('गजकेसरी योग', `गुरु, चंद्रमा से केंद्र (भाव ${relGuru}) में है।`, 'चंद्र योग', ['Guru','Chandra']);
+
+            // 2. Panch Mahapurush
+            const pmMap = {'Mangal':'रुचक', 'Budh':'भद्र', 'Guru':'हंस', 'Shukra':'मालव्य', 'Shani':'शश'};
+            Object.keys(pmMap).forEach(p => {
+                if(pInfo[p].isBali && isKendra(pInfo[p].house)) {
+                    addYoga(`पंच महापुरुष (${pmMap[p]} योग)`, `${PLANET_NAMES[PLANET_KEYS.indexOf(p)]} स्वराशि/उच्च का होकर केंद्र में है।`, 'राजयोग', [p]);
+                }
+            });
+
+            // 3. Parivartana Yoga
+            for(let i=0; i<PLANETS_NO_NODES.length; i++) {
+                for(let j=i+1; j<PLANETS_NO_NODES.length; j++) {
+                    const p1 = PLANETS_NO_NODES[i];
+                    const p2 = PLANETS_NO_NODES[j];
+                    if(RASHI_LORDS[pInfo[p1].rashiIdx] === p2 && RASHI_LORDS[pInfo[p2].rashiIdx] === p1) {
+                        const h1 = pInfo[p1].house;
+                        const h2 = pInfo[p2].house;
+                        let type = "महा योग";
+                        const triks = [6,8,12];
+                        if(triks.includes(h1) || triks.includes(h2)) type = "दैन्य योग";
+                        else if(h1 === 3 || h2 === 3) type = "खल योग";
+                        addYoga(`परिवर्तन योग (${type})`, `${PLANET_NAMES[PLANET_KEYS.indexOf(p1)]} और ${PLANET_NAMES[PLANET_KEYS.indexOf(p2)]} में राशि परिवर्तन।`, type==="महा योग"?"राजयोग":"धन योग", [p1,p2]);
+                    }
+                }
+            }
+
+            // 4. Saraswati Yoga
+            const sarHouses = [1, 2, 4, 5, 7, 9, 10];
+            const bH = pInfo['Budh'].house, gH = pInfo['Guru'].house, sH = pInfo['Shukra'].house;
+            if(sarHouses.includes(bH) && sarHouses.includes(gH) && sarHouses.includes(sH) && pInfo['Guru'].isBali) {
+                addYoga('सरस्वती योग', 'बुध, गुरु, शुक्र केंद्र/त्रिकोण/धन भाव में हैं और गुरु बली है।', 'अन्य', ['Budh','Guru','Shukra']);
+            }
+
+            // Lord Connections
+            const checkLordConnection = (h1, h2, name) => {
+                const l1 = houseLords[h1];
+                const l2 = houseLords[h2];
+                if(l1 === l2) return;
+                const conn = getConnection(l1, l2, pInfo[l1].house, pInfo[l2].house, pInfo[l1].rashiIdx, pInfo[l2].rashiIdx);
+                if(conn) addYoga(name, `${h1}वें और ${h2}वें भाव के स्वामी का संबंध (${conn})।`, name.includes('धन')||name.includes('भारती')?'धन योग':'राजयोग', [l1,l2]);
+            };
+
+            [1,4,7,10].forEach(k => {
+                [5,9].forEach(t => { checkLordConnection(k, t, "केंद्र-त्रिकोण राजयोग"); });
+            });
+            checkLordConnection(9, 10, "धर्म-कर्माधिपति योग");
+
+            if(pInfo['Budh'].house === pInfo['Shukra'].house) addYoga('लक्ष्मी नारायण योग', 'बुध-शुक्र युति।', 'धन योग', ['Budh','Shukra']);
+            if(pInfo['Mangal'].house === pInfo['Shukra'].house) addYoga('भृगु-मंगल योग', 'मंगल-शुक्र युति।', 'अन्य', ['Mangal','Shukra']);
+
+            // Vipareet
+            if(isTrik(pInfo[houseLords[6]].house)) addYoga('हर्ष योग (विपरित राजयोग)', '6ठा स्वामी त्रिक भाव में।', 'राजयोग', [houseLords[6]]);
+            if(isTrik(pInfo[houseLords[8]].house)) addYoga('सरल योग (विपरित राजयोग)', '8वां स्वामी त्रिक भाव में।', 'राजयोग', [houseLords[8]]);
+            if(isTrik(pInfo[houseLords[12]].house)) addYoga('विमल योग (विपरित राजयोग)', '12वां स्वामी त्रिक भाव में।', 'राजयोग', [houseLords[12]]);
+
+            // Neechabhanga
+            PLANETS_NO_NODES.forEach(p => {
+                const neechRashi = (EXALTATION[p] + 6) % 12;
+                if(pInfo[p].rashiIdx === neechRashi) {
+                    let cancelled = false;
+                    const disp = RASHI_LORDS[neechRashi];
+                    const exaltLord = RASHI_LORDS[EXALTATION[p]];
+                    if(isKendra(pInfo[disp].house)) cancelled = true;
+                    const dispFromMoon = normalizeHouse(pInfo[disp].house - pInfo['Chandra'].house + 1);
+                    if(isKendra(dispFromMoon)) cancelled = true;
+                    if(isKendra(pInfo[exaltLord].house)) cancelled = true;
+                    if(cancelled) addYoga(`नीचभंग राजयोग (${PLANET_NAMES[PLANET_KEYS.indexOf(p)]})`, 'नीचभंग की शर्तें पूरी हो रही हैं।', 'राजयोग', [p]);
+                }
+            });
+
+            // Dhan Yogas
+            checkLordConnection(11, 2, "धन योग"); checkLordConnection(1, 5, "धन योग");
+            checkLordConnection(4, 5, "धन योग"); checkLordConnection(5, 7, "धन योग");
+            checkLordConnection(2, 5, "भारती योग"); checkLordConnection(5, 11, "भारती योग");
+
+            const benInUpachaya = BENEFICS.every(b => isUpachaya(pInfo[b].house));
+            if(benInUpachaya) addYoga('वसुमति योग', 'सभी शुभ ग्रह उपचय भावों में हैं।', 'धन योग', BENEFICS.slice());
+
+            // Sun/Moon Yogas
+            const validP = (arr) => arr.length > 0 && !arr.includes('Chandra') && !arr.includes('Rahu') && !arr.includes('Ketu');
+            const veshi = validP(planetsInHouse[normalizeHouse(pInfo['Surya'].house + 1)]);
+            const vasi = validP(planetsInHouse[normalizeHouse(pInfo['Surya'].house + 11)]);
+            const veshiPlanets = planetsInHouse[normalizeHouse(pInfo['Surya'].house + 1)].filter(p=>!['Chandra','Rahu','Ketu'].includes(p));
+            const vasiPlanets = planetsInHouse[normalizeHouse(pInfo['Surya'].house + 11)].filter(p=>!['Chandra','Rahu','Ketu'].includes(p));
+            if(veshi && vasi) addYoga('उभयचरी योग', 'सूर्य के दोनों ओर ग्रह हैं।', 'सूर्य योग', veshiPlanets.concat(vasiPlanets));
+            else if(veshi) addYoga('वेशि योग', 'सूर्य से दूसरे भाव में ग्रह है।', 'सूर्य योग', veshiPlanets);
+            else if(vasi) addYoga('वासि योग', 'सूर्य से 12वें भाव में ग्रह है।', 'सूर्य योग', vasiPlanets);
+
+            const validM = (arr) => arr.length > 0 && !arr.includes('Surya') && !arr.includes('Rahu') && !arr.includes('Ketu');
+            const sunapha = validM(planetsInHouse[normalizeHouse(moonH + 1)]);
+            const anapha = validM(planetsInHouse[normalizeHouse(moonH + 11)]);
+            const sunaphaPlanets = planetsInHouse[normalizeHouse(moonH + 1)].filter(p=>!['Surya','Rahu','Ketu'].includes(p));
+            const anaphaPlanets = planetsInHouse[normalizeHouse(moonH + 11)].filter(p=>!['Surya','Rahu','Ketu'].includes(p));
+            if(sunapha && anapha) addYoga('दुरुधरा योग', 'चंद्र के दोनों ओर ग्रह हैं।', 'चंद्र योग', sunaphaPlanets.concat(anaphaPlanets));
+            else if(sunapha) addYoga('सुनफा योग', 'चंद्र से दूसरे भाव में ग्रह है।', 'चंद्र योग', sunaphaPlanets);
+            else if(anapha) addYoga('अनफा योग', 'चंद्र से 12वें भाव में ग्रह है।', 'चंद्र योग', anaphaPlanets);
+
+            const adhiHouses=[normalizeHouse(moonH+5),normalizeHouse(moonH+6),normalizeHouse(moonH+7)];
+            const adhi = adhiHouses.some(h=>planetsInHouse[h].some(p => ['Guru','Shukra','Budh'].includes(p)));
+            if(adhi) addYoga('चंद्राधि योग', 'चंद्र से 6, 7, 8 भाव में शुभ ग्रह हैं।', 'चंद्र योग', ['Guru','Shukra','Budh']);
+
+            if(pInfo['Chandra'].isBali && [5, 7, 9].includes(normalizeHouse(moonH - guruH + 1))) addYoga('गौरी योग', 'चंद्रमा बली है और गुरु द्वारा दृष्ट है।', 'चंद्र योग', ['Chandra','Guru']);
+
+            const hasAmala = (arr) => arr.length > 0 && arr.every(p => BENEFICS.includes(p));
+            const amalaH10=planetsInHouse[10].filter(p=>BENEFICS.includes(p));
+            const amalaHM=planetsInHouse[normalizeHouse(moonH + 9)].filter(p=>BENEFICS.includes(p));
+            if(hasAmala(planetsInHouse[10]) || hasAmala(planetsInHouse[normalizeHouse(moonH + 9)])) addYoga('अमल योग', '10वें भाव में केवल शुभ ग्रह हैं।', 'अन्य', amalaH10.concat(amalaHM));
+
+            // Misc Yogas
+            const p2 = planetsInHouse[2], p12 = planetsInHouse[12];
+            if(p2.length && p2.every(p => BENEFICS.includes(p)) && p12.length && p12.every(p => BENEFICS.includes(p))) addYoga('शुभ कर्तरी योग', 'लग्न के दोनों ओर शुभ ग्रह हैं।', 'अन्य', []);
+
+            let cL=true; for(let i=0;i<7;i++) if(!planetsInHouse[normalizeHouse(1+i)].length) cL=false;
+            if(cL) addYoga('लग्न मल्लिका योग', 'लग्न से लगातार 7 भावों में ग्रह हैं।', 'अन्य', []);
+
+            let cD=true; for(let i=0;i<7;i++) if(!planetsInHouse[normalizeHouse(2+i)].length) cD=false;
+            if(cD) addYoga('ग्रह (धन) मल्लिका योग', 'धन भाव से लगातार 7 भावों में ग्रह हैं।', 'अन्य', []);
+
+            if([1,4,7,10].every(h => planetsInHouse[h].length > 0)) addYoga('चतुरसागर योग', 'चारों केंद्र भावों में ग्रह स्थित हैं।', 'राजयोग', []);
+
+            const l1 = houseLords[1];
+            if(isKendra(pInfo[l1].house) && !planetsInHouse[6].length && !planetsInHouse[8].length) addYoga('पर्वता योग', 'लग्नेश केंद्र में और 6/8 खाली।', 'राजयोग', [l1]);
+
+            const lMoon = houseLords[moonH];
+            const friend = (FRIENDS[l1] || []).includes(lMoon);
+            if(isKendra(pInfo[l1].house) && isKendra(pInfo[lMoon].house) && (pInfo[l1].house === pInfo[lMoon].house || friend)) addYoga('पुष्कल योग', 'लग्नेश-चंद्रेश केंद्र में युति/मित्र।', 'राजयोग', [l1,lMoon]);
+
+            const l5 = houseLords[5], l6 = houseLords[6];
+            if(pInfo[l5].house === pInfo[l6].house && isKendra(pInfo[l5].house)) addYoga('शंख योग', '5वें और 6वें स्वामी केंद्र में एक साथ।', 'अन्य', [l5,l6]);
+
+            const dispL1 = RASHI_LORDS[pInfo[l1].rashiIdx];
+            if(isKendra(pInfo[dispL1].house) || isTrikona(pInfo[dispL1].house)) addYoga('पारिजात योग', 'लग्नेश का राशि स्वामी केंद्र/त्रिकोण में।', 'राजयोग', [dispL1]);
+
+            if((isKendra(pInfo[houseLords[9]].house) || isTrikona(pInfo[houseLords[9]].house)) && pInfo['Shukra'].isBali) addYoga('लक्ष्मी योग', 'नवमेश केंद्र/त्रिकोण में और शुक्र बली।', 'धन योग', [houseLords[9],'Shukra']);
+
+            const exL1 = RASHI_LORDS[EXALTATION[l1]];
+            if(exL1 && isKendra(pInfo[exL1].house)) addYoga('मृदंग योग', 'लग्नेश का उच्च स्वामी केंद्र में।', 'राजयोग', [exL1]);
+
+            // Sankhya Yogas
+            const occupiedRashis = new Set();
+            PLANETS_NO_NODES.forEach(p => occupiedRashis.add(pInfo[p].rashiIdx));
+            const count = occupiedRashis.size;
+            if(count === 4) addYoga('केदार योग (संख्या योग)', '7 ग्रह केवल 4 राशियों में स्थित हैं।', 'अन्य', []);
+            if(count === 3) addYoga('शूल योग (संख्या योग)', '7 ग्रह केवल 3 राशियों में स्थित हैं।', 'अन्य', []);
+            if(count === 2) addYoga('युग योग (संख्या योग)', '7 ग्रह केवल 2 राशियों में स्थित हैं।', 'अन्य', []);
+            if(count === 1) addYoga('गोल योग (संख्या योग)', '7 ग्रह केवल 1 राशि में स्थित हैं।', 'अन्य', []);
+
+            // ===== NEW YOGAS (user-approved) =====
+            // 1. चामर योग
+            if(EXALTATION[l1]===pInfo[l1].rashiIdx && isKendra(pInfo[l1].house))
+                addYoga('चामर योग','लग्नेश उच्च का होकर केंद्र में स्थित है।','राजयोग',[l1]);
+            // 2. महाभाग्य योग (needs day/night from ephemeris)
+            if(window._ydIsDay!==undefined){
+                const oddSign=r=>r%2===0;
+                if(window._ydIsDay){
+                    if(oddSign(rS)&&oddSign(rM)&&oddSign(lagnaRashi))
+                        addYoga('महाभाग्य योग','दिन में जन्म: सूर्य, चंद्र और लग्न विषम राशियों में।','राजयोग',['Surya','Chandra']);
+                }else{
+                    if(!oddSign(rS)&&!oddSign(rM)&&!oddSign(lagnaRashi))
+                        addYoga('महाभाग्य योग','रात में जन्म: सूर्य, चंद्र और लग्न सम राशियों में।','राजयोग',['Surya','Chandra']);
+                }
+            }
+            // 3. चंद्र-मंगल योग
+            if(pInfo['Chandra'].house===pInfo['Mangal'].house)
+                addYoga('चंद्र-मंगल योग',`चंद्र-मंगल की युति भाव ${pInfo['Chandra'].house} में।`,'धन योग',['Chandra','Mangal']);
+            // 4. गुरु-मंगल योग
+            if(pInfo['Guru'].house===pInfo['Mangal'].house)
+                addYoga('गुरु-मंगल योग',`गुरु-मंगल की युति भाव ${pInfo['Guru'].house} में।`,'धन योग',['Guru','Mangal']);
+            // 5. महालक्ष्मी योग (stricter than लक्ष्मी योग)
+            if((isKendra(pInfo[houseLords[9]].house)||isTrikona(pInfo[houseLords[9]].house)) && pInfo['Shukra'].isBali && isKendra(pInfo['Shukra'].house))
+                addYoga('महालक्ष्मी योग','नवमेश केंद्र/त्रिकोण में, शुक्र बली होकर केंद्र में।','धन योग',[houseLords[9],'Shukra']);
+            // 6. श्रीनाथ योग
+            if(pInfo[houseLords[7]].house===10 && pInfo[houseLords[10]].house===9)
+                addYoga('श्रीनाथ योग','सप्तमेश दशम भाव में और दशमेश नवम भाव में स्थित है।','राजयोग',[houseLords[7],houseLords[10]]);
+            // 7. दामिनी योग (JyotishApp definition: 6 signs)
+            if(occupiedRashis.size===6)
+                addYoga('दामिनी योग','7 ग्रह (राहु-केतु छोड़कर) 6 अलग-अलग राशियों में स्थित हैं।','धन योग',[]);
+            // 8. लग्न-अधि योग (JyotishApp definition)
+            (function(){
+                const ben=['Guru','Shukra','Budh'];
+                const hasBen=[6,7,8].some(h=>planetsInHouse[h].some(p=>ben.includes(p)));
+                let waxMoon=false;
+                if(window._ydLons){
+                    const elong=norm360(window._ydLons[2]-window._ydLons[1]);
+                    waxMoon = elong>0 && elong<180 && [6,7,8].some(h=>planetsInHouse[h].includes('Chandra'));
+                }
+                if(hasBen||waxMoon) addYoga('लग्न-अधि योग','लग्न से 6, 7, 8 भाव में शुभ ग्रह हैं।','राजयोग',ben);
+            })();
+            // 9. राज संबंध योग (JyotishApp: Chara Karaka based)
+            (function(){
+                const ck=charaKarakas(); if(!ck) return;
+                const amk=ck.AmK, ak=ck.AK;
+                const amkName=PLANET_NAMES[PLANET_KEYS.indexOf(amk)], akName=PLANET_NAMES[PLANET_KEYS.indexOf(ak)];
+                if(pInfo[amk].isBali){
+                    addYoga('राज संबंध योग',`चर अमात्यकारक ${amkName} स्वराशि/उच्च का है।`,'राजयोग',[amk]); return;
+                }
+                const rel=normalizeHouse(pInfo[amk].house-pInfo[ak].house+1);
+                if(isKendra(rel)||isTrikona(rel))
+                    addYoga('राज संबंध योग',`चर अमात्यकारक ${amkName} चर आत्मकारक ${akName} से केंद्र/त्रिकोण में है।`,'राजयोग',[amk]);
+            })();
+            // 10. काहल योग (JyotishApp definition)
+            (function(){
+                const l4=houseLords[4], l9=houseLords[9], l10=houseLords[10];
+                const l4H=pInfo[l4].house;
+                const mutK=(h1,h2)=>isKendra(normalizeHouse(h1-h2+1));
+                if(mutK(l4H,guruH)&&pInfo[l1].isBali){ addYoga('काहल योग','चतुर्थेश और गुरु परस्पर केंद्र में, लग्नेश बली।','राजयोग',[l4]); return; }
+                if(mutK(l4H,pInfo[l9].house)&&pInfo[l1].isBali){ addYoga('काहल योग','चतुर्थेश और नवमेश परस्पर केंद्र में, लग्नेश बली।','राजयोग',[l4]); return; }
+                const l10H=pInfo[l10].house;
+                if(pInfo[l4].isBali&&(l10H===l4H||normalizeHouse(l10H-l4H+1)===7))
+                    addYoga('काहल योग','चतुर्थेश स्वराशि/उच्च का, दशमेश से युति/दृष्ट।','राजयोग',[l4]);
+            })();
+
+            // --- SECTION 3: DOSHAS ---
+            // Parihara helpers
+            function mangalikBhanga(){
+                const mh=pInfo['Mangal'];
+                if(mh.isBali) return 'मांगलिक दोष भंग: मंगल स्वराशि/उच्च का है।';
+                if(mh.house===2) return 'मांगलिक दोष भंग: मंगल धन भाव में है।';
+                const rel=normalizeHouse(mh.house-guruH+1);
+                if([5,7,9].includes(rel)) return 'मांगलिक दोष भंग: गुरु की दृष्टि मंगल पर है।';
+                return null;
+            }
+            function kemadrumaBhanga(){
+                // App's cancellation rules
+                if(planetsInHouse[moonH].some(p=>!['Chandra','Surya','Rahu','Ketu'].includes(p)))
+                    return 'केमद्रुम भंग: चंद्रमा के साथ अन्य ग्रह की युति है।';
+                for(const h of [1,4,7,10]){
+                    if(planetsInHouse[h].some(p=>p!=='Chandra')) return 'केमद्रुम भंग: लग्न से केंद्र में ग्रह है।';
+                }
+                for(const k of [1,4,7,10]){
+                    const h=normalizeHouse(moonH+k-1);
+                    if(planetsInHouse[h].some(p=>p!=='Chandra')) return 'केमद्रुम भंग: चंद्र से केंद्र में ग्रह है।';
+                }
+                const asp=(p,hs)=>{ const r=normalizeHouse(pInfo[p].house-moonH+1); return hs.includes(r); };
+                if(asp('Guru',[5,7,9])||asp('Shukra',[7])||asp('Budh',[7]))
+                    return 'केमद्रुम भंग: चंद्रमा पर शुभ ग्रह की दृष्टि है।';
+                return null;
+            }
+
+            const mH = pInfo['Mangal'].house;
+            const mRel = normalizeHouse(mH - moonH + 1);
+            if([1,2,4,7,8,12].some(x => x===mH || x===mRel))
+                addDosha('मांगलिक दोष', 'मंगल लग्न/चंद्र से 1,2,4,7,8,12 में।', mangalikBhanga());
+
+            const paap2 = planetsInHouse[2].some(p => MALEFICS.includes(p));
+            const paap12 = planetsInHouse[12].some(p => MALEFICS.includes(p));
+            if(paap2 && paap12) addDosha('पाप कर्तरी दोष', 'लग्न के दोनों ओर पाप ग्रह।', null);
+
+            if([6,8,12].includes(normalizeHouse(moonH - guruH + 1)) && !isKendra(moonH)){
+                const shBhanga=(yogas.some(y=>y.cat==='राजयोग'||y.cat==='धन योग')&&isKendra(guruH))
+                    ?'शकट भंग: अन्य राजयोग/धनयोग विद्यमान और गुरु लग्न से केंद्र में।':null;
+                addDosha('शकट योग', 'चंद्र, गुरु से 6/8/12 है और केंद्र में नहीं है।', shBhanga);
+            }
+
+            const kEmpty = (h) => !planetsInHouse[h].length || planetsInHouse[h].every(p => ['Surya','Rahu','Ketu'].includes(p));
+            if(kEmpty(normalizeHouse(moonH+1)) && kEmpty(normalizeHouse(moonH+11)) && [1,4,7,10].every(h => kEmpty(h)))
+                addDosha('केमद्रुम दोष', 'चंद्र अकेला और केंद्र खाली।', kemadrumaBhanga());
+
+            if(isTrik(pInfo[houseLords[11]].house)) addDosha('दारिद्र्य योग', 'लाभेश त्रिक भाव में।', null);
+
+            ['Rahu', 'Ketu'].forEach(n => {
+                if(pInfo['Guru'].house === pInfo[n].house) addDosha('गुरु-चांडाल दोष', `गुरु-${n} युति।`, null);
+                if(pInfo['Mangal'].house === pInfo[n].house) addDosha('अंगारक दोष', `मंगल-${n} युति।`, null);
+                if(pInfo['Surya'].house === pInfo[n].house){
+                    let extra='';
+                    if(window._ydLons) extra=` (${angDiff(window._ydLons[1],window._ydLons[n==='Rahu'?8:9]).toFixed(1)}° पर)`;
+                    addDosha('सूर्य ग्रहण', `सूर्य-${n} युति${extra}।`, null);
+                }
+                if(pInfo['Chandra'].house === pInfo[n].house){
+                    let extra='';
+                    if(window._ydLons) extra=` (${angDiff(window._ydLons[2],window._ydLons[n==='Rahu'?8:9]).toFixed(1)}° पर)`;
+                    addDosha('चंद्र ग्रहण', `चंद्र-${n} युति${extra}।`, null);
+                }
+            });
+            if(pInfo['Shani'].house === pInfo['Rahu'].house) addDosha('श्रापित योग', 'शनि-राहु युति।', null);
+            if(pInfo['Shani'].house === pInfo['Chandra'].house) addDosha('विष योग', 'शनि-चंद्र युति।', null);
+
+            // Kaalsarp (with 12 types)
+            const rR = pInfo['Rahu'].rashiIdx;
+            const kR = pInfo['Ketu'].rashiIdx;
+            let arc1 = [], c = (rR + 1) % 12;
+            while(c !== kR) { arc1.push(c); c = (c + 1) % 12; }
+            let arc2 = [], c2 = (kR + 1) % 12;
+            while(c2 !== rR) { arc2.push(c2); c2 = (c2 + 1) % 12; }
+            const set1 = [...arc1, rR, kR], set2 = [...arc2, rR, kR];
+            if(PLANETS_NO_NODES.every(p => set1.includes(pInfo[p].rashiIdx)) || PLANETS_NO_NODES.every(p => set2.includes(pInfo[p].rashiIdx))){
+                const ksType=KAALSARP_TYPES[pInfo['Rahu'].house]||'';
+                const relR=normalizeHouse(pInfo['Rahu'].house-guruH+1), relK=normalizeHouse(pInfo['Ketu'].house-guruH+1);
+                const shanti=([5,7,9].includes(relR)||[5,7,9].includes(relK))?'कालसर्प शांति: गुरु की दृष्टि राहु/केतु पर होने से प्रभाव क्षीण।':null;
+                addDosha(`कालसर्प दोष (${ksType})`, 'सभी ग्रह राहु-केतु अक्ष के एक तरफ।', shanti);
+            }
+
+            // Pitra Dosha (detailed)
+            (function(){
+                const causes=[];
+                ['Rahu','Ketu'].forEach(n=>{
+                    const nm=n==='Rahu'?'राहु':'केतु';
+                    if(pInfo[n].house===9) causes.push(`नवम भाव में ${nm}`);
+                });
+                ['Rahu','Ketu'].forEach(n=>{
+                    const nm=n==='Rahu'?'राहु':'केतु';
+                    if(pInfo['Surya'].house===pInfo[n].house) causes.push(`सूर्य के साथ ${nm} की युति`);
+                });
+                ['Rahu','Ketu'].forEach(n=>{
+                    const nm=n==='Rahu'?'राहु':'केतु';
+                    if(pInfo['Chandra'].house===pInfo[n].house) causes.push(`चंद्र के साथ ${nm} की युति`);
+                });
+                if(causes.length) addDosha('पितृ दोष', `राहु/केतु का सूर्य/चंद्र/नवम भाव से संबंध (${causes.join('; ')})।`, null);
+            })();
+
+            // NEW: Graha Yuddha (needs exact degrees)
+            if(window._ydLons){
+                const yk={Mangal:3,Budh:4,Guru:5,Shukra:6,Shani:7};
+                const yn={Mangal:'मंगल',Budh:'बुध',Guru:'गुरु',Shukra:'शुक्र',Shani:'शनि'};
+                const keys=Object.keys(yk);
+                for(let i=0;i<keys.length;i++) for(let j=i+1;j<keys.length;j++){
+                    const d=angDiff(window._ydLons[yk[keys[i]]],window._ydLons[yk[keys[j]]]);
+                    if(d<1) addDosha('ग्रह युद्ध', `${yn[keys[i]]} और ${yn[keys[j]]} में ग्रह युद्ध (अंतर ${d.toFixed(1)}°)।`, null);
+                }
+            }
+
+            // NEW: Gandanta (needs exact degrees)
+            if(window._ydLons){
+                const gsigns=[0,3,6,9], gnames={0:'मेष',3:'कर्क',6:'तुला',9:'मकर'};
+                const gp={Surya:'सूर्य',Chandra:'चंद्र',Mangal:'मंगल',Budh:'बुध',Guru:'गुरु',Shukra:'शुक्र',Shani:'शनि',Rahu:'राहु',Ketu:'केतु'};
+                const gidx={Surya:1,Chandra:2,Mangal:3,Budh:4,Guru:5,Shukra:6,Shani:7,Rahu:8,Ketu:9};
+                Object.keys(gp).forEach(k=>{
+                    const lon=norm360(window._ydLons[gidx[k]]);
+                    const s=Math.floor(lon/30), d=lon%30;
+                    if(gsigns.includes(s)&&(d>=29||d<1))
+                        addDosha('गंडांत', `${gp[k]} गंडांत में (${gnames[s]} ${d.toFixed(1)}°)।`, null);
+                });
+            }
+
+            // --- RENDER ---
+            const STR_RANK={'प्रबल':0,'मध्यम':1,'सामान्य':2};
+            function renderYoga(y){
+                const detail=yogaDetail(y.name);
+                return `<li data-cat="${y.cat}"><span class="yoga-name">${y.name}:</span><span class="yoga-badge b-${y.str}">${y.str}</span> ${y.desc}${detail?`<div class="yoga-detail" style="display:none;">${detail}</div>`:''}</li>`;
+            }
+            function renderDosha(d){
+                return `<li data-cat="दोष"><span class="yoga-name">⚠️ ${d.name}:</span> ${d.desc}${d.parihara?`<span class="parihara">✅ ${d.parihara}</span>`:''}</li>`;
+            }
+            let html = '';
+            // Dashboard
+            html += `<div class="yd-dashboard">✨ <b>${yogas.length}</b> शुभ योग &nbsp;•&nbsp; ⚠️ <b>${doshas.length}</b> दोष</div>`;
+            const top3=[...yogas].sort((a,b)=>STR_RANK[a.str]-STR_RANK[b.str]).slice(0,3);
+            if(top3.length) html += `<div class="yd-top3">💪 <b>प्रबल योग:</b> ${top3.map(y=>y.name).join(' • ')}</div>`;
+            // Filters
+            html += `<div class="yd-filters">`
+                + `<button class="active" onclick="ydFilter('सभी',this)">सभी</button>`
+                + `<button onclick="ydFilter('धन योग',this)">धन योग</button>`
+                + `<button onclick="ydFilter('राजयोग',this)">राजयोग</button>`
+                + `<button onclick="ydFilter('चंद्र योग',this)">चंद्र योग</button>`
+                + `<button onclick="ydFilter('सूर्य योग',this)">सूर्य योग</button>`
+                + `<button onclick="ydFilter('दोष',this)">दोष</button>`
+                + `</div>`;
+
+            html += `<div class="report-section"><div class="section-header">1. ग्रहों का स्वभाव (FUNCTIONAL NATURE)</div>`;
+            html += natureList.length > 0 ? `<ul>${natureList.map(i => `<li>${i}</li>`).join('')}</ul>` : `<p>कोई विशेष ग्रह स्वभाव नहीं मिला।</p>`;
+            html += `</div>`;
+
+            html += `<div class="report-section"><div class="section-header">2. शुभ योग (AUSPICIOUS YOGAS)</div>`;
+            html += yogas.length > 0 ? `<ul class="yoga-list">${yogas.map(renderYoga).join('')}</ul>` : `<p>कोई प्रमुख शुभ योग नहीं मिला।</p>`;
+            html += `</div>`;
+
+            html += `<div class="report-section"><div class="section-header">3. अशुभ दोष (INAUSPICIOUS DOSHAS)</div>`;
+            html += doshas.length > 0 ? `<ul class="yoga-list">${doshas.map(renderDosha).join('')}</ul>` : `<p>कोई प्रमुख अशुभ दोष नहीं मिला।</p>`;
+            html += `</div>`;
+
+            reportContent.innerHTML = html;
+            outputArea.style.display = 'block';
+
+        } catch (e) {
+            alert("गणना में त्रुटि: " + e.message);
+            console.error(e);
+        }
+    }
+
+    // --- Actions ---
+    function resetData() {
+        document.getElementById('yd-rashi-input').value = '';
+        document.getElementById('yd-output-area').style.display = 'none';
+        document.getElementById('yd-report-content').innerHTML = '';
+        document.getElementById('yd-error-display').innerText = '';
+    }
+
+    function copyReport() {
+        const src = document.getElementById('yd-report-content');
+        const clone = src.cloneNode(true);
+        const f = clone.querySelector('.yd-filters'); if(f) f.remove();
+        const text = clone.innerText;
+        navigator.clipboard.writeText(text).then(() => alert('रिपोर्ट कॉपी हो गई!')).catch(err => alert('कॉपी असफल। कृपया मैनुअली सेलेक्ट करके कॉपी करें।'));
+    }
+
+    function downloadReport() {
+        const src = document.getElementById('yd-report-content');
+        const clone = src.cloneNode(true);
+        const f = clone.querySelector('.yd-filters'); if(f) f.remove();
+        const text = clone.innerText;
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', 'Vedic_Yoga_Dosha_Report.txt');
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    function ydFilter(cat, btn){
+        document.querySelectorAll('.yd-filters button').forEach(b=>b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        document.querySelectorAll('#yd-report-content .yoga-list li').forEach(li=>{
+            li.style.display = (cat==='सभी'||li.getAttribute('data-cat')===cat)?'':'none';
+        });
+    }
+
+    // Tap-to-expand yoga details (delegated, attached once)
+    document.getElementById('yd-report-content').addEventListener('click', function(e){
+        if(e.target.classList && e.target.classList.contains('yoga-name')){
+            const d=e.target.parentElement.querySelector('.yoga-detail');
+            if(d) d.style.display = d.style.display==='none'?'block':'none';
+        }
+    });
+
+    // Expose
+    window.ydGenerate = generateReport;
+    window.ydReset = resetData;
+    window.ydCopy = copyReport;
+    window.ydDownload = downloadReport;
+    window.ydFilter = ydFilter;
+})();
+</script>
+
+</body>
+</html>

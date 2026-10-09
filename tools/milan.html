@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>कुंडली मिलान महा-कैलकुलेटर (अष्टकूट + दशकूट)</title>
+    <style>
+        :root { --primary: #d35400; --dark: #2c3e50; --bg: #f4f6f8; --box-bg: #ffffff; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #333; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; background: var(--box-bg); border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; padding: 30px; border-top: 5px solid var(--primary); }
+        
+        h1 { text-align: center; color: var(--dark); margin-top: 0; font-size: 1.8rem; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        
+        /* Inputs */
+        .input-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #fff8e1; padding: 20px; border-radius: 8px; border: 1px solid #ffe0b2; margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
+        select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem; margin-bottom: 10px; }
+
+        /* Options */
+        .options-row { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; background: #eaf2fa; padding: 15px; border-radius: 8px; border: 1px solid #b9d4f1; margin-bottom: 20px;}
+        .chk-label { cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--dark); font-size: 1.1em;}
+        .chk-label input { transform: scale(1.3); cursor: pointer; }
+
+        /* Buttons */
+        .btn-calc { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; font-size: 1.2rem; font-weight: bold; cursor: pointer; border-radius: 6px; transition: 0.3s; }
+        .btn-calc:hover { background: #ba4a00; }
+        .btn-download { background: #27ae60; color: white; width: 100%; padding: 12px; border: none; font-weight: bold; margin-top: 20px; cursor: pointer; border-radius: 6px; display: none; font-size: 1.05rem;}
+        .btn-download:hover { background: #219653; }
+
+        /* Results */
+        .result-box { margin-top: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
+        .result-title { background: var(--dark); color: white; padding: 10px 15px; border-radius: 5px 5px 0 0; margin: -20px -20px 15px -20px; font-size: 1.2rem; font-weight: bold; text-align: center; }
+        
+        .result-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background: #fff; }
+        .result-table th, .result-table td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        .result-table th { background: #f0f0f0; color: var(--dark); }
+        .result-table td:first-child { text-align: left; font-weight: bold; color: #444; }
+
+        .score-display { text-align: center; font-size: 1.8rem; font-weight: bold; color: white; background: var(--dark); padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .verdict { text-align: center; font-size: 1.2rem; font-weight: bold; padding: 10px; border-radius: 5px; background: #f0f0f0;}
+        
+        .parihar-box { background: #e8f5e9; border: 1px solid #c8e6c9; padding: 15px; border-radius: 5px; font-size: 0.95rem; margin-bottom: 15px;}
+        .parihar-box ul { margin: 5px 0 0 0; padding-left: 20px; }
+        
+        .alert-box { background: #ffebee; border: 1px solid #ffcdd2; color: #c62828; padding: 12px; border-radius: 5px; font-weight: bold; margin-bottom: 15px; text-align: center;}
+        
+        .pass { color: #27ae60; font-weight: bold; }
+        .warn { color: #f39c12; font-weight: bold; }
+        .fail { color: #c0392b; font-weight: bold; }
+        .error-msg { color: red; text-align: center; display: none; font-weight: bold; margin-bottom: 15px; }
+
+        @media (max-width: 600px) { .input-section { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>महा-मिलान (अष्टकूट एवं दशकूट)</h1>
+
+    <div class="input-section">
+        <div class="input-group">
+            <label>वर (Boy)</label>
+            <select id="bNak"></select>
+            <select id="bPada"><option value="1">चरण 1</option><option value="2">चरण 2</option><option value="3">चरण 3</option><option value="4">चरण 4</option></select>
+        </div>
+        <div class="input-group">
+            <label>वधु (Girl)</label>
+            <select id="gNak"></select>
+            <select id="gPada"><option value="1">चरण 1</option><option value="2">चरण 2</option><option value="3">चरण 3</option><option value="4">चरण 4</option></select>
+        </div>
+    </div>
+
+    <!-- Options -->
+    <div class="options-row">
+        <label class="chk-label"><input type="checkbox" id="chk-ashtkoot" checked> 1. अष्टकूट मिलान (उत्तर भारतीय)</label>
+        <label class="chk-label"><input type="checkbox" id="chk-dashkoot" checked> 2. दशकूट मिलान (दक्षिण भारतीय)</label>
+    </div>
+
+    <div id="error-msg" class="error-msg">कृपया कम से कम एक पद्धति चुनें।</div>
+
+    <button class="btn-calc" onclick="calculateBoth()">मिलान करें (Calculate)</button>
+
+    <div id="output-area"></div>
+    <button id="btn-download" class="btn-download" onclick="downloadTxt()">📄 सम्पूर्ण मिलान रिपोर्ट डाउनलोड करें</button>
+</div>
+
+<script>
+// --- COMMON DATA ---
+const NAKSHATRAS = ["अश्विनी","भरणी","कृत्तिका","रोहिणी","मृगशिरा","आद्रा","पुनर्वसु","पुष्य","अश्लेषा","मघा","पूर्वाफाल्गुनी","उत्तराफाल्गुनी","हस्त","चित्रा","स्वाती","विशाखा","अनुराधा","ज्येष्ठा","मूल","पूर्वाषाढ़ा","उत्तराषाढ़ा","श्रवण","धनिष्ठा","शतभिषा","पूर्वाभाद्रपद","उत्तराभाद्रपद","रेवती"];
+const RASI_LORDS = [0, 1, 2, 3, 4, 2, 1, 0, 5, 6, 6, 5]; 
+
+// --- ASHTKOOT SPECIFIC DATA ---
+const AK_PROPS = [{n:0,y:0,g:0},{n:1,y:1,g:1},{n:2,y:2,g:2},{n:2,y:3,g:1},{n:1,y:3,g:0},{n:0,y:4,g:1},{n:0,y:5,g:0},{n:1,y:2,g:0},{n:2,y:5,g:2},{n:2,y:6,g:2},{n:1,y:6,g:1},{n:0,y:7,g:1},{n:0,y:8,g:0},{n:1,y:9,g:2},{n:2,y:8,g:0},{n:2,y:9,g:2},{n:1,y:10,g:0},{n:0,y:10,g:2},{n:0,y:4,g:2},{n:1,y:11,g:1},{n:2,y:12,g:1},{n:2,y:11,g:0},{n:1,y:13,g:2},{n:0,y:0,g:2},{n:0,y:13,g:1},{n:1,y:7,g:1},{n:2,y:1,g:0}];
+const AK_VASHYA = [0, 0, 1, 2, 3, 1, 1, 4, 1, 0, 1, 2];
+const AK_MAT_VASHYA = [[2,0,0.5,0,1], [0,2,0.5,0,1], [0.5,0.5,2,1,1], [0,0,1,2,0], [1,1,1,0,2]];
+const AK_MAT_YONI = [[4,2,2,3,2,2,2,2,0,1,3,3,2,1],[2,4,3,3,2,2,2,2,3,0,3,2,2,0],[2,3,4,2,1,2,1,3,3,1,2,0,3,1],[3,3,2,4,2,1,1,1,1,2,2,2,0,2],[2,2,1,2,4,2,1,2,2,1,0,2,2,1],[2,2,2,1,2,4,0,2,2,1,3,3,2,1],[2,2,1,1,1,0,4,2,2,1,2,2,2,1],[2,2,3,1,2,2,2,4,3,0,3,2,2,1],[0,3,3,1,2,2,2,3,4,1,2,2,2,1],[1,0,1,2,1,1,1,0,1,4,1,1,2,1],[3,3,2,2,0,3,2,3,2,1,4,2,2,1],[3,2,0,2,2,3,2,2,2,1,2,4,2,2],[2,2,3,0,2,2,2,2,2,2,2,2,4,2],[1,0,1,2,1,1,1,1,1,1,1,2,2,4]];
+
+// --- DASHKOOT SPECIFIC DATA ---
+const DK_RAJJU = [1,2,3,4,5,5,4,3,2,1,1,2,3,4,5,5,4,3,2,1,1,2,3,4,5,5,4];
+const DK_GANA = [0,1,2,1,0,1,0,0,2,2,1,1,0,2,0,2,0,2,2,1,1,0,2,2,1,1,0];
+const DK_YONI = [0,1,2,3,3,4,5,6,6,5,4,2,7,8,7,8,9,9,4,11,12,11,13,0,13,7,1];
+const DK_MAT_YONI = [[4,2,2,3,2,2,2,2,0,1,3,3,2,1], [2,4,3,3,2,2,2,2,3,0,3,2,2,0],[2,3,4,2,1,2,1,3,3,1,2,0,3,1], [3,3,2,4,2,1,1,1,1,2,2,2,0,2],[2,2,1,2,4,2,1,2,2,1,0,2,2,1], [2,2,2,1,2,4,0,2,2,1,3,3,2,1],[2,2,1,1,1,0,4,2,2,1,2,2,2,1], [2,2,3,1,2,2,2,4,3,0,3,2,2,1],[0,3,3,1,2,2,2,3,4,1,2,2,2,1], [1,0,1,2,1,1,1,0,1,4,1,1,2,1],[3,3,2,2,0,3,2,3,2,1,4,2,2,1], [3,2,0,2,2,3,2,2,2,1,2,4,2,2],[2,2,3,0,2,2,2,2,2,2,2,2,4,2], [1,0,1,2,1,1,1,1,1,1,1,2,2,4]];
+const DK_VEDHA = [[0,17], [1,16], [2,15], [3,14], [4,22], [5,21], [6,20], [7,19], [8,18],[9,26], [10,25], [11,24], [12,23], [13,22]];
+
+let globalReportTxt = "";
+
+window.onload = () => {
+    const b = document.getElementById('bNak'), g = document.getElementById('gNak');
+    NAKSHATRAS.forEach((n,i) => { b.add(new Option(`${i+1}. ${n}`, i)); g.add(new Option(`${i+1}. ${n}`, i)); });
+};
+
+// Common Helpers
+function getRasi(n, p) { return Math.floor(((n * 4) + p - 1) / 9); }
+
+function getAkMaitri(p1, p2) {
+    if(p1===p2) return 5;
+    const r = { 0: [[4,3,5],[1,6],[2]], 1: [[2,6],[0,5],[4,3]], 2: [[4,1],[0,5,6],[3]], 3: [[4,2],[0,1,5,6],[]], 4: [[3,0,5],[2],[1,6]], 5: [[4,3,0],[6],[2,1]], 6: [[2,1],[5],[4,3,0]] };
+    const c = (a, b) => r[a][0].includes(b) ? 'F' : (r[a][1].includes(b) ? 'N' : 'E');
+    let x = c(p1, p2), y = c(p2, p1);
+    if(x=='F' && y=='F') return 5;
+    if((x=='F' && y=='N') || (x=='N' && y=='F')) return 4;
+    if(x=='N' && y=='N') return 3;
+    if((x=='F' && y=='E') || (x=='E' && y=='F')) return 1;
+    if((x=='N' && y=='E') || (x=='E' && y=='N')) return 0.5;
+    return 0;
+}
+
+function getDkMaitri(l1, l2) {
+    if(l1===l2) return 5;
+    const mat = [[5,3,0,5,5,5,0], [3,5,5,0,0,3,5], [0,5,5,0,3,3,3], [5,0,0,5,5,3,3], [5,0,3,5,5,5,0], [5,3,3,3,5,5,3], [0,5,3,3,0,3,5]];
+    return (mat[l1][l2] + mat[l2][l1]) / 2; 
+}
+
+function calculateBoth() {
+    const err = document.getElementById('error-msg');
+    const out = document.getElementById('output-area');
+    const btnDown = document.getElementById('btn-download');
+    
+    const chkAK = document.getElementById('chk-ashtkoot').checked;
+    const chkDK = document.getElementById('chk-dashkoot').checked;
+
+    err.style.display = 'none'; out.innerHTML = ''; btnDown.style.display = 'none'; globalReportTxt = "";
+
+    if(!chkAK && !chkDK) { err.style.display = 'block'; return; }
+
+    const bN = parseInt(document.getElementById('bNak').value);
+    const gN = parseInt(document.getElementById('gNak').value);
+    const bP = parseInt(document.getElementById('bPada').value);
+    const gP = parseInt(document.getElementById('gPada').value);
+
+    let finalHtml = "";
+    let finalTxt = `कुण्डली मिलान रिपोर्ट\n==========================================\nवर: ${NAKSHATRAS[bN]} (चरण ${bP})\nवधु: ${NAKSHATRAS[gN]} (चरण ${gP})\n==========================================\n`;
+
+    if(chkAK) {
+        let ak = calcAshtkoot(bN, gN, bP, gP);
+        finalHtml += ak.html; finalTxt += ak.txt;
+    }
+    if(chkDK) {
+        let dk = calcDashkoot(bN, gN, bP, gP);
+        finalHtml += dk.html; finalTxt += dk.txt;
+    }
+
+    out.innerHTML = finalHtml;
+    globalReportTxt = finalTxt;
+    btnDown.style.display = 'block';
+}
+
+// 1. ASHTKOOT LOGIC (Fixed: Added Raw Score & Parihar back)
+function calcAshtkoot(bN, gN, bP, gP) {
+    const bR = getRasi(bN, bP); const gR = getRasi(gN, gP);
+    const bL = RASI_LORDS[bR]; const gL = RASI_LORDS[gR];
+
+    const vG = r => [3,7,11].includes(r)?4 : [0,4,8].includes(r)?3 : [1,5,9].includes(r)?2 : 1;
+    let sVar = (vG(bR) >= vG(gR)) ? 1 : 0;
+    let sVas = AK_MAT_VASHYA[AK_VASHYA[bR]][AK_VASHYA[gR]];
+    const tD = (f, t) => { let d=(t-f); if(d<0)d+=27; let r=(d+1)%9; return [3,5,7].includes(r)?0:3; };
+    let sTar = (tD(bN,gN) + tD(gN,bN)) / 2;
+    let sYon = AK_MAT_YONI[AK_PROPS[bN].y][AK_PROPS[gN].y];
+    let sMai = getAkMaitri(bL, gL);
+    
+    let bG = AK_PROPS[bN].g, gG = AK_PROPS[gN].g;
+    let sGan = 0;
+    if(bG === gG || (bG===0&&gG===1) || (bG===1&&gG===0)) sGan = 6;
+    else if((bG===0&&gG===2) || (bG===2&&gG===0)) sGan = 1;
+
+    let dist = (gR - bR); if(dist<0) dist+=12; dist+=1;
+    let sBha = [2,5,6,8,9,12].includes(dist) ? 0 : 7;
+    let sNad = (AK_PROPS[bN].n === AK_PROPS[gN].n) ? 0 : 8;
+
+    // Raw Score Calculation
+    let rawTot = sVar+sVas+sTar+sYon+sMai+sGan+sBha+sNad;
+
+    // Parihar Logic
+    let fBha = sBha, fNad = sNad, logs = [];
+    if(sBha === 0 && (bL === gL || getAkMaitri(bL, gL)>=4)) { fBha = 7; logs.push("✅ भकूट परिहार: राशि स्वामी मित्र हैं।"); }
+    if(sNad === 0) {
+        if(bN===gN && bP!==gP) { fNad=8; logs.push("✅ नाड़ी परिहार: नक्षत्र एक, चरण भिन्न।"); }
+        else if(bR===gR && bN!==gN) { fNad=8; logs.push("✅ नाड़ी परिहार: राशि एक, नक्षत्र भिन्न।"); }
+    }
+
+    // Final Score Calculation
+    let finTot = sVar+sVas+sTar+sYon+sMai+sGan+fBha+fNad;
+    let vCls = finTot >= 18 ? "pass" : "fail";
+    let vTxt = finTot >= 18 ? "विवाह उत्तम/शुभ है" : "विवाह अनुचित";
+
+    let mkR = (n,m,s) => `<tr><td>${n}</td><td>${m}</td><td>${s}</td><td>${s==m?'<span class="pass">✓</span>':(s>0?'<span class="warn">~</span>':'<span class="fail">✗</span>')}</td></tr>`;
+
+    let pariharHtml = "";
+    if(logs.length > 0) {
+        pariharHtml = `<div class="parihar-box"><strong>लागू परिहार (Exceptions):</strong><ul>${logs.map(l=>`<li>${l}</li>`).join('')}</ul></div>`;
+    } else if (rawTot === finTot && (sBha===0 || sNad===0)) {
+        pariharHtml = `<div class="parihar-box" style="background:#ffebee; border-color:#ffcdd2;"><strong class="fail">कोई परिहार लागू नहीं हुआ। दोष शेष हैं।</strong></div>`;
+    } else {
+        pariharHtml = `<div class="parihar-box" style="background:#f5f5f5; border-color:#ddd;"><strong>कोई प्रमुख दोष नहीं / गणना शुभ है।</strong></div>`;
+    }
+
+    let html = `<div class="result-box">
+        <div class="result-title">1. अष्टकूट मिलान (उत्तर भारतीय)</div>
+        <div style="font-weight:bold; color:var(--dark); margin-bottom:10px;">A. विस्तृत विवरण (कच्चे अंक)</div>
+        <table class="result-table">
+            <thead><tr><th>कूट</th><th>अधिकतम</th><th>प्राप्त (कच्चे)</th><th>स्थिति</th></tr></thead>
+            <tbody>
+                ${mkR('वर्ण',1,sVar)}${mkR('वश्य',2,sVas)}${mkR('तारा',3,sTar)}${mkR('योनि',4,sYon)}
+                ${mkR('मैत्री',5,sMai)}${mkR('गण',6,sGan)}${mkR('भकूट',7,sBha)}${mkR('नाड़ी',8,sNad)}
+            </tbody>
+        </table>
+        <div style="text-align:right; font-weight:bold; color:#666; margin-bottom:20px;">कच्चे अंकों का कुल योग: ${rawTot} / 36</div>
+        
+        <div style="font-weight:bold; color:var(--dark); margin-bottom:10px;">B. दोष परिहार एवं निर्णय</div>
+        ${pariharHtml}
+        
+        <div class="score-display">अंतिम कुल गुण: ${finTot} <span style="font-size:1.2rem; font-weight:normal;">/ 36</span></div>
+        <div class="verdict"><span class="${vCls}">${vTxt}</span></div>
+    </div>`;
+
+    let txt = `\n[1] अष्टकूट मिलान (उत्तर भारतीय)\n------------------------------------------\n`;
+    txt += `वर्ण: ${sVar}/1 | वश्य: ${sVas}/2 | तारा: ${sTar}/3 | योनि: ${sYon}/4\n`;
+    txt += `मैत्री: ${sMai}/5 | गण: ${sGan}/6 | भकूट (कच्चे): ${sBha}/7 | नाड़ी (कच्चे): ${sNad}/8\n`;
+    txt += `कच्चे अंकों का योग: ${rawTot} / 36\n\n`;
+    txt += `दोष परिहार स्थिति:\n`;
+    txt += logs.length>0 ? logs.join('\n') + '\n' : (sBha===0||sNad===0 ? "कोई परिहार लागू नहीं हुआ।\n" : "कोई प्रमुख दोष नहीं।\n");
+    txt += `\nअंतिम प्राप्तांक: ${finTot} / 36 (${vTxt})\n------------------------------------------\n`;
+
+    return { html, txt };
+}
+
+// 2. DASHKOOT LOGIC (Fixed: Restored the Warning/Average Logic)
+function calcDashkoot(bN, gN, bP, gP) {
+    const bR = getRasi(bN, bP); const gR = getRasi(gN, gP);
+
+    let dCount = (bN - gN); if(dCount < 0) dCount += 27;
+    let sDinam = ([2,4,6,8,0].includes(dCount%9) || dCount===26) ? 3 : 0;
+
+    let bG = DK_GANA[bN], gG = DK_GANA[gN];
+    let sGana = (bG===gG) ? 4 : ((gG===0&&bG===1)?3 : ((gG===1&&bG===0)?2:0));
+
+    let sYoni = DK_MAT_YONI[DK_YONI[bN]][DK_YONI[gN]];
+
+    let rDiff = (bR - gR); if(rDiff < 0) rDiff += 12; rDiff += 1;
+    let sRasi = 3;
+    if(rDiff === 7 || rDiff === 12) sRasi = 7;
+    else if([3,4,10,11].includes(rDiff)) sRasi = 5;
+    else if([2,5,6,8,9].includes(rDiff)) sRasi = 0;
+    if(rDiff===1 && bN===gN && bP!==gP) sRasi = 7; 
+    else if(rDiff===1 && bN!==gN) sRasi = 7;
+
+    let sLord = getDkMaitri(RASI_LORDS[bR], RASI_LORDS[gR]);
+    let sRajju = (DK_RAJJU[bN] !== DK_RAJJU[gN]) ? 5 : 0;
+
+    let isV = false;
+    for(let p of DK_VEDHA) if((p[0]===bN && p[1]===gN) || (p[0]===gN && p[1]===bN)) isV = true;
+    if([4,13,22].includes(bN) && [4,13,22].includes(gN) && bN!==gN) isV = true;
+    let sVedha = isV ? 0 : 2;
+
+    let sVashya = (sLord >= 3) ? 2 : 0;
+    
+    let mCount = (bN - gN); if(mCount < 0) mCount += 27; mCount += 1;
+    let sMahendra = [4,7,10,13,16,19,22,25].includes(mCount) ? 2 : 0;
+
+    let sdCount = (bN - gN); if(sdCount <= 0) sdCount += 27;
+    let sStree = (sdCount > 13) ? 2 : 0;
+
+    let finTot = sDinam+sGana+sYoni+sRasi+sLord+sRajju+sVedha+sVashya+sMahendra+sStree;
+    
+    // VERDICT LOGIC RESTORED TO ORIGINAL
+    let vCls = "", vTxt = "";
+    if(sRajju === 0) {
+        vCls = "fail"; vTxt = "विवाह वर्जित (रज्जु दोष)";
+    } else {
+        if(finTot >= 18) {
+            vCls = "pass"; vTxt = "विवाह शुभ है (उत्तम मिलान)।";
+        } else {
+            vCls = "warn"; vTxt = "मध्यम मिलान (विचारणीय)।";
+        }
+    }
+
+    let mkR = (n,m,s) => `<tr><td>${n}</td><td>${m}</td><td>${s}</td><td>${s==m?'<span class="pass">✓</span>':(s>0?'<span class="warn">~</span>':'<span class="fail">✗</span>')}</td></tr>`;
+
+    let html = `<div class="result-box">
+        <div class="result-title">2. दशकूट मिलान (दक्षिण भारतीय)</div>
+        <table class="result-table">
+            <thead><tr><th>कूट</th><th>अधिकतम</th><th>प्राप्त</th><th>स्थिति</th></tr></thead>
+            <tbody>
+                ${mkR('दिन',3,sDinam)}${mkR('गण',4,sGana)}${mkR('योनि',4,sYoni)}${mkR('राशि',7,sRasi)}
+                ${mkR('राश्याधिपति',5,sLord)}${mkR('रज्जु',5,sRajju)}${mkR('वेध',2,sVedha)}
+                ${mkR('वश्य',2,sVashya)}${mkR('माहेन्द्र',2,sMahendra)}${mkR('स्त्री-दीर्घ',2,sStree)}
+            </tbody>
+        </table>
+        ${sRajju===0 ? `<div class="alert-box">⚠️ सावधान: रज्जु दोष! दक्षिण भारतीय पद्धति में इसे विवाह के लिए वर्जित माना जाता है।</div>` : ''}
+        <div class="score-display">कुल प्राप्तांक: ${finTot} <span style="font-size:1.2rem; font-weight:normal;">/ 36</span></div>
+        <div class="verdict"><span class="${vCls}">${vTxt}</span></div>
+    </div>`;
+
+    let txt = `\n[2] दशकूट मिलान (दक्षिण भारतीय)\n------------------------------------------\n`;
+    txt += `दिन: ${sDinam}/3 | गण: ${sGana}/4 | योनि: ${sYoni}/4 | राशि: ${sRasi}/7 | राशि स्वामी: ${sLord}/5\n`;
+    txt += `रज्जु: ${sRajju}/5 | वेध: ${sVedha}/2 | वश्य: ${sVashya}/2 | माहेन्द्र: ${sMahendra}/2 | स्त्री-दीर्घ: ${sStree}/2\n`;
+    if(sRajju===0) txt += `चेतावनी: रज्जु दोष उपस्थित है।\n`;
+    txt += `\nदशकूट कुल प्राप्तांक: ${finTot} / 36 (${vTxt})\n------------------------------------------\n`;
+
+    return { html, txt };
+}
+
+function downloadTxt() {
+    if(!globalReportTxt) return;
+    const blob = new Blob([globalReportTxt], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Kundli_Milan_Mega_Report.txt";
+    a.click();
+}
+</script>
+
+</body>
+</html>

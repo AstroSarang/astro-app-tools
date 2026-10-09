@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to File Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            width: 400px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        textarea {
+            width: 90%;
+            height: 150px;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+        input[type="text"] {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>टेक्स्ट से फाइल बनाएं</h2>
+    
+    <!-- 1. टेक्स्ट पेस्ट करने वाला बॉक्स -->
+    <textarea id="userText" placeholder="यहाँ अपनी जानकारी पेस्ट करें..."></textarea>
+    
+    <!-- 2. फाइल का नाम लिखने वाला बॉक्स -->
+    <input type="text" id="fileName" placeholder="फाइल का नाम लिखें (उदा. mydata)">
+    
+    <!-- 3. डाउनलोड बटन -->
+    <br>
+    <button onclick="downloadFile()">Download .txt</button>
+</div>
+
+<script>
+    function downloadFile() {
+        // टेक्स्ट बॉक्स से जानकारी लेना
+        const textContent = document.getElementById("userText").value;
+        let fileName = document.getElementById("fileName").value;
+
+        // चेक करना कि टेक्स्ट खाली तो नहीं है
+        if (textContent === "") {
+            alert("कृपया पहले टेक्स्ट बॉक्स में कुछ लिखें!");
+            return;
+        }
+
+        // अगर फाइल का नाम नहीं लिखा है, तो डिफ़ॉल्ट नाम दें
+        if (fileName === "") {
+            fileName = "downloaded_text";
+        }
+
+        // अगर यूजर ने .txt नहीं लगाया है, तो खुद लगा दें
+        if (!fileName.endsWith(".txt")) {
+            fileName += ".txt";
+        }
+
+        // फाइल बनाने की प्रक्रिया
+        const blob = new Blob([textContent], { type: "text/plain" });
+        const link = document.createElement("a");
+        
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        
+        // लिंक पर क्लिक करवाना और फिर उसे हटा देना
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
