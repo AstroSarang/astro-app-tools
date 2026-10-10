@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>कुंडली रिपोर्ट असेंबलर v8 — Sanjivani Jyotish Sansthan</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Noto Sans Devanagari', sans-serif; background:#f7f3ec; margin:0; padding:24px 14px; color:#3a2c1a; }
+  .wrap { max-width:780px; margin:0 auto; }
+  h1 { text-align:center; color:#7b1e1e; margin:0 0 4px; font-size:26px; }
+  .sub { text-align:center; color:#8a6d3b; margin-bottom:22px; font-size:14px; }
+  .card { background:#fff; border:1px solid #e3d5b8; border-radius:12px; padding:20px 22px; margin-bottom:18px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+  .card h2 { margin:0 0 6px; font-size:18px; color:#7b1e1e; }
+  .desc { margin:0 0 12px; font-size:13px; color:#8a6d3b; }
+  .tag { display:inline-block; font-size:11px; background:#f3e7c8; color:#7b1e1e; border-radius:20px; padding:2px 10px; margin-bottom:8px; font-weight:bold; }
+  label.lbl { display:block; font-size:14px; margin:14px 0 6px; font-weight:bold; }
+  input[type=text], select, textarea.csv { width:100%; padding:10px; font-size:15px; border:1px solid #d8c79a; border-radius:8px; font-family:inherit; background:#fff; }
+  textarea.csv { height:110px; font-size:13px; resize:vertical; }
+  .btn { display:block; width:100%; margin-top:16px; padding:13px; font-size:17px; font-weight:bold; color:#fff; background:linear-gradient(180deg,#a93226,#7b1e1e); border:none; border-radius:10px; cursor:pointer; }
+  .btn:disabled { opacity:.55; cursor:wait; }
+  .btn.green { background:linear-gradient(180deg,#2e7d32,#1b5e20); }
+  .btn.orange { background:linear-gradient(180deg,#e67e22,#ca6f1e); }
+  .linkbtn { background:none; border:none; color:#7b1e1e; text-decoration:underline; cursor:pointer; font-size:13px; padding:0; font-family:inherit; }
+  /* drop zones */
+  .drop { border:2px dashed #d8c79a; border-radius:10px; padding:20px; text-align:center; font-size:14px; color:#8a6d3b; background:#fdfaf3; cursor:pointer; transition:.2s; }
+  .drop:hover, .drop.over { border-color:#a93226; background:#fdf3e7; }
+  .drop b { color:#7b1e1e; }
+  .drop .fname { font-weight:bold; color:#1e7b34; margin-top:6px; display:block; }
+  .trow { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px dashed #eee0c3; font-size:14px; }
+  .trow:last-child { border-bottom:none; }
+  .trow .nm { flex:1; }
+  .trow .pg { color:#8a6d3b; font-size:12px; white-space:nowrap; }
+  .ok { color:#1e7b34; font-weight:bold; white-space:nowrap; }
+  .warn { color:#b7791f; font-weight:bold; white-space:nowrap; }
+  .missing { color:#a93226; font-weight:bold; white-space:nowrap; }
+  /* segmented toggle (tabs) */
+  .seg { display:flex; background:#efe6d2; border-radius:30px; padding:4px; margin:4px 0 12px; }
+  .seg-opt { flex:1; text-align:center; padding:10px 6px; border-radius:26px; font-size:14px; font-weight:bold; color:#8a6d3b; cursor:pointer; user-select:none; }
+  .seg-opt.active { background:#fff; color:#7b1e1e; box-shadow:0 2px 6px rgba(0,0,0,.12); }
+  /* green toggle switch */
+  .togglerow { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:10px; font-size:14px; background:#fdf6e3; border:1px solid #e3d5b8; border-radius:8px; padding:10px 12px; cursor:pointer; user-select:none; }
+  .tswitch { width:54px; height:29px; border-radius:20px; background:#c9c2b2; position:relative; flex:none; transition:.2s; }
+  .tswitch::after { content:''; position:absolute; width:23px; height:23px; border-radius:50%; background:#fff; top:3px; left:3px; box-shadow:0 1px 3px rgba(0,0,0,.3); transition:.2s; }
+  .tswitch.on { background:#1e7b34; }
+  .tswitch.on::after { left:28px; }
+  .note { font-size:12px; color:#8a6d3b; margin-top:8px; }
+  .status { margin-top:12px; font-size:14px; min-height:20px; }
+  .status .okmsg { color:#1e7b34; font-weight:bold; }
+  .status .err { color:#a93226; font-weight:bold; }
+  .status .work { color:#8a6d3b; }
+  /* ribbon live preview */
+  .ribbon-demo { margin:12px auto 4px; width:340px; max-width:100%; height:66px; background:#e67e22; border-radius:6px; position:relative; }
+  .ribbon-demo .wr { position:absolute; left:64px; right:14px; top:14px; bottom:14px; background:#fff; clip-path:polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%, 7% 50%); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .ribbon-demo .wr span { color:#C0392B; font-family:Georgia,'Times New Roman',serif; font-weight:bold; font-size:22px; white-space:nowrap; }
+  .cap { text-align:center; font-size:12px; color:#8a6d3b; margin-top:6px; }
+  .hidden { display:none !important; }
+  .rowbtns { display:flex; gap:10px; margin-top:14px; }
+  .rowbtns .btn { margin-top:0; }
+  /* hidden render area for self-made kundli page (same as Gemini tool) */
+  #pdf-wrapper { display:none; }
+  #report-container { width:210mm; padding:15mm; box-sizing:border-box; background:#fff; margin:auto; }
+  #report-container .sansthan-name { font-family:'Poppins',sans-serif; font-size:28px; font-weight:700; text-align:center; color:#d35400; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px; }
+  #report-container .main-title { font-size:24px; font-weight:bold; color:#4a4a4a; margin-bottom:12px; border-bottom:3px solid #ef8c56; padding-bottom:4px; display:inline-block; }
+  #report-container .single-layout { display:flex; justify-content:space-between; gap:15px; margin-top:10px; }
+  #report-container .column { width:48%; border-radius:6px; overflow:hidden; }
+  #report-container .col-header { text-align:center; padding:8px; font-weight:600; color:#fff; font-size:18px; }
+  #report-container .header-yellow { background-color:#f3c86c; }
+  #report-container .header-orange { background-color:#ef8c56; }
+  #report-container .single-table { width:100%; border-collapse:collapse; }
+  #report-container .single-table td { padding:9.5px 12px; border:1px solid #e0e0e0; text-align:center; font-size:15px; }
+  #report-container .single-table tr:nth-child(even) { background-color:#f9f9f9; }
+  #report-container .summary-boxes { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; margin-top:25px; }
+  #report-container .box { width:31%; border:1px solid #e0e0e0; border-radius:6px; padding:12px 0; text-align:center; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+  #report-container .box-title { color:#555; font-size:14px; margin-bottom:6px; }
+  #report-container .box-value { font-size:16px; font-weight:600; }
+  #report-container .val-green { color:#8bc34a; } #report-container .val-blue { color:#00bcd4; } #report-container .val-orange { color:#ff9800; }
+  #report-container .milan-table { width:100%; border-collapse:collapse; margin-top:10px; }
+  #report-container .milan-table th, #report-container .milan-table td { border:1px solid #999; padding:6px 8px; font-size:13px; text-align:left; }
+  #report-container .milan-table th { background-color:#eee; font-weight:bold; text-align:center; font-size:14px; }
+  #report-container .milan-table td:first-child { background-color:#fdfdfd; font-weight:600; color:#333; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📕 कुंडली रिपोर्ट असेंबलर</h1>
+  <div class="sub">कवर + क्लाइंट कुंडली + एंडिंग पेज + कैटलॉग → एक PDF रिपोर्ट &nbsp;•&nbsp; v8</div>
+
+  <!-- ============ SCREEN 1 : TEMPLATE DOWNLOAD ============ -->
+  <div class="card" id="setupScreen">
+    <span class="tag">पहली बार — एक बार सेटअप</span>
+    <h2>टेम्पलेट PDFs download हो रहे हैं</h2>
+    <p class="desc">5 टेम्पलेट files internet से download होकर आपके browser में save हो जाएँगी — उसके बाद कभी download/upload नहीं करना पड़ेगा।</p>
+    <div class="status" id="setupStatus" style="font-size:15px;"></div>
+    <div class="note" id="setupNote"></div>
+    <button class="btn orange hidden" id="retryBtn">🔄 पुनः प्रयास करें</button>
+  </div>
+
+  <!-- ============ SCREEN 2 : MAIN ============ -->
+  <div class="card hidden" id="mainScreen">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span class="tag">हर बार — रिपोर्ट बनाना</span>
+      <button class="linkbtn" id="redownloadBtn">टेम्पलेट फिर से download करें</button>
+    </div>
+    <h2>नई रिपोर्ट</h2>
+    <div class="note" id="tplSavedNote" style="margin-top:0;"></div>
+
+    <label class="lbl">1️⃣ क्लाइंट कुंडली — तरीका चुनें</label>
+    <div class="seg" id="modeSeg">
+      <div class="seg-opt active" data-mode="upload">📤 ऑटो-जेनरेटेड PDF</div>
+      <div class="seg-opt" data-mode="self">✍️ खुद बनाएं</div>
+    </div>
+
+    <!-- TAB: upload -->
+    <div id="tabUpload">
+      <div class="drop" id="kundliDrop">📁 कुंडली PDF यहाँ <b>drag-drop</b> करें<br><span style="font-size:12px">या click करके चुनें</span><span class="fname hidden" id="kundliFname"></span></div>
+      <input type="file" id="kundliFile" accept=".pdf,application/pdf" class="hidden">
+      <div class="togglerow" id="stripToggleRow">
+        <span><b>पहला और आखिरी पेज हटाएं</b><br><span style="font-size:12px;color:#8a6d3b">सॉफ्टवेयर ब्रांडिंग वाले पेज (पहला/आखिरी)</span></span>
+        <span class="tswitch on" id="stripToggle"></span>
+      </div>
+      <div class="rowbtns" style="margin-top:14px;">
+        <button class="btn orange" id="autoResetBtn" style="font-size:15px;">🔄 रीसेट</button>
+      </div>
+    </div>
+
+    <!-- TAB: self-made (single page: upload + csv generate) -->
+    <div id="tabSelf" class="hidden">
+      <label class="lbl" style="margin-top:0;">📁 तैयार PDF upload करें</label>
+      <div id="selfSubFile">
+        <div class="drop" id="selfDrop">📁 खुद बनाई कुंडली की PDF यहाँ <b>drag-drop</b> करें<br><span style="font-size:12px">या click करके चुनें</span><span class="fname hidden" id="selfFname"></span></div>
+        <input type="file" id="selfFile" accept=".pdf,application/pdf" class="hidden">
+      </div>
+      <div class="note" style="text-align:center; margin:12px 0 2px; font-weight:bold; color:#2e7d32;">— दोनों स्वतंत्र हैं, एक या दोनों तैयार करें —</div>
+      <div id="selfSubCsv">
+      <label class="lbl" style="margin-top:0;">📝 CSV से नया पेज बनाएं</label>
+      <label class="lbl" style="font-weight:normal; font-size:13px;">रिपोर्ट की भाषा</label>
+      <select id="selfLang">
+        <option value="hi">हिन्दी</option>
+        <option value="en">English</option>
+        <option value="mr">मराठी</option>
+      </select>
+      <label class="lbl" style="font-weight:normal; font-size:13px;">Gemini से निकला CSV यहाँ paste करें</label>
+      <textarea class="csv" id="selfCsv" placeholder="पूरा नाम, Rahul&#10;जन्म तिथि, 14-02-1995&#10;जन्म समय, 03:00 AM&#10;..."></textarea>
+      <button class="btn green" id="makePageBtn">📄 पेज तैयार करें</button>
+      <div class="status" id="selfStatus"></div>
+      </div>
+      <div class="status" id="selfActiveStatus" style="margin-top:10px;"></div>
+      <div class="note">नोट: Upload और CSV दोनों स्वतंत्र हैं — जो-जो तैयार होगा वह सब रिपोर्ट में जुड़ेगा (क्रम: पहले CSV वाला पेज, फिर upload वाली PDF)। Upload वाली PDF के सारे pages ज्यों के त्यों जुड़ेंगे — कोई पेज नहीं हटेगा।</div>
+      <div class="rowbtns" style="margin-top:14px;">
+        <button class="btn orange" id="selfResetBtn" style="font-size:15px;">🔄 रीसेट (दोनों साफ करें)</button>
+      </div>
+    </div>
+
+    <label class="lbl">2️⃣ क्लाइंट का नाम (English)</label>
+    <input type="text" id="clientName" placeholder="जैसे: Rahul" autocomplete="off">
+    <div class="ribbon-demo"><div class="wr"><span id="ribbonDemoText">Rahul</span></div></div>
+    <div class="cap">कवर page 2 के white ribbon में ऐसे दिखेगा — लाल, serif bold, centered (लंबा नाम अपने-आप छोटा होगा)</div>
+
+    <label class="lbl">3️⃣ कैटलॉग भाषा</label>
+    <select id="catalogSel">
+      <option value="cat_mr">मराठी (default)</option>
+      <option value="cat_hi">हिन्दी</option>
+      <option value="cat_en">English</option>
+    </select>
+
+    <button class="btn" id="buildBtn">📥 रिपोर्ट बनाएं और डाउनलोड करें</button>
+    <div class="status" id="buildStatus"></div>
+    <div class="note">पेज क्रम: कवर (2) → कुंडली → एंडिंग (1) → कैटलॉग &nbsp;•&nbsp; फाइल नाम: <b><span id="fnamePreview">Client</span>-Kundli-Report.pdf</b></div>
+  </div>
+</div>
+
+<!-- hidden render area for self-made kundli page -->
+<div id="pdf-wrapper"><div id="report-container"></div></div>
+
+<script>
+'use strict';
+/* ================= IndexedDB : templates store ================= */
+const DB_NAME='sanjivani-report-assembler', DB_VER=1, STORE='templates';
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);
+  r.onupgradeneeded=e=>{e.target.result.createObjectStore(STORE);};
+  r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error);});}
+async function idbPut(k,v){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction(STORE,'readwrite').objectStore(STORE).put(v,k);
+  t.onsuccess=()=>res(); t.onerror=e=>rej(e.target.error);});}
+async function idbGet(k){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction(STORE,'readonly').objectStore(STORE).get(k);
+  t.onsuccess=()=>res(t.result); t.onerror=e=>rej(e.target.error);});}
+async function idbGetAll(){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction(STORE,'readonly').objectStore(STORE).getAll();
+  t.onsuccess=()=>res(t.result||[]); t.onerror=e=>rej(e.target.error);});}
+
+/* ================= Template definitions (GitHub + jsDelivr) ================= */
+const TPL_BASE='https://cdn.jsdelivr.net/gh/AstroSarang/sanjivani-templates@main/';
+const TPLS=[
+  {key:'cover',  label:'📄 01 — कवर (नाम वाला)',   expect:2,  file:'01%20Komal%201ST.pdf'},
+  {key:'ending', label:'📄 02 — एंडिंग पेज',       expect:1,  file:'02%20Komal%20LAST.pdf'},
+  {key:'cat_hi', label:'📄 03 — कैटलॉग हिन्दी',    expect:19, file:'03%20Astro%20Komal%20Jyotish%20Sansthan%20Hindi.pdf'},
+  {key:'cat_en', label:'📄 04 — कैटलॉग English',   expect:19, file:'04%20Astro%20Komal%20Jyotish%20Sansthan%20Eng.pdf'},
+  {key:'cat_mr', label:'📄 05 — कैटलॉग मराठी',     expect:24, file:'05%20Astro%20Komal%20Jyotish%20Sansthan%20Marathi.pdf'},
+];
+const tplState={}; // key -> {bytes:ArrayBuffer, pages}
+</script>
+<script>
+'use strict';
+/* ================= SETUP : auto-download templates ================= */
+const $=id=>document.getElementById(id);
+async function fetchTemplates(){
+  $('retryBtn').classList.add('hidden');
+  for(let i=0;i<TPLS.length;i++){
+    const t=TPLS[i];
+    $('setupStatus').innerHTML=`<span class="work">⬇ ${t.label} download हो रहा है... (${i+1}/5)</span>`;
+    let resp;
+    try{ resp=await fetch(TPL_BASE+t.file); }
+    catch(e){ throw new Error('Internet नहीं मिल पा रहा — net चालू करके पुनः प्रयास करें।'); }
+    if(!resp.ok) throw new Error(`${t.label} नहीं मिला (HTTP ${resp.status}) — GitHub repo check करें।`);
+    const buf=await resp.arrayBuffer();
+    let pages;
+    try{ pages=(await PDFLib.PDFDocument.load(buf.slice(0))).getPageCount(); }
+    catch(e){ throw new Error(`${t.label} सही PDF नहीं लग रही।`); }
+    if(pages!==t.expect) throw new Error(`${t.label}: ${pages} pages मिले, ${t.expect} चाहिए थे।`);
+    await idbPut(t.key,{bytes:buf, pages, savedAt:Date.now()});
+    tplState[t.key]={bytes:buf, pages};
+  }
+  $('setupStatus').innerHTML='<span class="okmsg">✔ 5 टेम्पलेट download होकर browser में save हो गए!</span>';
+  setTimeout(showMain, 900);
+}
+async function startSetupDownload(){
+  $('setupScreen').classList.remove('hidden');
+  $('mainScreen').classList.add('hidden');
+  if(typeof PDFLib==='undefined'){
+    $('setupStatus').innerHTML='<span class="err">⚠ PDF library load नहीं हो पाई — internet चालू करके page reload करें।</span>';
+    $('retryBtn').classList.remove('hidden');
+    return;
+  }
+  try{ await fetchTemplates(); }
+  catch(e){
+    $('setupStatus').innerHTML=`<span class="err">⚠ ${e.message}</span>`;
+    $('retryBtn').classList.remove('hidden');
+  }
+}
+$('retryBtn').onclick=()=>{ $('setupStatus').innerHTML=''; startSetupDownload(); };
+async function loadSavedTemplates(){
+  for(const t of TPLS){
+    const v=await idbGet(t.key);
+    if(v&&v.bytes) tplState[t.key]={bytes:v.bytes, name:v.name, pages:v.pages};
+  }
+  return TPLS.every(t=>tplState[t.key]&&tplState[t.key].bytes);
+}
+/* ================= MODE TABS ================= */
+let mode='upload';
+document.querySelectorAll('#modeSeg .seg-opt').forEach(el=>{
+  el.onclick=()=>{
+    document.querySelectorAll('#modeSeg .seg-opt').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active'); mode=el.dataset.mode;
+    $('tabUpload').classList.toggle('hidden', mode!=='upload');
+    $('tabSelf').classList.toggle('hidden', mode!=='self');
+    if(mode==='self') selfStatusMsg();
+  };
+});
+/* strip-pages toggle */
+let stripPages=true;
+$('stripToggleRow').onclick=()=>{ stripPages=!stripPages; $('stripToggle').classList.toggle('on',stripPages); };
+/* tab-1 reset: clear uploaded kundli + strip toggle back to default ON */
+$('autoResetBtn').onclick=()=>{
+  kundliBytes=null; kundliPages=0; kFile.value='';
+  const fn=$('kundliFname'); fn.classList.add('hidden'); fn.textContent='';
+  stripPages=true; $('stripToggle').classList.add('on');
+};
+/* kundli file : click + drag-drop */
+let kundliBytes=null, kundliName='', kundliPages=0;
+const kDrop=$('kundliDrop'), kFile=$('kundliFile');
+kDrop.onclick=()=>kFile.click();
+kFile.onchange=()=>{ if(kFile.files[0]) readKundli(kFile.files[0]); };
+['dragover','dragenter'].forEach(ev=>kDrop.addEventListener(ev,e=>{e.preventDefault();kDrop.classList.add('over');}));
+['dragleave','drop'].forEach(ev=>kDrop.addEventListener(ev,e=>{e.preventDefault();kDrop.classList.remove('over');}));
+kDrop.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f) readKundli(f); });
+async function readKundli(file){
+  try{
+    kundliBytes=await file.arrayBuffer();
+    kundliPages=(await PDFLib.PDFDocument.load(kundliBytes.slice(0))).getPageCount();
+    kundliName=file.name;
+    const fn=$('kundliFname'); fn.classList.remove('hidden');
+    fn.textContent=`✔ ${file.name} (${kundliPages} pages)`;
+  }catch(e){ kundliBytes=null; alert('यह PDF पढ़ी नहीं जा सकी: '+e.message); }
+}
+/* self-made : upload और csv-generate दोनों स्वतंत्र sections हैं;
+   जो-जो तैयार होगा वह सब रिपोर्ट में जुड़ेगा (पहले upload वाली PDF, फिर CSV वाला पेज) */
+function selfStatusMsg(){
+  const el=$('selfActiveStatus');
+  const a=selfMadeBytes?`<span class="okmsg">✔ CSV वाला पेज रिपोर्ट में जुड़ेगा (सबसे पहले)।</span>`:'';
+  const b=selfUploadBytes?`<span class="okmsg">✔ Upload वाली PDF (${selfUploadPages} pages) रिपोर्ट में जुड़ेगी (CSV पेज के बाद)।</span>`:'';
+  el.innerHTML=(a||b)?(a+(a&&b?'<br>':'')+b):'<span class="work">कुंडली के लिए ऊपर PDF upload करें और/या CSV से पेज बनाएं।</span>';
+}
+/* self-made PDF upload : click + drag-drop */
+let selfUploadBytes=null, selfUploadPages=0;
+const sDrop=$('selfDrop'), sFile=$('selfFile');
+sDrop.onclick=()=>sFile.click();
+sFile.onchange=()=>{ if(sFile.files[0]) readSelfFile(sFile.files[0]); };
+['dragover','dragenter'].forEach(ev=>sDrop.addEventListener(ev,e=>{e.preventDefault();sDrop.classList.add('over');}));
+['dragleave','drop'].forEach(ev=>sDrop.addEventListener(ev,e=>{e.preventDefault();sDrop.classList.remove('over');}));
+sDrop.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f) readSelfFile(f); });
+async function readSelfFile(file){
+  try{
+    selfUploadBytes=await file.arrayBuffer();
+    selfUploadPages=(await PDFLib.PDFDocument.load(selfUploadBytes.slice(0))).getPageCount();
+    const fn=$('selfFname'); fn.classList.remove('hidden');
+    fn.textContent=`✔ ${file.name} (${selfUploadPages} pages)`;
+    selfStatusMsg();
+  }catch(e){ selfUploadBytes=null; alert('यह PDF पढ़ी नहीं जा सकी: '+e.message); }
+}
+/* reset : दोनों (upload + csv) एक साथ साफ */
+$('selfResetBtn').onclick=()=>{
+  selfUploadBytes=null; selfUploadPages=0; sFile.value='';
+  const fn=$('selfFname'); fn.classList.add('hidden'); fn.textContent='';
+  $('selfCsv').value=''; selfMadeBytes=null;
+  $('selfStatus').innerHTML=''; selfStatusMsg();
+};
+/* live ribbon + filename preview */
+$('clientName').addEventListener('input',e=>{
+  const v=e.target.value.trim()||'Rahul';
+  $('ribbonDemoText').textContent=v;
+  const safe=v.replace(/[\\/:*?"<>|]/g,'').trim()||'Client';
+  $('fnamePreview').textContent=safe;
+});
+$('redownloadBtn').onclick=async()=>{
+  if(!confirm('टेम्पलेट GitHub से फिर से download होंगे। आगे बढ़ें?')) return;
+  for(const t of TPLS) delete tplState[t.key];
+  window.scrollTo(0,0);
+  await startSetupDownload();
+};
+function showMain(){
+  $('setupScreen').classList.add('hidden'); $('mainScreen').classList.remove('hidden');
+  $('tplSavedNote').innerHTML='✔ 5 टेम्पलेट saved हैं ('+TPLS.map(t=>tplState[t.key].pages+'p').join(' / ')+')';
+  const savedCat=localStorage.getItem('sra_catalog'); if(savedCat) $('catalogSel').value=savedCat;
+  window.scrollTo(0,0);
+}
+</script>
+<script>
+'use strict';
+/* ================= SELF-MADE KUNDLI PAGE (Gemini tool logic, embedded) ================= */
+let selfMadeBytes=null;
+const sdict={
+  hi:{titleSingle:"मुख्य विवरण",titleMilan:"कुण्डली मिलान",colLeft:"व्यक्तिगत विवरण",colRight:"अवकहडा चक्र"},
+  en:{titleSingle:"Basic Details",titleMilan:"Kundli Matching",colLeft:"Person Details",colRight:"Avkahada Chakra"},
+  mr:{titleSingle:"मूलभूत तपशील",titleMilan:"कुंडली जुळवणी",colLeft:"वैयक्तिक तपशील",colRight:"अवकहडा चक्र"}
+};
+function sBuildSingle(rows,container,lang){
+  container.innerHTML+=`<div class="main-title">${sdict[lang].titleSingle}</div>`;
+  const half=Math.ceil(rows.length/2), left=rows.slice(0,half), right=rows.slice(half);
+  let h=`<div class="single-layout"><div class="column"><div class="col-header header-yellow">${sdict[lang].colLeft}</div><table class="single-table"><tbody>`;
+  left.forEach(r=>{const p=r.split(','); if(p.length>=2) h+=`<tr><td>${p[0].trim()} : ${p.slice(1).join(',').trim()}</td></tr>`;});
+  h+=`</tbody></table></div><div class="column"><div class="col-header header-orange">${sdict[lang].colRight}</div><table class="single-table"><tbody>`;
+  right.forEach(r=>{const p=r.split(','); if(p.length>=2) h+=`<tr><td>${p[0].trim()} : ${p.slice(1).join(',').trim()}</td></tr>`;});
+  h+=`</tbody></table></div></div>`; container.innerHTML+=h;
+  const kw=['राशि','rashi','sign','लग्न','lagna','नक्षत्र','nakshatra','अक्षर','letter','पाया','paya'];
+  const boxes=[];
+  rows.forEach(r=>{const p=r.split(','); if(p.length>=2&&boxes.length<6){const k=p[0].trim().toLowerCase();
+    if(kw.some(x=>k.includes(x))) boxes.push({t:p[0].trim(),v:p.slice(1).join(',').trim()});}});
+  if(boxes.length){
+    const cols=['val-green','val-blue','val-orange','val-orange','val-green','val-blue'];
+    let bh=`<div class="summary-boxes">`;
+    boxes.forEach((b,i)=>{bh+=`<div class="box"><div class="box-title">${b.t}</div><div class="box-value ${cols[i%cols.length]}">${b.v}</div></div>`;});
+    container.innerHTML+=bh+`</div>`;
+  }
+}
+function sBuildMilan(rows,container,lang){
+  container.innerHTML+=`<div class="main-title">${sdict[lang].titleMilan}</div>`;
+  const hd=rows[0].split(',');
+  let h=`<table class="milan-table"><thead><tr><th>${lang==='en'?'Description':(lang==='mr'?'तपशील':'विवरण')}</th><th>${hd[1]?hd[1].trim():''}</th>`;
+  if(hd[2]) h+=`<th>${hd[2].trim()}</th>`;
+  h+=`</tr></thead><tbody>`;
+  for(let i=1;i<rows.length;i++){const c=rows[i].split(',');
+    h+=`<tr><td>${c[0]?c[0].trim():''}</td><td>${c[1]?c[1].trim():''}</td><td>${c[2]?c[2].trim():''}</td></tr>`;}
+  container.innerHTML+=h+`</tbody></table>`;
+}
+$('makePageBtn').onclick=async()=>{
+  const txt=$('selfCsv').value.trim();
+  if(!txt){ $('selfStatus').innerHTML='<span class="err">पहले ऊपर के box में Gemini वाला CSV paste करें।</span>'; return; }
+  const btn=$('makePageBtn'); btn.disabled=true;
+  $('selfStatus').innerHTML='<span class="work">पेज बन रहा है...</span>';
+  try{
+    const lang=$('selfLang').value;
+    const rows=txt.split('\n').filter(r=>r.trim()!=='');
+    const isMilan=rows[0].split(',').length>=3;
+    const c=$('report-container');
+    c.innerHTML=`<div class="sansthan-name">Sanjivani Jyotish Sansthan</div>`;
+    if(isMilan) sBuildMilan(rows,c,lang); else sBuildSingle(rows,c,lang);
+    const wrapper=$('pdf-wrapper'); wrapper.style.display='block';
+    await new Promise(r=>setTimeout(r,60)); // let layout settle
+    /* rasterize with html2canvas, then build an exact content-fit page with pdf-lib —
+       the image IS the page, so no empty top/bottom space and no blank 2nd page */
+    const canvas=await window.html2canvas(c,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+    wrapper.style.display='none';
+    const pageDoc=await PDFLib.PDFDocument.create();
+    const img=await pageDoc.embedJpg(canvas.toDataURL('image/jpeg',1.0));
+    const wPt=595.28, hPt=wPt*canvas.height/canvas.width; // A4 width, height fits content
+    pageDoc.addPage([wPt,hPt]).drawImage(img,{x:0,y:0,width:wPt,height:hPt});
+    selfMadeBytes=await pageDoc.save();
+    selfStatusMsg();
+    $('selfStatus').innerHTML=`<span class="okmsg">✔ पेज तैयार है — अब नीचे नाम व कैटलॉग चुनकर "रिपोर्ट बनाएं" दबाएं।</span>`;
+  }catch(e){
+    $('pdf-wrapper').style.display='none';
+    $('selfStatus').innerHTML='<span class="err">पेज नहीं बन पाया: '+e.message+'</span>';
+  }
+  btn.disabled=false;
+};
+</script>
+<script>
+'use strict';
+/* ================= REPORT ASSEMBLY ================= */
+/* ribbon geometry (cover p2) — measured from template render.
+   NOTE: cover MediaBox is [0,7.92,612,799.92], so drawText user-space y is shifted;
+   true ribbon center in drawText space = (450.5, 400.9) */
+const RIBBON_X=450, RIBBON_Y=401, RIBBON_MAXW=200, NAME_START_SIZE=30;
+function range(a,b){const r=[];for(let i=a;i<b;i++)r.push(i);return r;}
+$('catalogSel').onchange=e=>localStorage.setItem('sra_catalog',e.target.value);
+$('buildBtn').onclick=async()=>{
+  const btn=$('buildBtn'), st=$('buildStatus');
+  const setW=m=>{st.innerHTML=`<span class="work">${m}</span>`;};
+  const fail=m=>{st.innerHTML=`<span class="err">${m}</span>`; btn.disabled=false; btn.textContent='📥 रिपोर्ट बनाएं और डाउनलोड करें';};
+  const name=$('clientName').value.trim();
+  if(!name){ fail('क्लाइंट का नाम लिखें (English में)।'); return; }
+  let kParts=[]; // [{bytes}] — kundli section may have 1-2 independent parts
+  if(mode==='upload'){
+    if(!kundliBytes){ fail('पहले कुंडली PDF चुनें (drag-drop या click)।'); return; }
+    kParts.push({bytes:kundliBytes});
+  }else{
+    if(selfMadeBytes) kParts.push({bytes:selfMadeBytes});     // CSV page: first
+    if(selfUploadBytes) kParts.push({bytes:selfUploadBytes}); // self-made PDF: all pages, after CSV page
+    if(!kParts.length){ fail('खुद बनाई कुंडली के लिए ऊपर PDF upload करें और/या CSV से पेज बनाएं।'); return; }
+  }
+  btn.disabled=true; btn.textContent='बन रही है...';
+  try{
+    setW('कवर पर नाम लिखा जा रहा है...');
+    /* 1. cover + name on page 2 (ribbon center 450,391) */
+    const coverDoc=await PDFLib.PDFDocument.load(tplState.cover.bytes.slice(0));
+    const font=await coverDoc.embedFont(PDFLib.StandardFonts.TimesRomanBold);
+    const nameColor=PDFLib.rgb(192/255,57/255,43/255); // #C0392B
+    let size=NAME_START_SIZE;
+    while(size>8 && font.widthOfTextAtSize(name,size)>RIBBON_MAXW) size-=0.5;
+    const tw=font.widthOfTextAtSize(name,size);
+    coverDoc.getPage(1).drawText(name,{x:RIBBON_X-tw/2, y:RIBBON_Y-0.33*size, size, font, color:nameColor});
+    /* 2. merge */
+    const merged=await PDFLib.PDFDocument.create();
+    const addAll=async(src,idx)=>{ (await merged.copyPages(src,idx)).forEach(p=>merged.addPage(p)); };
+    setW('कवर जुड़ रहा है...');
+    await addAll(coverDoc,[0,1]);
+    setW('कुंडली जुड़ रही है...');
+    for(const part of kParts){
+      const kDoc=await PDFLib.PDFDocument.load(part.bytes.slice(0));
+      const n=kDoc.getPageCount();
+      const strip=(mode==='upload')&&stripPages;
+      const kIdx=(strip&&n>=3)?range(1,n-1):range(0,n);
+      await addAll(kDoc,kIdx);
+    }
+    setW('एंडिंग पेज जुड़ रहा है...');
+    const eDoc=await PDFLib.PDFDocument.load(tplState.ending.bytes.slice(0));
+    await addAll(eDoc,[0]);
+    const catKey=$('catalogSel').value;
+    setW('कैटलॉग जुड़ रहा है...');
+    const cDoc=await PDFLib.PDFDocument.load(tplState[catKey].bytes.slice(0));
+    await addAll(cDoc,range(0,cDoc.getPageCount()));
+    setW('PDF तैयार हो रही है...');
+    const out=await merged.save();
+    const totalPages=merged.getPageCount();
+    const safe=name.replace(/[\\/:*?"<>|]/g,'').trim()||'Client';
+    const blob=new Blob([out],{type:'application/pdf'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`${safe}-Kundli-Report.pdf`;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},60000);
+    st.innerHTML=`<span class="okmsg">✔ रिपोर्ट तैयार! ${totalPages} pages — ${safe}-Kundli-Report.pdf डाउनलोड हो गई।</span>`;
+  }catch(e){ fail('रिपोर्ट नहीं बन पाई: '+e.message); console.error(e); return; }
+  btn.disabled=false; btn.textContent='📥 रिपोर्ट बनाएं और डाउनलोड करें';
+};
+/* ================= INIT ================= */
+(async()=>{
+  const hasAll=await loadSavedTemplates();
+  if(hasAll) showMain();
+  else startSetupDownload();
+})();
+</script>
+</body>
+</html>

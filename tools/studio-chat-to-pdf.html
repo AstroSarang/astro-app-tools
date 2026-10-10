@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📋 AI Studio Chat → PDF</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
+    background: #f5f5f5; margin: 0; padding: 20px; color: #222;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  h1 { text-align: center; color: #1a73e8; font-size: 22px; margin-bottom: 6px; }
+  .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 20px; }
+
+  .upload-box {
+    background: #fff; border: 2px dashed #1a73e8; border-radius: 12px;
+    padding: 30px; text-align: center; margin-bottom: 20px; cursor: pointer;
+  }
+  .upload-box:hover { background: #f0f7ff; }
+  .upload-box input { display: none; }
+  .upload-label { font-size: 16px; color: #1a73e8; font-weight: bold; }
+  .upload-hint { font-size: 13px; color: #888; margin-top: 8px; }
+  #fileName { font-size: 13px; color: #666; margin-top: 8px; }
+
+  #dlBar {
+    display: none; position: sticky; top: 0; z-index: 50;
+    background: #fff; border-radius: 10px; padding: 12px 16px;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    text-align: center;
+  }
+  #pdfBtn {
+    background: #d32f2f; color: #fff; border: none;
+    padding: 12px 32px; border-radius: 8px; font-size: 16px;
+    font-weight: bold; cursor: pointer; font-family: inherit;
+  }
+  #pdfBtn:hover { background: #b71c1c; }
+  #pdfBtn:disabled { background: #ccc; cursor: default; }
+  #txtBtn {
+    background: #2e7d32; color: #fff; border: none;
+    padding: 12px 32px; border-radius: 8px; font-size: 16px;
+    font-weight: bold; cursor: pointer; font-family: inherit;
+    margin-left: 10px;
+  }
+  #txtBtn:hover { background: #1b5e20; }
+  #txtBtn:disabled { background: #ccc; cursor: default; }
+  #pdfProgress { font-size: 13px; color: #666; margin-top: 8px; min-height: 18px; }
+
+  .stats {
+    background: #e8f5e9; border-radius: 8px; padding: 12px 16px;
+    margin-bottom: 16px; font-size: 15px; display: none;
+  }
+  .stats b { color: #2e7d32; }
+
+  /* ---- document preview ---- */
+  #docPreview { display: none; }
+  .doc-title {
+    background: #fff; border-radius: 10px; padding: 24px;
+    margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+  .doc-title h2 { color: #1a73e8; margin: 0 0 8px 0; font-size: 22px; }
+  .doc-title .meta { color: #666; font-size: 14px; }
+
+  .pair {
+    background: #fff; border-radius: 10px; padding: 20px;
+    margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .sec-label {
+    font-size: 13px; font-weight: bold; color: #888;
+    text-transform: uppercase; margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .prompt-block {
+    background: #fff8e1; border-left: 4px solid #ff9800;
+    border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 18px;
+  }
+  .prompt-text {
+    font-size: 15px; color: #333; line-height: 1.6;
+    white-space: pre-wrap; word-wrap: break-word;
+  }
+  .resp-block {
+    background: #f1f8e9; border-left: 4px solid #4caf50;
+    border-radius: 0 8px 8px 0; padding: 14px 16px;
+  }
+  .pair-hr {
+    margin: 18px 0 4px 0; border: none; border-top: 2px solid #999;
+  }
+  .pair-num {
+    display: inline-block; background: #1a73e8; color: #fff;
+    font-weight: bold; font-size: 13px; border-radius: 12px;
+    padding: 2px 12px; margin-bottom: 12px;
+  }
+
+  .error {
+    background: #ffebee; color: #c62828; border-radius: 8px;
+    padding: 14px; margin-bottom: 16px; font-size: 14px; display: none;
+  }
+
+  /* ---- hidden A4 capture root (PDF के लिए) ---- */
+  #pdfRoot {
+    position: absolute; left: -10000px; top: 0;
+    width: 794px; background: #ffffff; color: #000;
+  }
+  #pdfRoot .pdf-inner { padding: 48px 48px; }
+  #pdfRoot .pdf-title { text-align: center; margin-bottom: 24px; }
+  #pdfRoot .pdf-title h2 {
+    font-family: 'Noto Sans Devanagari','Noto Sans',sans-serif;
+    color: #1a73e8; font-size: 24px; margin: 0 0 8px 0;
+  }
+  #pdfRoot .pdf-title .meta {
+    font-family: 'Noto Sans Devanagari','Noto Sans',sans-serif;
+    color: #666; font-size: 14px;
+  }
+  #pdfRoot .pdf-pair { margin-bottom: 20px; }
+  #pdfRoot .pdf-pair-num {
+    font-family: 'Noto Sans Devanagari','Noto Sans',sans-serif;
+    font-weight: bold; font-size: 15px; color: #1a73e8; margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📋 AI Studio Chat → PDF</h1>
+  <div class="subtitle">Chat file upload करो → पूरी chat की साफ़-सुथरी PDF download करो (प्रॉम्प्ट + जवाब)</div>
+
+  <div class="upload-box" id="uploadBox">
+    <input type="file" id="fileInput" accept=".bin,.json">
+    <div class="upload-label">📁 Chat File चुनो या यहाँ drag-drop करो (.bin / .json)</div>
+    <div class="upload-hint">Google AI Studio से downloaded chat file</div>
+    <div id="fileName"></div>
+  </div>
+
+  <div class="error" id="errorBox"></div>
+
+  <div id="dlBar">
+    <button id="pdfBtn">📥 PDF डाउनलोड करो</button>
+    <button id="txtBtn">📝 TXT डाउनलोड करो</button>
+    <div id="pdfProgress"></div>
+  </div>
+
+  <div class="stats" id="statsBox"></div>
+  <div id="docPreview"></div>
+</div>
+
+<!-- PDF capture के लिए hidden A4 root -->
+<div id="pdfRoot"><div class="pdf-inner" id="pdfInner"></div></div>
+
+<script>
+(function(){
+  'use strict';
+  var FONT = "'Noto Sans Devanagari','Noto Sans',sans-serif";
+  var PDF_W = 794;          /* A4 @96dpi */
+  var PDF_H = 1123;
+  var BATCH = 5;            /* एक बार में कितने pairs capture होंगे */
+
+  var uploadBox = document.getElementById('uploadBox');
+  var fileInput = document.getElementById('fileInput');
+  var fileNameEl = document.getElementById('fileName');
+  var errorBox = document.getElementById('errorBox');
+  var dlBar = document.getElementById('dlBar');
+  var pdfBtn = document.getElementById('pdfBtn');
+  var txtBtn = document.getElementById('txtBtn');
+  var pdfProgress = document.getElementById('pdfProgress');
+  var statsBox = document.getElementById('statsBox');
+  var docPreview = document.getElementById('docPreview');
+  var pdfRoot = document.getElementById('pdfRoot');
+  var pdfInner = document.getElementById('pdfInner');
+
+  var pairs = [];
+  var baseFileName = 'chat';
+
+  uploadBox.addEventListener('click', function(){ fileInput.click(); });
+  fileInput.addEventListener('change', handleFile);
+
+  uploadBox.addEventListener('dragover', function(e){
+    e.preventDefault(); e.stopPropagation();
+    uploadBox.style.background = '#e3f2fd';
+    uploadBox.style.borderColor = '#0d47a1';
+  });
+  uploadBox.addEventListener('dragleave', function(e){
+    e.preventDefault(); e.stopPropagation();
+    uploadBox.style.background = '';
+    uploadBox.style.borderColor = '';
+  });
+  uploadBox.addEventListener('drop', function(e){
+    e.preventDefault(); e.stopPropagation();
+    uploadBox.style.background = '';
+    uploadBox.style.borderColor = '';
+    var files = e.dataTransfer.files;
+    if(files && files.length > 0){ handleFile({ target: { files: files } }); }
+  });
+
+  function showError(msg){
+    errorBox.textContent = '❌ ' + msg;
+    errorBox.style.display = 'block';
+  }
+  function hideError(){ errorBox.style.display = 'none'; }
+
+  function handleFile(e){
+    hideError();
+    docPreview.innerHTML = '';
+    docPreview.style.display = 'none';
+    dlBar.style.display = 'none';
+    statsBox.style.display = 'none';
+    pairs = [];
+    var file = e.target.files[0];
+    if(!file) return;
+    baseFileName = file.name.replace(/\.[^.]+$/, '') || 'chat';
+    fileNameEl.textContent = '📄 ' + file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
+    pdfProgress.textContent = '⏳ File पढ़ रहे हैं...';
+
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      try {
+        var data = JSON.parse(ev.target.result);
+        pairs = parseChat(data);
+        pdfProgress.textContent = '';
+        if(pairs.length === 0){
+          showError('इस file में कोई prompt-response pair नहीं मिला। सही AI Studio chat file चुनो।');
+          return;
+        }
+        renderPreview();
+        statsBox.innerHTML = '✅ <b>' + pairs.length + '</b> prompts मिले — ऊपर बटन दबाकर PDF download करो';
+        statsBox.style.display = 'block';
+        dlBar.style.display = 'block';
+        pdfBtn.textContent = '📥 PDF डाउनलोड करो (' + pairs.length + ' prompts)';
+        dlBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch(err){
+        pdfProgress.textContent = '';
+        showError('File पढ़ने में error: ' + err.message);
+      }
+    };
+    reader.onerror = function(){ showError('File पढ़ने में fail हुआ।'); };
+    reader.readAsText(file);
+  }
+
+  /* v3 वाला proven parser — unchanged */
+  function parseChat(data){
+    var chunks = (((data || {}).chunkedPrompt || {}).chunks) || [];
+    var out = [];
+    var i = 0;
+    while(i < chunks.length){
+      var ch = chunks[i];
+      if(ch.role === 'user' && ch.text && ch.text.trim().length > 0){
+        var promptText = ch.text;
+        i++;
+        var responseParts = [];
+        while(i < chunks.length && chunks[i].role === 'model'){
+          var mch = chunks[i];
+          if(!mch.isThought){
+            var txt = mch.text || '';
+            if(!txt && mch.parts){
+              txt = mch.parts.map(function(p){ return (p && p.text) || ''; }).join('');
+            }
+            if(txt.trim().length > 0) responseParts.push(txt);
+          }
+          i++;
+        }
+        if(responseParts.length > 0){
+          out.push({ prompt: promptText, response: responseParts.join('\n\n') });
+        }
+      } else {
+        i++;
+      }
+    }
+    return out;
+  }
+
+  function escHtml(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /* एक pair का styled node बनाओ (preview + PDF दोनों के लिए) */
+  function buildPairNode(pair, idx, forPdf){
+    var wrap = document.createElement('div');
+    wrap.className = forPdf ? 'pdf-pair' : 'pair';
+
+    var num = document.createElement('div');
+    num.className = forPdf ? 'pdf-pair-num' : 'pair-num';
+    num.textContent = 'प्रश्न ' + (idx + 1);
+    wrap.appendChild(num);
+
+    var pBlock = document.createElement('div');
+    pBlock.className = 'prompt-block';
+    var pLabel = document.createElement('div');
+    pLabel.className = 'sec-label';
+    pLabel.textContent = '❓ प्रॉम्प्ट';
+    pBlock.appendChild(pLabel);
+    var pText = document.createElement('div');
+    pText.className = 'prompt-text';
+    pText.style.fontFamily = FONT;
+    pText.textContent = pair.prompt;
+    pBlock.appendChild(pText);
+    wrap.appendChild(pBlock);
+
+    var rBlock = document.createElement('div');
+    rBlock.className = 'resp-block';
+    var rLabel = document.createElement('div');
+    rLabel.className = 'sec-label';
+    rLabel.textContent = '💬 उत्तर';
+    rBlock.appendChild(rLabel);
+    var rHtml = document.createElement('div');
+    rHtml.innerHTML = markdownToStyledHtml(pair.response);
+    rBlock.appendChild(rHtml);
+    wrap.appendChild(rBlock);
+
+    var hr = document.createElement('hr');
+    hr.className = 'pair-hr';
+    wrap.appendChild(hr);
+    return wrap;
+  }
+
+  function buildTitleNode(forPdf){
+    var t = document.createElement('div');
+    t.className = forPdf ? 'pdf-title' : 'doc-title';
+    var d = new Date();
+    var dateStr = d.toLocaleDateString('hi-IN', { day:'numeric', month:'long', year:'numeric' });
+    t.innerHTML = '<h2>📋 AI Studio Chat</h2>' +
+      '<div class="meta">' + escHtml(baseFileName) + ' &nbsp;•&nbsp; ' +
+      pairs.length + ' prompts &nbsp;•&nbsp; ' + escHtml(dateStr) + '</div>';
+    return t;
+  }
+
+  function renderPreview(){
+    docPreview.innerHTML = '';
+    docPreview.appendChild(buildTitleNode(false));
+    pairs.forEach(function(pair, idx){
+      docPreview.appendChild(buildPairNode(pair, idx, false));
+    });
+    docPreview.style.display = 'block';
+  }
+
+  /* v3 वाले proven styling functions — unchanged */
+  function markdownToStyledHtml(md){
+    var rawHtml = '';
+    try {
+      marked.setOptions({ breaks: true, gfm: true });
+      rawHtml = marked.parse(md);
+    } catch(e){
+      rawHtml = '<p>' + escHtml(md).replace(/\n/g, '<br>') + '</p>';
+    }
+    var tmp = document.createElement('div');
+    tmp.innerHTML = rawHtml;
+    applyStyles(tmp);
+    var hr = document.createElement('hr');
+    hr.style.margin = '14px 0';
+    hr.style.border = 'none';
+    hr.style.borderTop = '1px solid #999';
+    tmp.appendChild(hr);
+    return tmp.innerHTML;
+  }
+
+  function convertNumberedLists(root){
+    try{
+      var ols = root.querySelectorAll('ol');
+      for(var i=0; i<ols.length; i++){
+        var ol = ols[i];
+        ol.style.listStyle = 'none';
+        ol.style.paddingLeft = '24px';
+        var num = 1;
+        var children = ol.childNodes;
+        for(var j=0; j<children.length; j++){
+          var li = children[j];
+          if(li.nodeType===1 && li.tagName==='LI'){
+            var marker = document.createElement('span');
+            marker.textContent = num + '] ';
+            marker.style.fontWeight = 'bold';
+            marker.style.fontSize = '16pt';
+            marker.style.color = '#000000';
+            marker.style.fontFamily = FONT;
+            li.insertBefore(marker, li.firstChild);
+            num++;
+          }
+        }
+      }
+    }catch(e){}
+  }
+
+  function applyStyles(root){
+    root.style.fontFamily = FONT;
+    root.style.fontSize = '16pt';
+    root.style.color = '#000000';
+    root.style.lineHeight = '1.6';
+    convertNumberedLists(root);
+    var all = root.querySelectorAll('*');
+    for(var i=0; i<all.length; i++){
+      var el = all[i];
+      try{
+        var tag = el.tagName;
+        if(tag==='SCRIPT'||tag==='STYLE') continue;
+        el.style.fontFamily = FONT;
+        el.style.backgroundColor = 'transparent';
+        if(tag==='H1'){
+          el.style.fontSize = '21pt'; el.style.color = '#ff0000';
+          el.style.fontWeight = 'bold'; el.style.margin = '14px 0 8px 0';
+        } else if(tag==='H2'){
+          el.style.fontSize = '19pt'; el.style.color = '#1c4587';
+          el.style.fontWeight = 'bold'; el.style.margin = '12px 0 7px 0';
+        } else if(tag==='H3'||tag==='H4'||tag==='H5'||tag==='H6'){
+          el.style.fontSize = '17pt'; el.style.color = '#980000';
+          el.style.fontWeight = 'bold'; el.style.margin = '12px 0 6px 0';
+        } else if(tag==='P'){
+          el.style.fontSize = '16pt'; el.style.color = '#000000';
+          el.style.margin = '0 0 10px 0';
+        } else if(tag==='LI'){
+          el.style.fontSize = '16pt'; el.style.color = '#000000';
+          el.style.margin = '0 0 6px 0';
+        } else if(tag==='STRONG'||tag==='B'){
+          el.style.fontWeight = 'bold';
+        } else if(tag==='UL'||tag==='OL'){
+          el.style.color = '#000000';
+          el.style.margin = '0 0 10px 0';
+          el.style.paddingLeft = '24px';
+        } else if(tag==='HR'){
+          el.style.margin = '12px 0';
+        } else if(tag==='EM'||tag==='I'){
+          el.style.fontStyle = 'italic';
+        } else if(tag==='CODE'){
+          el.style.fontFamily = 'monospace'; el.style.fontSize = '13pt';
+        } else if(tag==='PRE'){
+          el.style.fontFamily = 'monospace'; el.style.fontSize = '13pt';
+          el.style.backgroundColor = '#f5f5f5';
+          el.style.padding = '10px'; el.style.borderRadius = '6px';
+        } else if(tag==='BLOCKQUOTE'){
+          el.style.borderLeft = '3px solid #ccc';
+          el.style.margin = '0 0 10px 0';
+          el.style.paddingLeft = '12px'; el.style.color = '#555';
+        } else if(tag==='TABLE'){
+          el.style.borderCollapse = 'collapse'; el.style.margin = '0 0 10px 0';
+        } else if(tag==='TH'||tag==='TD'){
+          el.style.border = '1px solid #ccc';
+          el.style.padding = '6px 10px'; el.style.fontSize = '14pt';
+        }
+      }catch(e){}
+    }
+  }
+
+  /* ---------- PDF generation: styled HTML -> html2canvas -> pdf-lib ---------- */
+  pdfBtn.addEventListener('click', generatePdf);
+
+  function sliceCanvas(canvas, pageHPx){
+    var pages = [];
+    var y = 0;
+    while(y < canvas.height){
+      var h = Math.min(pageHPx, canvas.height - y);
+      var c = document.createElement('canvas');
+      c.width = canvas.width; c.height = h;
+      c.getContext('2d').drawImage(canvas, 0, y, canvas.width, h, 0, 0, canvas.width, h);
+      pages.push(c);
+      y += h;
+    }
+    return pages;
+  }
+
+  async function generatePdf(){
+    if(pairs.length === 0) return;
+    hideError();
+    pdfBtn.disabled = true;
+    var origLabel = pdfBtn.textContent;
+    try {
+      if(typeof html2canvas === 'undefined') throw new Error('html2canvas library load नहीं हुई। Internet check करो।');
+      if(!window.PDFLib) throw new Error('pdf-lib library load नहीं हुई। Internet check करो।');
+
+      pdfProgress.textContent = '⏳ तैयार हो रहा है...';
+      try { await document.fonts.ready; } catch(e){}
+
+      var pdfDoc = await window.PDFLib.PDFDocument.create();
+      var PT_W = 595.28, PT_H = 841.89; /* A4 points */
+      var SCALE = 2;
+      var pageHPx = Math.round((PDF_W * SCALE) * (PDF_H / PDF_W));
+
+      /* पहले title block */
+      var batches = [[{ title: true }]];
+      for(var i = 0; i < pairs.length; i += BATCH){
+        var grp = [];
+        for(var j = i; j < Math.min(i + BATCH, pairs.length); j++) grp.push({ idx: j });
+        batches.push(grp);
+      }
+
+      var totalPages = 0;
+      for(var b = 0; b < batches.length; b++){
+        pdfProgress.textContent = '⏳ PDF बन रहा है... (' + (b+1) + '/' + batches.length + ')';
+        pdfInner.innerHTML = '';
+        batches[b].forEach(function(item){
+          if(item.title) pdfInner.appendChild(buildTitleNode(true));
+          else pdfInner.appendChild(buildPairNode(pairs[item.idx], item.idx, true));
+        });
+        await new Promise(function(r){ setTimeout(r, 60); });
+
+        var canvas = await html2canvas(pdfRoot, {
+          scale: SCALE, backgroundColor: '#ffffff', logging: false, useCORS: true
+        });
+        var slices = sliceCanvas(canvas, pageHPx);
+        for(var s = 0; s < slices.length; s++){
+          var dataUrl = slices[s].toDataURL('image/jpeg', 0.92);
+          var img = await pdfDoc.embedJpg(dataUrl);
+          var page = pdfDoc.addPage([PT_W, PT_H]);
+          var fullH = (slices[s].height === pageHPx);
+          if(fullH){
+            page.drawImage(img, { x: 0, y: 0, width: PT_W, height: PT_H });
+          } else {
+            var h = PT_W * (slices[s].height / slices[s].width);
+            page.drawImage(img, { x: 0, y: PT_H - h, width: PT_W, height: h });
+          }
+          totalPages++;
+        }
+        /* memory free */
+        pdfInner.innerHTML = '';
+      }
+
+      pdfProgress.textContent = '⏳ Download तैयार हो रहा है...';
+      var bytes = await pdfDoc.save();
+      var blob = new Blob([bytes], { type: 'application/pdf' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = baseFileName + '-Chat-PDF.pdf';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){
+        try { URL.revokeObjectURL(a.href); } catch(e){}
+        try { document.body.removeChild(a); } catch(e){}
+      }, 2000);
+
+      pdfProgress.textContent = '✅ PDF download हो गया (' + totalPages + ' pages)';
+    } catch(err){
+      showError('PDF बनाने में error: ' + err.message);
+      pdfProgress.textContent = '';
+    }
+    pdfBtn.disabled = false;
+    pdfBtn.textContent = origLabel;
+  }
+
+  /* ---------- TXT download: साफ़ plain text, बिना markdown formatting ---------- */
+  txtBtn.addEventListener('click', generateTxt);
+
+  function markdownToPlainText(md){
+    var html = '';
+    try {
+      marked.setOptions({ breaks: true, gfm: true });
+      html = marked.parse(md);
+    } catch(e){
+      html = '<p>' + escHtml(md).replace(/\n/g, '<br>') + '</p>';
+    }
+    var tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    /* numbered lists -> 1] marker, bullets -> • marker */
+    try {
+      var ols = tmp.querySelectorAll('ol');
+      for(var i=0;i<ols.length;i++){
+        var items = ols[i].querySelectorAll('li');
+        for(var j=0;j<items.length;j++){
+          items[j].insertBefore(document.createTextNode((j+1) + '] '), items[j].firstChild);
+        }
+      }
+      var uls = tmp.querySelectorAll('ul');
+      for(var k=0;k<uls.length;k++){
+        var uitems = uls[k].querySelectorAll('li');
+        for(var m=0;m<uitems.length;m++){
+          uitems[m].insertBefore(document.createTextNode('• '), uitems[m].firstChild);
+        }
+      }
+    } catch(e){}
+    html = tmp.innerHTML;
+    html = html.replace(/<(br|hr)[^>]*>/gi, '\n');
+    html = html.replace(/<\/(p|h1|h2|h3|h4|h5|h6|li|tr|div|blockquote|pre|table|ul|ol)>/gi, '\n');
+    html = html.replace(/<td[^>]*>/gi, '');
+    html = html.replace(/<\/td>/gi, ' | ');
+    html = html.replace(/<th[^>]*>/gi, '');
+    html = html.replace(/<\/th>/gi, ' | ');
+    html = html.replace(/<[^>]+>/g, '');
+    var ta = document.createElement('textarea');
+    ta.innerHTML = html;
+    var text = ta.value;
+    text = text.replace(/[ \t ]+\n/g, '\n');
+    text = text.replace(/\n[ \t ]+/g, '\n');
+    text = text.replace(/\n{3,}/g, '\n\n');
+    return text.trim();
+  }
+
+  function generateTxt(){
+    if(pairs.length === 0) return;
+    hideError();
+    txtBtn.disabled = true;
+    try {
+      if(typeof marked === 'undefined') throw new Error('markdown library load नहीं हुई। Internet check करो।');
+      var d = new Date();
+      var dateStr = d.toLocaleDateString('hi-IN', { day:'numeric', month:'long', year:'numeric' });
+      var lines = [];
+      lines.push('AI Studio Chat');
+      lines.push(baseFileName + ' • ' + pairs.length + ' prompts • ' + dateStr);
+      lines.push('');
+      pairs.forEach(function(pair, idx){
+        lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        lines.push('प्रश्न ' + (idx + 1));
+        lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        lines.push('❓ प्रॉम्प्ट:');
+        lines.push(pair.prompt.trim());
+        lines.push('');
+        lines.push('💬 उत्तर:');
+        lines.push(markdownToPlainText(pair.response));
+        lines.push('');
+        lines.push('---');
+        lines.push('');
+      });
+      /* BOM: Windows Notepad में Hindi सही दिखे */
+      var blob = new Blob(['﻿' + lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = baseFileName + '-Chat.txt';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){
+        try { URL.revokeObjectURL(a.href); } catch(e){}
+        try { document.body.removeChild(a); } catch(e){}
+      }, 2000);
+      pdfProgress.textContent = '✅ TXT download हो गया';
+      setTimeout(function(){ if(pdfProgress.textContent.indexOf('TXT') !== -1) pdfProgress.textContent = ''; }, 3000);
+    } catch(err){
+      showError('TXT बनाने में error: ' + err.message);
+    }
+    txtBtn.disabled = false;
+  }
+})();
+</script>
+</body>
+</html>

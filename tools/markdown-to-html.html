@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Astro Report Converter (3 Boxes)</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 15px; background-color: #f0f2f5; }
+
+        /* टॉप बार */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; background: #fff; padding: 12px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .top-bar h2 { margin: 0; color: #333; font-size: 18px; font-weight: bold; }
+        .top-actions { display: flex; gap: 10px; }
+
+        .copy-all-btn { background-color: #28a745; color: white; border: none; padding: 9px 18px; font-size: 14px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        .copy-all-btn:hover { background-color: #218838; }
+
+        .reset-btn { background-color: #dc3545; color: white; border: none; padding: 9px 18px; font-size: 14px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        .reset-btn:hover { background-color: #c82333; }
+
+        /* ग्रिड लेआउट - डेस्कटॉप पर एक लाइन में 3 बॉक्स, मोबाइल पर एक के नीचे एक */
+        #app { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        @media (max-width: 900px) { #app { grid-template-columns: 1fr; } }
+
+        /* सेक्शन डिज़ाइन */
+        .section-container { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        .section-header h3 { margin: 0; color: #333; font-size: 16px; font-weight: bold; }
+        .header-btns { display: flex; gap: 6px; }
+
+        .col { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+
+        textarea { height: 150px; padding: 8px; font-size: 13px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; font-family: monospace; background: #fafafa; width: 100%; box-sizing: border-box; }
+        textarea:focus { outline: none; border-color: #007bff; }
+
+        .output-box { height: 180px; padding: 8px; background: #fff; border: 1px dashed #aaa; border-radius: 5px; overflow-y: auto; font-family: 'Noto Sans Devanagari', sans-serif; font-size: 16pt; color: #000000; line-height: 1.6; width: 100%; box-sizing: border-box; }
+        .output-box h1, .output-box h2, .output-box h3, .output-box h4, .output-box h5, .output-box h6 { font-size: 16pt; margin-top: 5px; margin-bottom: 5px; font-weight: bold; color: #000000; }
+        .empty-hint { color: #bbbbbb; font-size: 13pt; text-align: center; padding-top: 65px; }
+
+        .copy-btn { background-color: #007bff; color: white; border: none; padding: 6px 14px; font-size: 13px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .copy-btn:hover { background-color: #0056b3; }
+
+        .mini-reset { background-color: #f8f9fa; color: #dc3545; border: 1px solid #dc3545; padding: 6px 10px; font-size: 13px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        .mini-reset:hover { background-color: #dc3545; color: white; }
+
+        .label { font-size: 12px; color: #666; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .count { color: #999; font-weight: normal; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <h2>📝 एस्ट्रो रिपोर्ट कनवर्टर (3 बॉक्स)</h2>
+        <div class="top-actions">
+            <button id="copyAllBtn" class="copy-all-btn" onclick="copyAllBoxes(this)">📋 सभी 3 कॉपी</button>
+            <button id="resetAllBtn" class="reset-btn" onclick="resetAllBoxes()">🔄 सभी रीसेट</button>
+        </div>
+    </div>
+
+    <div id="app"></div>
+
+    <script>
+        if (window.marked) { marked.setOptions({ breaks: true, gfm: true }); }
+
+        var TOTAL = 3;
+        var appDiv = document.getElementById('app');
+
+        // 3 बॉक्स जनरेट करने का लूप
+        for (var i = 1; i <= TOTAL; i++) {
+            var section = document.createElement('div');
+            section.className = 'section-container';
+            section.innerHTML =
+                '<div class="section-header">' +
+                    '<h3>📦 बॉक्स ' + i + '</h3>' +
+                    '<div class="header-btns">' +
+                        '<button class="copy-btn" onclick="copyRichText(' + i + ', this)">✂️ कॉपी</button>' +
+                        '<button class="mini-reset" title="सिर्फ यह बॉक्स खाली करें" onclick="resetBox(' + i + ')">🗑️</button>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="col">' +
+                    '<div class="label"><span>यहाँ Markdown पेस्ट करें:</span><span class="count" id="count' + i + '"></span></div>' +
+                    '<textarea id="in' + i + '" placeholder="टेक्स्ट यहाँ पेस्ट करें..."></textarea>' +
+                '</div>' +
+                '<div class="col" style="margin-bottom: 0;">' +
+                    '<div class="label"><span>आउटपुट (Black, 16pt):</span></div>' +
+                    '<div id="out' + i + '" class="output-box"><div class="empty-hint">आउटपुट यहाँ दिखेगा…</div></div>' +
+                '</div>';
+            appDiv.appendChild(section);
+
+            (function (idx) {
+                var inputArea = document.getElementById('in' + idx);
+                var outputArea = document.getElementById('out' + idx);
+                var countEl = document.getElementById('count' + idx);
+                inputArea.addEventListener('input', function () {
+                    var v = this.value;
+                    outputArea.innerHTML = v.trim() === '' ? '<div class="empty-hint">आउटपुट यहाँ दिखेगा…</div>' : renderMarkdown(v);
+                    countEl.textContent = v ? ('अक्षर: ' + v.length) : '';
+                });
+            })(i);
+        }
+
+        function renderMarkdown(md) {
+            if (window.marked && marked.parse) { return marked.parse(md); }
+            var pre = document.createElement('pre');
+            pre.textContent = md;
+            return pre.outerHTML;
+        }
+
+        // सिर्फ एक बॉक्स खाली करने का फंक्शन
+        function resetBox(i) {
+            document.getElementById('in' + i).value = "";
+            document.getElementById('out' + i).innerHTML = '<div class="empty-hint">आउटपुट यहाँ दिखेगा…</div>';
+            document.getElementById('count' + i).textContent = "";
+        }
+
+        // सभी 3 बॉक्स एक साथ खाली करने का फंक्शन
+        function resetAllBoxes() {
+            if (!confirm('क्या सभी 3 बॉक्स खाली कर दें?')) { return; }
+            for (var i = 1; i <= TOTAL; i++) { resetBox(i); }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // बटन फीडबैक
+        function btnFeedback(btn, text, bg, restoreBg) {
+            var origText = btn.innerHTML;
+            btn.innerHTML = text;
+            btn.style.backgroundColor = bg;
+            setTimeout(function () {
+                btn.innerHTML = origText;
+                btn.style.backgroundColor = restoreBg;
+            }, 2000);
+        }
+        function btnWarn(btn, restoreBg, msg) { btnFeedback(btn, msg || '⚠️ पहले टेक्स्ट डालें', '#dc3545', restoreBg); }
+        function btnOk(btn, restoreBg, msg) { btnFeedback(btn, msg || '✅ हो गया!', '#28a745', restoreBg); }
+
+        // Docs में पेस्ट के लिए स्टाइल लगाना
+        function styleForDocs(root) {
+            root.style.fontFamily = "'Noto Sans Devanagari', sans-serif";
+            root.style.fontSize = "16pt";
+            root.style.color = "#000000";
+            root.style.lineHeight = "1.5";
+            root.style.backgroundColor = "transparent";
+            var all = root.querySelectorAll('*');
+            for (var k = 0; k < all.length; k++) {
+                var el = all[k];
+                el.style.fontFamily = "'Noto Sans Devanagari', sans-serif";
+                el.style.fontSize = "16pt";
+                el.style.color = "#000000";
+                el.style.backgroundColor = "transparent";
+                if (/^H[1-6]$/.test(el.tagName)) {
+                    el.style.fontWeight = 'bold';
+                    el.style.margin = '0 0 10px 0';
+                }
+                if (el.classList && el.classList.contains('empty-hint')) { el.style.display = 'none'; }
+            }
+        }
+
+        // रिच-टेक्स्ट कॉपी (Google Docs में सीधे पेस्ट होता है)
+        function copyNode(root) {
+            root.style.position = 'absolute';
+            root.style.left = '-9999px';
+            document.body.appendChild(root);
+            var range = document.createRange();
+            range.selectNodeContents(root);
+            var selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            var ok = false;
+            try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+            selection.removeAllRanges();
+            document.body.removeChild(root);
+            return ok;
+        }
+
+        // एक बॉक्स की कॉपी
+        function copyRichText(i, btnElement) {
+            var input = document.getElementById('in' + i);
+            if (input.value.trim() === "") { btnWarn(btnElement, '#007bff'); return; }
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = document.getElementById('out' + i).innerHTML;
+            styleForDocs(tempDiv);
+            if (copyNode(tempDiv)) { btnOk(btnElement, '#007bff'); }
+            else { btnWarn(btnElement, '#007bff', '❌ फेल'); }
+        }
+
+        // सभी 3 बॉक्स एक साथ कॉपी (बीच में --- विभाजक)
+        function copyAllBoxes(btnElement) {
+            var parts = [];
+            for (var i = 1; i <= TOTAL; i++) {
+                if (document.getElementById('in' + i).value.trim() === "") { continue; }
+                parts.push(document.getElementById('out' + i).innerHTML);
+            }
+            if (parts.length === 0) { btnWarn(btnElement, '#28a745'); return; }
+            var tempDiv = document.createElement('div');
+            for (var j = 0; j < parts.length; j++) {
+                if (j > 0) {
+                    var sep = document.createElement('p');
+                    sep.textContent = '---';
+                    tempDiv.appendChild(sep);
+                }
+                var wrap = document.createElement('div');
+                wrap.innerHTML = parts[j];
+                tempDiv.appendChild(wrap);
+            }
+            styleForDocs(tempDiv);
+            if (copyNode(tempDiv)) { btnOk(btnElement, '#28a745', '✅ तीनों कॉपी!'); }
+            else { btnWarn(btnElement, '#28a745', '❌ फेल'); }
+        }
+    </script>
+
+</body>
+</html>

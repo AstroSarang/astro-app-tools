@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📋 AI Studio Chat → Docs</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
+    background: #f5f5f5; margin: 0; padding: 20px; color: #222;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  h1 { text-align: center; color: #1a73e8; font-size: 22px; margin-bottom: 6px; }
+  .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 20px; }
+
+  .upload-box {
+    background: #fff; border: 2px dashed #1a73e8; border-radius: 12px;
+    padding: 30px; text-align: center; margin-bottom: 20px; cursor: pointer;
+  }
+  .upload-box:hover { background: #f0f7ff; }
+  .upload-box input { display: none; }
+  .upload-label { font-size: 16px; color: #1a73e8; font-weight: bold; }
+  .upload-hint { font-size: 13px; color: #888; margin-top: 8px; }
+
+  .stats {
+    background: #e8f5e9; border-radius: 8px; padding: 12px 16px;
+    margin-bottom: 16px; font-size: 15px; display: none;
+  }
+  .stats b { color: #2e7d32; }
+
+  .card {
+    background: #fff; border-radius: 10px; padding: 16px;
+    margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .card-num {
+    background: #1a73e8; color: #fff; font-weight: bold;
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .preview-label {
+    font-size: 12px; color: #888; font-weight: bold;
+    margin: 8px 0 4px 0; text-transform: uppercase;
+  }
+  .preview {
+    font-size: 14px; color: #444; line-height: 1.5;
+    background: #fafafa; border-radius: 6px; padding: 8px 10px;
+    max-height: 72px; overflow: hidden;
+  }
+  .preview.prompt { border-left: 3px solid #ff9800; }
+  .preview.response { border-left: 3px solid #4caf50; }
+
+  .copy-btn {
+    background: #1a73e8; color: #fff; border: none;
+    padding: 10px 24px; border-radius: 8px; font-size: 15px;
+    font-weight: bold; cursor: pointer; margin-top: 12px;
+    font-family: inherit; width: 100%;
+  }
+  .copy-btn:hover { background: #1557b0; }
+  .copy-btn.copied { background: #4caf50; }
+  .copy-btn:disabled { background: #ccc; cursor: default; }
+
+  .error {
+    background: #ffebee; color: #c62828; border-radius: 8px;
+    padding: 14px; margin-bottom: 16px; font-size: 14px; display: none;
+  }
+  .progress {
+    text-align: center; color: #666; font-size: 14px;
+    margin: 10px 0; display: none;
+  }
+  #fileName { font-size: 13px; color: #666; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📋 AI Studio Chat → Docs</h1>
+  <div class="subtitle">Chat file upload करो → सारे outputs list में → एक-एक करके copy करो</div>
+
+  <div class="upload-box" id="uploadBox">
+    <input type="file" id="fileInput" accept=".bin,.json">
+    <div class="upload-label">📁 Chat File चुनो या यहाँ drag-drop करो (.bin / .json)</div>
+    <div class="upload-hint">Google AI Studio से downloaded chat file</div>
+    <div id="fileName"></div>
+  </div>
+
+  <div class="error" id="errorBox"></div>
+  <div class="progress" id="progressBox">⏳ File पढ़ रहे हैं...</div>
+  <div class="stats" id="statsBox"></div>
+  <div id="cardsContainer"></div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var FONT = "'Noto Sans Devanagari','Noto Sans',sans-serif";
+
+  var uploadBox = document.getElementById('uploadBox');
+  var fileInput = document.getElementById('fileInput');
+  var fileNameEl = document.getElementById('fileName');
+  var errorBox = document.getElementById('errorBox');
+  var progressBox = document.getElementById('progressBox');
+  var statsBox = document.getElementById('statsBox');
+  var container = document.getElementById('cardsContainer');
+
+  uploadBox.addEventListener('click', function(){ fileInput.click(); });
+  fileInput.addEventListener('change', handleFile);
+
+  /* v3: drag-and-drop support */
+  uploadBox.addEventListener('dragover', function(e){
+    e.preventDefault(); e.stopPropagation();
+    uploadBox.style.background = '#e3f2fd';
+    uploadBox.style.borderColor = '#0d47a1';
+  });
+  uploadBox.addEventListener('dragleave', function(e){
+    e.preventDefault(); e.stopPropagation();
+    uploadBox.style.background = '';
+    uploadBox.style.borderColor = '';
+  });
+  uploadBox.addEventListener('drop', function(e){
+    e.preventDefault(); e.stopPropagation();
+    uploadBox.style.background = '';
+    uploadBox.style.borderColor = '';
+    var files = e.dataTransfer.files;
+    if(files && files.length > 0){
+      handleFile({ target: { files: files } });
+    }
+  });
+
+  function showError(msg){
+    errorBox.textContent = '❌ ' + msg;
+    errorBox.style.display = 'block';
+  }
+  function hideError(){ errorBox.style.display = 'none'; }
+
+  function getFirstLines(text, n){
+    if(!text) return '(खाली)';
+    var lines = text.split('\n').map(function(l){ return l.trim(); }).filter(function(l){ return l.length > 0; });
+    var preview = lines.slice(0, n || 2).join(' ');
+    if(preview.length > 200) preview = preview.substring(0, 200) + '...';
+    return preview || '(खाली)';
+  }
+
+  function handleFile(e){
+    hideError();
+    container.innerHTML = '';
+    statsBox.style.display = 'none';
+    var file = e.target.files[0];
+    if(!file) return;
+    fileNameEl.textContent = '📄 ' + file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
+    progressBox.style.display = 'block';
+
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      try {
+        var data = JSON.parse(ev.target.result);
+        var pairs = parseChat(data);
+        progressBox.style.display = 'none';
+        if(pairs.length === 0){
+          showError('इस file में कोई prompt-response pair नहीं मिला। सही AI Studio chat file चुनो।');
+          return;
+        }
+        renderCards(pairs);
+      } catch(err){
+        progressBox.style.display = 'none';
+        showError('File पढ़ने में error: ' + err.message);
+      }
+    };
+    reader.onerror = function(){
+      progressBox.style.display = 'none';
+      showError('File पढ़ने में fail हुआ।');
+    };
+    reader.readAsText(file);
+  }
+
+  function parseChat(data){
+    var chunks = (((data || {}).chunkedPrompt || {}).chunks) || [];
+    var pairs = [];
+    var i = 0;
+    while(i < chunks.length){
+      var ch = chunks[i];
+      /* user text prompt ढूंढो */
+      if(ch.role === 'user' && ch.text && ch.text.trim().length > 0){
+        var promptText = ch.text;
+        i++;
+        /* इसके बाद वाले model main chunks (thoughts skip) */
+        var responseParts = [];
+        while(i < chunks.length && chunks[i].role === 'model'){
+          var mch = chunks[i];
+          if(!mch.isThought){
+            var txt = mch.text || '';
+            if(!txt && mch.parts){
+              txt = mch.parts.map(function(p){ return (p && p.text) || ''; }).join('');
+            }
+            if(txt.trim().length > 0) responseParts.push(txt);
+          }
+          i++;
+        }
+        if(responseParts.length > 0){
+          pairs.push({
+            prompt: promptText,
+            response: responseParts.join('\n\n')
+          });
+        }
+      } else {
+        i++;
+      }
+    }
+    return pairs;
+  }
+
+  function renderCards(pairs){
+    statsBox.innerHTML = '✅ <b>' + pairs.length + '</b> prompts मिले — एक-एक करके copy करो';
+    statsBox.style.display = 'block';
+    container.innerHTML = '';
+
+    pairs.forEach(function(pair, idx){
+      var card = document.createElement('div');
+      card.className = 'card';
+
+      var header = document.createElement('div');
+      header.className = 'card-header';
+      var num = document.createElement('div');
+      num.className = 'card-num';
+      num.textContent = (idx + 1);
+      header.appendChild(num);
+      card.appendChild(header);
+
+      var pLabel = document.createElement('div');
+      pLabel.className = 'preview-label';
+      pLabel.textContent = '❓ Prompt';
+      card.appendChild(pLabel);
+      var pPrev = document.createElement('div');
+      pPrev.className = 'preview prompt';
+      pPrev.textContent = getFirstLines(pair.prompt, 2);
+      card.appendChild(pPrev);
+
+      var rLabel = document.createElement('div');
+      rLabel.className = 'preview-label';
+      rLabel.textContent = '💬 Response';
+      card.appendChild(rLabel);
+      var rPrev = document.createElement('div');
+      rPrev.className = 'preview response';
+      rPrev.textContent = getFirstLines(pair.response, 2);
+      card.appendChild(rPrev);
+
+      var btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.textContent = '📋 Copy Response';
+      btn.addEventListener('click', function(){ copyResponse(pair.response, btn); });
+      card.appendChild(btn);
+
+      container.appendChild(card);
+    });
+
+    /* ऊपर scroll */
+    statsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function markdownToStyledHtml(md){
+    var rawHtml = '';
+    try {
+      marked.setOptions({ breaks: true, gfm: true });
+      rawHtml = marked.parse(md);
+    } catch(e){
+      rawHtml = '<p>' + md.replace(/\n/g, '<br>') + '</p>';
+    }
+    var tmp = document.createElement('div');
+    tmp.innerHTML = rawHtml;
+    applyStyles(tmp);
+    /* v2: हर output के बाद --- line compulsory */
+    var hr = document.createElement('hr');
+    hr.style.margin = '14px 0';
+    hr.style.border = 'none';
+    hr.style.borderTop = '1px solid #999';
+    tmp.appendChild(hr);
+    return tmp.innerHTML;
+  }
+
+  /* v2: <ol> की default numbering (1.) हटाकर 1] format लगाओ */
+  function convertNumberedLists(root){
+    try{
+      var ols = root.querySelectorAll('ol');
+      for(var i=0; i<ols.length; i++){
+        var ol = ols[i];
+        ol.style.listStyle = 'none';
+        ol.style.paddingLeft = '24px';
+        var num = 1;
+        var children = ol.childNodes;
+        for(var j=0; j<children.length; j++){
+          var li = children[j];
+          if(li.nodeType===1 && li.tagName==='LI'){
+            var marker = document.createElement('span');
+            marker.textContent = num + '] ';
+            marker.style.fontWeight = 'bold';
+            marker.style.fontSize = '16pt';
+            marker.style.color = '#000000';
+            marker.style.fontFamily = FONT;
+            li.insertBefore(marker, li.firstChild);
+            num++;
+          }
+        }
+      }
+    }catch(e){}
+  }
+
+  function applyStyles(root){
+    root.style.fontFamily = FONT;
+    root.style.fontSize = '16pt';
+    root.style.color = '#000000';
+    root.style.lineHeight = '1.6';
+
+    /* v2: numbered list 1. -> 1] format */
+    convertNumberedLists(root);
+
+    var all = root.querySelectorAll('*');
+    for(var i=0; i<all.length; i++){
+      var el = all[i];
+      try{
+        var tag = el.tagName;
+        if(tag==='SCRIPT'||tag==='STYLE') continue;
+        el.style.fontFamily = FONT;
+        el.style.backgroundColor = 'transparent';
+        /* v2: heading sizes + colors + bold */
+        if(tag==='H1'){
+          el.style.fontSize = '21pt';
+          el.style.color = '#ff0000';
+          el.style.fontWeight = 'bold';
+          el.style.margin = '14px 0 8px 0';
+        } else if(tag==='H2'){
+          el.style.fontSize = '19pt';
+          el.style.color = '#1c4587';
+          el.style.fontWeight = 'bold';
+          el.style.margin = '12px 0 7px 0';
+        } else if(tag==='H3'||tag==='H4'||tag==='H5'||tag==='H6'){
+          el.style.fontSize = '17pt';
+          el.style.color = '#980000';
+          el.style.fontWeight = 'bold';
+          el.style.margin = '12px 0 6px 0';
+        } else if(tag==='P'){
+          el.style.fontSize = '16pt';
+          el.style.color = '#000000';
+          el.style.margin = '0 0 10px 0';
+        } else if(tag==='LI'){
+          el.style.fontSize = '16pt';
+          el.style.color = '#000000';
+          el.style.margin = '0 0 6px 0';
+        } else if(tag==='STRONG'||tag==='B'){
+          el.style.fontWeight = 'bold';
+        } else if(tag==='UL'||tag==='OL'){
+          el.style.color = '#000000';
+          el.style.margin = '0 0 10px 0';
+          el.style.paddingLeft = '24px';
+        } else if(tag==='HR'){
+          el.style.margin = '12px 0';
+        } else if(tag==='EM'||tag==='I'){
+          el.style.fontStyle = 'italic';
+        } else if(tag==='CODE'){
+          el.style.fontFamily = 'monospace';
+          el.style.fontSize = '13pt';
+        } else if(tag==='PRE'){
+          el.style.fontFamily = 'monospace';
+          el.style.fontSize = '13pt';
+          el.style.backgroundColor = '#f5f5f5';
+          el.style.padding = '10px';
+          el.style.borderRadius = '6px';
+        } else if(tag==='BLOCKQUOTE'){
+          el.style.borderLeft = '3px solid #ccc';
+          el.style.margin = '0 0 10px 0';
+          el.style.paddingLeft = '12px';
+          el.style.color = '#555';
+        } else if(tag==='TABLE'){
+          el.style.borderCollapse = 'collapse';
+          el.style.margin = '0 0 10px 0';
+        } else if(tag==='TH'||tag==='TD'){
+          el.style.border = '1px solid #ccc';
+          el.style.padding = '6px 10px';
+          el.style.fontSize = '14pt';
+        }
+      }catch(e){}
+    }
+  }
+
+  function copyResponse(markdown, btn){
+    var originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '⏳...';
+
+    var html = markdownToStyledHtml(markdown);
+    var plainText = markdown;
+
+    function done(ok){
+      btn.disabled = false;
+      if(ok){
+        btn.textContent = '✅ Copied! Doc में paste करो';
+        btn.classList.add('copied');
+        setTimeout(function(){
+          btn.textContent = originalText;
+          btn.classList.remove('copied');
+        }, 2500);
+      } else {
+        btn.textContent = '❌ Fail — दोबारा try करो';
+        setTimeout(function(){ btn.textContent = originalText; }, 2500);
+      }
+    }
+
+    try{
+      if(navigator.clipboard && window.ClipboardItem){
+        var item = new ClipboardItem({
+          'text/html': new Blob([html], {type:'text/html'}),
+          'text/plain': new Blob([plainText], {type:'text/plain'})
+        });
+        navigator.clipboard.write([item]).then(
+          function(){ done(true); },
+          function(){ fallbackCopy(html, done); }
+        );
+      } else {
+        fallbackCopy(html, done);
+      }
+    }catch(e){ fallbackCopy(html, done); }
+  }
+
+  function fallbackCopy(html, done){
+    try{
+      var holder = document.createElement('div');
+      holder.innerHTML = html;
+      holder.style.position = 'fixed';
+      holder.style.left = '-99999px';
+      holder.style.top = '0';
+      document.body.appendChild(holder);
+      var range = document.createRange();
+      range.selectNodeContents(holder);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      var ok = false;
+      try{ ok = document.execCommand('copy'); }catch(e){}
+      try{ sel.removeAllRanges(); }catch(e){}
+      try{ document.body.removeChild(holder); }catch(e){}
+      done(!!ok);
+    }catch(e){ done(false); }
+  }
+})();
+</script>
+</body>
+</html>

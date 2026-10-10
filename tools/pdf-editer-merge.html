@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merge PDF Pro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<style>
+    :root{ --c1:#6a11cb; --c2:#2575fc; --bg:#f0f4ff; }
+    body{ margin:0; font-family:'Segoe UI',sans-serif; background:var(--bg); color:#333; padding:20px; }
+    .wrap{ max-width:720px; margin:auto; background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(106,17,203,0.15); overflow:hidden; }
+    .head{ background:linear-gradient(135deg,var(--c1),var(--c2)); color:#fff; padding:30px; text-align:center; }
+    .head h1{ margin:0; font-size:28px; } .head p{ opacity:0.9; margin-top:8px; }
+    .body{ padding:25px; }
+    .drop-zone{ border:2px dashed #b3bce5; border-radius:12px; padding:40px 20px; text-align:center; cursor:pointer; transition:0.3s; background:#fafbff; }
+    .drop-zone:hover, .drop-zone.drag{ border-color:var(--c2); background:#eef3ff; }
+    .drop-zone i{ font-size:40px; display:block; margin-bottom:10px; }
+    input[type=file]{ display:none; }
+    #file-list{ margin-top:20px; display:flex; flex-direction:column; gap:10px; }
+    .f-item{ display:flex; align-items:center; background:#f8f9ff; border:1px solid #e0e6ff; border-radius:10px; padding:10px 12px; font-size:14px; }
+    .f-item .thumb{ width:40px; height:52px; background:#fff; border:1px solid #ccc; border-radius:4px; margin-right:12px; object-fit:cover; flex-shrink:0; }
+    .f-item .info{ flex-grow:1; overflow:hidden; }
+    .f-item .name{ font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .f-item .meta{ color:#666; font-size:12px; }
+    .f-item .ctrls{ display:flex; align-items:center; gap:6px; }
+    .btn-s{ border:none; background:#e9ecff; border-radius:6px; width:28px; height:28px; cursor:pointer; font-weight:bold; }
+    .btn-s:hover{ background:#d0d8ff; } .btn-x{ background:#ffe0e0; color:#d00; } .btn-x:hover{ background:#ffb3b3; }
+    .act{ display:none; margin-top:20px; gap:10px; }
+    .btn-main{ flex:1; padding:14px; border:none; border-radius:10px; font-size:16px; font-weight:bold; cursor:pointer; color:#fff; transition:0.3s; }
+    #btn-merge{ background:linear-gradient(135deg,var(--c1),var(--c2)); }
+    #btn-zip{ background:#333; } .btn-main:hover{ opacity:0.9; transform:translateY(-2px); }
+    #status{ margin-top:15px; text-align:center; font-weight:600; color:var(--c1); min-height:20px; }
+    #opt{ margin-top:15px; padding:15px; background:#f8f9ff; border-radius:10px; display:none; }
+    #opt label{ font-size:14px; font-weight:600; display:block; margin-bottom:8px; }
+    #fname{ width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="head"><h1>📄 Merge PDF Pro</h1><p>कई PDF फाइलों को एक में जोड़ें — तेज़, सुरक्षित, 100% प्राइवेट</p></div>
+    <div class="body">
+        <div class="drop-zone" id="dz"><i>📁</i><b>PDF फाइलें चुनें या यहाँ ड्रैग करें</b><br><small>क्रम बदलने के लिए ↑ ↓ बटन दबाएँ</small><input type="file" id="fi" accept="application/pdf" multiple></div>
+        <div id="file-list"></div>
+        <div id="opt"><label>📝 मर्ज की गई फाइल का नाम:</label><input type="text" id="fname" value="Merged_Document.pdf"></div>
+        <div class="act" id="actions"><button class="btn-main" id="btn-merge">⚡ Merge & Download PDF</button><button class="btn-main" id="btn-zip">🗜️ Download ZIP</button></div>
+        <div id="status"></div>
+    </div>
+</div>
+<script>
+(function(){
+    const { PDFDocument } = PDFLib;
+    let files = [];
+    const dz=document.getElementById('dz'), fi=document.getElementById('fi'), list=document.getElementById('file-list'),
+          acts=document.getElementById('actions'), opt=document.getElementById('opt'), status=document.getElementById('status');
+
+    dz.onclick=()=>fi.click();
+    dz.ondragover=e=>{e.preventDefault();dz.classList.add('drag')};
+    dz.ondragleave=()=>dz.classList.remove('drag');
+    dz.ondrop=e=>{e.preventDefault();dz.classList.remove('drag');addFiles(e.dataTransfer.files)};
+    fi.onchange=e=>addFiles(e.target.files);
+
+    async function addFiles(fl){
+        for(let f of fl){ if(f.type!=='application/pdf'){status.textContent='⚠️ सिर्फ PDF फाइलें चुनें';continue;}
+            const buf=await f.arrayBuffer();
+            let thumb='';
+            try{
+                const tmp=await PDFDocument.load(buf,{ignoreEncryption:true});
+                const pg=tmp.getPages()[0]; const {width,height}=pg.getSize();
+                const c=document.createElement('canvas'); c.width=80; c.height=80*height/width;
+                const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
+                ctx.fillStyle='#ddd'; ctx.fillRect(8,8,c.width-16,c.height-16);
+                ctx.fillStyle='#6a11cb'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+                ctx.fillText('PDF',c.width/2,c.height/2); thumb=c.toDataURL();
+            }catch(e){}
+            files.push({file:f,buf,thumb,pages:0});
+            try{ const d=await PDFDocument.load(buf,{ignoreEncryption:true}); files[files.length-1].pages=d.getPageCount(); }catch(e){}
+        }
+        render();
+    }
+    function render(){
+        list.innerHTML='';
+        files.forEach((o,i)=>{
+            const d=document.createElement('div'); d.className='f-item';
+            d.innerHTML=`<img class="thumb" src="${o.thumb||''}"><div class="info"><div class="name">${i+1}. ${o.file.name}</div><div class="meta">${o.pages} pages • ${(o.file.size/1024/1024).toFixed(2)} MB</div></div>
+            <div class="ctrls"><button class="btn-s" data-a="up" data-i="${i}">↑</button><button class="btn-s" data-a="dn" data-i="${i}">↓</button><button class="btn-s btn-x" data-a="rm" data-i="${i}">✕</button></div>`;
+            list.appendChild(d);
+        });
+        list.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+            const i=+b.dataset.i,a=b.dataset.a;
+            if(a==='rm')files.splice(i,1);
+            if(a==='up'&&i>0)[files[i-1],files[i]]=[files[i],files[i-1]];
+            if(a==='dn'&&i<files.length-1)[files[i+1],files[i]]=[files[i],files[i+1]];
+            render();
+        });
+        const show=files.length>0;
+        acts.style.display=show?'flex':'none'; opt.style.display=show?'block':'none';
+        if(show)status.textContent=`✅ ${files.length} फाइलें तैयार हैं`;
+    }
+    async function buildPdf(){
+        const out=await PDFDocument.create();
+        for(const o of files){
+            const src=await PDFDocument.load(o.buf,{ignoreEncryption:true});
+            const cp=await out.copyPages(src,src.getPageIndices());
+            cp.forEach(p=>out.addPage(p));
+        }
+        return await out.save();
+    }
+    function b64ToBytes(b64){
+        if (b64.length % 4) b64 += '='.repeat(4 - (b64.length % 4));
+        const bin=atob(b64); const bytes=new Uint8Array(bin.length);
+        for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+        return bytes;
+    }
+    async function fetchBytes(url){
+        if(url.startsWith('data:')){
+            const b64=url.split(',')[1]; return b64ToBytes(b64);
+        }
+        const r=await fetch(url); const blob=await r.blob();
+        const buf=await blob.arrayBuffer(); return new Uint8Array(buf);
+    }
+    async function getPreviewBytes(o){
+        if(o.buf) return new Uint8Array(o.buf);
+        if(o.dataUrl) return fetchBytes(o.dataUrl);
+        throw new Error('No data');
+    }
+    async function renderThumb(o){
+        const bytes=await getPreviewBytes(o);
+        const pdf=await PDFDocument.load(bytes);
+        const canvas=document.createElement('canvas');
+        return canvas.toDataURL();
+    }
+    function download(blob,name){ saveAs(blob,name); }
+    document.getElementById('btn-merge').onclick=async e=>{
+        const btn=e.target; btn.disabled=true;
+        try{
+            status.textContent='⏳ PDF मर्ज हो रहा है...';
+            const bytes=await buildPdf();
+            let n=document.getElementById('fname').value.trim()||'Merged_Document.pdf';
+            if(!n.toLowerCase().endsWith('.pdf'))n+='.pdf';
+            download(new Blob([bytes],{type:'application/pdf'}),n);
+            status.textContent='✅ डाउनलोड शुरू हो गया!';
+        }catch(err){ status.textContent='❌ एरर: '+err.message; }
+        btn.disabled=false;
+    };
+    document.getElementById('btn-zip').onclick=async e=>{
+        const btn=e.target; btn.disabled=true;
+        try{
+            status.textContent='⏳ ZIP बन रहा है...';
+            const bytes=await buildPdf();
+            const zip=new JSZip();
+            const pdfBase64=btoa(String.fromCharCode(...new Uint8Array(bytes)));
+            const dataUrl = `data:application/pdf;base64,${pdfBase64}`;
+            const pdfBytes=await fetchBytes(dataUrl);
+            zip.file(file.name.replace(/\.pdf$/i, '') + '_Merged.pdf', pdfBytes);
+            const content=await zip.generateAsync({type:'blob'});
+            download(content,'Merged_PDFs.zip');
+            status.textContent='✅ ZIP डाउनलोड शुरू!';
+        }catch(err){ status.textContent='❌ एरर: '+err.message; }
+        btn.disabled=false;
+    };
+})();
+</script>
+</body>
+</html>

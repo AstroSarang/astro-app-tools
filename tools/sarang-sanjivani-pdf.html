@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>कुंडली रिपोर्ट मेकर v2</title>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  body { background: #eef3ee; margin: 0; padding: 20px; display: flex; justify-content: center; }
+  .card { background: #fff; width: 100%; max-width: 640px; border-radius: 14px; box-shadow: 0 8px 28px rgba(0,0,0,.1); padding: 28px; }
+  .hd { background: linear-gradient(135deg,#1b7a3d,#2ea44f); color: #fff; border-radius: 10px; padding: 18px; text-align: center; margin-bottom: 20px; }
+  .hd h2 { margin: 0 0 6px; font-size: 22px; }
+  .hd .sub { font-size: 13px; opacity: .92; }
+  .lbl { display: block; font-weight: bold; margin: 18px 0 8px; font-size: 15px; color: #1b7a3d; }
+  .drop { border: 2px dashed #2ea44f; border-radius: 10px; padding: 26px 14px; text-align: center; background: #f4faf5; color: #333; font-size: 15px; cursor: pointer; }
+  .drop.over { background: #e2f3e5; border-color: #1b7a3d; }
+  .drop small { color: #777; font-size: 12px; }
+  .fname { display: block; margin-top: 8px; color: #1b7a3d; font-weight: bold; font-size: 13px; }
+  .hidden { display: none !important; }
+  input[type=text], select, textarea { width: 100%; padding: 11px; border: 1.5px solid #cfd8cf; border-radius: 8px; font-size: 15px; margin-top: 4px; }
+  textarea.csv { height: 110px; font-family: monospace; font-size: 13px; }
+  .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+  .btn.green { background: #2ea44f; color: #fff; }
+  .btn.green:disabled { background: #9ccc9f; cursor: wait; }
+  .btn.red { background: #d33; color: #fff; font-size: 17px; padding: 16px; margin-top: 22px; }
+  .btn.red:disabled { background: #e99; cursor: wait; }
+  .btn.orange { background: #ef8c56; color: #fff; }
+  .rowbtns { display: flex; gap: 10px; margin-top: 14px; }
+  .rowbtns .btn { margin-top: 0; }
+  .status { font-size: 14px; margin-top: 8px; min-height: 20px; }
+  .okmsg { color: #1b7a3d; font-weight: bold; }
+  .err { color: #c00; font-weight: bold; }
+  .work { color: #b7791f; font-weight: bold; }
+  .ribbon-demo { margin-top: 10px; background: #f6f6f6; border-radius: 8px; padding: 10px; text-align: center; }
+  .ribbon-demo .wr { display: inline-block; background: #fff; border-left: 14px solid #e8912d; border-right: 14px solid #e8912d; padding: 6px 34px; font-family: Georgia, serif; font-weight: bold; color: #C0392B; font-size: 20px; }
+  .cap { font-size: 12px; color: #777; margin-top: 6px; text-align: center; }
+  .note { background: #fff8e1; border: 1px solid #f0d97a; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #8a6d3b; margin-top: 18px; }
+  .togglerow { display: flex; justify-content: space-between; align-items: center; background: #f4faf5; border: 1px solid #cfe3d2; border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 14px; cursor: pointer; }
+  .togglerow small { color: #8a6d3b; font-size: 12px; }
+  .tswitch { width: 46px; height: 26px; border-radius: 13px; background: #ccc; position: relative; flex-shrink: 0; transition: .2s; }
+  .tswitch.on { background: #2ea44f; }
+  .tswitch::after { content: ''; position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: .2s; }
+  .tswitch.on::after { left: 23px; }
+  .row2 { display: flex; gap: 12px; }
+  .row2 > div { flex: 1; }
+  /* CSV page (hidden render area) */
+  #pdf-wrapper { display: none; }
+  #report-container { width: 210mm; padding: 15mm; box-sizing: border-box; background: #fff; margin: auto; }
+  #report-container .sansthan-name { font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 700; text-align: center; color: #d35400; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+  #report-container .main-title { font-size: 24px; font-weight: bold; color: #4a4a4a; margin-bottom: 12px; border-bottom: 3px solid #ef8c56; padding-bottom: 4px; display: inline-block; }
+  #report-container .single-layout { display: flex; justify-content: space-between; gap: 15px; margin-top: 10px; }
+  #report-container .column { width: 48%; border-radius: 6px; overflow: hidden; }
+  #report-container .col-header { text-align: center; padding: 8px; font-weight: 600; color: #fff; font-size: 18px; }
+  #report-container .header-yellow { background-color: #f3c86c; }
+  #report-container .header-orange { background-color: #ef8c56; }
+  #report-container .single-table { width: 100%; border-collapse: collapse; }
+  #report-container .single-table td { padding: 9.5px 12px; border: 1px solid #e0e0e0; text-align: center; font-size: 15px; }
+  #report-container .single-table tr:nth-child(even) { background-color: #f9f9f9; }
+  #report-container .summary-boxes { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 25px; }
+  #report-container .box { width: 31%; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 0; text-align: center; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  #report-container .box-title { color: #555; font-size: 14px; margin-bottom: 6px; }
+  #report-container .box-value { font-size: 16px; font-weight: 600; }
+  #report-container .val-green { color: #8bc34a; } #report-container .val-blue { color: #00bcd4; } #report-container .val-orange { color: #ff9800; }
+  #report-container .milan-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  #report-container .milan-table th, #report-container .milan-table td { border: 1px solid #999; padding: 6px 8px; font-size: 13px; text-align: left; }
+  #report-container .milan-table th { background-color: #eee; font-weight: bold; text-align: center; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="hd">
+    <h2>🪔 कुंडली रिपोर्ट मेकर</h2>
+    <div class="sub">कवर + जन्म-विवरण पेज + कुंडली + एंडिंग + कैटलॉग → एक PDF रिपोर्ट &nbsp;•&nbsp; v2</div>
+  </div>
+
+  <label class="lbl">1️⃣ कवर अपलोड करें (2 पेज वाला)</label>
+  <div class="drop" id="coverDrop">📁 कवर PDF यहाँ <b>drag-drop</b> करें<br><small>या click करके चुनें</small><span class="fname hidden" id="coverFname"></span></div>
+  <input type="file" id="coverFile" accept=".pdf,application/pdf" class="hidden">
+
+  <label class="lbl">2️⃣ क्लाइंट का नाम (English)</label>
+  <input type="text" id="clientName" placeholder="जैसे: Rahul" autocomplete="off">
+  <div class="ribbon-demo"><div class="wr"><span id="ribbonDemoText">Rahul</span></div></div>
+  <div class="cap">कवर page 2 के नाम वाली पट्टी पर ऐसे लिखा जाएगा (लंबा नाम अपने-आप छोटा होगा)</div>
+
+  <label class="lbl">3️⃣ CSV से जन्म-विवरण पेज बनाएं</label>
+  <div style="font-size:13px;color:#555;">रिपोर्ट की भाषा</div>
+  <select id="csvLang"><option value="hi">हिन्दी</option><option value="en">English</option><option value="mr">मराठी</option></select>
+  <div style="font-size:13px;color:#555;margin-top:8px;">Gemini से निकला CSV यहाँ paste करें</div>
+  <textarea class="csv" id="csvText" placeholder="पूरा नाम, Rahul&#10;जन्म तिथि, 14-02-1995&#10;जन्म समय, 03:00 AM&#10;..."></textarea>
+  <button class="btn green" id="makePageBtn">📄 पेज तैयार करें</button>
+  <div class="status" id="csvStatus"></div>
+
+  <label class="lbl">4️⃣ ऑटो-जेनरेटेड कुंडली अपलोड करें</label>
+  <div class="drop" id="kundliDrop">📁 कुंडली PDF यहाँ <b>drag-drop</b> करें<br><small>या click करके चुनें</small><span class="fname hidden" id="kundliFname"></span></div>
+  <input type="file" id="kundliFile" accept=".pdf,application/pdf" class="hidden">
+  <div class="togglerow" id="stripToggleRow">
+    <span><b>पहला और आखिरी पेज हटाएं</b><br><small>सॉफ्टवेयर ब्रांडिंग वाले पेज (पहला/आखिरी)</small></span>
+    <span class="tswitch on" id="stripToggle"></span>
+  </div>
+
+  <div class="row2">
+    <div>
+      <label class="lbl">5️⃣ एंडिंग पेज (डिस्क्लेमर)</label>
+      <div class="drop" id="endingDrop" style="padding:18px 10px;">📁 PDF चुनें<br><small>या drag-drop</small><span class="fname hidden" id="endingFname"></span></div>
+      <input type="file" id="endingFile" accept=".pdf,application/pdf" class="hidden">
+    </div>
+    <div>
+      <label class="lbl">6️⃣ कैटलॉग (मराठी)</label>
+      <div class="drop" id="catalogDrop" style="padding:18px 10px;">📁 PDF चुनें<br><small>या drag-drop</small><span class="fname hidden" id="catalogFname"></span></div>
+      <input type="file" id="catalogFile" accept=".pdf,application/pdf" class="hidden">
+    </div>
+  </div>
+
+  <button class="btn red" id="buildBtn">📥 रिपोर्ट बनाएं और डाउनलोड करें</button>
+  <div class="status" id="buildStatus"></div>
+
+  <div class="note">नोट: सभी uploads optional हैं — जो-जो अपलोड करेंगे / बनाएंगे वही रिपोर्ट में जुड़ेगा। क्रम: कवर (नाम सहित) → जन्म-विवरण पेज → कुंडली → एंडिंग पेज → कैटलॉग। कोई फाइल save नहीं होती।</div>
+
+  <div class="rowbtns">
+    <button class="btn orange" id="resetBtn" style="font-size:15px;">🔄 रीसेट (सब साफ करें)</button>
+  </div>
+</div>
+
+<div id="pdf-wrapper"><div id="report-container"></div></div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+function range(a,b){const r=[];for(let i=a;i<b;i++)r.push(i);return r;}
+
+/* ---------- uploads ---------- */
+let coverBytes=null, kundliBytes=null, kundliPages=0, endingBytes=null, catalogBytes=null, csvBytes=null;
+async function readPdf(file){
+  const bytes=await file.arrayBuffer();
+  const pages=(await PDFLib.PDFDocument.load(bytes.slice(0))).getPageCount();
+  return {bytes, pages};
+}
+function wireDrop(dropId,fileId,labelId,cb){
+  const d=$(dropId), f=$(fileId);
+  d.onclick=()=>f.click();
+  f.onchange=()=>{ if(f.files[0]) cb(f.files[0]); };
+  ['dragover','dragenter'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.remove('over');}));
+  d.addEventListener('drop',e=>{ const fl=e.dataTransfer.files[0]; if(fl) cb(fl); });
+}
+function showFname(labelId,file,pages){
+  const el=$(labelId); el.classList.remove('hidden');
+  el.textContent=`✔ ${file.name} (${pages} pages)`;
+}
+wireDrop('coverDrop','coverFile','coverFname',async f=>{
+  try{ const r=await readPdf(f); coverBytes=r.bytes; showFname('coverFname',f,r.pages); }
+  catch(e){ coverBytes=null; alert('यह PDF पढ़ी नहीं जा सकी: '+e.message); }
+});
+wireDrop('kundliDrop','kundliFile','kundliFname',async f=>{
+  try{ const r=await readPdf(f); kundliBytes=r.bytes; showFname('kundliFname',f,r.pages); }
+  catch(e){ kundliBytes=null; alert('यह PDF पढ़ी नहीं जा सकी: '+e.message); }
+});
+wireDrop('endingDrop','endingFile','endingFname',async f=>{
+  try{ const r=await readPdf(f); endingBytes=r.bytes; showFname('endingFname',f,r.pages); }
+  catch(e){ kundliBytes=null; alert('यह PDF पढ़ी नहीं जा सकी: '+e.message); }
+});
+wireDrop('catalogDrop','catalogFile','catalogFname',async f=>{
+  try{ const r=await readPdf(f); catalogBytes=r.bytes; showFname('catalogFname',f,r.pages); }
+  catch(e){ catalogBytes=null; alert('यह PDF पढ़ी नहीं जा सकी: '+e.message); }
+});
+
+/* ---------- strip toggle ---------- */
+let stripPages=true;
+$('stripToggleRow').onclick=()=>{ stripPages=!stripPages; $('stripToggle').classList.toggle('on',stripPages); };
+
+/* ---------- live ribbon preview ---------- */
+$('clientName').addEventListener('input',e=>{
+  $('ribbonDemoText').textContent=e.target.value.trim()||'Rahul';
+});
+
+/* ---------- CSV page generator ---------- */
+const sdict={
+  hi:{titleSingle:"मुख्य विवरण",titleMilan:"कुण्डली मिलान",colLeft:"व्यक्तिगत विवरण",colRight:"अवकहडा चक्र"},
+  en:{titleSingle:"Basic Details",titleMilan:"Kundli Matching",colLeft:"Person Details",colRight:"Avkahada Chakra"},
+  mr:{titleSingle:"मूलभूत तपशील",titleMilan:"कुंडली जुळवणी",colLeft:"वैयक्तिक तपशील",colRight:"अवकहडा चक्र"}
+};
+function sBuildSingle(rows,container,lang){
+  container.innerHTML+=`<div class="main-title">${sdict[lang].titleSingle}</div>`;
+  const half=Math.ceil(rows.length/2), left=rows.slice(0,half), right=rows.slice(half);
+  let h=`<div class="single-layout"><div class="column"><div class="col-header header-yellow">${sdict[lang].colLeft}</div><table class="single-table"><tbody>`;
+  left.forEach(r=>{const p=r.split(','); if(p.length>=2) h+=`<tr><td>${p[0].trim()} : ${p.slice(1).join(',').trim()}</td></tr>`;});
+  h+=`</tbody></table></div><div class="column"><div class="col-header header-orange">${sdict[lang].colRight}</div><table class="single-table"><tbody>`;
+  right.forEach(r=>{const p=r.split(','); if(p.length>=2) h+=`<tr><td>${p[0].trim()} : ${p.slice(1).join(',').trim()}</td></tr>`;});
+  h+=`</tbody></table></div></div>`; container.innerHTML+=h;
+  const kw=['राशि','rashi','sign','लग्न','lagna','नक्षत्र','nakshatra','अक्षर','letter','पाया','paya'];
+  const boxes=[];
+  rows.forEach(r=>{const p=r.split(','); if(p.length>=2&&boxes.length<6){const k=p[0].trim().toLowerCase();
+    if(kw.some(x=>k.includes(x))) boxes.push({t:p[0].trim(),v:p.slice(1).join(',').trim()});}});
+  if(boxes.length){
+    const cols=['val-green','val-blue','val-orange','val-orange','val-green','val-blue'];
+    let bh=`<div class="summary-boxes">`;
+    boxes.forEach((b,i)=>{bh+=`<div class="box"><div class="box-title">${b.t}</div><div class="box-value ${cols[i%cols.length]}">${b.v}</div></div>`;});
+    container.innerHTML+=bh+`</div>`;
+  }
+}
+function sBuildMilan(rows,container,lang){
+  container.innerHTML+=`<div class="main-title">${sdict[lang].titleMilan}</div>`;
+  const hd=rows[0].split(',');
+  let h=`<table class="milan-table"><thead><tr><th>${lang==='en'?'Description':(lang==='mr'?'तपशील':'विवरण')}</th><th>${hd[1]?hd[1].trim():''}</th>`;
+  if(hd[2]) h+=`<th>${hd[2].trim()}</th>`;
+  h+=`</tr></thead><tbody>`;
+  for(let i=1;i<rows.length;i++){const c=rows[i].split(',');
+    h+=`<tr><td>${c[0]?c[0].trim():''}</td><td>${c[1]?c[1].trim():''}</td><td>${c[2]?c[2].trim():''}</td></tr>`;}
+  container.innerHTML+=h+`</tbody></table>`;
+}
+$('makePageBtn').onclick=async()=>{
+  const txt=$('csvText').value.trim();
+  if(!txt){ $('csvStatus').innerHTML='<span class="err">पहले ऊपर के box में Gemini वाला CSV paste करें।</span>'; return; }
+  const btn=$('makePageBtn'); btn.disabled=true;
+  $('csvStatus').innerHTML='<span class="work">पेज बन रहा है...</span>';
+  try{
+    const lang=$('csvLang').value;
+    const rows=txt.split('\n').filter(r=>r.trim()!=='');
+    const isMilan=rows[0].split(',').length>=3;
+    const c=$('report-container');
+    c.innerHTML=`<div class="sansthan-name">Sanjivani Jyotish Sansthan</div>`;
+    if(isMilan) sBuildMilan(rows,c,lang); else sBuildSingle(rows,c,lang);
+    const wrapper=$('pdf-wrapper'); wrapper.style.display='block';
+    await new Promise(r=>setTimeout(r,60));
+    const canvas=await window.html2canvas(c,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+    wrapper.style.display='none';
+    const pageDoc=await PDFLib.PDFDocument.create();
+    const img=await pageDoc.embedJpg(canvas.toDataURL('image/jpeg',1.0));
+    const wPt=595.28, hPt=wPt*canvas.height/canvas.width;
+    pageDoc.addPage([wPt,hPt]).drawImage(img,{x:0,y:0,width:wPt,height:hPt});
+    csvBytes=await pageDoc.save();
+    $('csvStatus').innerHTML=`<span class="okmsg">✔ पेज तैयार है — रिपोर्ट में जुड़ेगा।</span>`;
+  }catch(e){
+    $('pdf-wrapper').style.display='none';
+    $('csvStatus').innerHTML='<span class="err">पेज नहीं बन पाया: '+e.message+'</span>';
+  }
+  btn.disabled=false;
+};
+
+/* ---------- reset (everything) ---------- */
+$('resetBtn').onclick=()=>{
+  coverBytes=null; $('coverFile').value='';
+  let el=$('coverFname'); el.classList.add('hidden'); el.textContent='';
+  $('clientName').value=''; $('ribbonDemoText').textContent='Rahul';
+  $('csvText').value=''; csvBytes=null; $('csvStatus').innerHTML='';
+  kundliBytes=null; kundliPages=0; $('kundliFile').value='';
+  el=$('kundliFname'); el.classList.add('hidden'); el.textContent='';
+  stripPages=true; $('stripToggle').classList.add('on');
+  endingBytes=null; $('endingFile').value='';
+  el=$('endingFname'); el.classList.add('hidden'); el.textContent='';
+  catalogBytes=null; $('catalogFile').value='';
+  el=$('catalogFname'); el.classList.add('hidden'); el.textContent='';
+  $('buildStatus').innerHTML='';
+  window.scrollTo(0,0);
+};
+
+/* ---------- build ---------- */
+const RIBBON_X=450, RIBBON_Y=401, RIBBON_MAXW=200, NAME_START_SIZE=30;
+$('buildBtn').onclick=async()=>{
+  const btn=$('buildBtn'), st=$('buildStatus');
+  const setW=m=>{st.innerHTML=`<span class="work">${m}</span>`;};
+  const fail=m=>{st.innerHTML=`<span class="err">${m}</span>`; btn.disabled=false; btn.textContent='📥 रिपोर्ट बनाएं और डाउनलोड करें';};
+  const name=$('clientName').value.trim();
+  /* सभी uploads optional — जो उपलब्ध होगा वही जुड़ेगा */
+  if(coverBytes && !name){ fail('कवर पर लिखने के लिए क्लाइंट का नाम लिखें (English में)।'); return; }
+  if(!coverBytes && !csvBytes && !kundliBytes && !endingBytes && !catalogBytes){
+    fail('रिपोर्ट के लिए कम से कम एक PDF अपलोड करें या CSV से पेज बनाएं।'); return;
+  }
+  btn.disabled=true; btn.textContent='बन रही है...';
+  try{
+    const merged=await PDFLib.PDFDocument.create();
+    const addAll=async(src,idx)=>{ (await merged.copyPages(src,idx)).forEach(p=>merged.addPage(p)); };
+    if(coverBytes){
+      setW('कवर पर नाम लिखा जा रहा है...');
+      const coverDoc=await PDFLib.PDFDocument.load(coverBytes.slice(0));
+      if(name && coverDoc.getPageCount()>=2){
+        const font=await coverDoc.embedFont(PDFLib.StandardFonts.TimesRomanBold);
+        const nameColor=PDFLib.rgb(192/255,57/255,43/255);
+        let size=NAME_START_SIZE;
+        while(size>8 && font.widthOfTextAtSize(name,size)>RIBBON_MAXW) size-=0.5;
+        const tw=font.widthOfTextAtSize(name,size);
+        coverDoc.getPage(1).drawText(name,{x:RIBBON_X-tw/2, y:RIBBON_Y-0.33*size, size, font, color:nameColor});
+      }
+      setW('कवर जुड़ रहा है...');
+      await addAll(coverDoc,range(0,coverDoc.getPageCount()));
+    }
+    if(csvBytes){
+      setW('जन्म-विवरण पेज जुड़ रहा है...');
+      const csvDoc=await PDFLib.PDFDocument.load(csvBytes.slice(0));
+      await addAll(csvDoc,range(0,csvDoc.getPageCount()));
+    }
+    if(kundliBytes){
+      setW('कुंडली जुड़ रही है...');
+      const kDoc=await PDFLib.PDFDocument.load(kundliBytes.slice(0));
+      const n=kDoc.getPageCount();
+      const kIdx=(stripPages&&n>=3)?range(1,n-1):range(0,n);
+      await addAll(kDoc,kIdx);
+    }
+    if(endingBytes){
+      setW('एंडिंग पेज जुड़ रहा है...');
+      const eDoc=await PDFLib.PDFDocument.load(endingBytes.slice(0));
+      await addAll(eDoc,range(0,eDoc.getPageCount()));
+    }
+    if(catalogBytes){
+      setW('कैटलॉग जुड़ रहा है...');
+      const cDoc=await PDFLib.PDFDocument.load(catalogBytes.slice(0));
+      await addAll(cDoc,range(0,cDoc.getPageCount()));
+    }
+    setW('PDF तैयार हो रही है...');
+    const out=await merged.save();
+    const totalPages=merged.getPageCount();
+    const safe=name.replace(/[\\/:*?"<>|]/g,'').trim()||'Client';
+    const blob=new Blob([out],{type:'application/pdf'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    a.download=`${safe}-Kundli-Report.pdf`;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},60000);
+    st.innerHTML=`<span class="okmsg">✔ रिपोर्ट तैयार! ${totalPages} pages — ${safe}-Kundli-Report.pdf डाउनलोड हो गई।</span>`;
+  }catch(e){ fail('रिपोर्ट नहीं बन पाई: '+e.message); console.error(e); return; }
+  btn.disabled=false; btn.textContent='📥 रिपोर्ट बनाएं और डाउनलोड करें';
+};
+</script>
+</body>
+</html>

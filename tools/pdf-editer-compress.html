@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lossless PDF Compressor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
+    body { background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow: hidden; }
+    .header { text-align: center; margin-bottom: 20px; color: #fff; text-shadow: 1px 1px 5px rgba(0,0,0,0.2); }
+    .header h1 { font-size: 30px; font-weight: 700; }
+    .header p { font-size: 14px; opacity: 0.9; }
+    .container { background: #fff; width: 100%; max-width: 1000px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+    .drop-zone { border: 2px dashed #43cea2; border-radius: 12px; padding: 50px 20px; text-align: center; background: #f0fff8; cursor: pointer; transition: 0.3s; margin: 30px; }
+    .drop-zone:hover, .drop-zone.dragover { background: #e0f7ef; transform: scale(1.01); }
+    .drop-zone i { font-size: 45px; color: #43cea2; margin-bottom: 12px; }
+    #fileInput { display: none; }
+    .details-panel { display: none; padding: 20px 30px; border-top: 1px solid #eee; }
+    .details-panel h3 { font-size: 16px; margin-bottom: 12px; color: #333; border-bottom: 2px solid #43cea2; padding-bottom: 8px; display: inline-block; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+    .info-item { background: #f8f9fa; padding: 10px 14px; border-radius: 8px; font-size: 13px; }
+    .info-item b { color: #185a9d; display: block; font-size: 11px; text-transform: uppercase; margin-bottom: 3px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; margin-bottom: 20px; }
+    .ctrl-group { flex: 1; min-width: 200px; }
+    .ctrl-group label { font-size: 13px; font-weight: 600; color: #333; display: block; margin-bottom: 6px; }
+    .ctrl-group label span { color: #43cea2; font-weight: 700; }
+    input[type="range"] { width: 100%; accent-color: #43cea2; cursor: pointer; }
+    input[type="number"] { width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 6px; }
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; background: #fff8e1; padding: 10px 14px; border-radius: 8px; border: 1px solid #ffe082; margin-bottom: 20px; }
+    .toggle-wrap span { font-size: 13px; font-weight: 600; }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #43cea2; }
+    input:checked + .slider:before { transform: translateX(20px); }
+    .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; color: #fff; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-compress { background: linear-gradient(135deg, #43cea2, #185a9d); width: 100%; justify-content: center; font-size: 17px; padding: 15px; }
+    .btn-compress:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(67,206,162,0.4); }
+    .progress-container { display: none; margin-top: 20px; }
+    .progress-bar-bg { background: #e9ecef; border-radius: 10px; height: 22px; overflow: hidden; position: relative; }
+    .progress-bar-fill { background: linear-gradient(90deg, #43cea2, #185a9d); height: 100%; width: 0%; transition: width 0.3s; border-radius: 10px; }
+    .progress-text { position: absolute; width: 100%; text-align: center; line-height: 22px; font-size: 12px; font-weight: 700; color: #333; top: 0; }
+    .result-box { display: none; margin-top: 20px; background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 10px; padding: 18px; text-align: center; }
+    .result-box h3 { color: #2e7d32; margin-bottom: 10px; font-size: 18px; }
+    .size-comp { display: flex; justify-content: center; gap: 20px; margin-bottom: 15px; font-size: 14px; }
+    .size-comp div b { display: block; font-size: 20px; }
+    .old-size b { color: #c62828; text-decoration: line-through; }
+    .new-size b { color: #2e7d32; }
+    .saved { background: #2e7d32; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block; margin-bottom: 15px; }
+    .btn-dl { background: #2e7d32; margin: 5px; }
+    .btn-dl:hover { background: #1b5e20; }
+    .btn-prev { background: #ff9800; margin: 5px; }
+    .btn-prev:hover { background: #e65100; }
+    .btn-new { background: #6c757d; margin-top: 15px; width: 100%; justify-content: center; }
+    .preview-box { display: none; margin-top: 15px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+    .preview-box iframe { width: 100%; height: 400px; border: none; }
+    #pdfViewerContainer { display: none; flex: 1; overflow: auto; background: #525659; padding: 20px; text-align: center; }
+    #pdfViewerContainer canvas { box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin-bottom: 15px; max-width: 100%; height: auto; background: #fff; }
+</style>
+</head>
+<body>
+<div class="header">
+    <h1><i class="fas fa-compress-alt"></i> Lossless PDF Compressor</h1>
+    <p>क्वालिटी 100% Same — साइज़ सिर्फ़ कम! (100% Private & Secure)</p>
+</div>
+<div class="container" id="mainContainer">
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <h3>PDF यहाँ Drag & Drop करें</h3>
+        <p style="font-size:13px; color:#666;">या क्लिक करके चुनें (Max 100MB)</p>
+        <input type="file" id="fileInput" accept="application/pdf">
+    </div>
+    <div class="details-panel" id="detailsPanel">
+        <h3><i class="fas fa-file-pdf"></i> <span id="fileName"></span></h3>
+        <div class="info-grid">
+            <div class="info-item"><b>Original Size</b><span id="fileSize"></span></div>
+            <div class="info-item"><b>Total Pages</b><span id="pageCount"></span></div>
+        </div>
+        <div class="controls">
+            <div class="ctrl-group">
+                <label>🖼️ Image Quality: <span id="qualityVal">85%</span></label>
+                <input type="range" id="quality" min="10" max="100" value="85">
+            </div>
+            <div class="ctrl-group">
+                <label>📐 DPI (Resolution): <span id="dpiVal">150</span></label>
+                <input type="range" id="dpi" min="72" max="300" value="150" step="1">
+            </div>
+            <div class="ctrl-group">
+                <label>📄 Pages (e.g. 1-5):</label>
+                <input type="number" id="pageRange" placeholder="All Pages" min="1">
+            </div>
+        </div>
+        <div class="toggle-wrap">
+            <label class="switch"><input type="checkbox" id="previewToggle" checked><span class="slider"></span></label>
+            <span>👁️ Compress करने से पहले Preview दिखाएँ</span>
+        </div>
+        <button class="btn btn-compress" id="compressBtn"><i class="fas fa-compress-arrows-alt"></i> Compress Now</button>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressFill"></div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+        </div>
+        <div class="result-box" id="resultBox">
+            <h3>✅ Compression Complete!</h3>
+            <div class="size-comp">
+                <div class="old-size">Original<b id="oldSize"></b></div>
+                <div class="new-size">Compressed<b id="newSize"></b></div>
+            </div>
+            <div class="saved" id="savedBadge"></div>
+            <br>
+            <button class="btn btn-dl" id="downloadBtn"><i class="fas fa-download"></i> Download PDF</button>
+            <button class="btn btn-prev" id="previewBtn"><i class="fas fa-eye"></i> Preview</button>
+            <div class="preview-box" id="previewBox"><iframe id="previewFrame"></iframe></div>
+        </div>
+    </div>
+    <div id="pdfViewerContainer"></div>
+</div>
+
+<script>
+(function(){
+    'use strict';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const { PDFDocument } = PDFLib;
+
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const detailsPanel = document.getElementById('detailsPanel');
+    const mainContainer = document.getElementById('mainContainer');
+    const pdfViewerContainer = document.getElementById('pdfViewerContainer');
+    const quality = document.getElementById('quality');
+    const qualityVal = document.getElementById('qualityVal');
+    const dpi = document.getElementById('dpi');
+    const dpiVal = document.getElementById('dpiVal');
+    const pageRange = document.getElementById('pageRange');
+    const previewToggle = document.getElementById('previewToggle');
+    const compressBtn = document.getElementById('compressBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const resultBox = document.getElementById('resultBox');
+    const previewBox = document.getElementById('previewBox');
+    const previewFrame = document.getElementById('previewFrame');
+
+    let originalFile = null;
+    let originalBytes = null;
+    let originalPdfDoc = null;
+    let totalPages = 0;
+    let compressedBlob = null;
+    let compressedUrl = null;
+    let originalUrl = null;
+
+    quality.addEventListener('input', () => qualityVal.textContent = quality.value + '%');
+    dpi.addEventListener('input', () => dpiVal.textContent = dpi.value);
+
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault(); dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+    function resetState(){
+        if (compressedUrl) URL.revokeObjectURL(compressedUrl);
+        if (originalUrl) URL.revokeObjectURL(originalUrl);
+        compressedBlob = null; compressedUrl = null; originalUrl = null;
+        resultBox.style.display = 'none';
+        previewBox.style.display = 'none';
+        previewFrame.src = '';
+        progressContainer.style.display = 'none';
+        progressFill.style.width = '0%';
+        progressText.textContent = '0%';
+        pdfViewerContainer.style.display = 'none';
+        pdfViewerContainer.innerHTML = '';
+    }
+
+    async function handleFile(file){
+        resetState();
+        if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+            alert('⚠️ कृपया सिर्फ PDF फाइल चुनें'); return;
+        }
+        if (file.size > 100 * 1024 * 1024) { alert('⚠️ फाइल 100MB से बड़ी है'); return; }
+        originalFile = file;
+        originalBytes = await file.arrayBuffer();
+        originalUrl = URL.createObjectURL(file);
+
+        try {
+            const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(originalBytes) });
+            originalPdfDoc = await loadingTask.promise;
+            totalPages = originalPdfDoc.numPages;
+
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            document.getElementById('pageCount').textContent = totalPages + ' pages';
+            pageRange.max = totalPages;
+            pageRange.placeholder = 'All Pages (1-' + totalPages + ')';
+
+            dropZone.style.display = 'none';
+            detailsPanel.style.display = 'block';
+        } catch(err) {
+            alert('❌ PDF पढ़ने में एरर: ' + err.message);
+        }
+    }
+
+    compressBtn.addEventListener('click', async () => {
+        if (!originalBytes) return;
+        compressBtn.disabled = true;
+        resultBox.style.display = 'none';
+        previewBox.style.display = 'none';
+        progressContainer.style.display = 'block';
+
+        const q = parseInt(quality.value) / 100;
+        const targetDpi = parseInt(dpi.value);
+        const scale = targetDpi / 72;
+
+        let pagesToProcess = [];
+        const rangeVal = pageRange.value.trim();
+        if (rangeVal) {
+            const r = parseInt(rangeVal);
+            if (r >= 1 && r <= totalPages) pagesToProcess = [r];
+            else { alert('⚠️ पेज नंबर 1 से ' + totalPages + ' के बीच होना चाहिए'); compressBtn.disabled = false; progressContainer.style.display = 'none'; return; }
+        } else {
+            for (let i = 1; i <= totalPages; i++) pagesToProcess.push(i);
+        }
+
+        try {
+            const pdfDoc = await PDFDocument.create();
+            for (let idx = 0; idx < pagesToProcess.length; idx++) {
+                const pageNum = pagesToProcess[idx];
+                const page = await originalPdfDoc.getPage(pageNum);
+                const viewport = page.getViewport({ scale: scale });
+
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.floor(viewport.width);
+                canvas.height = Math.floor(viewport.height);
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                const imgData = canvas.toDataURL('image/jpeg', q);
+                const imgBytes = await fetch(imgData).then(r => r.arrayBuffer());
+                const jpgImage = await pdfDoc.embedJpg(imgBytes);
+                const newPage = pdfDoc.addPage([canvas.width, canvas.height]);
+                newPage.drawImage(jpgImage, { x: 0, y: 0, width: canvas.width, height: canvas.height });
+
+                const pct = Math.round(((idx + 1) / pagesToProcess.length) * 100);
+                progressFill.style.width = pct + '%';
+                progressText.textContent = pct + '% — Page ' + pageNum;
+            }
+
+            const pdfBytes = await pdfDoc.save();
+            compressedBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+            compressedUrl = URL.createObjectURL(compressedBlob);
+
+            const oldMB = (originalFile.size / 1024 / 1024).toFixed(2);
+            const newMB = (compressedBlob.size / 1024 / 1024).toFixed(2);
+            const savedPct = Math.round((1 - compressedBlob.size / originalFile.size) * 100);
+
+            document.getElementById('oldSize').textContent = oldMB + ' MB';
+            document.getElementById('newSize').textContent = newMB + ' MB';
+            document.getElementById('savedBadge').textContent = savedPct + '% छोटा! 🎉';
+
+            progressContainer.style.display = 'none';
+            resultBox.style.display = 'block';
+
+            if (previewToggle.checked) {
+                previewFrame.src = compressedUrl;
+                previewBox.style.display = 'block';
+            }
+        } catch(err) {
+            alert('❌ Compression में एरर: ' + err.message);
+            progressContainer.style.display = 'none';
+        }
+        compressBtn.disabled = false;
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+        if (!compressedUrl) return;
+        const a = document.createElement('a');
+        a.href = compressedUrl;
+        a.download = originalFile.name.replace(/\.pdf$/i, '') + '_compressed.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
+
+    document.getElementById('previewBtn').addEventListener('click', async () => {
+        if (!compressedUrl) return;
+        mainContainer.style.maxWidth = '1200px';
+        pdfViewerContainer.style.display = 'block';
+        pdfViewerContainer.innerHTML = '';
+        detailsPanel.style.display = 'none';
+        try {
+            const pdf = await pdfjsLib.getDocument({ data: await compressedBlob.arrayBuffer() }).promise;
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({ scale: 1.2 });
+                const canvas = document.createElement('canvas');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+                pdfViewerContainer.appendChild(canvas);
+            }
+            const backBtn = document.createElement('button');
+            backBtn.className = 'btn btn-new';
+            backBtn.innerHTML = '<i class="fas fa-arrow-left"></i> वापस जाएँ';
+            backBtn.onclick = () => {
+                pdfViewerContainer.style.display = 'none';
+                pdfViewerContainer.innerHTML = '';
+                detailsPanel.style.display = 'block';
+            };
+            pdfViewerContainer.appendChild(backBtn);
+        } catch(err) { alert('❌ Preview एरर: ' + err.message); }
+    });
+
+    const saveOriginalBtn = document.createElement('button');
+    saveOriginalBtn.className = 'btn btn-dl';
+    saveOriginalBtn.innerHTML = '<i class="fas fa-save"></i> Original Save करें';
+    saveOriginalBtn.style.margin = '5px';
+    saveOriginalBtn.onclick = () => {
+        const a = document.createElement('a');
+        a.href = originalUrl;
+        a.download = originalFile.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+    resultBox.insertBefore(saveOriginalBtn, resultBox.children[3]);
+
+    const deleteOriginalBtn = document.createElement('button');
+    deleteOriginalBtn.className = 'btn btn-new';
+    deleteOriginalBtn.innerHTML = '<i class="fas fa-trash"></i> नई फाइल चुनें';
+    deleteOriginalBtn.onclick = () => {
+        resetState();
+        originalFile = null; originalBytes = null; originalPdfDoc = null;
+        fileInput.value = '';
+        dropZone.style.display = 'block';
+        detailsPanel.style.display = 'none';
+    };
+    resultBox.appendChild(deleteOriginalBtn);
+})();
+</script>
+</body>
+</html>
