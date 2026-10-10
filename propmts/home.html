@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Prompts Copier</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border-left: 5px solid #007bff;
+        }
+        .card-content {
+            white-space: pre-wrap;
+            font-size: 14px;
+            color: #555;
+            max-height: 100px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+        .card-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #007bff;
+        }
+        .btn {
+            align-self: flex-end;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Universal Prompts Manager</h1>
+    <div class="container" id="prompt-container">
+        <!-- Prompts will be loaded here -->
+    </div>
+
+    <div id="snackbar" class="toast">Text Copied to Clipboard!</div>
+
+    <script>
+        // यहाँ आपका पूरा डेटा है
+        const rawData = `कृपया पीडीएफ कुंडली से, d1 का 
+
+1] लग्न सहित सभी 9 ग्रहों के लिए डिग्री (अंश:कला:विकला) निकालें। (Page 2)
+
+क्रम: लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु।
+फॉर्मेट: 4:54:00,0:35:27,18:30:32
+
+2] Bhava Cusp से 10वें भाव की डिग्री (MC) और राशी नंबर (Page 3)
+
+सभी डिग्रियां एक लाइन में एक साथ कोड फोर्मेट में दें।
+
+NEXT TASK : ये वर्ग कुंडलियों के स्क्रीनशॉट हैं।
+
+कृपया कुंडलियों (D1,D9,D7,D10,D60) के लिए राशि नंबर निकालें।
+
+क्रम: लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु।
+फॉर्मेट: D-xx: 1,2,3,4,5,6,7,8,9,10
+
+सभी के नंबर एक साथ कोड फोर्मेट में दें।
+------------------------------------------
+ये वर्ग कुंडलियों के स्क्रीनशॉट हैं।
+
+कृपया सभी 20 कुंडलियों (D1 से D60) के लिए राशि नंबर निकालें।
+
+क्रम: लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु।
+फॉर्मेट: D-xx: 1,2,3,4,5,6,7,8,9,10
+
+सभी के नंबर एक साथ कोड फोर्मेट में दें।
+------------------------------------------
+ये वर्ग कुंडलियों के स्क्रीनशॉट हैं।
+
+कृपया कुंडलियों (D1,D9,D10,D11,D2,D3,D4,D5,D6,D7,D8,D12,D20,D24,D30,D60) के लिए राशि नंबर निकालें।
+
+क्रम: लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु।
+फॉर्मेट: D-xx: 1,2,3,4,5,6,7,8,9,10
+
+सभी के नंबर एक साथ कोड फोर्मेट में दें।
+------------------------------------------
+➤ कृपया तकनीकी जाँच करें कि क्या इस जातक पर 'अष्टोत्तरी दशा' (Ashtottari Dasha) प्रणाली लागू होती है?
+महर्षि पाराशर के दो मुख्य नियमों (राहु की केंद्र/त्रिकोण स्थिति और जन्म पक्ष-समय का संयोजन) के आधार पर विश्लेषण करें और अंतिम निष्कर्ष 'हाँ' या 'नहीं' में दें।
+▸ राहु लग्न से 4, 5, 7, 9, 10 भाव में स्थित हो।
+▸ कृष्ण पक्ष (Dark Fortnight) में दिन का जन्म हो।
+▸ शुक्ल पक्ष (Bright Fortnight) में रात का जन्म हो।
+------------------------------------------
+जातक के जन्म विवरण और अवकहाडा चक्र सहित सबको एक विवरण के रूप में दीजिये
+
+➤ जातक का जन्म विवरण
+
+► पूरा नाम : 
+► जन्म तिथि : 
+► जन्म समय :
+► जन्म स्थान :
+► वार ( जुलियन दिन) :
+► अयनांश :
+
+➤ अवकहडा चक्र
+
+► नक्षत्र और राशि
+▸ जन्म नक्षत्र (चरण) :
+▸ जन्म राशि (स्वामी) (चंद्र राशि) :
+▸ जन्म अक्षर (नक्षत्र अनुसार) :
+▸ पाया :
+▸ लग्न राशि (स्वामी)
+▸ सूर्य राशि (स्वामी)
+
+► पंचांग घटक (स्वामी सहित)
+▸ योग (स्वामी) :
+▸ तिथि (स्वामी) :
+▸ करण (स्वामी) :
+▸ वार (स्वामी) :
+▸ नक्षत्र (स्वामी) :
+
+► ज्योतिषीय गुणधर्म 
+▸ वर्ण :
+▸ वश्य :
+▸ गण :
+▸ योनि :
+▸ नाडी :
+▸ वैर (शत्रु) योनी :
+▸ तत्व :
+------------------------------------------
+आपको निम्मलिखित दी गई 28 चीजों की जानकारी निकालनी है।
+
+शर्तें (Strict Rules):
+
+1.  आउटपुट केवल कॉमा (,) सेपरेटेड होना चाहिए (Format: Label, Value)।
+2.  आउटपुट को एक Code Block के अंदर ही दें ताकि मैं उसे आसानी से कॉपी कर सकूँ।
+3.  अगर PDF में कोई जानकारी नहीं मिलती है, तो कॉमा के बाद खाली छोड़ दें (जैसे:
+    होरा, )।
+4.  लेबल्स के लिए नीचे दी गई डिक्शनरी में से मेरी चुनी हुई भाषा का ही उपयोग करें
+    (अपनी तरफ से कोई अनुवाद न करें):
+
+[HINDI LABELS] पूरा नाम, जन्म तिथि, जन्म समय, जन्म स्थान, अयनांश का नाम, अयनांश
+मान, वार (वैदिक दिन), तिथि, योग, करण, होरा, जुलियन दिन, लग्न राशि, जन्म राशि
+(चंद्र राशि), सूर्य राशि, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया, वर्ण,
+वश्य, योनि, वैर / शत्रु योनि, गण, नाड़ी, नाड़ी पद, तत्व, विहग
+
+[ENGLISH LABELS] Full Name, Date of Birth, Time of Birth, Place of Birth,
+Ayanamsa Name, Ayanamsa Value, Day (Vedic), Tithi, Yoga, Karana, Hora, Julian
+Day, Ascendant (Lagna), Moon Sign (Rashi), Sun Sign, Birth Nakshatra, Nakshatra
+Pada, Birth Letter, Paya, Varna, Vashya, Yoni, Enemy Yoni, Gana, Nadi, Nadi
+Pada, Element (Tattva), Vihaga
+
+[MARATHI LABELS] पूर्ण नाव, जन्म तारीख, जन्म वेळ, जन्म ठिकाण, अयनांश नाव, अयनांश
+मूल्य, वार (वैदिक), तिथी, योग, करण, होरा, ज्युलियन दिवस, लग्न रास, जन्म रास
+(चंद्र रास), सूर्य रास, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया,
+वर्ण, वश्य, योनी, वैर / शत्रू योनी, गण, नाडी, नाडी पद, तत्व, विहग
+
+कृपया इस डेटा को [HINDI / ENGLISH / MARATHI] भाषा के लेबल्स का उपयोग करके निकालें।
+
+------------------------------------------
+
+आपको निम्मलिखित दी गई 28 चीजों की जानकारी दोनों व्यक्तियों के लिए निकालनी है।
+
+शर्तें (Strict Rules):
+
+1.  आउटपुट केवल कॉमा (,) सेपरेटेड होना चाहिए (Format: Label, Boy_Value,
+    Girl_Value)।
+2.  पहली लाइन में हेडिंग होनी चाहिए: पूरा नाम, [लड़के का नाम], [लड़की का नाम]।
+3.  आउटपुट को एक Code Block के अंदर ही दें ताकि मैं उसे आसानी से कॉपी कर सकूँ।
+4.  लेबल्स के लिए नीचे दी गई डिक्शनरी में से मेरी चुनी हुई भाषा का ही उपयोग करें
+    (अपनी तरफ से कोई अनुवाद न करें):
+
+[HINDI LABELS] पूरा नाम, जन्म तिथि, जन्म समय, जन्म स्थान, अयनांश का नाम, अयनांश
+मान, वार (वैदिक दिन), तिथि, योग, करण, होरा, जुलियन दिन, लग्न राशि, जन्म राशि
+(चंद्र राशि), सूर्य राशि, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया, वर्ण,
+वश्य, योनि, वैर / शत्रु योनि, गण, नाड़ी, नाड़ी पद, तत्व, विहग
+
+[ENGLISH LABELS] Full Name, Date of Birth, Time of Birth, Place of Birth,
+Ayanamsa Name, Ayanamsa Value, Day (Vedic), Tithi, Yoga, Karana, Hora, Julian
+Day, Ascendant (Lagna), Moon Sign (Rashi), Sun Sign, Birth Nakshatra, Nakshatra
+Pada, Birth Letter, Paya, Varna, Vashya, Yoni, Enemy Yoni, Gana, Nadi, Nadi
+Pada, Element (Tattva), Vihaga
+
+[MARATHI LABELS] पूर्ण नाव, जन्म तारीख, जन्म वेळ, जन्म ठिकाण, अयनांश नाव, अयनांश
+मूल्य, वार (वैदिक), तिथी, योग, करण, होरा, ज्युलियन दिवस, लग्न रास, जन्म रास
+(चंद्र रास), सूर्य रास, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया,
+वर्ण, वश्य, योनी, वैर / शत्रू योनी, गण, नाडी, नाडी पद, तत्व, विहग
+
+कृपया इस डेटा को [HINDI / ENGLISH / MARATHI] भाषा के लेबल्स का उपयोग करके निकालें।
+------------------------------------------
+अब इस विश्लेषण का एक इंस्टाग्राम DM रिप्लाई तैयार कीजिए मैसेज स्टाइल में, हिंग्लिश में और एक प्यारग्राफ मे होना चाहिए, ताकि उसे शार्ट में जवाब दे सकूँ
+------------------------------------------
+इस पूरे text को उसी तरह natural और easy-to-understand **chat/message style** में rewrite करो, जैसा कोई astrologer अपने client को WhatsApp पर personally समझा रहा हो।
+
+ध्यान रखना:
+
+* Original meaning, information और सभी important points बिल्कुल preserve करना।
+* भाषा natural, conversational और सरल रखनी है।
+* बहुत ज्यादा formal या bookish language नहीं होनी चाहिए।
+* जरूरत के अनुसार paragraphs और bullet points रख सकते हो, ताकि WhatsApp पर पढ़ना आसान लगे।
+* English terms जैसे Gold, Jupiter, Physical Gold, D2 (Hora), D9 Navamsha आदि जहाँ जरूरी हों, उन्हें वैसे ही रहने दो।
+* Text को unnecessarily छोटा मत करना और कोई important information हटाना नहीं।
+* Tone knowledgeable, confident और friendly हो — लेकिन ऐसा लगे कि कोई इंसान सामने वाले को समझाकर बता रहा है।
+* शुरुआत और अंत भी natural chat की तरह रखो।
+* अपनी तरफ से कोई नई astrology interpretation या fact add मत करना।
+* सिर्फ दिए गए text को इसी style में rewrite करना है।
+:
+------------------------------------------
+नीचे एक विस्तृत मैरेज/करियर/astrological रिपोर्ट दी गई है जिसमें कुल 23 प्रश्नों के उत्तर और
+ज्योतिषीय विश्लेषण (पराशरी, जैमिनी, भृगु नंदी नाड़ी और केपी पद्धति
+के आधार पर) शामिल हैं। आपको इस पूरी रिपोर्ट का विश्लेषण करके एक
+'टेक्स्ट-टू-स्पीच' (TTS) ऑडियो स्क्रिप्ट तैयार करनी
+है। 
+
+स्क्रिप्ट के लिए निर्देश (सख्ती से पालन करें): 
+
+1] रिपोर्ट जिस भाषा मे है उस भाषा मे स्क्रिप्ट तैयार करे जैसे मराठी या हिंदी
+अथवा इंग्लिश. और नियम नंबर 2 मे दी गयी शूरवात भी रिपोर्ट की भाषा के अनुसार बदलना है। 
+
+2] शुरुआत: स्क्रिप्ट की शुरुआत बिल्कुल इन शब्दों से होनी चाहिए: 'नमस्कार,
+संजीवनी ज्योतिष संस्थान में आपका स्वागत है। चारुल जी, यह आपकी
+व्यक्तिगत मैरेज रिपोर्ट का ऑडियो सारांश है।'
+
+3] लंबाई और विस्तार: यह स्क्रिप्ट एक 20 मिनट के ऑडियो के लिए है। इसलिए स्क्रिप्ट
+की लंबाई कम से कम 3000 से 3500 शब्दों की होनी चाहिए। रिपोर्ट के 23 सवालों को
+केवल एक-एक लाइन में खत्म न करें; हर सवाल के निष्कर्ष को गहराई से और
+विस्तार से समझाएं।
+
+4] संरचना और प्रवाह: सभी 23 सवालों को एक-एक करके या तार्किक रूप से जोड़कर (जैसे:
+विवाह का समय, जीवनसाथी का स्वभाव, करियर, ससुराल पक्ष और उपाय) एक कहानी और संवाद
+(Conversational) के लहजे में समझाएं। क्लाइंट को ऐसा लगना चाहिए कि कोई उन्हें
+सामने बैठाकर उनकी रिपोर्ट समझा रहा है।
+
+5] तकनीकी शब्दावली से बचें: कुंडली के तकनीकी विवरणों (जैसे- ग्रहों की डिग्रियां,
+D-9/D-60 चार्ट के नाम, मृत्यु भाग आदि) को सीधे पढ़ने के बजाय, उनके पीछे छिपे
+अर्थ और अंतिम फलादेश को सरल भाषा में समझाएं।
+
+5] सहानुभूति और स्पष्टता: जहाँ भी जीवनसाथी के स्वभाव में कमी/वैवाहिक जीवन में
+किसी चुनौती (कड़वा सच)/करियर मे चुनौती का जिक्र हो, उसे बहुत ही सहानुभूति और मेंटरशिप वाले लहजे
+में लिखें।
+
+6] उपाय (Remedies): स्क्रिप्ट के अंत में रिपोर्ट में दिए गए सभी कर्मिक और
+व्यवहारगत उपायों को स्पष्ट रूप से समझाएं।
+
+7] TTS के अनुकूल प्रारूप: स्क्रिप्ट में किसी भी तरह के बुलेट पॉइंट्स, एस्टरिस्क
+(*), हैशटैग (#), या इमोजी का प्रयोग न करें। इसे स्पष्ट पैराग्राफ में लिखें ताकि
+TTS सॉफ्टवेयर इसे बिना अटके और एक प्राकृतिक मानवीय आवाज़ में पढ़ सके। अंग्रेजी
+के शब्दों को देवनागरी लिपि (जैसे 'प्रैक्टिकल', 'सपोर्टिव') में ही लिखें।
+
+अब इस रिपोर्ट के आधार पर स्क्रिप्ट तैयार करें।
+------------------------------------------
+कृपया इस PDF से निम्नलिखित जानकारी निकालें और गणना करें। 
+सटीक परिणाम के लिए नीचे दिए गए निर्देशों का कड़ाई से पालन करें:
+1] इनपुट डेटा (Data Source):
+
+ग्रहों और लग्न की डिग्री: PDF के Page 2 पर स्थित तालिका "Planetary Positions for Rashi Chart (D-1)" से लग्न और सभी 9 ग्रहों की डिग्री (अंश:कला:विकला) लें।
+
+दशम भाव (MC): PDF के Page 3 (Bhava Cusp table) से 10वें भाव की डिग्री और राशि लें।
+
+2] गणना का लॉजिक (Calculation Method):
+
+D9, D7, और D10 चार्ट बनाते समय 'Degree Projection' (डिग्री प्रोजेक्शन) विधि का उपयोग करें।
+
+इसका अर्थ है कि ग्रह को केवल संबंधित वर्ग (Varga) की राशि में न रखें, बल्कि यह भी गणना करें कि उस वर्ग के भीतर वह कितनी डिग्री (0° से 30° के बीच) पर है। (उदाहरण: यदि कोई ग्रह नवमांश के बिल्कुल मध्य में है, तो D9 में उसकी डिग्री 15° होगी)।
+
+भाव (Houses): 'Equal House System' (समान भाव विभाजन) का उपयोग करें, जहाँ लग्न की (Projected) डिग्री ही सभी भावों का मध्य (Cusp) होगी।
+
+3] आउटपुट तालिकाएं:
+इस जानकारी के आधार पर निम्नलिखित तालिकाओं को तैयार करें:
+
+A] D9 (नवमांश) ग्रह स्थिति तालिका - (ग्रह, डिग्री, राशि, नक्षत्र-पद, नक्षत्र-स्वामी)
+
+B] D9 के 12 भाव के राशि-नक्षत्र (Bhava Cusp - Equal House System)
+
+C] D7 (सप्तमांश) ग्रह स्थिति तालिका - (ग्रह, डिग्री, राशि, नक्षत्र-पद, नक्षत्र-स्वामी)
+
+D] D7 के 12 भाव के राशि-नक्षत्र (Bhava Cusp - Equal House System)
+
+E] D10 (दशमांश) ग्रह स्थिति तालिका - (ग्रह, डिग्री, राशि, नक्षत्र-पद, नक्षत्र-स्वामी)
+
+F] D10 के 12 भाव के राशि-नक्षत्र (Bhava Cusp - Equal House System)
+------------------------------------------`;
+
+        // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
+        const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
+        
+        // बेकार लाइन्स को हटाने के लिए (जैसे MMM...RRR)
+        const junkRegex = /^[M|P|C|H|R]{5,}/;
+
+        function processData() {
+            const container = document.getElementById('prompt-container');
+            // पहले डैश लाइन्स से तोडें
+            let parts = rawData.split(separatorRegex);
+
+            parts.forEach((part, index) => {
+                let cleanText = part.trim();
+
+                // चेक करें कि क्या टेक्स्ट में सिर्फ जंक (MMM...RRR) है
+                // या क्या यह खाली है
+                let isJunk = false;
+                
+                // उन अजीब लाइन्स को हटाएं जो टेक्स्ट के बीच में चिपकी हो सकती हैं
+                const lines = cleanText.split('\n');
+                const filteredLines = lines.filter(line => {
+                    const l = line.trim();
+                    // अगर लाइन में बहुत सारे M, P, C, R एक साथ हैं तो उसे हटा दें
+                    if (l.match(/^[M|P|C|H|R]{10,}/)) return false;
+                    // अगर लाइन में सिर्फ डैशेस हैं
+                    if (l.match(/^-{5,}$/)) return false;
+                    return true;
+                });
+                
+                cleanText = filteredLines.join('\n').trim();
+
+                if (cleanText.length > 5) { // अगर 5 अक्षर से ज्यादा है तभी दिखाएं
+                    createCard(cleanText, index + 1);
+                }
+            });
+        }
+
+        function createCard(text, id) {
+            const container = document.getElementById('prompt-container');
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            header.innerText = `Prompt #${id}`;
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+            content.innerText = text;
+
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = 'Copy Prompt';
+            btn.onclick = () => copyText(text);
+
+            card.appendChild(header);
+            card.appendChild(content);
+            card.appendChild(btn);
+            container.appendChild(card);
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+            }).catch(err => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast();
+            });
+        }
+
+        function showToast() {
+            var x = document.getElementById("snackbar");
+            x.className = "toast show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        // Initialize
+        processData();
+
+    </script>
+</body>
+</html>

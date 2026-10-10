@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Prompts Copier</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border-left: 5px solid #007bff;
+        }
+        .card-content {
+            white-space: pre-wrap;
+            font-size: 14px;
+            color: #555;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+        .card-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #007bff;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn {
+            align-self: flex-end;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Free Consultation Prompts</h1>
+    <div class="container" id="prompt-container">
+        <!-- Prompts will be loaded here -->
+    </div>
+
+    <div id="snackbar" class="toast">Text Copied to Clipboard!</div>
+
+    <script>
+        // यहाँ आपका पूरा डेटा है
+        const rawData = `ये D1 और D9,D10 कुंडलियों के स्क्रीनशॉट हैं।
+
+निर्देश : कृपया कुंडलियों के लिए ग्रहों के राशि नंबर निकालें।
+
+क्रम: लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु।
+फॉर्मेट: D-xx: 1,2,3,4,5,6,7,8,9,10
+
+सभी के नंबर एक साथ कोड फोर्मेट में दें।
+------------------------------------------
+कृपया जातक के ज्योतिषीय डेटा का उपयोग करके विश्लेषण कीजिये, जैसे ग्रह स्तिथि के अनुसार, कंरट दशा-गोचर में परिस्थिति, रोग और बीमारियाँ वैगरे, तथा करियर-विवाह-धन.
+
+उसके पहले ध्यान रखने योग्य बातें :
+
+1] ध्यान रहे अभी 2026 चल रहा है और जातिका/जातक xyz 00 साल की/का है. 
+------------------------------------------
+इस कुंडली के आधार पर जातक के करियर का विस्तृत विश्लेषण करें। बताएं कि नौकरी या व्यापार में से क्या बेहतर है, किस क्षेत्र में सफलता मिलेगी और करियर में बड़ा उछाल कब आ सकता है?
+------------------------------------------
+इस कुंडली के आधार पर जातक के वैवाहिक जीवन का विश्लेषण करें। विवाह का योग कब बन रहा है? 
+------------------------------------------
+एक एक्सपर्ट ज्योतिषी की तरह बर्ताव करो जो इंस्टाग्राम DM पर अपने क्लाइंट से चैट कर रहा है। उपरोक्त analyis को सिर्फ 2-3 प्याराग्राफ का एक बहुत ही आकर्षक और ऊपरी (surface-level) ओवरव्यू तैयार करो।
+
+भाषा और टोन (Language & Tone): तुम्हारा जवाब 100% 'Hinglish' (हिंदी शब्द अंग्रेजी लिपि में, जैसे हम व्हाट्सएप या इंस्टाग्राम पर चैट करते हैं) में होना चाहिए। टोन बहुत ही फ्रेंडली, कैज़ुअल और क्लाइंट के मन में उत्सुकता (curiosity) जगाने वाली होनी चाहिए।
+
+अनिवार्य अंत (Mandatory Hook):
+3-4 लाइन के ओवरव्यू के ठीक बाद, क्लाइंट को पेड सर्विस के लिए कन्वर्ट करने के लिए नीचे दिया गया टेक्स्ट बिना कोई बदलाव किए हूबहू कॉपी-पेस्ट कर दो:
+
+"Par dekho, yeh bas ek quick surface-level reading hai. Asli situation tabhi clear hoti hai jab chart ka detailed analysis kiya jaye, jahan planets ki strength aur capacity check hoti hai ki wo sach mein results dene ke kabil hain ya nahi. Kabhi-kabhi malefic planets bhi bure results nahi dete agar unmein strength na ho, aur yahi same logic benefic planets par bhi apply hota hai agar wo enough strong nahi hain, toh wo achhe results nahi de paate.
+
+Dhyan Rahe ise 100% na maane, Ek accurate aur final conclusion par aane ke liye Parashari, Jaimini, KP, aur BNN, in charo jyotish systems se in-depth analysis karna bahut zaroori hota hai. Agar aap properly apni life ki clarity aur remedies chahte ho, toh let's schedule a detailed paid consultation. Message me for the booking details!
+
+(Indepth Analysis Me Shamil : Asta, Vakri, Vargottam, Shatru/Mitra/Sama Rashi, Uchcha/Neech/Neechbhang, Shadbal, Bhavabal, Ashtakvarga, Bhinnashtakvarga, Shodashvarga, Vimposhak, Chalit, Navamsha, Svamsha-Karakamsha, Argala, Arudha Pada, Char Karaka, Pushkar Bhagya, Mrityu Bhagya, Navatara Chakra.[Vimshottari Dasha, Yogini Dasha, Tribhagi Dasha, Ashtottari Dasha, KP Dasha, Char Dasha, Double Transit])"
+------------------------------------------
+अब जातक जो भी सवाल करेगा उसको मैं यहाँ पेस्ट करुँगी आपको वैसा ही चैट टोन में जवाब देना है, क्या आप तैयार है ? 
+------------------------------------------
+Remedies de dejiye, dharmik aur gairdharmik dono (short caution ke sath ki ye sadharan uapay hain, indepth analysis se prabhavi Remedies nikalkar aati hain)
+------------------------------------------
+यह PDF जातक की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+
+1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+
+2] सर्वाष्टकवर्ग तालिका
+
+3] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+
+4] भाव बल तालिका
+
+5] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग और दश वर्ग)
+
+6] जैमिनी आरूढ़ पद (राशी आधारित)
+
+7] विशोंतरी महादशा अंतर्दशा चार्ट
+
+8] योगिनी दशा अंतर्दशा चार्ट
+
+9] चर दशा अंतर्दशा चार्ट
+
+10] कृष्णमूर्ति पद्धति (KP) भाव स्थिति तालिका
+
+11] कृष्णमूर्ति पद्धति (KP) ग्रह स्थिति तालिका
+
+12] कृष्णमूर्ति पद्धति (KP) घर के कारक ग्रह स्थिति तालिका
+
+13] कृष्णमूर्ति पद्धति (KP) ग्रह कारकत्व स्थिति तालिका
+
+14] D1 के 12 भाव के राशी-नक्षत्र (Bhava Cusp)
+
+कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
+------------------------------------------
+आप एक बेहद अनुभवी और मिलनसार वैदिक ज्योतिषी हैं। मैं अभी ज्योतिष सीख रहा हूँ। मेरा एक मित्र/रिश्तेदार मेरे पास अपनी कुंडली लेकर आया है और मुझसे अपने भविष्य के बारे में पूछ रहा है।
+
+कृपया आप इस कुंडली को देखकर एक स्क्रिप्ट तैयार करें, जिसे मैं अपने मित्र/रिश्तेदार को सुना सकूँ। यह स्क्रिप्ट एक लेख या रिपोर्ट जैसी नहीं, बल्कि एक **जीवंत और व्यक्तिगत बातचीत** जैसी लगनी चाहिए। और मॉर्डन मराठी भाषा मे होनी चाहिए। 
+
+**स्क्रिप्ट तैयार करते समय इन बातों का ध्यान रखें:**
+
+1.  **सीधा संवाद:** सीधे जातक को "आप," "आपके," या "तुम्हारी कुंडली में" कहकर संबोधित करें। ऐसा लगना चाहिए कि मैं सीधे उनसे बात कर रहा हूँ।
+2.  **बातचीत का प्रवाह:** शुरुआत किसी सामान्य और सकारात्मक बात से करें, जैसे "अच्छा, तो चलिए देखते हैं आपकी कुंडली... सबसे पहली जो खास बात मुझे दिख रही है वो है..."।
+3.  **सरल भाषा:** ज्योतिष के भारी शब्दों का प्रयोग करने के बाद उन्हें सरल भाषा में समझाएं। जैसे, "आपकी कुंडली में 'गजकेसरी योग' बन रहा है। अब इसका मतलब ये होता है कि आप अपनी बुद्धि और ज्ञान से जीवन में बहुत सम्मान और धन कमा सकते हैं।"
+4.  **छिपे हुए रहस्य उजागर करें:** सामान्य बातों के अलावा, ग्रहों की स्थिति के आधार पर उनके स्वभाव, करियर या संबंधों से जुड़ी कोई ऐसी गहरी या छिपी हुई बात बताएं, जिसे सुनकर वे आश्चर्यचकित हो जाएं।
+5.  **संवाद जैसा बनाएं:** बीच-बीच में प्रश्नवाचक वाक्यों का प्रयोग करें, जैसे - "समझ रहे हैं आप मेरी बात?" या "ऐसा होता है आपके साथ?"। इससे यह एकतरफा भाषण नहीं लगेगा।
+6.  **सकारात्मक और नकारात्मक संतुलन:** सिर्फ अच्छी बातें ही नहीं, बल्कि चुनौतियों और दोषों के बारे में भी बताएं, लेकिन बताने का तरीका सहानुभूतिपूर्ण और समाधान-उन्मुख होना चाहिए। जैसे - "हाँ, एक जगह थोड़ी सी चुनौती दिख रही है... लेकिन घबराने वाली बात नहीं है, इसका उपाय भी होता है।"
+
+**इन मुख्य विषयों को बातचीत में शामिल करें:**
+* जातक का मूल स्वभाव, उसकी सबसे बड़ी ताकत और कमजोरी।
+* कुंडली का सबसे शक्तिशाली राजयोग और उसका जीवन पर प्रभाव।
+* कुंडली का सबसे प्रमुख दोष और उससे जुड़ी सावधानियां।
+* कुंडली के अनुसार जातक के छोटे और बड़े रोग और बीमारियाँ। 
+* करियर, धन, विवाह और स्वास्थ्य से जुड़ी एक-एक महत्वपूर्ण और आश्चर्यजनक बात। 
+
+कृपया पूरी स्क्रिप्ट को एक सहज प्रवाह में लिखें, ताकि मैं इसे आसानी से पढ़कर सुना सकूँ।
+------------------------------------------
+इस कुंडली के आधार पर जातक के वैवाहिक जीवन का विश्लेषण करें। विवाह का योग कब बन रहा है? जीवनसाथी का स्वभाव और दिशा क्या हो सकती है? वैवाहिक जीवन में सुख के लिए क्या कोई उपाय आवश्यक है?
+------------------------------------------
+इस कुंडली के आधार पर जातक के करियर का विस्तृत विश्लेषण करें। बताएं कि नौकरी या व्यापार में से क्या बेहतर है, किस क्षेत्र में सफलता मिलेगी और करियर में बड़ा उछाल कब आ सकता है?
+------------------------------------------
+ 
+------------------------------------------
+आप एक अत्यंत अनुभवी और ज्ञानी वैदिक ज्योतिषी हैं। मैं आपको एक जातक की लग्न कुंडली प्रदान कर रहा हूँ। आपका कार्य इस कुंडली का गहन और विस्तृत विश्लेषण करना है। आपको अपनी प्रतिक्रिया एक विशेषज्ञ ज्योतिषी की तरह प्रस्तुत करनी है, जो सीधे जातक से बात कर रहा हो।
+
+आपका विश्लेषण ऐसा होना चाहिए जो जातक को आश्चर्यचकित कर दे और उसके जीवन के उन छिपे हुए पहलुओं को उजागर करे जिनसे वह अनजान हो सकता है। साधारण बातें न बताएं, बल्कि ग्रहों की स्थिति के आधार पर विशेष और गुप्त रहस्यों पर ध्यान केंद्रित करें।
+
+**विश्लेषण में निम्नलिखित बिंदुओं को शामिल करें:**
+
+1.  **व्यक्तित्व और स्वभाव का गहरा विश्लेषण:**
+    * लग्न, लग्नेश, और चंद्रमा की स्थिति के आधार पर जातक के मूल स्वभाव, उसकी सोच, और बाहरी दुनिया के लिए उसके व्यवहार का वर्णन करें।
+    * जातक की सबसे बड़ी ताकत और सबसे बड़ी कमजोरी क्या है?
+    * क्या कोई ऐसी छिपी हुई प्रतिभा या इच्छा है जिसे जातक खुद भी पूरी तरह से नहीं समझता?
+
+2.  **कुंडली के विशेष योग और दोष:**
+    * कुंडली में बनने वाले सभी महत्वपूर्ण **सकारात्मक योग** (जैसे - गजकेसरी योग, पंच महापुरुष योग, राज योग, धन योग) को पहचानें और बताएं कि यह जातक के जीवन को कैसे और कब प्रभावित करेंगे।
+    * कुंडली में मौजूद सभी महत्वपूर्ण **नकारात्मक दोष** (जैसे - कालसर्प दोष, मांगलिक दोष, पितृ दोष, ग्रहण दोष) का विश्लेषण करें। यह दोष जीवन के किस क्षेत्र में समस्याएँ दे रहा है और उसकी तीव्रता कितनी है?
+
+3.  **जीवन के प्रमुख क्षेत्रों पर भविष्यवाणी:**
+    * **करियर और व्यवसाय:** जातक के लिए कौन सा क्षेत्र सबसे अच्छा रहेगा? नौकरी या व्यवसाय? सफलता कब मिलने की संभावना है?
+    * **धन और आर्थिक स्थिति:** जातक की आर्थिक स्थिति कैसी रहेगी? धन कमाने और बचाने की क्षमता कैसी है? क्या कोई अप्रत्याशित धन लाभ का योग है?
+    * **विवाह और संबंध:** वैवाहिक जीवन कैसा रहेगा? जीवनसाथी का स्वभाव कैसा हो सकता है? विवाह का सही समय क्या हो सकता है?
+    * **स्वास्थ्य:** जातक को किन स्वास्थ्य समस्याओं के प्रति सचेत रहना चाहिए?
+
+4.  **कुंडली के छिपे हुए रहस्य और विशेष संकेत:**
+    * ग्रहों की कोई विशेष युति, दृष्टि या स्थिति जिसका जातक के जीवन पर कोई असाधारण प्रभाव पड़ रहा हो।
+    * जीवन की कोई ऐसी संभावित घटना (सकारात्मक या नकारात्मक) जिसके बारे में जातक को पहले से सचेत रहना चाहिए।
+    * जातक का भाग्यशाली ग्रह कौन सा है और उसे कैसे मजबूत किया जा सकता है?
+
+आपका उत्तर सरल हिंदी में होना चाहिए, लेकिन भाषा में ज्योतिषीय गंभीरता और ज्ञान झलकना चाहिए। विश्लेषण को अलग-अलग खंडों में व्यवस्थित करें ताकि उसे समझना आसान हो।`;
+
+        // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
+        const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
+        
+        function processData() {
+            const container = document.getElementById('prompt-container');
+            // पहले डैश लाइन्स से तोडें
+            let parts = rawData.split(separatorRegex);
+
+            parts.forEach((part, index) => {
+                let cleanText = part.trim();
+                
+                // फिल्टरिंग लॉजिक
+                const lines = cleanText.split('\n');
+                const filteredLines = lines.filter(line => {
+                    const l = line.trim();
+                    // जंक (MMM... RRR... PPPP...) हटाएं
+                    if (l.match(/^[M|P|C|H|R]{5,}$/)) return false;
+                    // सिर्फ डैश वाली लाइन हटाएं
+                    if (l.match(/^-{5,}$/)) return false;
+                    return true;
+                });
+                
+                cleanText = filteredLines.join('\n').trim();
+
+                if (cleanText.length > 5) { // खाली या बहुत छोटी स्ट्रिंग न दिखाएं
+                    createCard(cleanText, index + 1);
+                }
+            });
+        }
+
+        function createCard(text, id) {
+            const container = document.getElementById('prompt-container');
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            header.innerHTML = `<span>Prompt #${id}</span>`;
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+            content.innerText = text;
+
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = 'Copy Prompt';
+            btn.onclick = () => copyText(text);
+
+            card.appendChild(header);
+            card.appendChild(content);
+            card.appendChild(btn);
+            container.appendChild(card);
+        }
+
+        function copyText(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast();
+                }).catch(err => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed'; // Avoid scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast() {
+            var x = document.getElementById("snackbar");
+            x.className = "toast show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        // Initialize
+        processData();
+
+    </script>
+</body>
+</html>

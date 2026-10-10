@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kundali Milan Prompt Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fce4ec; /* Light Pink background */
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-top: 6px solid #d81b60; /* Deep Pink/Red border */
+        }
+        h1 {
+            text-align: center;
+            color: #c2185b;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #880e4f;
+            margin-bottom: 30px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+        .box-group {
+            background-color: #f8bbd0; /* Light pink box */
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #f48fb1;
+        }
+        .box-title {
+            font-weight: bold;
+            color: #880e4f;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #444;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ec407a;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #880e4f;
+            box-shadow: 0 0 5px rgba(216, 27, 96, 0.3);
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        #createBtn {
+            background-color: #d81b60;
+            color: white;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        #createBtn:hover {
+            background-color: #ad1457;
+        }
+        #outputArea {
+            margin-top: 40px;
+            display: none;
+            background-color: #fff0f5;
+            padding: 20px;
+            border: 1px solid #f8bbd0;
+            border-radius: 8px;
+        }
+        #finalPrompt {
+            width: 100%;
+            height: 350px;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        #copyBtn {
+            background-color: #00897b; /* Teal for contrast */
+            color: white;
+            margin-top: 15px;
+        }
+        #copyBtn:hover {
+            background-color: #00695c;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>D7/D9 मिलान प्रॉम्प्ट जनरेटर</h1>
+    <p class="subtitle">Kundali Matching File Integration Tool</p>
+
+    <div class="grid-container">
+        <!-- Groom Side -->
+        <div class="box-group">
+            <div class="box-title">पति (Groom)</div>
+            
+            <label>1. पति का नाम (हिंदी):</label>
+            <input type="text" id="varNameHindi" placeholder="उदा. राहुल">
+            
+            <label>2. पति फाइल नाम (English/Code):</label>
+            <input type="text" id="varFileName" placeholder="उदा. Rahul Sharma">
+            <small style="color:#666;">(सिर्फ नाम लिखें, बिना [] ब्रैकेट के)</small>
+        </div>
+
+        <!-- Bride Side -->
+        <div class="box-group">
+            <div class="box-title">पत्नी (Bride)</div>
+            
+            <label>3. पत्नी का नाम (हिंदी):</label>
+            <input type="text" id="vadhuNameHindi" placeholder="उदा. मोनिका">
+            
+            <label>4. पत्नी फाइल नाम (English/Code):</label>
+            <input type="text" id="vadhuFileName" placeholder="उदा. Monika">
+            <small style="color:#666;">(सिर्फ नाम लिखें, बिना [] ब्रैकेट के)</small>
+        </div>
+    </div>
+
+    <button id="createBtn" onclick="generateMatchmakingPrompt()">Generate Prompt (प्रॉम्प्ट बनाएँ)</button>
+
+    <!-- Output Section -->
+    <div id="outputArea">
+        <h3 style="margin-bottom:5px; color:#880e4f;">आपका तैयार प्रॉम्प्ट:</h3>
+        <textarea id="finalPrompt" readonly></textarea>
+        <button id="copyBtn" onclick="copyToClipboard()">Copy Prompt (प्रॉम्प्ट कॉपी करें)</button>
+    </div>
+
+</div>
+<script>
+    function generateMatchmakingPrompt() {
+        try {
+            // 1. Get Values
+            var vNameH = document.getElementById('varNameHindi').value.trim();
+            var vFile = document.getElementById('varFileName').value.trim();
+            var bNameH = document.getElementById('vadhuNameHindi').value.trim();
+            var bFile = document.getElementById('vadhuFileName').value.trim();
+
+            // Default fallback if empty
+            if(vNameH === "") vNameH = "पति";
+            if(bNameH === "") bNameH = "पत्नी";
+            if(vFile === "") vFile = "GroomFile";
+            if(bFile === "") bFile = "BrideFile";
+
+            // 2. Construct the Template
+            // Using logic: Name -> vNameH, File -> [vFile], Txt Data -> [vFile Data]
+
+            var promptText = `विषय: कुंडली मिलान के लिए डेटा का विश्लेषण।
+कार्य: मैं आपको कुल 4 फाइलें प्रदान कर रहा हूँ, जिनमें दो व्यक्तियों - पति (${vNameH}) और पत्नी (${bNameH}) - की कुंडली का विवरण है। आपको इन फाइलों की सामग्री को ध्यान से पढ़ना है और पुष्टि करनी है कि आपने डेटा को समझ लिया है, ताकि हम अगले चरण में विस्तृत विश्लेषण कर सकें।
+
+प्रदान की गई फाइलें:
+पति (${vNameH}) - कुंडली PDF: [${vFile}] - इस PDF में ${vNameH} की जन्म कुंडली है।
+पति (${vNameH}) - Chat Txt: [${vFile} Data] - इस txt में ${vNameH} की कुंडली के विस्तृत विश्लेषण का डेटा है जो हमारी पिछली बातचीत से लिया गया है।
+पत्नी (${bNameH}) - कुंडली PDF: [${bFile}] - इस PDF में ${bNameH} की जन्म कुंडली है।
+पत्नी (${bNameH}) - Chat Txt : [${bFile} Data] - इस txt में ${bNameH} की कुंडली के विस्तृत विश्लेषण का डेटा है जो हमारी पिछली बातचीत से लिया गया है।
+
+ध्यान दें: कुंडली PDF और विश्लेषण के स्क्रीनशॉट की PDF फाइल में कुछ जानकारी की पुनरावृत्ति (repetition) हो सकती है। आपको दोनों फाइलों का डेटा मिलाकर प्रत्येक व्यक्ति के लिए एक संपूर्ण संदर्भ बनाना है।
+
+आपका तत्काल कार्य:
+इन चारों फाइलों की सामग्री का विश्लेषण करें।
+प्रत्येक व्यक्ति (${vNameH} और ${bNameH}) के लिए मुख्य ज्योतिषीय विवरण (जैसे लग्न, राशि, नक्षत्र, और मंगल की स्थिति) को संक्षेप में बताएं, ताकि मैं यह जाँच सकूँ कि आपने डेटा सही से समझा है।
+अंत में केवल यह लिखकर पुष्टि करें: "डेटा सफलतापूर्वक लोड और विश्लेषित कर लिया गया है। मैं कुंडली मिलान के लिए आपके प्रश्नों की प्रतीक्षा कर रहा हूँ।"`;
+
+            // 3. Output
+            document.getElementById('finalPrompt').value = promptText;
+            document.getElementById('outputArea').style.display = 'block';
+            
+            // Scroll to output
+            document.getElementById('outputArea').scrollIntoView({behavior: "smooth"});
+
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    }
+
+    function copyToClipboard() {
+        var copyText = document.getElementById("finalPrompt");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); 
+        navigator.clipboard.writeText(copyText.value).then(function() {
+            alert("मिलान प्रॉम्प्ट कॉपी हो गया है!");
+        });
+    }
+</script>
+
+</body>
+</html>
