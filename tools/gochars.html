@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<script src="../vendor/swisseph-local.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>गोचर कैलकुलेटर v5 (Live Transit + विश्लेषण)</title>
@@ -44,7 +43,7 @@ tr.imp-row{background:#fff8e1;font-weight:600}
 .med{background:#fff3cd}
 .low{background:#f8d7da}
 .conclusion{font-weight:700}
-/* v11: manual BAL toggle switch (green) + 12-input grid */
+/* v12: manual BAL toggle switch (green) + 12-input grid */
 .switch{position:relative;display:inline-block;width:52px;height:28px;vertical-align:middle;flex-shrink:0}
 .switch input{opacity:0;width:0;height:0}
 .switch .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;transition:.3s;border-radius:28px}
@@ -144,27 +143,6 @@ tr.imp-row{background:#fff8e1;font-weight:600}
 <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
 </select></div>
 </div>
-<div class="row" style="align-items:center;gap:10px;margin-top:6px">
-<label class="switch"><input type="checkbox" id="manual-bal-toggle"><span class="slider"></span></label>
-<span style="font-size:.95rem;font-weight:600">📝 Manual Bhava Bala (App से)</span>
-</div>
-<div id="manual-bal-inputs" style="display:none">
-<div class="bal-grid">
-<input id="mbal-1" type="number" min="0" max="1000" placeholder="भाव 1">
-<input id="mbal-2" type="number" min="0" max="1000" placeholder="भाव 2">
-<input id="mbal-3" type="number" min="0" max="1000" placeholder="भाव 3">
-<input id="mbal-4" type="number" min="0" max="1000" placeholder="भाव 4">
-<input id="mbal-5" type="number" min="0" max="1000" placeholder="भाव 5">
-<input id="mbal-6" type="number" min="0" max="1000" placeholder="भाव 6">
-<input id="mbal-7" type="number" min="0" max="1000" placeholder="भाव 7">
-<input id="mbal-8" type="number" min="0" max="1000" placeholder="भाव 8">
-<input id="mbal-9" type="number" min="0" max="1000" placeholder="भाव 9">
-<input id="mbal-10" type="number" min="0" max="1000" placeholder="भाव 10">
-<input id="mbal-11" type="number" min="0" max="1000" placeholder="भाव 11">
-<input id="mbal-12" type="number" min="0" max="1000" placeholder="भाव 12">
-</div>
-<div style="font-size:.8em;color:#666;margin-top:4px">App के Bhava Bala tab से 12 भावों के values डालें। खाली छोड़ा भाव calculated BAL use करेगा।</div>
-</div>
 <div class="row" id="double-focus" style="display:none;gap:15px">
 <label style="font-size:.95rem;cursor:pointer"><input type="checkbox" id="dt-vivah" checked style="width:16px;height:16px"> 💒 विवाह focus</label>
 <label style="font-size:.95rem;cursor:pointer"><input type="checkbox" id="dt-santan" style="width:16px;height:16px"> 👶 संतान focus</label>
@@ -192,14 +170,6 @@ tr.imp-row{background:#fff8e1;font-weight:600}
         months.forEach((m,i) => mo.innerHTML += `<option value="${i+1}"${(i+1)===defMon?' selected':''}>${m}</option>`);
     }
 })();
-// v11: manual BAL toggle show/hide
-(function() {
-    var mbt = document.getElementById('manual-bal-toggle');
-    if (mbt) mbt.addEventListener('change', function() {
-        document.getElementById('manual-bal-inputs').style.display = this.checked ? 'block' : 'none';
-    });
-})();
-
 // v2: Mode switching
 let currentMode = 'normal';
 function setMode(mode) {
@@ -214,7 +184,7 @@ window.setMode = setMode;
 </script>
 
 <script type="module">
-const EPHEM_CDN = '../vendor/swisseph-browser.js';
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
 const RASHI_HI = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
 const BHAVA_HI = ['पहला','दूसरा','तीसरा','चौथा','पांचवां','छठा','सातवां','आठवां','नौवां','दसवां','ग्यारहवां','बारहवां'];
 const GRAHAS = [
@@ -678,7 +648,46 @@ function f_bdig(cusps,i){
   let v=Math.abs(ref-(i+1));if(v>6)v=12-v;
   return v*10;
 }
-function f_bdris(plon,cusps,i){
+// v12: VERIFIED Bhava Drishti Bala from APK bytecode (48/48 on 4 charts via Gemini decode)
+// Replaces the B.V. Raman proxy f_bdris
+function f_bdris_verified(plon, cusps) {
+  const planetLongs = [plon.Sun, plon.Moon, plon.Mars, plon.Mercury, plon.Jupiter, plon.Venus, plon.Saturn];
+  const drigBala = new Array(12).fill(0.0);
+  const sunLong = planetLongs[0], moonLong = planetLongs[1];
+  let diffMoonSun = moonLong - sunLong;
+  if (diffMoonSun < 0) diffMoonSun += 360.0;
+  const isMoonBenefic = (diffMoonSun >= 84.0 && diffMoonSun <= 276.0);
+  for (let p = 0; p < 7; p++) {
+    const pLong = planetLongs[p], pIndex = p + 1;
+    for (let b = 0; b < 12; b++) {
+      let diff = cusps[b] - pLong;
+      if (diff < 0) diff += 360.0;
+      let v = 0.0;
+      if (diff > 0 && diff <= 30) v = 0.0;
+      else if (diff > 30 && diff <= 60) v = (diff - 30.0) / 2.0;
+      else if (diff > 60 && diff <= 90) v = (diff - 60.0) + 15.0;
+      else if (diff > 90 && diff <= 120) v = (120.0 - diff) / 2.0 + 30.0;
+      else if (diff > 120 && diff <= 150) v = 150.0 - diff;
+      else if (diff > 150 && diff <= 180) v = (diff - 150.0) * 2.0;
+      else if (diff > 180 && diff <= 300) v = (300.0 - diff) / 2.0;
+      else if (diff > 300 && diff <= 360) v = 0.0;
+      if (v !== 0.0) {
+        let isNeg = false;
+        if (pIndex === 1 || pIndex === 3 || pIndex === 7) isNeg = true;
+        else if (pIndex === 2) { if (!isMoonBenefic) isNeg = true; }
+        if (isNeg) v = -v;
+        if (pIndex === 3) { if ((diff > 90 && diff <= 120) || (diff > 210 && diff <= 240)) v -= 15.0; }
+        else if (pIndex === 5) { if ((diff > 120 && diff <= 150) || (diff > 240 && diff <= 270)) v += 30.0; }
+        else if (pIndex === 7) { if ((diff > 60 && diff <= 90) || (diff > 270 && diff <= 300)) v -= 45.0; }
+        if (pIndex !== 4 && pIndex !== 5) v = v / 4.0;
+        drigBala[b] += v;
+      }
+    }
+  }
+  return drigBala;
+}
+// v12: OLD proxy kept for reference (replaced by verified version above)
+function f_bdris_OLD(plon,cusps,i){
   const bm=cusps[i];let t=0;
   for(const q of F_PLANETS){
     const dk=f_n360(bm-plon[q]),v=f_dv(dk)+f_vis(q,dk);
@@ -687,6 +696,11 @@ function f_bdris(plon,cusps,i){
     t+=ben?c:-c;
   }
   return t;
+}
+function f_bdris(plon,cusps,i){
+  // v12: use verified array version, return single bhava
+  if (!plon._dris) plon._dris = f_bdris_verified(plon, cusps);
+  return plon._dris[i];
 }
 function f_balb(plon,pspeed,pdecl,cusps,ctx){
   const lords=cusps.map(c=>F_RLORD[Math.floor(c/30)]);
@@ -839,21 +853,8 @@ async function calcAnalysis() {
 }
 window.calcAnalysis = calcAnalysis;
 
-// v11: Manual Bhava Bala (App se) - green toggle + 12 inputs
-function readManualBal() {
-    var t = document.getElementById('manual-bal-toggle');
-    if (!t || !t.checked) return null;
-    var vals = []; var any = false;
-    for (var i = 1; i <= 12; i++) {
-        var el = document.getElementById('mbal-' + i);
-        var v = el ? parseFloat(el.value) : NaN;
-        if (!isNaN(v) && v > 0 && v <= 1000) { vals.push(v); any = true; }
-        else vals.push(null);
-    }
-    return any ? vals : null;
-}
 function balSourceLabel() {
-    return window._balSource === 'manual' ? 'Manual BAL (App \u0938\u0947)' : 'Calculated BAL (B.V. Raman \u0935\u093f\u0927\u093f)';
+    return 'Calculated BAL (App Verified \u0935\u093f\u0927\u093f)';
 }
 
 // Shared: build SAV/BAV/BAL data from natal
@@ -866,15 +867,8 @@ function buildAshtaData() {
     };
     const sav = calcSAV(pos);           // per rashi (0=Mesha)
     const bavJup = calcBAV('Jupiter', pos); // per bhava
-    // v4: B.V. Raman Bhava Bala (app-verified methods)
+    // v12: App-verified Bhava Bala (48/48 on 4 charts)
     const balBhava = v4_calcBhavaBala(natalData); // per bhava, index 0 = 1st
-    // v11: Manual Bhava Bala override (toggle ON + value>0 -> manual wins)
-    var manual = readManualBal();
-    window._balSource = 'calculated';
-    if (manual) {
-        for (var i = 0; i < 12; i++) if (manual[i] != null) balBhava[i] = manual[i];
-        window._balSource = 'manual';
-    }
     return {sav, bavJup, balBhava};
 }
 
