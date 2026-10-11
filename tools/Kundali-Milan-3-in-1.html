@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔱 Kundali-Milan-3-in-1 - Astro Sarang</title>
+<script>
+const DAYS_PER_YEAR=365.256364;
+function vimshottariTimeline(bJD,moonLon){
+    const nakSpan=360/27;
+    const nakIdx=Math.floor(moonLon/nakSpan);
+    const frac=(moonLon%nakSpan)/nakSpan;
+    const startLord=VIM_ORDER[nakIdx%9];
+    const balDays=VIM_YR[startLord]*DAYS_PER_YEAR*(1-frac);
+    // Build MD list from birth
+    const mds=[];let cur=bJD;
+    let idx=VIM_ORDER.indexOf(startLord);
+    // first MD (balance)
+    mds.push({lord:startLord,start:cur,end:cur+balDays});
+    cur+=balDays;idx=(idx+1)%9;
+    for(let k=0;k<12;k++){ // enough MDs
+        const lord=VIM_ORDER[idx];
+        const dur=VIM_YR[lord]*DAYS_PER_YEAR;
+        mds.push({lord,start:cur,end:cur+dur});
+        cur+=dur;idx=(idx+1)%9;
+    }
+    return mds;
+}
+function dashaAt(mds,jd){
+    // returns {md, ad, mdStart} at given jd
+    for(const m of mds){
+        if(jd>=m.start&&jd<m.end){
+            const mdDur=m.end-m.start;
+            let cur=m.start,ad='?';
+            let idx=VIM_ORDER.indexOf(m.lord);
+            for(let i=0;i<9;i++){
+                const al=VIM_ORDER[(idx+i)%9];
+                const adDur=mdDur*VIM_YR[al]/120;
+                if(jd>=cur&&jd<cur+adDur){ad=al;break;}
+                cur+=adDur;
+            }
+            return{md:m.lord,ad,mdStart:m.start,mdEnd:m.end};
+        }
+    }
+    return{md:'?',ad:'?'};
+}
+function isMarakBadhak(planet,chart){
+    // Marak: 2nd/7th lord; Badhak: per lagna type
+    const lsign=chart.lsign;
+    const lord2=SIGN_LORD[(lsign+1)%12],lord7=SIGN_LORD[(lsign+6)%12];
+    let badhak;
+    if([0,3,6,9].includes(lsign))badhak=SIGN_LORD[(lsign+10)%12]; // movable: 11th
+    else if([1,4,7,10].includes(lsign))badhak=SIGN_LORD[(lsign+8)%12]; // fixed: 9th
+    else badhak=SIGN_LORD[(lsign+6)%12]; // dual: 7th
+    const marak=[lord2,lord7].includes(planet);
+    const badh=planet===badhak;
+    return{marak,badh};
+}
+/* ================= Main ================= */
+let G=null;
+window.calculate=async function(){
+    showErr('');
+    try{
+        const swe=await ensureSwe();
+        document.getElementById('status').textContent='गणना हो रही है…';
+        const persons=[];
+        for(const p of [1,2]){
+            const dm=parseDMY(document.getElementById('p'+p+'-date').value);
+            if(!dm)throw 'व्यक्ति '+p+': तिथि dd-mm-yyyy में लिखें।';
+            const tm=String(document.getElementById('p'+p+'-time').value||'').trim().match(/^(\d{1,2}):(\d{2})$/);
+            if(!tm)throw 'व्यक्ति '+p+': समय HH:MM में लिखें।';
+            const lat=parseFloat(document.getElementById('p'+p+'-lat').value),lon=parseFloat(document.getElementById('p'+p+'-lon').value);
+            if(!(lat>-90&&lat<90&&lon>-180&&lon<180))throw 'व्यक्ति '+p+': Lat/Lon सही भरें।';
+            const bJD=jdFromYMDH(dm.y,dm.mo,dm.d,(+tm[1])+(+tm[2])/60-5.5);
+            const chart=await computeChart(swe,bJD,lat,lon);
+            const mds=vimshottariTimeline(bJD,chart.moonLon);
+            persons.push({n:p,chart,mds});
+        }
+        G={persons};
+        renderTab1();renderTab2();renderTab3();
+        document.getElementById('dl-row').style.display='flex';
+        document.getElementById('status').textContent='तीनों tabs तैयार ✓';
+    }catch(err){
+        showErr(typeof err==='string'?err:'त्रुटि: '+err.message);
+        document.getElementById('status').textContent='';
+    }
+};
+/* ================= Tab 1 ================= */
+function renderTab1(){
+    const [A,B]=G.persons;
+    const c1=A.chart,c2=B.chart;
+    let h='<table><tr><th>विवरण</th><th>व्यक्ति 1</th><th>व्यक्ति 2</th></tr>';
+    h+='<tr><td class="grp" colspan="3">D1 ग्रहों की स्थिति (राशि, भाव, नक्षत्र-स्वामी)</td></tr>';
+    c1.planets.forEach((p,i)=>{const q=c2.planets[i];
+        h+=`<tr><td>${p.hi}</td><td>${p.sign}, भाव ${p.bhava}, ${p.nak} (${p.nlord})</td><td>${q.sign}, भाव ${q.bhava}, ${q.nak} (${q.nlord})</td></tr>`;});
+    h+='<tr><td class="grp" colspan="3">D1 कुंडली की स्थिति</td></tr>';
+    const d1rows=[['लग्न राशि',c1.lagnaSign,c2.lagnaSign],['लग्नेश',c1.lagnaLord,c2.lagnaLord],
+        ['लग्न नक्षत्र',c1.lagnaNak,c2.lagnaNak],['लग्न नक्षत्र-स्वामी',c1.lagnaNLord,c2.lagnaNLord],
+        ['चंद्र राशि',c1.moonSign,c2.moonSign],['चंद्र नक्षत्र',c1.moonNak,c2.moonNak],
+        ['चंद्र नक्षत्र-स्वामी',c1.moonNLord,c2.moonNLord],['सप्तम भाव राशि',c1.h7Sign,c2.h7Sign],
+        ['सप्तम नक्षत्र',c1.h7Nak,c2.h7Nak],['सप्तम नक्षत्र-स्वामी',c1.h7NLord,c2.h7NLord],
+        ['सप्तमेश',c1.h7Lord,c2.h7Lord]];
+    for(const r of d1rows)h+=`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`;
+    h+='<tr><td class="grp" colspan="3">D9 ग्रहों की स्थिति (राशि, भाव, नक्षत्र-स्वामी)</td></tr>';
+    c1.planets.forEach((p,i)=>{const q=c2.planets[i];
+        h+=`<tr><td>नवमांश ${p.hi}</td><td>${p.nvSignName}, भाव ${p.nvBhava}, ${p.nvNak} (${p.nvNLord})</td><td>${q.nvSignName}, भाव ${q.nvBhava}, ${q.nvNak} (${q.nvNLord})</td></tr>`;});
+    h+='<tr><td class="grp" colspan="3">D9 कुंडली की स्थिति</td></tr>';
+    const d9rows=[['नवमांश लग्न राशि',c1.nvLagna,c2.nvLagna],['नवमांश लग्नेश',c1.nvLagnaLord,c2.nvLagnaLord],
+        ['नवमांश सप्तम राशि',c1.nvH7,c2.nvH7],['नवमांश सप्तमेश',c1.nvH7Lord,c2.nvH7Lord]];
+    for(const r of d9rows)h+=`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`;
+    h+='<tr><td class="grp" colspan="3">जैमिनी चर कारक</td></tr>';
+    for(const k of Object.keys(KARAKA_HI))h+=`<tr><td>${KARAKA_HI[k]} (${k})</td><td>${c1.chara[k]}</td><td>${c2.chara[k]}</td></tr>`;
+    h+='<tr><td class="grp" colspan="3">जैमिनी आरूढ़ पद (राशि, भाव)</td></tr>';
+    c1.arudha.forEach((a,i)=>{const b=c2.arudha[i];
+        h+=`<tr><td>${a.name}</td><td>${a.sign}, भाव ${a.bhava}</td><td>${b.sign}, भाव ${b.bhava}</td></tr>`;});
+    h+='<tr><td class="grp" colspan="3">कारकांश / स्वांश</td></tr>';
+    h+=`<tr><td>कारकांश लग्न</td><td>${c1.karakamsha}</td><td>${c2.karakamsha}</td></tr>`;
+    h+='<tr><td class="grp" colspan="3">KP विवरण - 7वां भाव</td></tr>';
+    h+=`<tr><td>7वें भाव का CSL</td><td>${c1.kp7.csl}</td><td>${c2.kp7.csl}</td></tr>`;
+    h+=`<tr><td>CSL का नक्षत्र स्वामी (NL)</td><td>${c1.kp7.nl}</td><td>${c2.kp7.nl}</td></tr>`;
+    h+=`<tr><td>उप-स्वामी (SL)</td><td>${c1.kp7.sl}</td><td>${c2.kp7.sl}</td></tr>`;
+    h+=`<tr><td>SSL</td><td>${c1.kp7.ssl}</td><td>${c2.kp7.ssl}</td></tr>`;
+    h+='</table>';
+    document.getElementById('out1').innerHTML=h;
+}
+/* ================= Tab 2 ================= */
+window.renderTab2=function(){
+    if(!G)return;
+    const yrs=parseInt(document.getElementById('yr-range').value)||5;
+    const [A,B]=G.persons;
+    function prabhav(d,chart,sandhi){
+        const mb=isMarakBadhak(d.md,chart),mba=isMarakBadhak(d.ad,chart);
+        if(mb.marak||mba.marak)return{cls:'bad',lbl:'Bad',flags:['मारक']};
+        if(mb.badh||mba.badh||sandhi)return{cls:'mix',lbl:'Mixed',flags:[sandhi?'दशा-छिद्र':'बाधक']};
+        return{cls:'good',lbl:'Good',flags:[]};
+    }
+    let h='<table><tr><th>वर्ष</th><th>पति की दशा</th><th>प्रभाव</th><th>पत्नी की दशा</th><th>प्रभाव</th><th>वैवाहिक प्रभाव</th></tr>';
+    for(let y=0;y<yrs;y++){
+        const yrJD=jdFromYMDH(2026+y,1,1,0);
+        const d1=dashaAt(A.mds,yrJD),d2=dashaAt(B.mds,yrJD);
+        const yrEnd=jdFromYMDH(2026+y+1,1,1,0);
+        const d1e=dashaAt(A.mds,yrEnd-1),d2e=dashaAt(B.mds,yrEnd-1);
+        const s1=d1.md!==d1e.md,s2=d2.md!==d2e.md;
+        const p1=prabhav(d1,A.chart,s1),p2=prabhav(d2,B.chart,s2);
+        // Combined: both Bad = Bad; one Bad = Mixed (other balances); else follow worst
+        let cc='good',cl='Good';
+        if(p1.cls==='bad'&&p2.cls==='bad'){cc='bad';cl='Bad';}
+        else if(p1.cls==='bad'||p2.cls==='bad'){cc='mix';cl='Mixed';}
+        else if(p1.cls==='mix'||p2.cls==='mix'){cc='mix';cl='Mixed';}
+        const f1=p1.flags.length?` <span class="warn">⚠️${p1.flags.join(',')}</span>`:'';
+        const f2=p2.flags.length?` <span class="warn">⚠️${p2.flags.join(',')}</span>`:'';
+        h+=`<tr><td>${2026+y}</td><td>${d1.md}-${d1.ad}</td><td><span class="badge ${p1.cls}">${p1.lbl}</span>${f1}</td><td>${d2.md}-${d2.ad}</td><td><span class="badge ${p2.cls}">${p2.lbl}</span>${f2}</td><td><span class="badge ${cc}">${cl}</span></td></tr>`;
+    }
+    h+='</table><div class="note">⚠️ दशा-छिद्र = वर्ष में महादशा बदलती है | मारक = 2/7 भावेश, बाधक = बाधकेश की दशा</div>';
+    document.getElementById('out2').innerHTML=h;
+};
+/* ================= Tab 3 ================= */
+function sphuta(lons){
+    const t=lons.reduce((s,l)=>s+l,0)%360;
+    const ni=nakInfo(t);
+    return{lon:t,sign:RASHI[Math.floor(t/30)],nak:ni.nak,nlord:ni.nlord};
+}
+function sphutaBala(sp,chart){
+    // स्फुट की राशि के स्वामी की D1 में स्थिति से बल
+    const spSign=Math.floor(sp.lon/30);
+    const lord=SIGN_LORD[spSign];
+    const lordP=chart.planets.find(p=>p.hi===lord);
+    if(!lordP)return{lbl:'मध्यम',cls:'mix'};
+    const bh=lordP.bhava;
+    if([1,4,7,10,5,9].includes(bh))return{lbl:'बलवान',cls:'good'};
+    if([6,8,12].includes(bh))return{lbl:'कमजोर',cls:'bad'};
+    return{lbl:'मध्यम',cls:'mix'};
+}
+window.renderTab3=function(){
+    if(!G)return;
+    const [A,B]=G.persons;
+    const P1=A.chart.planets,P2=B.chart.planets;
+    const L=h=>P1.find(p=>p.hi===h).lon, M=h=>P2.find(p=>p.hi===h).lon;
+    const beeja=sphuta([L('सूर्य'),L('शुक्र'),L('गुरु')]);
+    const kshetra=sphuta([M('चंद्र'),M('मंगल'),M('गुरु')]);
+    const bBala=sphutaBala(beeja,A.chart),kBala=sphutaBala(kshetra,B.chart);
+    let concl='';
+    if(bBala.lbl==='बलवान'&&kBala.lbl==='बलवान')concl='दोनों बलवान - कोई जैविक बाधा नहीं, देरी का कारण केवल दशा/गोचर।';
+    else if(bBala.lbl==='कमजोर'&&kBala.lbl==='कमजोर')concl='दोनों कमजोर - गंभीर स्थिति, चिकित्सा + उपाय दोनों आवश्यक।';
+    else if(bBala.lbl==='कमजोर'||kBala.lbl==='कमजोर')concl=`${bBala.lbl==='कमजोर'?'पिता':'माता'} पक्ष कमजोर - समस्या इस पक्ष में अधिक, चिकित्सा इसी दिशा में।`;
+    else concl='संतुलन की स्थिति - बलवान पक्ष कमजोर की कमी पूरी कर सकता है, प्रयास से सफलता।';
+    let h='<table><tr><th></th><th>पिता (व्यक्ति 1)</th><th>माता (व्यक्ति 2)</th></tr>';
+    h+=`<tr><td><b>स्फुट</b></td><td>बीज स्फुट = सूर्य+शुक्र+गुरु</td><td>क्षेत्र स्फुट = चंद्र+मंगल+गुरु</td></tr>`;
+    h+=`<tr><td>राशि / अंश</td><td>${beeja.sign} ${beeja.lon.toFixed(2)}°</td><td>${kshetra.sign} ${kshetra.lon.toFixed(2)}°</td></tr>`;
+    h+=`<tr><td>नक्षत्र / स्वामी</td><td>${beeja.nak} (${beeja.nlord})</td><td>${kshetra.nak} (${kshetra.nlord})</td></tr>`;
+    h+=`<tr><td><b>बल</b></td><td><span class="badge ${bBala.cls}">${bBala.lbl}</span></td><td><span class="badge ${kBala.cls}">${kBala.lbl}</span></td></tr>`;
+    h+=`</table><div class="note"><b>संयुक्त निष्कर्ष:</b> ${concl}</div>`;
+    document.getElementById('out3').innerHTML=h;
+};
+/* ================= Downloads ================= */
+function dlTxt(name,txt){
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
+    a.download=name;a.click();
+}
+window.downloadTxt1=function(){
+    if(!G)return;
+    const [A,B]=G.persons,c1=A.chart,c2=B.chart;
+    let t='Kundali-Milan-3-in-1 : Tab 1 - Data Table\n'+'='.repeat(50)+'\n\n';
+    t+='--- D1 ग्रहों की स्थिति (राशि, भाव, नक्षत्र-स्वामी) ---\n';
+    c1.planets.forEach((p,i)=>{const q=c2.planets[i];
+        t+=`${p.hi}: व्यक्ति1=${p.sign}, भाव ${p.bhava}, ${p.nak} (${p.nlord}) | व्यक्ति2=${q.sign}, भाव ${q.bhava}, ${q.nak} (${q.nlord})\n`;});
+    t+='\n--- D1 कुंडली ---\n';
+    [['लग्न राशि',c1.lagnaSign,c2.lagnaSign],['लग्नेश',c1.lagnaLord,c2.lagnaLord],
+     ['लग्न नक्षत्र',c1.lagnaNak,c2.lagnaNak],['लग्न नक्षत्र-स्वामी',c1.lagnaNLord,c2.lagnaNLord],
+     ['चंद्र राशि',c1.moonSign,c2.moonSign],['चंद्र नक्षत्र',c1.moonNak,c2.moonNak],
+     ['चंद्र नक्षत्र-स्वामी',c1.moonNLord,c2.moonNLord],['सप्तम भाव राशि',c1.h7Sign,c2.h7Sign],
+     ['सप्तम नक्षत्र',c1.h7Nak,c2.h7Nak],['सप्तम नक्षत्र-स्वामी',c1.h7NLord,c2.h7NLord],
+     ['सप्तमेश',c1.h7Lord,c2.h7Lord]].forEach(r=>{t+=`${r[0]}: व्यक्ति1=${r[1]} | व्यक्ति2=${r[2]}\n`;});
+    t+='\n--- D9 ग्रहों की स्थिति ---\n';
+    c1.planets.forEach((p,i)=>{const q=c2.planets[i];
+        t+=`नवमांश ${p.hi}: व्यक्ति1=${p.nvSignName}, भाव ${p.nvBhava}, ${p.nvNak} (${p.nvNLord}) | व्यक्ति2=${q.nvSignName}, भाव ${q.nvBhava}, ${q.nvNak} (${q.nvNLord})\n`;});
+    t+='\n--- D9 कुंडली ---\n';
+    [['नवमांश लग्न राशि',c1.nvLagna,c2.nvLagna],['नवमांश लग्नेश',c1.nvLagnaLord,c2.nvLagnaLord],
+     ['नवमांश सप्तम राशि',c1.nvH7,c2.nvH7],['नवमांश सप्तमेश',c1.nvH7Lord,c2.nvH7Lord]].forEach(r=>{t+=`${r[0]}: व्यक्ति1=${r[1]} | व्यक्ति2=${r[2]}\n`;});
+    t+='\n--- जैमिनी चर कारक ---\n';
+    for(const k of Object.keys(KARAKA_HI))t+=`${KARAKA_HI[k]} (${k}): व्यक्ति1=${c1.chara[k]} | व्यक्ति2=${c2.chara[k]}\n`;
+    t+='\n--- जैमिनी आरूढ़ पद (राशि, भाव) ---\n';
+    c1.arudha.forEach((a,i)=>{const b=c2.arudha[i];
+        t+=`${a.name}: व्यक्ति1=${a.sign}, भाव ${a.bhava} | व्यक्ति2=${b.sign}, भाव ${b.bhava}\n`;});
+    t+='\n--- कारकांश / स्वांश ---\n';
+    t+=`कारकांश लग्न: व्यक्ति1=${c1.karakamsha} | व्यक्ति2=${c2.karakamsha}\n`;
+    t+='\n--- KP: 7वां भाव ---\n';
+    t+=`7वें भाव का CSL: व्यक्ति1=${c1.kp7.csl} | व्यक्ति2=${c2.kp7.csl}\n`;
+    t+=`CSL का नक्षत्र स्वामी (NL): व्यक्ति1=${c1.kp7.nl} | व्यक्ति2=${c2.kp7.nl}\n`;
+    t+=`उप-स्वामी (SL): व्यक्ति1=${c1.kp7.sl} | व्यक्ति2=${c2.kp7.sl}\n`;
+    t+=`SSL: व्यक्ति1=${c1.kp7.ssl} | व्यक्ति2=${c2.kp7.ssl}\n`;
+    dlTxt('Kundali-Milan-3-in-1-Tab1-Data-Table.txt',t);
+};
+window.downloadTxt2=function(){
+    if(!G)return;
+    const yrs=parseInt(document.getElementById('yr-range').value)||5;
+    const [A,B]=G.persons;
+    function prabhav(d,chart,sandhi){
+        const mb=isMarakBadhak(d.md,chart),mba=isMarakBadhak(d.ad,chart);
+        if(mb.marak||mba.marak)return{cls:'bad',lbl:'Bad',flags:['मारक']};
+        if(mb.badh||mba.badh||sandhi)return{cls:'mix',lbl:'Mixed',flags:[sandhi?'दशा-छिद्र':'बाधक']};
+        return{cls:'good',lbl:'Good',flags:[]};
+    }
+    let t='Kundali-Milan-3-in-1 : Tab 2 - दशा संधि Timeline\n'+'='.repeat(50)+'\n\n';
+    t+='वर्ष | पति की दशा | पति प्रभाव | पत्नी की दशा | पत्नी प्रभाव | वैवाहिक प्रभाव\n';
+    t+='-'.repeat(80)+'\n';
+    for(let y=0;y<yrs;y++){
+        const yrJD=jdFromYMDH(2026+y,1,1,0);
+        const d1=dashaAt(A.mds,yrJD),d2=dashaAt(B.mds,yrJD);
+        const yrEnd=jdFromYMDH(2026+y+1,1,1,0);
+        const d1e=dashaAt(A.mds,yrEnd-1),d2e=dashaAt(B.mds,yrEnd-1);
+        const s1=d1.md!==d1e.md,s2=d2.md!==d2e.md;
+        const p1=prabhav(d1,A.chart,s1),p2=prabhav(d2,B.chart,s2);
+        let cl='Good';
+        if(p1.cls==='bad'&&p2.cls==='bad')cl='Bad';
+        else if(p1.cls==='bad'||p2.cls==='bad')cl='Mixed';
+        else if(p1.cls==='mix'||p2.cls==='mix')cl='Mixed';
+        const f1=p1.flags.length?` (${p1.flags.join(',')})`:'',f2=p2.flags.length?` (${p2.flags.join(',')})`:'';
+        t+=`${2026+y} | ${d1.md}-${d1.ad} | ${p1.lbl}${f1} | ${d2.md}-${d2.ad} | ${p2.lbl}${f2} | ${cl}\n`;
+    }
+    t+='\nनोट: दशा-छिद्र = वर्ष में महादशा बदलती है | मारक = 2/7 भावेश, बाधक = बाधकेश की दशा\n';
+    dlTxt('Kundali-Milan-3-in-1-Tab2-Dasha-Sandhi.txt',t);
+};
+window.downloadTxt3=function(){
+    if(!G)return;
+    const [A,B]=G.persons;
+    const P1=A.chart.planets,P2=B.chart.planets;
+    const L=h=>P1.find(p=>p.hi===h).lon, M=h=>P2.find(p=>p.hi===h).lon;
+    const beeja=sphuta([L('सूर्य'),L('शुक्र'),L('गुरु')]);
+    const kshetra=sphuta([M('चंद्र'),M('मंगल'),M('गुरु')]);
+    const bBala=sphutaBala(beeja,A.chart),kBala=sphutaBala(kshetra,B.chart);
+    let concl='';
+    if(bBala.lbl==='बलवान'&&kBala.lbl==='बलवान')concl='दोनों बलवान - कोई जैविक बाधा नहीं, देरी का कारण केवल दशा/गोचर।';
+    else if(bBala.lbl==='कमजोर'&&kBala.lbl==='कमजोर')concl='दोनों कमजोर - गंभीर स्थिति, चिकित्सा + उपाय दोनों आवश्यक।';
+    else if(bBala.lbl==='कमजोर'||kBala.lbl==='कमजोर')concl=`${bBala.lbl==='कमजोर'?'पिता':'माता'} पक्ष कमजोर - समस्या इस पक्ष में अधिक, चिकित्सा इसी दिशा में।`;
+    else concl='संतुलन की स्थिति - बलवान पक्ष कमजोर की कमी पूरी कर सकता है, प्रयास से सफलता।';
+    let t='Kundali-Milan-3-in-1 : Tab 3 - बीज-क्षेत्र स्फुट\n'+'='.repeat(50)+'\n\n';
+    t+='--- बीज स्फुट (पिता/व्यक्ति 1) = सूर्य + शुक्र + गुरु ---\n';
+    t+=`राशि/अंश: ${beeja.sign} ${beeja.lon.toFixed(2)}°\n`;
+    t+=`नक्षत्र/स्वामी: ${beeja.nak} (${beeja.nlord})\n`;
+    t+=`बल: ${bBala.lbl}\n`;
+    t+='\n--- क्षेत्र स्फुट (माता/व्यक्ति 2) = चंद्र + मंगल + गुरु ---\n';
+    t+=`राशि/अंश: ${kshetra.sign} ${kshetra.lon.toFixed(2)}°\n`;
+    t+=`नक्षत्र/स्वामी: ${kshetra.nak} (${kshetra.nlord})\n`;
+    t+=`बल: ${kBala.lbl}\n`;
+    t+=`\n--- संयुक्त निष्कर्ष ---\n${concl}\n`;
+    dlTxt('Kundali-Milan-3-in-1-Tab3-Beeja-Kshetra.txt',t);
+};
+window.downloadPng=function(){
+    html2canvas(document.getElementById('capture-area'),{scale:2}).then(cv=>{
+        const a=document.createElement('a');
+        a.href=cv.toDataURL('image/png');a.download='Kundali-Milan-3-in-1-3in1.png';a.click();
+    });
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans Devanagari','Mangal',sans-serif;background:#f5f6fa;color:#222;padding:12px;max-width:1100px;margin:0 auto}
+h1{text-align:center;color:#2c3e50;font-size:1.35rem;margin:10px 0}
+.sub{text-align:center;color:#777;font-size:.85rem;margin-bottom:10px}
+.card{background:#fff;border-radius:12px;padding:14px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+label{display:block;font-weight:bold;margin:8px 0 4px;font-size:.92rem}
+input,select{width:100%;padding:9px;border:1px solid #ccc;border-radius:8px;font-size:1rem;font-family:inherit}
+.dual{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:700px){.dual{grid-template-columns:1fr}}
+.person{border:2px solid #8e44ad;border-radius:10px;padding:10px}
+.person h3{color:#8e44ad;margin-bottom:6px}
+.btn{display:block;width:100%;padding:13px;background:#8e44ad;color:#fff;border:none;border-radius:10px;font-size:1.1rem;font-weight:bold;cursor:pointer;margin:12px 0;font-family:inherit}
+.btn:active{transform:scale(.98)}
+.tabs{display:flex;gap:6px;margin:12px 0}
+.tab{flex:1;padding:11px 6px;background:#ddd;border:none;border-radius:10px;font-weight:bold;cursor:pointer;font-size:.95rem;font-family:inherit}
+.tab.on{background:#8e44ad;color:#fff}
+.sec{display:none}
+.sec.on{display:block}
+table{border-collapse:collapse;width:100%;margin:8px 0;font-size:.88rem}
+th,td{border:1px solid #ddd;padding:6px 7px;text-align:center}
+th{background:#8e44ad;color:#fff}
+.grp{background:#f0e6f6;font-weight:bold;text-align:left!important}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:.82rem;font-weight:bold}
+.good{background:#d4efdf;color:#1e8449}.bad{background:#fadbd8;color:#922b21}.mix{background:#fef9e7;color:#7d6608}
+.warn{color:#c0392b;font-weight:bold}
+.note{color:#666;font-size:.83rem;margin-top:6px}
+.err{color:#c0392b;font-weight:bold;text-align:center;padding:8px}
+.status{text-align:center;color:#27ae60;font-weight:bold;min-height:1.4em}
+.dl-row{display:flex;gap:8px;margin:10px 0}
+.dl-row .btn{margin:0}
+h2{color:#8e44ad;font-size:1.1rem;margin-bottom:8px}
+.yr-row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.yr-row select{width:auto;min-width:120px}
+.yr-row label{margin:0}
+.place-wrap{position:relative}
+.place-results{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:0 0 8px 8px;max-height:180px;overflow-y:auto;z-index:50;display:none;box-shadow:0 4px 10px rgba(0,0,0,.12);text-align:left}
+.pr-item{padding:7px 10px;cursor:pointer;font-size:.85rem;border-bottom:1px solid #f5f5f5}
+.pr-item:hover{background:#f0e6f6}
+.pr-none{padding:8px 10px;font-size:.82rem;color:#999}
+</style>
+</head>
+<body>
+<div id="capture-area">
+<h1>🔱 Kundali-Milan-3-in-1</h1>
+<div class="sub">दो कुंडलियों का तुलनात्मक विश्लेषण - Data Table • दशा संधि • बीज-क्षेत्र स्फुट</div>
+
+<div class="card">
+<div class="dual">
+<div class="person">
+<h3>👤 व्यक्ति 1 (वर / पिता)</h3>
+<label>Astro Code:</label>
+<div style="display:flex;gap:6px">
+<input type="text" id="p1-code" placeholder="AS1-..." style="flex:1">
+<button class="btn" style="width:auto;margin:0;padding:9px 14px;white-space:nowrap" onclick="fillFromCode(1)">📥 भरो</button>
+</div>
+<label>जन्म तिथि (dd-mm-yyyy):</label>
+<input type="text" id="p1-date" placeholder="dd-mm-yyyy">
+<label>जन्म समय (HH:MM):</label>
+<input type="text" id="p1-time" placeholder="HH:MM">
+<label>स्थान / Lat / Lon:</label>
+<div class="place-wrap">
+<input type="text" id="p1-place" placeholder="शहर का नाम (English)" autocomplete="off">
+<div class="place-results" id="p1-place-results"></div>
+</div>
+<div class="dual">
+<div><input type="number" id="p1-lat" step="0.01" placeholder="Lat"></div>
+<div><input type="number" id="p1-lon" step="0.01" placeholder="Lon"></div>
+</div>
+</div>
+<div class="person">
+<h3>👤 व्यक्ति 2 (वधू / माता)</h3>
+<label>Astro Code:</label>
+<div style="display:flex;gap:6px">
+<input type="text" id="p2-code" placeholder="AS1-..." style="flex:1">
+<button class="btn" style="width:auto;margin:0;padding:9px 14px;white-space:nowrap" onclick="fillFromCode(2)">📥 भरो</button>
+</div>
+<label>जन्म तिथि (dd-mm-yyyy):</label>
+<input type="text" id="p2-date" placeholder="dd-mm-yyyy">
+<label>जन्म समय (HH:MM):</label>
+<input type="text" id="p2-time" placeholder="HH:MM">
+<label>स्थान / Lat / Lon:</label>
+<div class="place-wrap">
+<input type="text" id="p2-place" placeholder="शहर का नाम (English)" autocomplete="off">
+<div class="place-results" id="p2-place-results"></div>
+</div>
+<div class="dual">
+<div><input type="number" id="p2-lat" step="0.01" placeholder="Lat"></div>
+<div><input type="number" id="p2-lon" step="0.01" placeholder="Lon"></div>
+</div>
+</div>
+</div>
+<button class="btn" onclick="calculate()">🔱 तीनों Tabs की गणना करें</button>
+<div class="status" id="status"></div>
+<div class="err" id="err"></div>
+</div>
+
+<div class="tabs">
+<button class="tab on" onclick="showTab(1,this)">👫 1. Data Table</button>
+<button class="tab" onclick="showTab(2,this)">💑 2. दशा संधि</button>
+<button class="tab" onclick="showTab(3,this)">🌱 3. बीज-क्षेत्र</button>
+</div>
+
+<div class="sec on" id="sec1"><div class="card"><h2>👫 Comprehensive Data Table</h2><div id="out1"><div class="note">गणना करें - दोनों कुंडलियों की पूर्ण तुलनात्मक तालिका यहां आएगी।</div></div></div></div>
+<div class="sec" id="sec2"><div class="card"><h2>💑 दशा संधि Timeline</h2>
+<div class="yr-row"><label>Timeline अवधि:</label>
+<select id="yr-range" onchange="renderTab2()">
+<option value="1">1 वर्ष</option><option value="2">2 वर्ष</option><option value="3">3 वर्ष</option>
+<option value="4">4 वर्ष</option><option value="5" selected>5 वर्ष (default)</option>
+<option value="6">6 वर्ष</option><option value="7">7 वर्ष</option><option value="8">8 वर्ष</option>
+<option value="9">9 वर्ष</option><option value="10">10 वर्ष</option><option value="12">12 वर्ष</option>
+<option value="15">15 वर्ष</option><option value="20">20 वर्ष</option><option value="25">25 वर्ष</option>
+</select></div>
+<div id="out2"><div class="note">गणना करें - दोनों की दशा timeline यहां आएगी।</div></div></div></div>
+<div class="sec" id="sec3"><div class="card"><h2>🌱 बीज-क्षेत्र स्फुट</h2><div id="out3"><div class="note">गणना करें - बीज और क्षेत्र स्फुट यहां आएंगे।</div></div></div></div>
+
+<div class="dl-row" id="dl-row" style="display:none">
+<button class="btn" onclick="downloadTxt1()">📝 Tab1 TXT</button>
+<button class="btn" onclick="downloadTxt2()">📝 Tab2 TXT</button>
+<button class="btn" onclick="downloadTxt3()">📝 Tab3 TXT</button>
+<button class="btn" onclick="downloadPng()">📸 PNG</button>
+</div>
+</div>
+<script>
+function showTab(n,el){document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));document.getElementById('sec'+n).classList.add('on');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');}
+function showErr(m){document.getElementById('err').textContent=m;}
+/* ================= Astro Code auto-fill ================= */
+function parseAstroCode(code){
+    const m=String(code||'').trim().match(/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/i);
+    if(!m)return null;
+    return{
+        dd:+m[1].slice(6,8),mm:+m[1].slice(4,6),yy:+m[1].slice(0,4),
+        hh:+m[2].slice(0,2),mi:+m[2].slice(2,4),
+        lat:(+m[4].slice(0,2)+(+m[4].slice(2))/60)*(m[5].toUpperCase()==='S'?-1:1),
+        lon:(+m[6].slice(0,3)+(+m[6].slice(3))/60)*(m[7].toUpperCase()==='W'?-1:1)
+    };
+}
+window.fillFromCode=function(p){
+    const pc=parseAstroCode(document.getElementById('p'+p+'-code').value);
+    if(!pc){showErr('व्यक्ति '+p+': गलत Astro Code format');return;}
+    showErr('');
+    const pad=n=>String(n).padStart(2,'0');
+    document.getElementById('p'+p+'-date').value=`${pad(pc.dd)}-${pad(pc.mm)}-${pc.yy}`;
+    document.getElementById('p'+p+'-time').value=`${pad(pc.hh)}:${pad(pc.mi)}`;
+    document.getElementById('p'+p+'-lat').value=pc.lat.toFixed(2);
+    document.getElementById('p'+p+'-lon').value=pc.lon.toFixed(2);
+};
+/* ================= Worldwide city search ================= */
+function setupCitySearch(p){
+    const place=document.getElementById('p'+p+'-place');
+    const box=document.getElementById('p'+p+'-place-results');
+    const latEl=document.getElementById('p'+p+'-lat'),lonEl=document.getElementById('p'+p+'-lon');
+    let timer=null,ctrl=null;
+    function closeBox(){box.style.display='none';box.innerHTML='';}
+    function pick(label,la,lo){
+        clearTimeout(timer);place.value=label;
+        latEl.value=la.toFixed(4);lonEl.value=lo.toFixed(4);
+        closeBox();
+    }
+    function render(items){
+        if(!items.length){box.innerHTML='<div class="pr-none">कोई शहर नहीं मिला - lat/lon manual भरें</div>';}
+        else{
+            box.innerHTML=items.map((it,i)=>'<div class="pr-item" data-i="'+i+'">'+it.label+'</div>').join('');
+            box.querySelectorAll('.pr-item').forEach(el=>{
+                el.addEventListener('mousedown',e=>{e.preventDefault();const it=items[+el.getAttribute('data-i')];pick(it.label,it.lat,it.lon);});
+            });
+        }
+        box.style.display='block';
+    }
+    async function apiSearch(q){
+        const providers=[
+            {url:'https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=8&language=en&format=json',
+             parse:j=>(j.results||[]).map(g=>{const parts=[g.name];if(g.admin1)parts.push(g.admin1);if(g.country)parts.push(g.country);return{label:parts.join(', '),lat:+g.latitude.toFixed(4),lon:+g.longitude.toFixed(4)};})},
+            {url:'https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=8&lang=en',
+             parse:j=>(j.features||[]).map(f=>{const pr=f.properties||{},parts=[pr.name];if(pr.state)parts.push(pr.state);if(pr.country)parts.push(pr.country);const c=f.geometry&&f.geometry.coordinates;return c?{label:parts.join(', '),lat:+c[1].toFixed(4),lon:+c[0].toFixed(4)}:null;}).filter(Boolean)},
+            {url:'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=8',
+             parse:j=>(Array.isArray(j)?j:[]).map(n=>({label:String(n.display_name).split(',').slice(0,3).join(','),lat:+parseFloat(n.lat).toFixed(4),lon:+parseFloat(n.lon).toFixed(4)}))}
+        ];
+        for(const pv of providers){
+            try{
+                if(ctrl)ctrl.abort();ctrl=new AbortController();
+                const r=await fetch(pv.url,{signal:ctrl.signal});
+                if(!r.ok)continue;
+                const out=pv.parse(await r.json());
+                if(out.length)return out;
+            }catch(e){}
+        }
+        return[];
+    }
+    place.addEventListener('input',()=>{
+        const q=place.value;clearTimeout(timer);
+        if(q.trim().length<2){closeBox();return;}
+        box.innerHTML='<div class="pr-none">खोजा जा रहा है…</div>';box.style.display='block';
+        timer=setTimeout(async()=>{
+            if(place.value!==q||place.value.trim().length<2)return;
+            const res=await apiSearch(place.value);
+            if(place.value===q)render(res);
+        },400);
+    });
+    place.addEventListener('blur',()=>setTimeout(closeBox,200));
+}
+setupCitySearch(1);setupCitySearch(2);
+</script>
+<script>
+/* ================= Constants ================= */
+const RASHI=['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+const SIGN_LORD=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+const NAK=['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती'];
+const NLORD=['केतु','शुक्र','सूर्य','चंद्र','मंगल','राहु','गुरु','शनि','बुध'];
+const GRAHA_HI=['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि','राहु','केतु'];
+const VIM_ORDER=['केतु','शुक्र','सूर्य','चंद्र','मंगल','राहु','गुरु','शनि','बुध'];
+const VIM_YR={'केतु':7,'शुक्र':20,'सूर्य':6,'चंद्र':10,'मंगल':7,'राहु':18,'गुरु':16,'शनि':19,'बुध':17};
+const ARUDHA_NAMES=['आरूढ़ लग्न (A1/AL)','धन पद (A2)','भ्रातृ पद (A3)','मातृ पद (A4)','पुत्र पद (A5)','रोग पद (A6)','दारापद (A7)','मृत्यु पद (A8)','भाग्य पद (A9)','राज्य पद (A10)','लाभ पद (A11)','उपपद लग्न (A12/UL)'];
+const KARAKA_HI={AK:'आत्मकारक',AmK:'अमात्यकारक',BK:'भ्रातृकारक',MK:'मातृकारक',PK:'पुत्रकारक',GK:'ज्ञातिकारक',DK:'दाराकारक'};
+
+let _SEP=null,_swe=null,_sweLoading=null;
+const EPHEM_CDN='https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+async function ensureSwe(){
+    if(_swe)return _swe;
+    if(_sweLoading)return _sweLoading;
+    _sweLoading=(async()=>{
+        const m=await import(/* @vite-ignore */EPHEM_CDN);
+        const swe=new m.SwissEphemeris();await swe.init();
+        swe.setSiderealMode(m.SiderealMode.Lahiri);
+        _swe=swe;_SEP=m.Planet;return swe;
+    })();
+    return _sweLoading;
+}
+function norm360(x){x%=360;return x<0?x+360:x;}
+function parseDMY(s){const m=String(s||'').trim().match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);return m?{d:+m[1],mo:+m[2],y:+m[3]}:null;}
+function jdFromYMDH(y,mo,d,h){
+    let yy=y,mm=mo;if(mm<=2){yy--;mm+=12;}
+    const A=Math.floor(yy/100),B=2-A+Math.floor(A/4);
+    return Math.floor(365.25*(yy+4716))+Math.floor(30.6001*(mm+1))+d+B-1524.5+h/24;
+}
+function fmtD(jd){const z=Math.floor(jd+0.5),f=(jd+0.5)-z;let a=z;if(a>=2299161){const al=Math.floor((a-1867216.25)/36524.25);a=a+1+al-Math.floor(al/4);}const b=a+1524,c=Math.floor((b-122.1)/365.25),dd=Math.floor(365.25*c),e=Math.floor((b-dd)/30.6001);const day=b-dd-Math.floor(30.6001*e)+f;let mo=e<14?e-1:e-13;let yr=mo>2?c-4716:c-4715;const ddI=Math.floor(day);return String(ddI).padStart(2,'0')+'-'+String(mo).padStart(2,'0')+'-'+yr;}
+function nakInfo(lon){const ni=Math.floor(lon/(360/27));return{nak:NAK[ni],nlord:NLORD[ni%9],idx:ni};}
+function navamshaSign(sign,deg){
+    const part=Math.floor(deg/(30/9));
+    let start;
+    if([0,3,6,9].includes(sign))start=sign;
+    else if([1,4,7,10].includes(sign))start=(sign+8)%12;
+    else start=(sign+4)%12;
+    return (start+part)%12;
+}
+/* ================= Chart computation ================= */
+async function computeChart(swe,bJD,lat,lon){
+    const ayan=swe.getAyanamsa(bJD);
+    const houses=swe.calculateHouses(bJD,lat,lon,'P');
+    const lagna=norm360(houses.ascendant-ayan);
+    const lsign=Math.floor(lagna/30);
+    const lagNak=nakInfo(lagna);
+    const planets=[];
+    const swMap={0:'Sun',1:'Moon',2:'Mars',3:'Mercury',4:'Jupiter',5:'Venus',6:'Saturn'};
+    for(let i=0;i<7;i++){
+        const l=norm360(swe.calculatePosition(bJD,_SEP[swMap[i]],0).longitude-ayan);
+        planets.push(mkPlanet(GRAHA_HI[i],l,lsign));
+    }
+    const rahuL=norm360(swe.calculatePosition(bJD,10,0).longitude-ayan);
+    planets.push(mkPlanet('राहु',rahuL,lsign));
+    planets.push(mkPlanet('केतु',norm360(rahuL+180),lsign));
+    // D9 lagna
+    const nvLagna=navamshaSign(lsign,lagna%30);
+    // fix navamsha bhavas now that nvLagna is known
+    for(const p of planets){
+        p.nvBhava=((p.nvSign-nvLagna)%12+12)%12+1;
+    }
+    // Chara karakas (7 grahas by degree in sign, desc)
+    const seven=[...planets.slice(0,7)].sort((a,b)=>b.degInSign-a.degInSign);
+    const kk=['AK','AmK','BK','MK','PK','GK','DK'];
+    const chara={};kk.forEach((k,i)=>{chara[k]=seven[i].hi;});
+    const akPlanet=planets.find(p=>p.hi===chara.AK);
+    const karakamsha=RASHI[akPlanet.nvSign];
+    // Arudha padas
+    const arudha=calcArudhas(planets,lsign);
+    // 7th house KP
+    const s7=(lsign+6)%12;
+    const kp7=calcKP7th(swe,bJD,lat,lon,ayan);
+    const moonP=planets[1];
+    return {lagna,lsign,lagnaSign:RASHI[lsign],lagnaLord:SIGN_LORD[lsign],
+        lagnaNak:lagNak.nak,lagnaNLord:lagNak.nlord,
+        moonSign:RASHI[Math.floor(moonP.lon/30)],moonNak:moonP.nak,moonNLord:moonP.nlord,moonLon:moonP.lon,
+        h7Sign:RASHI[s7],h7Lord:SIGN_LORD[s7],h7Nak:nakInfo(s7*30).nak,h7NLord:nakInfo(s7*30).nlord,
+        nvLagna:RASHI[nvLagna],nvLagnaLord:SIGN_LORD[nvLagna],nvH7:RASHI[(nvLagna+6)%12],nvH7Lord:SIGN_LORD[(nvLagna+6)%12],
+        planets,chara,karakamsha,arudha,kp7,bJD};
+}
+function mkPlanet(hi,l,lsign){
+    const sign=Math.floor(l/30),deg=l%30;
+    const ni=nakInfo(l);
+    const nvS=navamshaSign(sign,deg);
+    return {hi,lon:l,sign:RASHI[sign],signIdx:sign,degInSign:deg,
+        bhava:((sign-lsign)%12+12)%12+1,nak:ni.nak,nlord:ni.nlord,
+        nvSign:nvS,nvSignName:RASHI[nvS],nvBhava:0,nvNak:nakInfo(nvS*30+deg).nak,nvNLord:nakInfo(nvS*30+deg).nlord};
+}
+function calcArudhas(planets,lsign){
+    // EXACT port of website's jaimini-v3.html Arudha logic (user-confirmed)
+    function normalizeHouse(h){return ((h-1)%12+12)%12+1;}
+    const res=[];
+    for(let h=1;h<=12;h++){
+        const hSign=(lsign+h-1)%12; // 0-11
+        const lord=SIGN_LORD[hSign];
+        const lordP=planets.find(p=>p.hi===lord);
+        const lordSign=lordP?lordP.signIdx:lsign;
+        const houseOfLord=((lordSign-lsign)%12+12)%12+1;
+        const steps=((houseOfLord-h)%12+12)%12+1;
+        let aHouse;
+        if(steps===1||steps===7)aHouse=normalizeHouse(h+9);
+        else if(steps===4)aHouse=houseOfLord;
+        else if(steps===10)aHouse=normalizeHouse(h+3);
+        else aHouse=normalizeHouse(houseOfLord+steps-1);
+        const dist=((aHouse-h)%12+12)%12+1;
+        if(dist===1||dist===7)aHouse=normalizeHouse(aHouse+9);
+        const aSign=(lsign+aHouse-1)%12;
+        res.push({name:ARUDHA_NAMES[h-1],sign:RASHI[aSign],bhava:aHouse});
+    }
+    return res;
+}
+/* ================= KP: 7th CSL ================= */
+function kpSubLords(nakIdx){
+    const total=800.0,start=nakIdx%9,res=[];let pos=0;
+    for(let i=0;i<9;i++){
+        const lord=VIM_ORDER[(start+i)%9];
+        const w=VIM_YR[lord]/120*total;
+        res.push({lord,s:pos,e:pos+w});pos+=w;
+    }
+    return res;
+}
+function kpGetLords(absMin,nakIdx){
+    const din=absMin-nakIdx*800;
+    for(const sub of kpSubLords(nakIdx)){
+        if(sub.s<=din&&din<sub.e){
+            const si=VIM_ORDER.indexOf(sub.lord),wtot=sub.e-sub.s;let pos=sub.s;
+            for(let i=0;i<9;i++){
+                const ssl=VIM_ORDER[(si+i)%9],w=VIM_YR[ssl]/120*wtot;
+                if(pos<=din&&din<pos+w)return{sl:sub.lord,ssl};
+                pos+=w;
+            }
+        }
+    }
+    return{sl:'?',ssl:'?'};
+}
+function calcKP7th(swe,bJD,lat,lon,ayan){
+    // Verified pattern from kp-calculator-v26 (app-matched)
+    const KP_OFF=(5+26.22/60)/60; // 5'26.22" in degrees
+    const kpAya=ayan-KP_OFF;
+    const hs=swe.calculateHouses(bJD,lat,lon,'P');
+    let housesArr=(hs&&(hs.cusps||hs.houses))||[];
+    if(housesArr.length<12)return{csl:'?',nl:'?',sl:'?',ssl:'?'};
+    // hs.cusps[0]=cusp12, hs.cusps[1]=cusp1 -> rotate
+    const ascCheck=norm360(housesArr[1]-kpAya);
+    const ascSid=norm360(hs.ascendant-kpAya);
+    let rotated=housesArr;
+    if(Math.abs(ascCheck-ascSid)<1.0||Math.abs(ascCheck-ascSid)>359.0){
+        rotated=housesArr.slice(1).concat([housesArr[0]]);
+    }
+    const cusp7=norm360(rotated[6]-kpAya); // 7th cusp sidereal (KP)
+    const nakIdx=Math.floor(cusp7/(360/27))%27;
+    const ni=nakInfo(cusp7);
+    const {sl,ssl}=kpGetLords(cusp7*60,nakIdx);
+    // Hindi names
+    const H={केतु:'केतु',शुक्र:'शुक्र',सूर्य:'सूर्य',चंद्र:'चंद्र',मंगल:'मंगल',राहु:'राहु',गुरु:'गुरु',शनि:'शनि',बुध:'बुध'};
+    return{csl:H[sl]||sl,nl:ni.nlord,sl:H[sl]||sl,ssl:H[ssl]||ssl};
+}
+</script>
+</body>
+</html>
