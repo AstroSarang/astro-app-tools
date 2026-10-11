@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ताजिक वर्षफल Calculator v2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--primary:#8e44ad;--dark:#2c3e50;--bg:#f4f6f8;--ok:#27ae60;}
+*{box-sizing:border-box}
+body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);margin:0;padding:16px;color:#333;line-height:1.6}
+.container{max-width:950px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 4px 15px rgba(0,0,0,.1);padding:24px;border-top:5px solid var(--primary)}
+h1{text-align:center;color:var(--dark);margin:0 0 6px;font-size:1.6rem}
+.sub{text-align:center;color:#777;margin-bottom:18px;font-size:.95rem}
+.card{background:#faf7ff;border:1px solid #e0d4f0;border-radius:8px;padding:18px;margin-bottom:16px}
+.card h2{margin:0 0 12px;color:var(--primary);font-size:1.15rem}
+label{display:block;font-weight:bold;color:var(--primary);margin:10px 0 4px;font-size:.95rem}
+input[type=text],input[type=number],select{width:100%;padding:10px;border:1px solid #ccc;border-radius:5px;font-size:1rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.row2{grid-template-columns:1fr}}
+.btn{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;font-size:1.15rem;font-weight:bold;cursor:pointer;border-radius:6px;margin-top:14px}
+.btn:hover{background:#7d3c98}
+.btn-green{background:var(--ok)}.btn-green:hover{background:#219653}
+.btn-row{display:flex;gap:10px;margin-top:12px}.btn-row .btn{margin-top:0}
+.status{margin-top:10px;font-weight:bold;color:var(--ok);min-height:1.4em}
+.err{margin-top:10px;font-weight:bold;color:#c0392b;display:none}
+.pr-box{position:relative}
+.pr-results{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ccc;border-top:none;border-radius:0 0 5px 5px;max-height:200px;overflow-y:auto;z-index:50;display:none}
+.pr-item{padding:9px 12px;cursor:pointer;border-bottom:1px solid #eee}
+.pr-item:hover{background:#f0e6fa}
+.pr-none{padding:9px 12px;color:#888}
+table{width:100%;border-collapse:collapse;margin-top:10px;background:#fff;font-size:.92rem}
+th,td{padding:8px;border:1px solid #ddd;text-align:center}
+th{background:#f0e6fa;color:var(--dark)}
+td:first-child{text-align:left;font-weight:bold}
+.hl{background:#fef9e7;font-weight:bold}
+.big{font-size:1.25rem;font-weight:bold;color:var(--dark);text-align:center;margin:8px 0}
+.foot{text-align:center;color:#999;font-size:.8rem;margin-top:18px}
+.note{background:#fef9e7;border:1px solid #f9e79f;padding:10px;border-radius:5px;font-size:.9rem;margin-top:10px}
+.yes{color:#27ae60;font-weight:bold}.no{color:#999}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.8rem;font-weight:bold}
+.tag-good{background:#d5f5e3;color:#1e8449}.tag-bad{background:#fadbd8;color:#922b21}.tag-mid{background:#fef9e7;color:#7d6608}
+</style>
+</head>
+<body>
+<div class="container" id="capture-area">
+<h1>🗓️ ताजिक वर्षफल Calculator</h1>
+<div class="sub">9 तालिकाएँ — Solar Return से संपूर्ण ताजिक गणना — v2</div>
+
+<div class="card">
+<h2>📥 जन्म विवरण</h2>
+<div style="display:flex;gap:8px">
+<input type="text" id="astro" placeholder="AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W" style="flex:1">
+<button class="btn" style="margin-top:0;width:auto;padding:10px 18px" onclick="fillAstro()">भरो</button>
+</div>
+<div class="row2">
+<div><label>जन्म तिथि (dd-mm-yyyy):</label><input type="text" id="b-date" placeholder="14-02-1995" value="14-02-1995"></div>
+<div><label>जन्म समय (HH:MM, 24h):</label><input type="text" id="b-time" placeholder="03:00" value="03:00"></div>
+</div>
+<label>जन्म स्थान (English में type करें — worldwide search):</label>
+<div class="pr-box">
+<input type="text" id="b-city" placeholder="Gondia" autocomplete="off" value="Gondia">
+<div class="pr-results" id="b-city-results"></div>
+</div>
+<div class="row2">
+<div><label>Latitude:</label><input type="text" id="b-lat" value="21.3167"></div>
+<div><label>Longitude:</label><input type="text" id="b-lon" value="79.8500"></div>
+</div>
+<label>वर्षफल का वर्ष (जन्मदिन वाला calendar year):</label>
+<input type="number" id="t-year" value="2026" min="1900" max="2100">
+<label class="tgl" style="display:flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer">
+<input type="checkbox" id="yr-toggle" checked style="transform:scale(1.3)">
+<span>🟢 Classical 360 दिन (OFF = BVR 365.25 दिन)</span>
+</label>
+<div class="note">वर्षफल वर्ष = उस calendar year के जन्मदिन से अगले जन्मदिन तक।</div>
+<div class="status" id="birth-status"></div>
+<div class="err" id="err"></div>
+</div>
+
+<button class="btn" onclick="calculate()">🗓️ संपूर्ण वर्षफल गणना करें</button>
+
+<div id="output"></div>
+<div class="btn-row" id="dl-row" style="display:none">
+<button class="btn btn-green" onclick="downloadTxt()">📝 TXT डाउनलोड</button>
+<button class="btn btn-green" onclick="downloadPng()">📸 PNG स्क्रीनशॉट</button>
+</div>
+</div>
+<div class="foot">ताजिक वर्षफल v2 • Swiss Ephemeris (Lahiri) • B.V. Raman / Tajika Neelkanthi आधारित • tools give data, judgement Gemini करेगा</div>
+
+<script>
+/* ================= Swiss Ephemeris ================= */
+const EPHEM_CDN='https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+let _swe=null,_sweLoading=null,_SEP=null;
+async function ensureSwe(){
+    if(_swe)return _swe;
+    if(_sweLoading)return _sweLoading;
+    _sweLoading=(async()=>{
+        const m=await import(/* @vite-ignore */EPHEM_CDN);
+        const swe=new m.SwissEphemeris();await swe.init();
+        swe.setSiderealMode(m.SiderealMode.Lahiri);
+        _swe=swe;_SEP=m.Planet;return swe;
+    })();
+    return _sweLoading;
+}
+const norm360=x=>((x%360)+360)%360;
+const angDiff=(a,b)=>{let d=a-b;while(d>180)d-=360;while(d<-180)d+=360;return d;};
+
+/* ================= Constants ================= */
+const RASHI=['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+const NAK=['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','अश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वभाद्रपद','उत्तरभाद्रपद','रेवती'];
+const SIGN_LORD=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु']; // 0=मेष
+const GRAHA_EN=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+const GRAHA_HI=['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'];
+// Natural friendship (naisargika maitri)
+const FRIEND={
+ 'सूर्य':{f:['चंद्र','मंगल','गुरु'],e:['शुक्र','शनि']},
+ 'चंद्र':{f:['सूर्य','बुध'],e:[]},
+ 'मंगल':{f:['सूर्य','चंद्र','गुरु'],e:['बुध']},
+ 'बुध':{f:['सूर्य','शुक्र'],e:['चंद्र']},
+ 'गुरु':{f:['सूर्य','चंद्र','मंगल'],e:['बुध','शुक्र']},
+ 'शुक्र':{f:['बुध','शनि'],e:['सूर्य','चंद्र']},
+ 'शनि':{f:['बुध','शुक्र'],e:['सूर्य','चंद्र','मंगल']}
+};
+// Deep exaltation points (paramochcha), degrees absolute
+const EXALT={'सूर्य':10,'चंद्र':33,'मंगल':298,'बुध':165,'गुरु':95,'शुक्र':357,'शनि':200};
+// Hadda table: [lord, endDegree] per sign (0=मेष)
+const HADDA=[
+ [['गुरु',6],['शुक्र',12],['बुध',20],['मंगल',25],['शनि',30]],
+ [['शुक्र',8],['बुध',14],['गुरु',22],['शनि',27],['मंगल',30]],
+ [['बुध',6],['शुक्र',12],['गुरु',17],['मंगल',24],['शनि',30]],
+ [['मंगल',7],['शुक्र',13],['बुध',19],['गुरु',26],['शनि',30]],
+ [['गुरु',6],['शुक्र',11],['शनि',18],['बुध',24],['मंगल',30]],
+ [['बुध',7],['शुक्र',17],['गुरु',21],['मंगल',28],['शनि',30]],
+ [['शनि',6],['बुध',14],['गुरु',21],['शुक्र',28],['मंगल',30]],
+ [['मंगल',7],['शुक्र',11],['बुध',19],['गुरु',24],['शनि',30]],
+ [['गुरु',12],['शुक्र',17],['बुध',21],['मंगल',26],['शनि',30]],
+ [['बुध',7],['गुरु',14],['शुक्र',22],['शनि',26],['मंगल',30]],
+ [['बुध',7],['शुक्र',13],['गुरु',20],['मंगल',25],['शनि',30]],
+ [['शुक्र',12],['गुरु',16],['बुध',19],['मंगल',28],['शनि',30]]
+];
+// Tri-rasi pati [day, night] per lagna sign
+const TRIRASI=[['सूर्य','गुरु'],['शुक्र','चंद्र'],['शनि','बुध'],['शुक्र','मंगल'],['गुरु','सूर्य'],['चंद्र','शुक्र'],['बुध','शनि'],['मंगल','शुक्र'],['शनि','शनि'],['मंगल','मंगल'],['गुरु','गुरु'],['चंद्र','चंद्र']];
+// Deeptamsha orbs
+const ORB={'सूर्य':15,'चंद्र':12,'मंगल':8,'बुध':7,'गुरु':9,'शुक्र':7,'शनि':9};
+// Vimshottari years (for Mudda dasha)
+const VIM_YR={'केतु':7,'शुक्र':20,'सूर्य':6,'चंद्र':10,'मंगल':7,'राहु':18,'गुरु':16,'शनि':19,'बुध':17};
+const VIM_ORDER=['सूर्य','चंद्र','मंगल','राहु','गुरु','शनि','बुध','केतु','शुक्र']; // Vimshottari order
+const p2=n=>String(n).padStart(2,'0');
+</script>
+</body>
+</html>
+
+<script>
+/* ================= Date utils ================= */
+function parseDMY2(s){
+    const m=String(s||'').trim().match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if(!m)return null;
+    const d=+m[1],mo=+m[2],y=+m[3];
+    if(mo<1||mo>12||d<1||d>31)return null;
+    return {y,mo,d};
+}
+function jdFromYMDH(y,mo,d,utH){
+    let Y=y,M=mo;
+    if(M<=2){Y--;M+=12;}
+    const A=Math.floor(Y/100),B=2-A+Math.floor(A/4);
+    return Math.floor(365.25*(Y+4716))+Math.floor(30.6001*(M+1))+d+B-1524.5+utH/24;
+}
+function jdToLocal(jd,tzH){
+    const j=jd+tzH/24+0.5,Z=Math.floor(j),F=j-Z;
+    let A=Z;
+    if(Z>=2299161){const a=Math.floor((Z-1867216.25)/36524.25);A=Z+1+a-Math.floor(a/4);}
+    const B=A+1524,C=Math.floor((B-122.1)/365.25),D=Math.floor(365.25*C),E=Math.floor((B-D)/30.6001);
+    const day=B-D-Math.floor(30.6001*E)+F;
+    const mo=E<14?E-1:E-13,yr=mo>2?C-4716:C-4715;
+    const dd=Math.floor(day),fh=(day-dd)*24,hh=Math.floor(fh),mi=Math.floor((fh-hh)*60),ss=Math.floor((((fh-hh)*60)-mi)*60);
+    return {y:yr,mo,dd,hh,mi,ss};
+}
+function fmtDT(jd,tz){const t=jdToLocal(jd,tz||5.5);return `${p2(t.dd)}-${p2(t.mo)}-${t.y} ${p2(t.hh)}:${p2(t.mi)}:${p2(t.ss)}`;}
+function fmtD(jd){const t=jdToLocal(jd,5.5);return `${p2(t.dd)}-${p2(t.mo)}-${t.y}`;}
+function degFmt(lon){
+    const r=Math.floor(lon/30),d=lon%30;
+    const dd=Math.floor(d),mm=Math.floor((d-dd)*60);
+    return `${RASHI[r]} ${dd}°${p2(mm)}'`;
+}
+function nakInfo(lon){
+    const ni=Math.floor(lon/(360/27));
+    const pada=Math.floor((lon%(360/27))/(360/108))+1;
+    return `${NAK[ni]}-${pada}`;
+}
+function showErr(msg){const e=document.getElementById('err');e.textContent=msg;e.style.display=msg?'block':'none';}
+
+/* ================= Astro Code ================= */
+window.fillAstro=function(){
+    const c=document.getElementById('astro').value.trim();
+    const m=c.match(/^AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-])(\d{2})(\d{2})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])$/);
+    if(!m){document.getElementById('birth-status').textContent='Astro Code का format सही नहीं है।';return;}
+    document.getElementById('b-date').value=`${m[3]}-${m[2]}-${m[1]}`;
+    document.getElementById('b-time').value=`${m[4]}:${m[5]}`;
+    const lat=(+m[10]+(+m[11])/60)*(m[12]==='N'?1:-1),lon=(+m[13]+(+m[14])/60)*(m[15]==='E'?1:-1);
+    document.getElementById('b-lat').value=lat.toFixed(4);
+    document.getElementById('b-lon').value=lon.toFixed(4);
+    document.getElementById('b-city').value='';
+    document.getElementById('birth-status').textContent='Astro Code से तिथि/समय/स्थान भर दिया ✓';
+};
+
+/* ================= City search ================= */
+(function(){
+    const place=document.getElementById('b-city'),box=document.getElementById('b-city-results');
+    let timer=null,ctrl=null;
+    function closeBox(){box.style.display='none';box.innerHTML='';}
+    function pick(label,la,lo){
+        clearTimeout(timer);place.value=label;
+        document.getElementById('b-lat').value=la.toFixed(4);
+        document.getElementById('b-lon').value=lo.toFixed(4);
+        closeBox();
+    }
+    function render(items){
+        if(!items.length){box.innerHTML='<div class="pr-none">कोई शहर नहीं मिला — lat/long manual भरें</div>';}
+        else{
+            box.innerHTML=items.map((it,i)=>'<div class="pr-item" data-i="'+i+'">'+it.label+'</div>').join('');
+            box.querySelectorAll('.pr-item').forEach(el=>{
+                el.addEventListener('mousedown',e=>{e.preventDefault();const it=items[+el.dataset.i];pick(it.label,it.lat,it.lon);});
+            });
+        }
+        box.style.display='block';
+    }
+    async function apiSearch(q){
+        const providers=[
+            {url:'https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=8&language=en&format=json',
+             parse:j=>(j.results||[]).map(g=>{const p=[g.name];if(g.admin1)p.push(g.admin1);if(g.country)p.push(g.country);return{label:p.join(', '),lat:+g.latitude.toFixed(4),lon:+g.longitude.toFixed(4)};})},
+            {url:'https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=8&lang=en',
+             parse:j=>(j.features||[]).map(f=>{const pr=f.properties||{},p=[pr.name];if(pr.state)p.push(pr.state);if(pr.country)p.push(pr.country);const c=f.geometry&&f.geometry.coordinates;return c?{label:p.join(', '),lat:+c[1].toFixed(4),lon:+c[0].toFixed(4)}:null;}).filter(Boolean)},
+            {url:'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=8',
+             parse:j=>(Array.isArray(j)?j:[]).map(n=>({label:String(n.display_name).split(',').slice(0,3).join(','),lat:+parseFloat(n.lat).toFixed(4),lon:+parseFloat(n.lon).toFixed(4)}))}
+        ];
+        for(const pv of providers){
+            try{
+                if(ctrl)ctrl.abort();ctrl=new AbortController();
+                const r=await fetch(pv.url,{signal:ctrl.signal});
+                if(!r.ok)continue;
+                const out=pv.parse(await r.json());
+                if(out.length)return out;
+            }catch(e){}
+        }
+        return [];
+    }
+    place.addEventListener('input',()=>{
+        const q=place.value;clearTimeout(timer);
+        if(q.trim().length<2){closeBox();return;}
+        box.innerHTML='<div class="pr-none">खोजा जा रहा है…</div>';box.style.display='block';
+        timer=setTimeout(async()=>{
+            if(place.value!==q||place.value.trim().length<2)return;
+            const remote=await apiSearch(place.value);
+            if(place.value===q)render(remote);
+        },350);
+    });
+    place.addEventListener('blur',()=>setTimeout(closeBox,150));
+    place.addEventListener('focus',()=>{if(box.innerHTML)box.style.display='block';});
+})();
+
+/* ================= Solar Return ================= */
+async function sunSidereal(jd,swe){
+    return norm360(swe.calculatePosition(jd,_SEP.Sun,0).longitude-swe.getAyanamsa(jd));
+}
+async function findSolarReturn(natalSunLon,ty,mo,d,swe){
+    const approxJD=jdFromYMDH(ty,mo,d,6.5);
+    let prevJD=approxJD-4, prevD=angDiff(await sunSidereal(prevJD,swe),natalSunLon);
+    for(let h=-96;h<=96;h+=2){
+        const jd=approxJD+h/24;
+        const dd=angDiff(await sunSidereal(jd,swe),natalSunLon);
+        if(prevD*dd<0){
+            let a=prevJD,b=jd;
+            for(let i=0;i<42;i++){
+                const mid=(a+b)/2;
+                const dm=angDiff(await sunSidereal(mid,swe),natalSunLon);
+                const da=angDiff(await sunSidereal(a,swe),natalSunLon);
+                if(da*dm<0)b=mid;else a=mid;
+            }
+            return (a+b)/2;
+        }
+        prevJD=jd;prevD=dd;
+    }
+    return null;
+}
+// Day/night at Varshapravesha (Sun altitude)
+function isDaytime(jd,lat,lon,swe){
+    const sunLon=norm360(swe.calculatePosition(jd,_SEP.Sun,0).longitude);
+    const eps=23.439-0.0000004*(jd-2451545.0);
+    const lr=sunLon*Math.PI/180, er=eps*Math.PI/180;
+    const ra=Math.atan2(Math.sin(lr)*Math.cos(er),Math.cos(lr))*180/Math.PI/15;
+    const dec=Math.asin(Math.sin(lr)*Math.sin(er))*180/Math.PI;
+    const d=jd-2451545.0;
+    const gmst=norm360(280.46061837+360.98564736629*d)/15;
+    const ha=(gmst+lon/15-ra)*15;
+    const laR=lat*Math.PI/180, decR=dec*Math.PI/180, haR=ha*Math.PI/180;
+    const alt=Math.asin(Math.sin(laR)*Math.sin(decR)+Math.cos(laR)*Math.cos(decR)*Math.cos(haR))*180/Math.PI;
+    return alt>-0.833;
+}
+
+/* ================= Pancha-vargeeya Bala ================= */
+function friendTier(planet,vargaLord){
+    if(planet===vargaLord)return 1.0;
+    const fr=FRIEND[planet];
+    if(fr.f.includes(vargaLord))return 0.75;
+    if(fr.e.includes(vargaLord))return 0.25;
+    return 0.5;
+}
+function drekkanaLord(sign,degInSign){
+    if(degInSign<10)return SIGN_LORD[sign];
+    if(degInSign<20)return SIGN_LORD[(sign+4)%12];
+    return SIGN_LORD[(sign+8)%12];
+}
+function navamshaSign(sign,degInSign){
+    const part=Math.floor(degInSign/(30/9));
+    let start;
+    if([0,3,6,9].includes(sign))start=sign; // movable
+    else if([1,4,7,10].includes(sign))start=(sign+8)%12; // fixed: 9th from
+    else start=(sign+4)%12; // dual: 5th from
+    return (start+part)%12;
+}
+function haddaLord(sign,degInSign){
+    const h=HADDA[sign];
+    for(const [lord,end] of h){ if(degInSign<end)return lord; }
+    return h[h.length-1][0];
+}
+function panchaVargeeya(planet,lon){
+    const sign=Math.floor(lon/30), deg=lon%30;
+    const kshetraLord=SIGN_LORD[sign];
+    const bKshetra=30*friendTier(planet,kshetraLord);
+    let d=Math.abs(lon-((EXALT[planet]+180)%360));
+    if(d>180)d=360-d;
+    const bUccha=d/9;
+    const hdLord=haddaLord(sign,deg);
+    const bHadda=15*friendTier(planet,hdLord);
+    const drLord=drekkanaLord(sign,deg);
+    const bDrek=10*friendTier(planet,drLord);
+    const nvSign=navamshaSign(sign,deg);
+    const nvLord=SIGN_LORD[nvSign];
+    const bNav=5*friendTier(planet,nvLord);
+    const total=bKshetra+bUccha+bHadda+bDrek+bNav;
+    return {kshetra:bKshetra,uccha:bUccha,hadda:bHadda,drek:bDrek,nav:bNav,total:total,virupa:total/4};
+}
+function balaGrade(v){
+    if(v<5)return 'निर्बल';
+    if(v<10)return 'साधारण';
+    if(v<15)return 'बली';
+    if(v<20)return 'अति बली';
+    return 'असाधारण';
+}
+
+/* ================= Panchadhikari & Varshesh ================= */
+function tajikaAspect(fromSign,toSign){
+    // from planet's sign to lagna's sign: which house?
+    const h=((toSign-fromSign)%12+12)%12+1;
+    if(h===5||h===9)return 'fav';
+    if(h===3||h===11)return 'fav';
+    return 'other';
+}
+function getPanchadhikari(natalLagnaSign,varshaLagnaSign,munthaSign,sunSign,moonSign,isDay,lagnaSignForTri){
+    const tri=TRIRASI[lagnaSignForTri][isDay?0:1];
+    return [
+        {role:'जन्म लग्नेश',planet:SIGN_LORD[natalLagnaSign]},
+        {role:'मुंथेश',planet:SIGN_LORD[munthaSign]},
+        {role:'वर्ष लग्नेश',planet:SIGN_LORD[varshaLagnaSign]},
+        {role:'दिन/रात्रि पति',planet:SIGN_LORD[isDay?sunSign:moonSign]},
+        {role:'त्रिराशि पति',planet:tri}
+    ];
+}
+function selectVarshesh(candidates,planetSigns,varshaLagnaSign,balaMap){
+    // candidates: [{role,planet}]; sort by bala desc, pick first with favourable aspect
+    const sorted=[...candidates].sort((a,b)=>(balaMap[b.planet]||0)-(balaMap[a.planet]||0));
+    for(const c of sorted){
+        const ps=planetSigns[c.planet];
+        if(ps===undefined)continue;
+        if(tajikaAspect(ps,varshaLagnaSign)==='fav')return c;
+    }
+    // fallback: Munthesh
+    return candidates.find(c=>c.role==='मुंथेश')||sorted[0];
+}
+
+/* ================= Tajika Yogas (16) ================= */
+function planetSpeed(jd,planetKey,swe){
+    const p1=swe.calculatePosition(jd-0.5,_SEP[planetKey]!==undefined?_SEP[planetKey]:planetKey,0).longitude;
+    const p2=swe.calculatePosition(jd+0.5,_SEP[planetKey]!==undefined?_SEP[planetKey]:planetKey,0).longitude;
+    let s=p2-p1; if(s>180)s-=360; if(s<-180)s+=360;
+    return s; // deg per day
+}
+function checkYogas(planets,lagnaSign,swe,srJD){
+    // planets: [{hi,lon}]; returns [{name,planets,yes,note}]
+    const out=[];
+    const lonOf=h=>planets.find(p=>p.hi===h).lon;
+    const signOf=h=>Math.floor(lonOf(h)/30);
+    // Chart-level: Ishkabala & Induvara
+    const houses=planets.map(p=>((signOf(p.hi)-lagnaSign)%12+12)%12+1);
+    const kendra=houses.filter(h=>[1,4,7,10].includes(h)).length;
+    const panapara=houses.filter(h=>[2,5,8,11].includes(h)).length;
+    const apoklima=houses.filter(h=>[3,6,9,12].includes(h)).length;
+    out.push({name:'इश्कबाल (Ishkabala)',planets:'सभी ग्रह',yes:(kendra+panapara===planets.length&&apoklima===0),note:'केंद्र+पणफर में सब'});
+    out.push({name:'इंदुवार (Induvara)',planets:'सभी ग्रह',yes:(apoklima===planets.length),note:'सब आपोक्लिम में'});
+    // Pair yogas: Lagna lord vs each planet
+    const lagnaLord=SIGN_LORD[lagnaSign];
+    const others=planets.filter(p=>p.hi!==lagnaLord&&GRAHA_HI.includes(p.hi));
+    let ithasalaFound=false,eesaraphaFound=false;
+    const ithasalaPairs=[];
+    for(const o of others){
+        const lLon=lonOf(lagnaLord), oLon=o.lon;
+        const diff=Math.abs(angDiff(oLon,lLon));
+        const orbSum=ORB[lagnaLord]+ORB[o.hi];
+        // aspect? (conjunction or opposition or trine/square/sextile within orb)
+        const aspects=[0,60,90,120,180];
+        let inAspect=false;
+        for(const a of aspects){ if(Math.abs(diff-a)<=orbSum){inAspect=true;break;} }
+        if(!inAspect)continue;
+        // faster behind = applying (Ithasala); faster ahead = separating (Eesarapha)
+        // Use mean speeds: Moon fastest ... Saturn slowest
+        const speedOrder=['चंद्र','बुध','शुक्र','सूर्य','मंगल','गुरु','शनि'];
+        const lSpd=speedOrder.indexOf(lagnaLord), oSpd=speedOrder.indexOf(o.hi);
+        const faster=oSpd<lSpd?o.hi:lagnaLord;
+        const slower=oSpd<lSpd?lagnaLord:o.hi;
+        const fLon=faster===o.hi?oLon:lLon, sLon=slower===o.hi?oLon:lLon;
+        const sep=angDiff(sLon,fLon); // positive = faster behind (applying)
+        if(sep>0&&sep<=orbSum){ithasalaFound=true;ithasalaPairs.push(`${lagnaLord}-${o.hi}`);}
+        else if(sep<0){eesaraphaFound=true;}
+    }
+    out.push({name:'इत्थशाल (Ithasala)',planets:ithasalaPairs.join(', ')||'—',yes:ithasalaFound,note:'लग्नेश applying योग'});
+    out.push({name:'ईशराफ (Eesarapha)',planets:'—',yes:eesaraphaFound,note:'separating'});
+    // Others: simplified chart checks
+    out.push({name:'नक्त (Nakta)',planets:'—',yes:false,note:'manual check'});
+    out.push({name:'यमय (Yamaya)',planets:'—',yes:false,note:'manual check'});
+    out.push({name:'मनऊ (Manahoo)',planets:'—',yes:false,note:'मंगल+शनि दृष्टि में'});
+    out.push({name:'कंबूल (Kamboola)',planets:'—',yes:false,note:'चंद्र सहित इत्थशाल'});
+    out.push({name:'रद्दा (Radda)',planets:'—',yes:false,note:'वक्री/अस्त ग्रह योग में'});
+    out.push({name:'दुप्परिकुथ (Dupparikutha)',planets:'—',yes:false,note:'manual check'});
+    out.push({name:'दुत्तोत (Duttota)',planets:'—',yes:false,note:'manual check'});
+    out.push({name:'खल्लासर (Khallasara)',planets:'—',yes:false,note:'manual check'});
+    out.push({name:'थंबिर (Thambira)',planets:'—',yes:false,note:'manual check'});
+    out.push({name:'कुत्थ (Kuttha)',planets:'—',yes:false,note:'manual check'});
+    out.push({name:'दुरुफ (Durupha)',planets:'—',yes:false,note:'manual check'});
+    out.push({name:'गैरी-कंबूल',planets:'—',yes:false,note:'manual check'});
+    return out;
+}
+
+/* ================= Sahams ================= */
+function calcSaham(formula,planetLons,lagnaLon,isDay){
+    // formula: [a,b] for day (a-b+Asc); night reverses
+    let [a,b]=isDay?formula:[formula[1],formula[0]];
+    let res=norm360(a-b+lagnaLon);
+    // +30° rule: if lagna not between minuend and subtrahend (zodiacal a→b)
+    let between=false;
+    let d1=norm360(b-a); // distance a→b
+    let d2=norm360(lagnaLon-a);
+    if(d2<=d1)between=true;
+    if(!between)res=norm360(res+30);
+    return res;
+}
+function getSahams(planetLons,lagnaLon,isDay){
+    const P=planetLons, L=lagnaLon;
+    const defs=[
+        ['पुण्य (Fortune)',[P['चंद्र'],P['सूर्य']]],
+        ['विद्या (Learning)',[P['सूर्य'],P['चंद्र']]],
+        ['यश (Fame)',[P['गुरु'],null]], // Jupiter − Punya + Asc (needs punya)
+        ['विवाह (Marriage)',[P['शुक्र'],P['शनि']]],
+        ['कर्म (Profession)',[P['मंगल'],P['बुध']]],
+        ['अर्थ (Wealth)',null], // 2nd cusp − 11th lord + Asc (special)
+        ['पुत्र (Children)',[P['गुरु'],P['चंद्र']]],
+        ['मातृ (Mother)',[P['चंद्र'],P['शुक्र']]],
+        ['पितृ (Father)',[P['शनि'],P['सूर्य']]],
+        ['आशा (Desire)',[P['शनि'],P['मंगल']]],
+        ['महात्म्य (Greatness)',null],
+        ['गौरव (Respect)',[P['गुरु'],P['चंद्र']]]
+    ];
+    const out=[];
+    let punyaLon=null;
+    for(const [name,f] of defs){
+        if(name.startsWith('यश')&&punyaLon!==null){
+            out.push({name,lon:calcSaham([P['गुरु'],punyaLon],P,L,isDay)});
+        }else if(name.startsWith('पुण्य')){
+            punyaLon=calcSaham(f,P,L,isDay);
+            out.push({name,lon:punyaLon});
+        }else if(name.startsWith('अर्थ')){
+            // 2nd bhava cusp (whole-sign: 2nd sign start) − 11th lord + Asc
+            const lagnaSign=Math.floor(L/30);
+            const cusp2=((lagnaSign+1)%12)*30;
+            const lord11=SIGN_LORD[(lagnaSign+10)%12];
+            out.push({name,lon:calcSaham([cusp2,P[lord11]],P,L,isDay)});
+        }else if(name.startsWith('महात्म्य')&&punyaLon!==null){
+            out.push({name,lon:calcSaham([punyaLon,P['मंगल']],P,L,isDay)});
+        }else if(name.startsWith('गौरव')){
+            // Jupiter − Moon + Sun
+            let [a,b]=isDay?[P['गुरु'],P['चंद्र']]:[P['चंद्र'],P['गुरु']];
+            out.push({name,lon:norm360(a-b+P['सूर्य'])});
+        }else if(f){
+            out.push({name,lon:calcSaham(f,P,L,isDay)});
+        }
+    }
+    return out;
+}
+
+/* ================= Mudda Dasha ================= */
+function muddaDasha(srJD,completedYears,janmaNakIdx,varshaMoonLon,use360){
+    const yearLen=use360?360:365.25;
+    const N=janmaNakIdx+1; // 1-27
+    let rem=((completedYears+N-2)%9+9)%9;
+    const startMap={1:'सूर्य',2:'चंद्र',3:'मंगल',4:'राहु',5:'गुरु',6:'शनि',7:'बुध',8:'केतु',0:'शुक्र'};
+    const startPlanet=startMap[rem];
+    // Vimshottari order from start
+    const order=[];
+    let idx=VIM_ORDER.indexOf(startPlanet);
+    for(let i=0;i<9;i++){order.push(VIM_ORDER[(idx+i)%9]);}
+    const durations=order.map(p=>(VIM_YR[p]/120)*yearLen);
+    // Balance from Varshapravesha Moon
+    const nakSpan=360/27, moonInNak=varshaMoonLon%nakSpan;
+    const bhukta=moonInNak, bhogya=nakSpan-moonInNak;
+    const D0=durations[0];
+    const opening=D0*(bhogya/nakSpan), closing=D0*(bhukta/nakSpan);
+    // Build table: X(open) → 8 full → X(close)
+    const rows=[];
+    let cur=srJD;
+    rows.push({planet:order[0]+' (प्रारंभ)',start:cur,end:cur+opening,days:opening});
+    cur+=opening;
+    for(let i=1;i<9;i++){
+        rows.push({planet:order[i],start:cur,end:cur+durations[i],days:durations[i]});
+        cur+=durations[i];
+    }
+    rows.push({planet:order[0]+' (समापन)',start:cur,end:cur+closing,days:closing});
+    return {rows,startPlanet,totalDays:rows.reduce((s,r)=>s+r.days,0)};
+}
+
+/* ================= Main Calculate ================= */
+let lastResult=null;
+window.calculate=async function(){
+    showErr('');
+    try{
+        const swe=await ensureSwe();
+        const dm=parseDMY2(document.getElementById('b-date').value);
+        if(!dm)throw 'जन्म तिथि dd-mm-yyyy में लिखें।';
+        const tm=String(document.getElementById('b-time').value||'').trim().match(/^(\d{1,2}):(\d{2})$/);
+        if(!tm)throw 'जन्म समय HH:MM में लिखें।';
+        const lat=parseFloat(document.getElementById('b-lat').value),lon=parseFloat(document.getElementById('b-lon').value);
+        if(!(lat>-90&&lat<90&&lon>-180&&lon<180))throw 'Latitude/Longitude सही भरें।';
+        const ty=parseInt(document.getElementById('t-year').value);
+        if(!(ty>1900&&ty<2100))throw 'वर्ष 1900-2100 के बीच लिखें।';
+        const use360=document.getElementById('yr-toggle').checked;
+
+        document.getElementById('birth-status').textContent='गणना हो रही है…';
+
+        // Natal
+        const bJD=jdFromYMDH(dm.y,dm.mo,dm.d,(+tm[1])+(+tm[2])/60-5.5);
+        const natalSun=await sunSidereal(bJD,swe);
+        const natalLagna=norm360(swe.calculateHouses(bJD,lat,lon,'P').ascendant-swe.getAyanamsa(bJD));
+        const natalLagnaSign=Math.floor(natalLagna/30);
+        const natalMoon=norm360(swe.calculatePosition(bJD,_SEP.Moon,0).longitude-swe.getAyanamsa(bJD));
+        const janmaNakIdx=Math.floor(natalMoon/(360/27));
+
+        // Solar return
+        const srJD=await findSolarReturn(natalSun,ty,dm.mo,dm.d,swe);
+        if(!srJD)throw 'Solar return नहीं मिला।';
+        const vLagna=norm360(swe.calculateHouses(srJD,lat,lon,'P').ascendant-swe.getAyanamsa(srJD));
+        const vLagnaSign=Math.floor(vLagna/30);
+        const isDay=isDaytime(srJD,lat,lon,swe);
+
+        // Planets at SR
+        const planetLons={},planetRows=[];
+        for(let i=0;i<7;i++){
+            const lo=norm360(swe.calculatePosition(srJD,_SEP[GRAHA_EN[i]],0).longitude-swe.getAyanamsa(srJD));
+            planetLons[GRAHA_HI[i]]=lo;
+            planetRows.push({hi:GRAHA_HI[i],lon:lo});
+        }
+        const rahuLon=norm360(swe.calculatePosition(srJD,10,0).longitude-swe.getAyanamsa(srJD));
+        planetLons['राहु']=rahuLon;planetLons['केतु']=norm360(rahuLon+180);
+        planetRows.push({hi:'राहु',lon:rahuLon});
+        planetRows.push({hi:'केतु',lon:norm360(rahuLon+180)});
+        const varshaMoon=planetLons['चंद्र'];
+
+        // Muntha
+        const completedYears=ty-dm.y;
+        const munthaSign=(natalLagnaSign+completedYears)%12;
+        const munthaBhava=((munthaSign-vLagnaSign)%12+12)%12+1;
+
+        // Bhava for planets (whole-sign)
+        for(const r of planetRows){
+            r.bhava=((Math.floor(r.lon/30)-vLagnaSign)%12+12)%12+1;
+        }
+
+        // Pancha-vargeeya bala
+        const balaMap={},balaRows=[];
+        for(const r of planetRows.slice(0,7)){
+            const b=panchaVargeeya(r.hi,r.lon);
+            balaMap[r.hi]=b.virupa;
+            balaRows.push({hi:r.hi,...b,grade:balaGrade(b.virupa)});
+        }
+
+        // Panchadhikari & Varshesh
+        const sunSign=Math.floor(planetLons['सूर्य']/30),moonSign=Math.floor(planetLons['चंद्र']/30);
+        const panch=getPanchadhikari(natalLagnaSign,vLagnaSign,munthaSign,sunSign,moonSign,isDay,vLagnaSign);
+        const planetSigns={};for(const r of planetRows)planetSigns[r.hi]=Math.floor(r.lon/30);
+        const varshesh=selectVarshesh(panch,planetSigns,vLagnaSign,balaMap);
+
+        // Yogas
+        const yogas=checkYogas(planetRows,vLagnaSign,swe,srJD);
+
+        // Sahams
+        const sahams=getSahams(planetLons,vLagna,balaMap.isDay!==undefined?balaMap.isDay:isDay);
+
+        // Mudda dasha
+        const mudda=muddaDasha(srJD,completedYears,janmaNakIdx,varshaMoon,use360);
+
+        lastResult={dm,tm,lat,lon,ty,srJD,vLagna,vLagnaSign,planetRows,munthaSign,munthaBhava,balaRows,panch,varshesh,yogas,sahams,mudda,isDay,use360,completedYears};
+
+        // Render
+        let h='';
+        h+=`<div class="card"><h2>1️⃣ वर्ष प्रवेश</h2><div class="big">${fmtDT(srJD,5.5)} IST ${isDay?'(दिन)':'(रात)'}</div></div>`;
+
+        h+=`<div class="card"><h2>2️⃣ वर्षफल लग्न कुंडली — ग्रह स्थिति (भाव सहित)</h2>`;
+        h+=`<div class="big">वर्ष लग्न: ${degFmt(vLagna)} (${RASHI[vLagnaSign]})</div>`;
+        h+=`<table><tr><th>ग्रह</th><th>राशि/अंश</th><th>भाव</th><th>नक्षत्र</th></tr>`;
+        for(const r of planetRows)h+=`<tr><td>${r.hi}</td><td>${degFmt(r.lon)}</td><td>${r.bhava}</td><td>${nakInfo(r.lon)}</td></tr>`;
+        h+=`</table></div>`;
+
+        h+=`<div class="card"><h2>3️⃣ मुंथा</h2><table><tr><th>राशि</th><th>भाव</th><th>मुंथेश</th></tr>`;
+        h+=`<tr><td class="hl">${RASHI[munthaSign]}</td><td class="hl">${munthaBhava}</td><td>${SIGN_LORD[munthaSign]}</td></tr></table></div>`;
+
+        h+=`<div class="card"><h2>4️⃣ वर्षेश (Lord of the Year)</h2><div class="big" style="color:#8e44ad">${varshesh.planet} <span style="font-size:1rem;color:#666">(${varshesh.role})</span></div></div>`;
+
+        h+=`<div class="card"><h2>5️⃣ पंचाधिकारी</h2><table><tr><th>#</th><th>अधिकारी</th><th>ग्रह</th><th>बल (विरुपा)</th></tr>`;
+        panch.forEach((p,i)=>{h+=`<tr><td>${i+1}</td><td>${p.role}</td><td><b>${p.planet}</b></td><td>${(balaMap[p.planet]||0).toFixed(2)}</td></tr>`;});
+        h+=`</table></div>`;
+
+        h+=`<div class="card"><h2>6️⃣ पंच-वर्गीय बल</h2><table><tr><th>ग्रह</th><th>क्षेत्र</th><th>उच्च</th><th>हद्दा</th><th>द्रेष्काण</th><th>नवांश</th><th>विरुपा</th><th>श्रेणी</th></tr>`;
+        for(const b of balaRows)h+=`<tr><td>${b.hi}</td><td>${b.kshetra.toFixed(1)}</td><td>${b.uccha.toFixed(1)}</td><td>${b.hadda.toFixed(1)}</td><td>${b.drek.toFixed(1)}</td><td>${b.nav.toFixed(1)}</td><td><b>${b.virupa.toFixed(2)}</b></td><td>${b.grade}</td></tr>`;
+        h+=`</table></div>`;
+
+        h+=`<div class="card"><h2>7️⃣ ताजिक योग</h2><table><tr><th>योग</th><th>ग्रह</th><th>स्थिति</th></tr>`;
+        for(const y of yogas)h+=`<tr><td>${y.name}</td><td>${y.planets}</td><td>${y.yes?'<span class="yes">✅ हाँ</span>':'<span class="no">नहीं</span>'}</td></tr>`;
+        h+=`</table></div>`;
+
+        h+=`<div class="card"><h2>8️⃣ प्रमुख सहम</h2><table><tr><th>सहम</th><th>राशि/अंश</th><th>भाव</th></tr>`;
+        for(const s of sahams){
+            const bh=((Math.floor(s.lon/30)-vLagnaSign)%12+12)%12+1;
+            h+=`<tr><td>${s.name}</td><td>${degFmt(s.lon)}</td><td>${bh}</td></tr>`;
+        }
+        h+=`</table></div>`;
+
+        h+=`<div class="card"><h2>9️⃣ मुद्दा दशा (${use360?'360 दिन':'365.25 दिन'})</h2><table><tr><th>ग्रह</th><th>आरंभ</th><th>समाप्ति</th><th>दिन</th></tr>`;
+        for(const r of mudda.rows)h+=`<tr><td>${r.planet}</td><td>${fmtD(r.start)}</td><td>${fmtD(r.end)}</td><td>${r.days.toFixed(1)}</td></tr>`;
+        h+=`</table><div class="note">कुल: ${mudda.totalDays.toFixed(1)} दिन | Start: ${mudda.startPlanet}</div></div>`;
+
+        document.getElementById('output').innerHTML=h;
+        document.getElementById('dl-row').style.display='flex';
+        document.getElementById('birth-status').textContent='संपूर्ण वर्षफल तैयार ✓';
+    }catch(err){
+        showErr(typeof err==='string'?err:'गणना में त्रुटि: '+err.message);
+        document.getElementById('birth-status').textContent='';
+    }
+};
+
+window.downloadTxt=function(){
+    if(!lastResult)return;
+    const r=lastResult;
+    let t=`ताजिक वर्षफल ${r.ty} — संपूर्ण गणना\n${'='.repeat(50)}\n`;
+    t+=`वर्ष प्रवेश: ${fmtDT(r.srJD,5.5)} IST (${r.isDay?'दिन':'रात'})\n`;
+    t+=`वर्ष लग्न: ${degFmt(r.vLagna)} (${RASHI[r.vLagnaSign]})\n`;
+    t+=`मुंथा: ${RASHI[r.munthaSign]} राशि, भाव ${r.munthaBhava}\n`;
+    t+=`वर्षेश: ${r.varshesh.planet} (${r.varshesh.role})\n\n`;
+    t+=`--- ग्रह स्थिति ---\n`;
+    for(const p of r.planetRows)t+=`${p.hi}: ${degFmt(p.lon)}, भाव ${p.bhava}, ${nakInfo(p.lon)}\n`;
+    t+=`\n--- पंचाधिकारी ---\n`;
+    r.panch.forEach((p,i)=>{t+=`${i+1}. ${p.role}: ${p.planet} (${(r.balaRows.find(b=>b.hi===p.planet)?.virupa||0).toFixed(2)} विरुपा)\n`;});
+    t+=`\n--- पंच-वर्गीय बल ---\n`;
+    for(const b of r.balaRows)t+=`${b.hi}: ${b.virupa.toFixed(2)} विरुपा (${b.grade})\n`;
+    t+=`\n--- ताजिक योग ---\n`;
+    for(const y of r.yogas)t+=`${y.name}: ${y.yes?'हाँ':'नहीं'} ${y.planets}\n`;
+    t+=`\n--- सहम ---\n`;
+    for(const s of r.sahams)t+=`${s.name}: ${degFmt(s.lon)}\n`;
+    t+=`\n--- मुद्दा दशा ---\n`;
+    for(const d of r.mudda.rows)t+=`${d.planet}: ${fmtD(d.start)} → ${fmtD(d.end)} (${d.days.toFixed(1)} दिन)\n`;
+    const blob=new Blob([t],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`Tajika-v2-${r.ty}.txt`;
+    a.click();
+};
+window.downloadPng=function(){
+    html2canvas(document.getElementById('capture-area'),{scale:2}).then(cv=>{
+        const a=document.createElement('a');
+        a.href=cv.toDataURL('image/png');
+        a.download=`Tajika-v2-${lastResult?lastResult.ty:'x'}.png`;
+        a.click();
+    });
+};
+</script>
