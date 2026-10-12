@@ -1522,50 +1522,63 @@ async function getTransitPeriods(swe, SEP, planetKey, startDate, endDate, prog) 
 
 // Which natal points does transiting planet aspect/affect?
 // Returns list of Hindi descriptions
-function transitEffects(tRashi, natal, d9Lagna, d9Planets, mode) {
-  const effects = [];
-  const L = natal.lagna, M = natal.moon;
-  const bhL = (tRashi - L + 12) % 12 + 1;  // bhava from lagna
-  const bhM = (tRashi - M + 12) % 12 + 1;  // bhava from moon
-  // Special aspects for Jupiter (5,7,9) and Saturn (3,7,10)
-  // For simplicity: check conjunction (same rashi) + 7th aspect
-  const aspectedRashis = [(tRashi + 6) % 12]; // 7th aspect
-  // TODO: full special aspects can be added
+// Which natal points does transiting planet aspect/affect?
+// Updated to include SPECIAL ASPECTS of Jupiter and Saturn! (2026-10-12)
+function transitEffects(tRashi, natal, planetKey, mode) {
+    const effects = [];
+    const L = natal.lagna;
+    const M = natal.moon;
+    const bhL = (tRashi - L + 12) % 12 + 1;  // bhava from lagna
+    const bhM = (tRashi - M + 12) % 12 + 1;  // bhava from moon
 
-  if (mode === 'vivah' || mode === 'both') {
-    // D1 marriage points
-    const saptamRashi = (L + 6) % 12;
-    const labhRashi = (L + 10) % 12;
-    const dwitiyaRashi = (L + 1) % 12;
-    if (tRashi === L) effects.push('लग्न पर गोचर');
-    if (tRashi === saptamRashi) effects.push('सप्तम भाव में गोचर');
-    if (tRashi === labhRashi) effects.push('लाभ भाव में गोचर');
-    if (tRashi === dwitiyaRashi) effects.push('परिवार (द्वितीय) भाव में गोचर');
-    if (tRashi === natal.planets.venus) effects.push('जन्म शुक्र पर गोचर/युति');
-    if (tRashi === natal.planets.jupiter) effects.push('जन्म गुरु पर गोचर/युति');
-    if (tRashi === M) effects.push('चंद्र राशि पर गोचर');
-    if (aspectedRashis.includes(L)) effects.push('लग्न पर दृष्टि');
-    if (aspectedRashis.includes(saptamRashi)) effects.push('सप्तम भाव पर दृष्टि');
-    if (aspectedRashis.includes(natal.planets.venus)) effects.push('जन्म शुक्र पर दृष्टि');
-    // D9
-    if (d9Planets) {
-      const d9Saptam = (d9Lagna + 6) % 12;
-      // (transit D9 rashi check would need transit longitude; simplified)
+    // ग्रहों की दृष्टियां तय करना (Aspect Logic)
+    let aspectedRashis = [(tRashi + 6) % 12]; // 7वीं दृष्टि (सभी ग्रहों की होती है)
+
+    if (planetKey === 'jupiter') {
+        aspectedRashis.push((tRashi + 4) % 12); // गुरु की 5वीं दृष्टि
+        aspectedRashis.push((tRashi + 8) % 12); // गुरु की 9वीं दृष्टि
+    } else if (planetKey === 'saturn') {
+        aspectedRashis.push((tRashi + 2) % 12); // शनि की 3री दृष्टि
+        aspectedRashis.push((tRashi + 9) % 12); // शनि की 10वीं दृष्टि
     }
-  }
-  if (mode === 'santan' || mode === 'both') {
-    const panchamRashi = (L + 4) % 12;
-    const ekadashRashi = (L + 10) % 12;
-    const navamRashi = (L + 8) % 12;
-    if (tRashi === panchamRashi) effects.push('पंचम भाव में गोचर');
-    if (tRashi === ekadashRashi) effects.push('एकादश भाव में गोचर');
-    if (tRashi === navamRashi) effects.push('नवम भाव में गोचर');
-    if (tRashi === dwitiyaRashi2(natal)) effects.push('द्वितीय भाव में गोचर');
-    if (tRashi === natal.planets.jupiter) effects.push('जन्म गुरु पर गोचर/युति');
-  }
-  return {bhL, bhM, effects};
+
+    // === विवाह (Marriage) Focus ===
+    if (mode === 'vivah' || mode === 'both') {
+        const saptamRashi = (L + 6) % 12;
+        const labhRashi = (L + 10) % 12;
+        const dwitiyaRashi = (L + 1) % 12;
+
+        // युति / भाव में उपस्थिति (Placement)
+        if (tRashi === L) effects.push('लग्न में गोचर');
+        if (tRashi === saptamRashi) effects.push('सप्तम भाव में गोचर');
+        if (tRashi === labhRashi) effects.push('लाभ भाव में गोचर');
+        if (tRashi === dwitiyaRashi) effects.push('द्वितीय भाव में गोचर');
+        if (tRashi === natal.planets.venus) effects.push('जन्म शुक्र पर गोचर');
+
+        // दृष्टि (Aspects) - Now includes 3,5,7,9,10 aspects!
+        if (aspectedRashis.includes(L)) effects.push('लग्न पर दृष्टि');
+        if (aspectedRashis.includes(saptamRashi)) effects.push('सप्तम भाव पर दृष्टि');
+        if (aspectedRashis.includes(natal.planets.venus)) effects.push('जन्म शुक्र पर दृष्टि');
+    }
+
+    // === संतान (Childbirth) Focus ===
+    if (mode === 'santan' || mode === 'both') {
+        const panchamRashi = (L + 4) % 12;
+        const navamRashi = (L + 8) % 12;
+
+        // युति / भाव में उपस्थिति (Placement)
+        if (tRashi === panchamRashi) effects.push('पंचम भाव में गोचर');
+        if (tRashi === navamRashi) effects.push('नवम भाव में गोचर');
+        if (tRashi === natal.planets.jupiter) effects.push('जन्म गुरु पर गोचर');
+
+        // दृष्टि (Aspects)
+        if (aspectedRashis.includes(panchamRashi)) effects.push('पंचम भाव पर दृष्टि');
+        if (aspectedRashis.includes(navamRashi)) effects.push('नवम भाव पर दृष्टि');
+        if (aspectedRashis.includes(natal.planets.jupiter)) effects.push('जन्म गुरु पर दृष्टि');
+    }
+
+    return {bhL, bhM, effects};
 }
-function dwitiyaRashi2(natal) { return (natal.lagna + 1) % 12; }
 
 function downloadTxt() {
     if (!window._gocharText) { alert('पहले "गोचर निकालें" दबाएं'); return; }
@@ -1909,8 +1922,8 @@ async function calcDoubleTransit(startDate, endDate, prog, out) {
         const sp = satPeriods.find(p => segStart >= p.from && segStart <= p.to);
         if (!jp || !sp) continue;
 
-        const jEff = transitEffects(jp.rashi, natalData, null, null, focusMode);
-        const sEff = transitEffects(sp.rashi, natalData, null, null, focusMode);
+        const jEff = transitEffects(jp.rashi, natalData, 'jupiter', focusMode);
+        const sEff = transitEffects(sp.rashi, natalData, 'saturn', focusMode);
         // Overlap: common effect keywords
         const overlap = jEff.effects.filter(e => sEff.effects.includes(e));
         const isActive = overlap.length > 0;
