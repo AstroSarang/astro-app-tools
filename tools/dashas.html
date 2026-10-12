@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<script src="../vendor/swisseph-local.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>दशा कैलकुलेटर v3 (App-Verified)</title>
+<title>दशा कैलकुलेटर v4 (App-Verified + Master Timeline)</title>
 <style>
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;padding:15px;background:#f0f2f5;color:#1d2129;margin:0}
 .container{max-width:950px;margin:15px auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 15px rgba(0,0,0,.08)}
@@ -13,6 +12,16 @@ h1{text-align:center;color:#0d3b66;margin:0 0 15px}
 .tab-btn{padding:10px 16px;border:2px solid #0d3b66;border-radius:8px;background:#fff;color:#0d3b66;cursor:pointer;font-size:.95rem;font-weight:600}
 .tab-btn.active{background:#0d3b66;color:#fff}
 .tab-panel{display:none}.tab-panel.active{display:block}
+/* Main tabs (v4) */
+.main-tab-nav{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+.main-tab-btn{padding:12px 24px;border:3px solid #2e7d32;border-radius:10px;background:#fff;color:#2e7d32;cursor:pointer;font-size:1.05rem;font-weight:700}
+.main-tab-btn.active{background:#2e7d32;color:#fff}
+.main-tab-panel{display:none}.main-tab-panel.active{display:block}
+/* Mini tabs inside Main Tab 1 */
+.mini-tab-nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:15px}
+.mini-tab-btn{padding:8px 14px;border:2px solid #0d3b66;border-radius:6px;background:#fff;color:#0d3b66;cursor:pointer;font-size:.85rem;font-weight:600}
+.mini-tab-btn.active{background:#0d3b66;color:#fff}
+.mini-tab-panel{display:none}.mini-tab-panel.active{display:block}
 .ephem{background:#f3e5f5;border:1px solid #ce93d8;border-radius:8px;padding:15px;margin-bottom:20px}
 .ephem h3{margin:0 0 10px;color:#4a148c}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:8px}
@@ -39,8 +48,8 @@ th{background:#e3f2fd}
 </head>
 <body>
 <div class="container">
-<h1>🪐 दशा कैलकुलेटर v3</h1>
-<p style="text-align:center;color:#666;font-size:.9em">App-verified logic • 365.256364 days/year</p>
+<h1>🪐 दशा कैलकुलेटर v4</h1>
+<p style="text-align:center;color:#666;font-size:.9em">App-verified logic • 365.256364 days/year • Master Timeline</p>
 
 <!-- Birth Details -->
 <div class="ephem">
@@ -66,17 +75,26 @@ th{background:#e3f2fd}
 <button id="btn-ephem" onclick="calcFromBirth()" disabled>ग्रह स्थिति निकालें व दशा बनाएं</button>
 </div>
 
-<!-- Tabs -->
-<div class="tab-nav">
-<button class="tab-btn active" onclick="switchTab('vimshottari')">विंशोत्तरी</button>
-<button class="tab-btn" onclick="switchTab('yogini')">योगिनी</button>
-<button class="tab-btn" onclick="switchTab('tribhagi')">त्रिभागी</button>
-<button class="tab-btn" onclick="switchTab('ashtottari')">अष्टोत्तरी</button>
-<button class="tab-btn" onclick="switchTab('chara')">चर दशा</button>
+<!-- MAIN TABS (v4) -->
+<div class="main-tab-nav">
+<button class="main-tab-btn active" onclick="switchMainTab('dasha')">📊 दशा कैलकुलेट</button>
+<button class="main-tab-btn" onclick="switchMainTab('timeline')">📅 मास्टर Timeline</button>
+</div>
+
+<!-- MAIN TAB 1: Dasha Calculate -->
+<div id="maintab-dasha" class="main-tab-panel active">
+
+<!-- Mini Tabs (5 dashas) -->
+<div class="mini-tab-nav">
+<button class="mini-tab-btn active" onclick="switchTab('vimshottari')">विंशोत्तरी</button>
+<button class="mini-tab-btn" onclick="switchTab('yogini')">योगिनी</button>
+<button class="mini-tab-btn" onclick="switchTab('tribhagi')">त्रिभागी</button>
+<button class="mini-tab-btn" onclick="switchTab('ashtottari')">अष्टोत्तरी</button>
+<button class="mini-tab-btn" onclick="switchTab('chara')">चर दशा</button>
 </div>
 
 <!-- Vimshottari -->
-<div id="tab-vimshottari" class="tab-panel active">
+<div id="tab-vimshottari" class="mini-tab-panel active">
 <div id="vimshottari-pill"></div>
 <div class="controls">
 <label>कितनी महादशाएं? <select id="vimshottari-count"><option>3</option><option selected>5</option><option>8</option><option>12</option></select></label>
@@ -92,7 +110,7 @@ th{background:#e3f2fd}
 </div>
 
 <!-- Yogini -->
-<div id="tab-yogini" class="tab-panel">
+<div id="tab-yogini" class="mini-tab-panel">
 <div id="yogini-pill"></div>
 <div class="controls">
 <label>कितनी महादशाएं? <select id="yogini-count"><option>4</option><option>8</option><option selected>12</option><option>16</option><option>20</option></select></label>
@@ -108,7 +126,7 @@ th{background:#e3f2fd}
 </div>
 
 <!-- Tribhagi -->
-<div id="tab-tribhagi" class="tab-panel">
+<div id="tab-tribhagi" class="mini-tab-panel">
 <div id="tribhagi-pill"></div>
 <div class="controls">
 <label>कितनी महादशाएं? <select id="tribhagi-count"><option>3</option><option>5</option><option>8</option><option selected>12</option><option>16</option><option>20</option></select></label>
@@ -124,7 +142,7 @@ th{background:#e3f2fd}
 </div>
 
 <!-- Ashtottari -->
-<div id="tab-ashtottari" class="tab-panel">
+<div id="tab-ashtottari" class="mini-tab-panel">
 <div id="ashtottari-pill"></div>
 <div class="controls">
 <label>कितनी महादशाएं? <select id="ashtottari-count"><option>3</option><option selected>5</option><option>8</option></select></label>
@@ -140,7 +158,7 @@ th{background:#e3f2fd}
 </div>
 
 <!-- Chara -->
-<div id="tab-chara" class="tab-panel">
+<div id="tab-chara" class="mini-tab-panel">
 <div id="chara-pill"></div>
 <div class="controls">
 <button class="btn" onclick="charaCalc()">गणना करें</button>
@@ -152,6 +170,37 @@ th{background:#e3f2fd}
 </div>
 <div id="chara-note" class="note" style="display:none"></div>
 <div id="chara-out"></div>
+</div>
+
+</div><!-- /maintab-dasha -->
+
+<!-- MAIN TAB 2: Master Timeline -->
+<div id="maintab-timeline" class="main-tab-panel">
+<div class="ephem" style="background:#e8f5e9;border-color:#81c784">
+<h3 style="color:#1b5e20">📅 मास्टर समय-सारणी</h3>
+<p style="font-size:.9em;color:#555">विंशोत्तरी, योगिनी, चर, त्रिभागी, अष्टोत्तरी + गुरु/शनि गोचर - एक ही table में</p>
+<div class="row">
+<div class="f">से (MM-YYYY)<input id="tl-from" type="month" value="2026-06"></div>
+<div class="f">तक (MM-YYYY)<input id="tl-to" type="month" value="2033-06"></div>
+</div>
+<p style="font-size:.8em;color:#666">* शुरुआत और अंत दोनों की 1 तारीख automatic ली जाएगी</p>
+<h4 style="margin:10px 0 5px">क्या-क्या दिखाना है:</h4>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0">
+<label style="background:#f1f8e9;padding:6px 10px;border-radius:6px;border:1px solid #c5e1a5"><input type="checkbox" id="tl-c-vim" checked> विंशोत्तरी</label>
+<label style="background:#f1f8e9;padding:6px 10px;border-radius:6px;border:1px solid #c5e1a5"><input type="checkbox" id="tl-c-yog" checked> योगिनी</label>
+<label style="background:#f1f8e9;padding:6px 10px;border-radius:6px;border:1px solid #c5e1a5"><input type="checkbox" id="tl-c-chara" checked> चर</label>
+<label style="background:#f1f8e9;padding:6px 10px;border-radius:6px;border:1px solid #c5e1a5"><input type="checkbox" id="tl-c-tri" checked> त्रिभागी</label>
+<label style="background:#f1f8e9;padding:6px 10px;border-radius:6px;border:1px solid #c5e1a5"><input type="checkbox" id="tl-c-ash" checked> अष्टोत्तरी</label>
+<label style="background:#e3f2fd;padding:6px 10px;border-radius:6px;border:1px solid #90caf9"><input type="checkbox" id="tl-c-jup" checked> गुरु गोचर</label>
+<label style="background:#e3f2fd;padding:6px 10px;border-radius:6px;border:1px solid #90caf9"><input type="checkbox" id="tl-c-sat" checked> शनि गोचर</label>
+</div>
+<button class="btn" onclick="buildTimeline()" style="background:#2e7d32">📊 समय-सारणी बनाएं</button>
+</div>
+<div id="tl-out"></div>
+<div class="controls" id="tl-downloads" style="display:none">
+<button class="btn btn2" onclick="downloadTimelineTxt()">📝 TXT डाउनलोड</button>
+<button class="btn" onclick="downloadTimelinePng()" style="background:#6a1b9a">📸 PNG डाउनलोड</button>
+</div>
 </div>
 
 </div>
@@ -596,10 +645,16 @@ function charaCalc() {
     }
 }
 function switchTab(name) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.mini-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.mini-tab-panel').forEach(p => p.classList.remove('active'));
     event.target.classList.add('active');
     document.getElementById('tab-' + name).classList.add('active');
+}
+function switchMainTab(name) {
+    document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.main-tab-panel').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('maintab-' + name).classList.add('active');
 }
 function downloadTxt(prefix) {
     // Chara uses pre-formatted text matching old code output
@@ -688,7 +743,7 @@ function testSetBirth() {
 </script>
 
 <script type="module">
-const EPHEM_CDN = '../vendor/swisseph-browser.js';
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
 let SE = null, SEP = null;
 
 // ============ EPHEMERIS (varga-verified API) ============
@@ -781,6 +836,261 @@ function fillFromCode() {
 })();
 window.calcFromBirth = calcFromBirth;
 window.fillFromCode = fillFromCode;
+window.buildTimeline = buildTimeline;
+window.autoCalcAllDashas = autoCalcAllDashas;
+window.downloadTimelineTxt = downloadTimelineTxt;
+window.downloadTimelinePng = downloadTimelinePng;
+window.switchMainTab = switchMainTab;
+
+// ============ MASTER TIMELINE (v4) ============
+function findDashaAt(mds, date) {
+    const d = new Date(date); d.setHours(0,0,0,0);
+    for (const md of mds) {
+        if (d >= md.start && d < md.end) {
+            for (const ad of (md.ads || [])) {
+                if (d >= ad.start && d < ad.end) {
+                    // Chara uses rashi, others use lord
+                    const mdKey = md.lord !== undefined ? md.lord : md.rashi;
+                    const adKey = ad.lord !== undefined ? ad.lord : ad.rashi;
+                    return {md: mdKey, ad: adKey, isChara: md.rashi !== undefined};
+                }
+            }
+            const mdKey = md.lord !== undefined ? md.lord : md.rashi;
+            return {md: mdKey, ad: null, isChara: md.rashi !== undefined};
+        }
+    }
+    return null;
+}
+
+// Find ALL ADs that occur within a period (for "/" display) - grouped by MD
+function findAllAdsInPeriod(mds, perStart, perEnd, hiMap, isChara) {
+    const rashiHi = (typeof RASHI_HI !== 'undefined') ? RASHI_HI : RASHI_HI_SHORT;
+    const map = isChara ? rashiHi : hiMap;
+    const mdGroups = {}; // mdName -> [adNames]
+    const mdOrder = []; // preserve order
+    for (const md of mds) {
+        if (md.end <= perStart || md.start >= perEnd) continue;
+        for (const ad of (md.ads || [])) {
+            if (ad.end <= perStart || ad.start >= perEnd) continue;
+            const mdKey = md.lord !== undefined ? md.lord : md.rashi;
+            const adKey = ad.lord !== undefined ? ad.lord : ad.rashi;
+            const mdName = map[mdKey] || mdKey;
+            const adName = map[adKey] || adKey;
+            if (!mdGroups[mdName]) {
+                mdGroups[mdName] = [];
+                mdOrder.push(mdName);
+            }
+            if (!mdGroups[mdName].includes(adName)) {
+                mdGroups[mdName].push(adName);
+            }
+        }
+    }
+    // Return grouped: [{mdName, adNames: [...]}]
+    return mdOrder.map(mdName => ({mdName, adNames: mdGroups[mdName]}));
+}
+
+function getPlanetRashiAt(planetName, date) {
+    // planetName: 'Jupiter' or 'Saturn'
+    if (!window._swe || !window._SEP) return null;
+    try {
+        const swe = window._swe, SEP = window._SEP;
+        const jd = swe.julianDay(date.getFullYear(), date.getMonth()+1, date.getDate(), 12, 0);
+        const ayan = swe.getAyanamsa(jd);
+        const norm360 = d => ((d % 360) + 360) % 360;
+        const body = planetName === 'Jupiter' ? SEP.Jupiter : SEP.Saturn;
+        const lon = norm360(swe.calculatePosition(jd, body, 0).longitude - ayan);
+        return Math.floor(lon / 30);
+    } catch(e) { return null; }
+}
+
+const TL_HI = {
+    vimshottari: VIM_HI, yogini: YOG_HI, chara: null, tribhagi: VIM_HI, ashtottari: ASH_HI
+};
+const RASHI_HI_SHORT = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+
+function buildTimeline() {
+    const out = document.getElementById('tl-out');
+    if (!birthData) { out.innerHTML = '<div class="error">पहले जन्म विवरण भरें (Tab 1 में)</div>'; return; }
+    
+    const fromVal = document.getElementById('tl-from').value; // YYYY-MM
+    const toVal = document.getElementById('tl-to').value;
+    if (!fromVal || !toVal) { out.innerHTML = '<div class="error">अवधि चुनें</div>'; return; }
+    
+    const [fy, fm] = fromVal.split('-').map(Number);
+    const [ty, tm] = toVal.split('-').map(Number);
+    const startDate = new Date(fy, fm-1, 1);
+    const endDate = new Date(ty, tm, 1); // 1st of NEXT month (so selected To month is included)
+    if (endDate <= startDate) { out.innerHTML = '<div class="error">"तक" की तारीख "से" से बड़ी होनी चाहिए</div>'; return; }
+    
+    // Checkboxes
+    const show = {
+        vimshottari: document.getElementById('tl-c-vim').checked,
+        yogini: document.getElementById('tl-c-yog').checked,
+        chara: document.getElementById('tl-c-chara').checked,
+        tribhagi: document.getElementById('tl-c-tri').checked,
+        ashtottari: document.getElementById('tl-c-ash').checked,
+        jupiter: document.getElementById('tl-c-jup').checked,
+        saturn: document.getElementById('tl-c-sat').checked
+    };
+    if (!Object.values(show).some(v => v)) { out.innerHTML = '<div class="error">कम से कम एक checkbox चुनें</div>'; return; }
+    
+    // Get dasha data from cache (user should have calculated in Tab 1)
+    // If not cached, try to calculate now with sufficient count
+    const dashaData = {};
+    const prefixes = ['vimshottari','yogini','tribhagi','ashtottari'];
+    let needCalc = false;
+    for (const p of prefixes) {
+        if (show[p] && (!dashaCache[p] || !dashaCache[p].mds)) needCalc = true;
+    }
+    if (show.chara && (!window._charaCache || !window._charaCache.mds)) needCalc = true;
+    
+    if (needCalc) {
+        out.innerHTML = '<div class="note">⚠️ पहले <b>Tab 1 (दशा कैलकुलेट)</b> में सभी दशाएं calculate करें, फिर यहां बनाएं।<br>या नीचे बटन दबाकर auto-calculate करें।<br><button class="btn" onclick="autoCalcAllDashas()" style="margin-top:8px">🔄 सभी दशाएं Auto-Calculate करें</button></div>';
+        return;
+    }
+    
+    // Build year periods (12-month blocks from startDate)
+    const periods = [];
+    let cur = new Date(startDate);
+    while (cur < endDate) {
+        const periodEnd = new Date(cur);
+        periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+        if (periodEnd > endDate) periodEnd.setTime(endDate.getTime());
+        periods.push({start: new Date(cur), end: new Date(periodEnd)});
+        cur = periodEnd;
+    }
+    
+    const lagnaRashi = birthData.lagnaRashi !== undefined ? birthData.lagnaRashi : 0;
+    const moonRashi = Math.floor((birthData.moonLon || 0) / 30);
+    
+    // Hindi month names
+    const MH = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+    const fmtMY = d => MH[d.getMonth()] + ' ' + d.getFullYear();
+    
+    // Build table
+    let html = '<table id="tl-table"><tr><th>समय</th>';
+    const colKeys = [];
+    if (show.vimshottari) { html += '<th>विंशोत्तरी<br>(MD-AD)</th>'; colKeys.push('vimshottari'); }
+    if (show.yogini) { html += '<th>योगिनी<br>(MD-AD)</th>'; colKeys.push('yogini'); }
+    if (show.chara) { html += '<th>चर<br>(MD-AD)</th>'; colKeys.push('chara'); }
+    if (show.tribhagi) { html += '<th>त्रिभागी<br>(MD-AD)</th>'; colKeys.push('tribhagi'); }
+    if (show.ashtottari) { html += '<th>अष्टोत्तरी<br>(MD-AD)</th>'; colKeys.push('ashtottari'); }
+    if (show.jupiter) { html += '<th>गुरु गोचर<br>(लग्न/चंद्र से)</th>'; colKeys.push('jupiter'); }
+    if (show.saturn) { html += '<th>शनि गोचर<br>(लग्न/चंद्र से)</th>'; colKeys.push('saturn'); }
+    html += '</tr>';
+    
+    const txtLines = [];
+    txtLines.push('मास्टर समय-सारणी');
+    txtLines.push('='.repeat(50));
+    const lagnaName = RASHI_HI_SHORT[lagnaRashi] || lagnaRashi;
+    const moonName = RASHI_HI_SHORT[moonRashi] || moonRashi;
+    txtLines.push(`लग्न: ${lagnaName} | चंद्र राशि: ${moonName}`);
+    txtLines.push(`अवधि: 01-${String(fm).padStart(2,'0')}-${fy} से 01-${String(tm).padStart(2,'0')}-${ty}`);
+    txtLines.push('='.repeat(50));
+    
+    const bhavaNames = ['1वां','2रा','3रा','4था','5वां','6ठा','7वां','8वां','9वां','10वां','11वां','12वां'];
+    
+    // Show lagna/moon info on top of table
+    html = `<div style="background:#e8f5e9;padding:8px;border-radius:6px;margin-bottom:8px;text-align:center;font-weight:bold">लग्न: ${lagnaName} | चंद्र राशि: ${moonName}</div>` + html;
+    
+    periods.forEach((per, pi) => {
+        const label = fmtMY(per.start) + ' - ' + fmtMY(new Date(per.end.getFullYear(), per.end.getMonth()-1, 1));
+        html += `<tr><td class="time-col" style="background:#fff3e0;font-weight:bold;white-space:nowrap">${label}</td>`;
+        txtLines.push(`\n[${fmtMY(per.start)} - ${fmtMY(new Date(per.end.getFullYear(), per.end.getMonth()-1, 1))}]`);
+        
+        for (const key of colKeys) {
+            let cellHtml = '', cellTxt = '';
+            if (['vimshottari','yogini','tribhagi','ashtottari'].includes(key)) {
+                const mds = dashaCache[key].mds;
+                const hiMap = TL_HI[key];
+                // Find ALL ADs grouped by MD (MD name once, then ADs)
+                const mdGroups = findAllAdsInPeriod(mds, per.start, per.end, hiMap, false);
+                if (mdGroups.length > 0) {
+                    // Format: "MD1 MD: AD1 / AD2 AD" (MD name once per group)
+                    cellHtml = mdGroups.map(g => `${g.mdName} MD | ${g.adNames.join(' / ')} AD`).join('<br>');
+                    cellTxt = mdGroups.map(g => `${g.mdName} MD | ${g.adNames.join(' / ')} AD`).join('; ');
+                } else { cellHtml = '-'; cellTxt = '-'; }
+                const names = {vimshottari:'विंशोत्तरी', yogini:'योगिनी', tribhagi:'त्रिभागी', ashtottari:'अष्टोत्तरी'};
+                txtLines.push(`  ${names[key]}: ${cellTxt}`);
+            } else if (key === 'chara') {
+                const mds = window._charaCache.mds;
+                const mdGroups = findAllAdsInPeriod(mds, per.start, per.end, null, true);
+                if (mdGroups.length > 0) {
+                    cellHtml = mdGroups.map(g => `${g.mdName} MD | ${g.adNames.join(' / ')} AD`).join('<br>');
+                    cellTxt = mdGroups.map(g => `${g.mdName} MD | ${g.adNames.join(' / ')} AD`).join('; ');
+                } else { cellHtml = '-'; cellTxt = '-'; }
+                txtLines.push(`  चर: ${cellTxt}`);
+            } else if (key === 'jupiter' || key === 'saturn') {
+                const pname = key === 'jupiter' ? 'Jupiter' : 'Saturn';
+                // Use START date of period (not mid) - matches user expectation
+                const rashi = getPlanetRashiAt(pname, per.start);
+                if (rashi !== null) {
+                    const bhL = (rashi - lagnaRashi + 12) % 12;
+                    const bhM = (rashi - moonRashi + 12) % 12;
+                    cellHtml = `लग्न से ${bhavaNames[bhL]}<br>चंद्र से ${bhavaNames[bhM]}`;
+                    cellTxt = `लग्न से ${bhavaNames[bhL]} भाव, चंद्र से ${bhavaNames[bhM]} भाव`;
+                } else { cellHtml = 'Ephemeris चाहिए'; cellTxt = '-'; }
+                const gname = key === 'jupiter' ? 'गुरु गोचर' : 'शनि गोचर';
+                txtLines.push(`  ${gname}: ${cellTxt}`);
+            }
+            html += `<td style="font-size:12px">${cellHtml}</td>`;
+        }
+        html += '</tr>';
+    });
+    html += '</table>';
+    
+    out.innerHTML = html;
+    document.getElementById('tl-downloads').style.display = 'flex';
+    window._timelineTxt = txtLines.join('\n');
+    window._timelinePeriod = `${fmtMY(startDate)} से ${fmtMY(endDate)}`;
+}
+
+function autoCalcAllDashas() {
+    // Set high counts and trigger all calcs
+    try {
+        const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+        setVal('vimshottari-count', '12'); setVal('yogini-count', '20');
+        // tribhagi and ashtottari use their own counts
+        if (typeof vimCalc === 'function') vimCalc();
+        if (typeof yogCalc === 'function') yogCalc();
+        if (typeof triCalc === 'function') triCalc();
+        if (typeof ashCalc === 'function') ashCalc();
+        if (typeof charaCalc === 'function') charaCalc();
+        setTimeout(() => buildTimeline(), 500);
+    } catch(e) {
+        document.getElementById('tl-out').innerHTML = '<div class="error">Auto-calculate में त्रुटि: ' + e.message + '</div>';
+    }
+}
+
+function downloadTimelineTxt() {
+    if (!window._timelineTxt) { alert('पहले "समय-सारणी बनाएं" दबाएं'); return; }
+    const blob = new Blob([window._timelineTxt], {type: 'text/plain;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Master-Timeline.txt';
+    a.click();
+}
+
+function downloadTimelinePng() {
+    const tbl = document.getElementById('tl-table');
+    if (!tbl) { alert('पहले "समय-सारणी बनाएं" दबाएं'); return; }
+    // Load html2canvas if needed
+    const doCapture = () => {
+        html2canvas(tbl, {scale: 2, backgroundColor: '#ffffff'}).then(canvas => {
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL('image/png');
+            a.download = 'Master-Timeline.png';
+            a.click();
+        }).catch(e => alert('PNG में त्रुटि: ' + e.message));
+    };
+    if (typeof html2canvas === 'undefined') {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        s.onload = doCapture;
+        s.onerror = () => alert('html2canvas लोड नहीं हुआ (internet चाहिए)');
+        document.head.appendChild(s);
+    } else doCapture();
+}
 </script>
 </body>
 </html>
