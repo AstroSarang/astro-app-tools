@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>नौकरी vs व्यवसाय - अष्टकवर्ग v2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans Devanagari',sans-serif;background:#f5f5f5;padding:10px;color:#333}
+.container{max-width:950px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.12)}
+.header{background:linear-gradient(135deg,#3f51b5,#5c6bc0);color:#fff;padding:18px;text-align:center}
+.header h1{font-size:22px;margin-bottom:5px}
+.header p{font-size:13px;opacity:0.9}
+#ephem-status{text-align:center;padding:8px;font-size:13px;background:#fff3e0}
+.tabs{display:flex;background:#e8eaf6;overflow-x:auto}
+.tab{flex:1;padding:13px 6px;text-align:center;cursor:pointer;font-size:14px;border:none;background:none;white-space:nowrap;font-family:inherit}
+.tab.active{background:#3f51b5;color:#fff;font-weight:bold}
+.tabcontent{display:none;padding:18px}
+.tabcontent.active{display:block}
+h3{margin:16px 0 8px;color:#3f51b5;font-size:17px}
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.input-grid label{font-size:14px}
+.input-grid input{width:100%;padding:9px;margin-top:4px;border:1px solid #ccc;border-radius:5px;font-size:15px;font-family:inherit}
+.btn{background:#4caf50;color:#fff;padding:11px 24px;border:none;border-radius:6px;cursor:pointer;font-size:16px;margin:8px 4px;font-family:inherit}
+.btn.blue{background:#2196f3}
+.btn.orange{background:#ff9800}
+.btn:disabled{background:#ccc;cursor:not-allowed}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+th,td{border:1px solid #ddd;padding:9px;text-align:center}
+th{background:#3f51b5;color:#fff}
+.job-win{background:#c8e6c9;font-weight:bold}
+.biz-win{background:#ffe0b2;font-weight:bold}
+.neutral{background:#f5f5f5}
+.verdict{padding:18px;border-radius:10px;margin:16px 0;text-align:center;font-size:19px;font-weight:bold;line-height:1.6}
+.meter{height:36px;background:#e0e0e0;border-radius:18px;overflow:hidden;margin:12px 0;display:flex}
+.meter-job{background:linear-gradient(90deg,#43a047,#66bb6a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold}
+.meter-biz{background:linear-gradient(90deg,#fb8c00,#ffa726);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold}
+.note{background:#fff8e1;padding:12px;border-radius:6px;margin:12px 0;font-size:14px;border-left:4px solid #ffc107;line-height:1.7}
+@media(max-width:600px){.input-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container" id="mainContainer">
+<div class="header">
+<h1>💼 नौकरी vs व्यवसाय</h1>
+<p>अष्टकवर्ग प्रणाली से करियर विश्लेषण • v2 (13-Oct-2026)</p>
+</div>
+<div id="ephem-status">Swiss Ephemeris लोड हो रहा है...</div>
+
+<div class="tabs">
+<button class="tab active" onclick="showTab(0)">📥 Input</button>
+<button class="tab" onclick="showTab(1)">📊 SAV तुलना</button>
+<button class="tab" onclick="showTab(2)">🔍 BAV विश्लेषण</button>
+<button class="tab" onclick="showTab(3)">⚖️ इष्ट/कष्ट</button>
+<button class="tab" onclick="showTab(4)">🎯 निष्कर्ष</button>
+</div>
+
+<div class="tabcontent active" id="tc0">
+<h3>🔗 Astro Code</h3>
+<div class="input-grid">
+<label>Astro Code<input type="text" id="astroCode" placeholder="AS1-..."></label>
+<label>&nbsp;<button class="btn blue" onclick="fillFromAstroCode()" style="width:100%">📥 भरो</button></label>
+</div>
+<h3>📅 जन्म विवरण</h3>
+<div class="input-grid">
+<label>जन्म तारीख<input type="date" id="bd-date"></label>
+<label>जन्म समय<input type="time" id="bd-time"></label>
+<label>अक्षांश (Lat)<input type="number" id="bd-lat" step="0.0001" placeholder="21.4624"></label>
+<label>देशांतर (Lon)<input type="number" id="bd-lon" step="0.0001" placeholder="79.2212"></label>
+</div>
+<div class="note">🪐 ग्रह स्थिति Swiss Ephemeris से auto-calculate होगी (लाहिड़ी अयनांश)।</div>
+<div style="text-align:center;margin:15px 0">
+<button class="btn" id="btn-calc" onclick="calculateAll()" disabled>🧮 विश्लेषण करें</button>
+<div id="calcStatus" style="margin-top:10px;font-size:14px;color:#666">⏳ Ephemeris लोड होने का wait करें</div>
+</div>
+</div>
+
+<div class="tabcontent" id="tc1"><div id="savOut"><p style="text-align:center;color:#999;padding:30px">पहले Tab 1 में Calculate दबाएं</p></div>
+<div style="text-align:center;margin:15px 0"><button class="btn orange" onclick="downloadPngTab(1)">📸 PNG डाउनलोड</button></div></div>
+<div class="tabcontent" id="tc2"><div id="bavOut"><p style="text-align:center;color:#999;padding:30px">पहले Tab 1 में Calculate दबाएं</p></div>
+<div style="text-align:center;margin:15px 0"><button class="btn orange" onclick="downloadPngTab(2)">📸 PNG डाउनलोड</button></div></div>
+<div class="tabcontent" id="tc3"><div id="balOut"><p style="text-align:center;color:#999;padding:30px">पहले Tab 1 में Calculate दबाएं</p></div>
+<div style="text-align:center;margin:15px 0"><button class="btn orange" onclick="downloadPngTab(3)">📸 PNG डाउनलोड</button></div></div>
+<div class="tabcontent" id="tc4">
+<div id="verdictOut"><p style="text-align:center;color:#999;padding:30px">पहले Tab 1 में Calculate दबाएं</p></div>
+<div style="text-align:center;margin:15px 0">
+<button class="btn blue" onclick="downloadTxt()">📝 TXT डाउनलोड</button>
+<button class="btn orange" onclick="downloadPng()">📸 PNG डाउनलोड</button>
+</div>
+</div>
+</div>
+
+<script>
+// ===== Ashtakavarga (APK-verified Parashara) =====
+const BAV_TABLE = {
+  Sun: { Sun:[1,2,4,7,8,9,10,11], Moon:[3,6,10,11], Mars:[1,2,4,7,8,9,10,11], Mercury:[3,5,6,9,10,11,12], Jupiter:[5,6,9,11], Venus:[6,7,12], Saturn:[1,2,4,7,8,9,10,11], Lagna:[3,4,6,10,11,12] },
+  Moon: { Sun:[3,6,7,8,10,11], Moon:[1,3,6,7,10,11], Mars:[2,3,5,6,9,10,11], Mercury:[1,3,4,5,7,8,10,11], Jupiter:[1,4,7,8,10,11,12], Venus:[3,4,5,7,9,10,11], Saturn:[3,5,6,11], Lagna:[3,6,10,11] },
+  Mars: { Sun:[3,5,6,10,11], Moon:[3,6,11], Mars:[1,2,4,7,8,10,11], Mercury:[3,5,6,11], Jupiter:[6,10,11,12], Venus:[6,8,11,12], Saturn:[1,4,7,8,9,10,11], Lagna:[1,3,6,10,11] },
+  Mercury: { Sun:[5,6,9,11,12], Moon:[2,4,6,8,10,11], Mars:[1,2,4,7,8,9,10,11], Mercury:[1,3,5,6,9,10,11,12], Jupiter:[6,8,11,12], Venus:[1,2,3,4,5,8,9,11], Saturn:[1,2,4,7,8,9,10,11], Lagna:[1,2,4,6,8,10,11] },
+  Jupiter: { Sun:[1,2,3,4,7,8,9,10,11], Moon:[2,5,7,9,11], Mars:[1,2,4,7,8,10,11], Mercury:[1,2,4,5,6,9,10,11], Jupiter:[1,2,3,4,7,8,10,11], Venus:[2,5,6,9,10,11], Saturn:[3,5,6,12], Lagna:[1,2,4,5,6,7,9,10,11] },
+  Venus: { Sun:[8,11,12], Moon:[1,2,3,4,5,8,9,11,12], Mars:[3,5,6,9,11,12], Mercury:[3,5,6,9,11], Jupiter:[5,8,9,10,11], Venus:[1,2,3,4,5,8,9,10,11], Saturn:[3,4,5,8,9,10,11], Lagna:[1,2,3,4,5,8,9,11] },
+  Saturn: { Sun:[1,2,4,7,8,10,11], Moon:[3,6,11], Mars:[3,5,6,10,11,12], Mercury:[6,8,9,10,11,12], Jupiter:[5,6,11,12], Venus:[6,11,12], Saturn:[3,5,6,11], Lagna:[1,3,4,6,10,11] }
+};
+const PLANETS_7 = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+const RASHI_HI = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+const PLANET_HI = {Sun:'सूर्य',Moon:'चंद्र',Mars:'मंगल',Mercury:'बुध',Jupiter:'गुरु',Venus:'शुक्र',Saturn:'शनि'};
+
+function calcSAV(pos) {
+  const sav = new Array(12).fill(0);
+  const refs = [...PLANETS_7, 'Lagna'];
+  for (let r = 0; r < 12; r++) {
+    for (const p of PLANETS_7) {
+      for (const ref of refs) {
+        const house = ((r - pos[ref]) % 12 + 12) % 12 + 1;
+        if (BAV_TABLE[p][ref].includes(house)) sav[r]++;
+      }
+    }
+  }
+  return sav;
+}
+function calcBAV(planet, pos) {
+  const bavRashi = new Array(12).fill(0);
+  const refs = [...PLANETS_7, 'Lagna'];
+  for (let r = 0; r < 12; r++) {
+    for (const ref of refs) {
+      const house = ((r - pos[ref]) % 12 + 12) % 12 + 1;
+      if (BAV_TABLE[planet][ref].includes(house)) bavRashi[r]++;
+    }
+  }
+  const lagna = pos.Lagna;
+  return bavRashi.map((_, i) => bavRashi[(lagna + i) % 12]);
+}
+
+let calcData = null;
+
+function showTab(n) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===n));
+  document.querySelectorAll('.tabcontent').forEach((c,i) => c.classList.toggle('active', i===n));
+}
+
+// ===== Swiss Ephemeris (Gochar-v13 exact pattern) =====
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+(async function initEphem() {
+  const st = document.getElementById('ephem-status');
+  try {
+    const m = await import(/* @vite-ignore */EPHEM_CDN);
+    const swe = new m.SwissEphemeris();
+    await swe.init();
+    swe.setSiderealMode(m.SiderealMode.Lahiri);
+    window._swe = swe;
+    window._SEP = m.Planet;
+    st.textContent = '✅ Swiss Ephemeris तैयार (लाहिड़ी अयनांश)';
+    st.style.background = '#e8f5e9';
+    document.getElementById('btn-calc').disabled = false;
+    document.getElementById('calcStatus').textContent = '✅ तैयार - जन्म विवरण भरकर Calculate दबाएं';
+    document.getElementById('calcStatus').style.color = '#4caf50';
+  } catch(e) {
+    st.textContent = '⚠️ Ephemeris लोड नहीं हुआ: ' + e.message;
+    st.style.background = '#ffebee';
+    document.getElementById('calcStatus').textContent = '❌ Ephemeris नहीं लोड हुआ - Internet check करके reload करें';
+    document.getElementById('calcStatus').style.color = '#f44336';
+  }
+})();
+
+function fillFromAstroCode() {
+  const code = document.getElementById('astroCode').value.trim();
+  const m = code.match(/AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-]\d{2})(\d{2})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])/);
+  if (!m) { alert('Astro Code format गलत है'); return; }
+  document.getElementById('bd-date').value = m[1]+'-'+m[2]+'-'+m[3];
+  document.getElementById('bd-time').value = m[4]+':'+m[5];
+  const lat = parseInt(m[9]) + parseInt(m[10])/60;
+  const lon = parseInt(m[12]) + parseInt(m[13])/60;
+  document.getElementById('bd-lat').value = (m[11]==='S' ? -lat : lat).toFixed(4);
+  document.getElementById('bd-lon').value = (m[14]==='W' ? -lon : lon).toFixed(4);
+}
+
+async function calculateAll() {
+  const swe = window._swe, SEP = window._SEP;
+  if (!swe) { alert('Ephemeris तैयार नहीं है'); return; }
+  const dateVal = document.getElementById('bd-date').value;
+  const timeVal = document.getElementById('bd-time').value;
+  if (!dateVal || !timeVal) { alert('जन्म तारीख और समय भरें'); return; }
+  const [y,mo,d] = dateVal.split('-').map(Number);
+  const [hh,mm] = timeVal.split(':').map(Number);
+  const lat = parseFloat(document.getElementById('bd-lat').value);
+  const lonP = parseFloat(document.getElementById('bd-lon').value);
+  if (isNaN(lat) || isNaN(lonP)) { alert('अक्षांश और देशांतर भरें'); return; }
+
+  try {
+    const utcMs = Date.UTC(y, mo-1, d, hh, mm) - (5.5 * 3600000);
+    const ud = new Date(utcMs);
+    const jd = swe.julianDay(ud.getUTCFullYear(), ud.getUTCMonth()+1, ud.getUTCDate(),
+        ud.getUTCHours() + ud.getUTCMinutes()/60);
+    const ayan = swe.getAyanamsa(jd);
+    const norm360 = x => ((x % 360) + 360) % 360;
+    const pos = {};
+    for (const k of PLANETS_7) {
+      const lon = norm360(swe.calculatePosition(jd, SEP[k], 0).longitude - ayan);
+      pos[k] = Math.floor(lon / 30);
+    }
+    const hs = swe.calculateHouses(jd, lat, lonP, 'P');
+    pos.Lagna = Math.floor(norm360(hs.ascendant - ayan) / 30);
+
+    const lagna = pos.Lagna;
+    const savRashi = calcSAV(pos);
+    const sav = []; for (let b=0;b<12;b++) sav.push(savRashi[(lagna+b)%12]);
+    const bav = {}; for (const p of PLANETS_7) bav[p] = calcBAV(p, pos);
+    const rashi10 = (lagna+9)%12;
+    const LORD_OF_RASHI = ['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+    const lord10 = LORD_OF_RASHI[rashi10];
+    const ishta = sav.map(s => Math.round((s/56)*60));
+    const kashta = ishta.map(i => 60-i);
+
+    calcData = {pos, lagna, sav, bav, lord10, ishta, kashta};
+    renderSAV(); renderBAV(); renderBAL(); renderVerdict();
+    document.getElementById('calcStatus').innerHTML = '✅ Calculate हो गया - ' + new Date().toLocaleTimeString('hi-IN');
+    showTab(1);
+  } catch(e) {
+    alert('Calculation error: ' + e.message);
+  }
+}
+
+function renderSAV() {
+  const {sav} = calcData;
+  const s6=sav[5], s7=sav[6], s10=sav[9], s3=sav[2], s11=sav[10];
+  let html = '<h3>1] 6th vs 7th भाव</h3><table><tr><th>भाव</th><th>क्षेत्र</th><th>SAV</th><th>स्थिति</th></tr>';
+  html += `<tr><td>6th</td><td>💼 सर्विस/नौकरी</td><td><b>${s6}</b></td><td class="${s6>s7?'job-win':'neutral'}">${s6>s7?'✅ मजबूत':s6===s7?'➖ बराबर':'कमजोर'}</td></tr>`;
+  html += `<tr><td>7th</td><td>📈 पारंपरिक व्यापार</td><td><b>${s7}</b></td><td class="${s7>s6?'biz-win':'neutral'}">${s7>s6?'✅ मजबूत':s6===s7?'➖ बराबर':'कमजोर'}</td></tr></table>`;
+  html += '<h3>2] 10th vs 3rd भाव</h3><table><tr><th>भाव</th><th>क्षेत्र</th><th>SAV</th><th>स्थिति</th></tr>';
+  html += `<tr><td>10th</td><td>💼 सर्विस स्थिरता</td><td><b>${s10}</b></td><td class="${s10>s3?'job-win':'neutral'}">${s10>s3?'✅ मजबूत':'कमजोर'}${s10>30?' (30+ उच्च पद)':''}</td></tr>`;
+  html += `<tr><td>3rd</td><td>📈 साहस/डिजिटल</td><td><b>${s3}</b></td><td class="${s3>s10?'biz-win':'neutral'}">${s3>s10?'✅ मजबूत':'कमजोर'}</td></tr></table>`;
+  const jobStronger = (s6+s10)>=(s7+s3);
+  html += '<h3>3] 11th भाव (लाभ)</h3><table><tr><th>भाव</th><th>SAV</th><th>लाभ की दिशा</th></tr>';
+  html += `<tr><td>11th</td><td><b>${s11}</b></td><td class="${jobStronger?'job-win':'biz-win'}">${jobStronger?'💼 नौकरी में लाभ':'📈 व्यवसाय में लाभ'}${s11>30?' (30+ बड़ा लाभ)':''}</td></tr></table>`;
+  const wins = (s6>s7?1:0)+(s10>s3?1:0)+(jobStronger?1:0);
+  html += `<div class="note"><b>SAV निष्कर्ष:</b> ${wins>=2?'💼 नौकरी का पलड़ा भारी':wins===1?'⚖️ मिश्रित':'📈 व्यवसाय का पलड़ा भारी'}</div>`;
+  document.getElementById('savOut').innerHTML = html;
+}
+
+function renderBAV() {
+  const {bav, lord10} = calcData;
+  let html = '<h3>A] शनि BAV (नौकरी कारक)</h3><table><tr><th>भाव</th><th>अंक</th><th>संकेत</th></tr>';
+  html += `<tr><td>6th</td><td><b>${bav.Saturn[5]}</b></td><td class="${bav.Saturn[5]>=4?'job-win':'neutral'}">${bav.Saturn[5]>=4?'✅ 4+ मजबूत':'4 से कम'}</td></tr>`;
+  html += `<tr><td>10th</td><td><b>${bav.Saturn[9]}</b></td><td class="${bav.Saturn[9]>=4?'job-win':'neutral'}">${bav.Saturn[9]>=4?'✅ 4+ मजबूत':'4 से कम'}</td></tr></table>`;
+  html += '<h3>B] बुध BAV (व्यापार कारक)</h3><table><tr><th>भाव</th><th>अंक</th><th>संकेत</th></tr>';
+  html += `<tr><td>7th</td><td><b>${bav.Mercury[6]}</b></td><td class="${bav.Mercury[6]>=4?'biz-win':'neutral'}">${bav.Mercury[6]>=4?'✅ 4+':'मध्यम'}</td></tr>`;
+  html += `<tr><td>10th</td><td><b>${bav.Mercury[9]}</b></td><td>${bav.Mercury[9]>=4?'✅ ठीक':'⚠️ कम'}</td></tr>`;
+  html += `<tr><td>11th</td><td><b>${bav.Mercury[10]}</b></td><td>${bav.Mercury[10]>=4?'✅ ठीक':'⚠️ कम'}</td></tr></table>`;
+  html += `<h3>C] दशमेश (${PLANET_HI[lord10]}) BAV</h3><table><tr><th>10th में अंक</th><th>संकेत</th></tr>`;
+  html += `<tr><td><b>${bav[lord10][9]}</b></td><td class="${bav[lord10][9]>=5?'job-win':bav[lord10][9]>=4?'neutral':''}">${bav[lord10][9]>=5?'✅ 5+ बड़ी सफलता':bav[lord10][9]>=4?'⚠️ मध्यम':'❌ कमजोर'}</td></tr></table>`;
+  document.getElementById('bavOut').innerHTML = html;
+}
+
+function renderBAL() {
+  const {ishta, kashta} = calcData;
+  let html = '<h3>इष्ट/कष्ट फल</h3><table><tr><th>भाव</th><th>इष्ट</th><th>कष्ट</th><th>शुभता</th></tr>';
+  for (const b of [6,7,10,11]) {
+    const i=ishta[b-1], k=kashta[b-1];
+    const lbl = b===6?'6th (नौकरी)':b===7?'7th (व्यवसाय)':b===10?'10th (करियर)':'11th (लाभ)';
+    html += `<tr><td>${lbl}</td><td><b>${i}</b></td><td>${k}</td><td>${i>k+10?'✅ आसानी से':i>k?'⚠️ मध्यम':'❌ संघर्ष'}</td></tr>`;
+  }
+  html += '</table><div class="note">इष्ट/कष्ट SAV से simplified।</div>';
+  document.getElementById('balOut').innerHTML = html;
+}
+
+function renderVerdict() {
+  const {sav, bav, ishta, lord10} = calcData;
+  const s6=sav[5], s7=sav[6], s10=sav[9], s3=sav[2], s11=sav[10];
+  let job = Math.min(30,(s6/56)*30) + Math.min(20,(s10/56)*20);
+  job += bav.Saturn[5]>=4?15:(bav.Saturn[5]/4)*15;
+  job += bav.Saturn[9]>=4?15:(bav.Saturn[9]/4)*15;
+  job += ((ishta[5]+ishta[9])/120)*20;
+  let biz = Math.min(30,(s7/56)*30) + Math.min(20,(s3/56)*20);
+  biz += bav.Mercury[6]>=4?15:(bav.Mercury[6]/4)*15;
+  const m1011=(bav.Mercury[9]+bav.Mercury[10])/2;
+  biz += m1011>=4?15:(m1011/4)*15;
+  biz += ((ishta[6]+ishta[2])/120)*20;
+  const bonus11 = (s11/56)*15;
+  if ((s6+s10)>=(s7+s3)) job += bonus11; else biz += bonus11;
+  const jobPct = Math.round(job/(job+biz)*100), bizPct = 100-jobPct;
+  calcData.jobPct=jobPct; calcData.bizPct=bizPct;
+
+  // --- Career Type Detection (v3: gap-based) ---
+  const sat6 = bav.Saturn[5], sat10 = bav.Saturn[9];
+  const gap67 = s6 - s7;
+  let careerType = "", careerIcon = "", careerReason = "";
+  // 1. कंसल्टेंसी: 6th बहुत strong + 7th से बड़ा gap (independent)
+  if (gap67 >= 10 && s6 >= 35) {
+    careerType = "कंसल्टेंसी / सर्विस एजेंसी";
+    careerIcon = "🧑‍🏫";
+    careerReason = `6ठा (${s6}) 7वें (${s7}) से बहुत मजबूत - स्वतंत्र सलाहकार।`;
+  // 2. नौकरी: 10th strong + Saturn support
+  } else if (s10 >= 30 && (sat6 >= 4 || sat10 >= 4)) {
+    careerType = "स्थायी नौकरी / कॉर्पोरेट जॉब";
+    careerIcon = "🏢";
+    careerReason = `10वां (${s10}) + शनि BAV (${sat10}) - stable job योग।`;
+  // 3. पार्टनरशिप: 7th बहुत dominant
+  } else if (s7 >= 32 && s7 > s6 + 5) {
+    careerType = "पार्टनरशिप व्यापार";
+    careerIcon = "🤝";
+    careerReason = `7वां भाव (${s7}) स्पष्ट प्रभावी - साझेदारी व्यापार।`;
+  // 4. स्वतंत्र कार्य: 3rd बहुत strong + 6th > 7th
+  } else if (s3 >= 32 && gap67 >= 5) {
+    careerType = "स्वतंत्र कार्य / फ्रीलांसिंग";
+    careerIcon = "🎥";
+    careerReason = `3रा भाव (${s3}) + 6ठा-7वां gap - independent work।`;
+  } else {
+    careerType = "मिश्रित करियर";
+    careerIcon = "🔄";
+    careerReason = "कोई एक दिशा स्पष्ट नहीं।";
+  }
+  let html = `<div style="background:#e3f2fd;padding:15px;border-radius:8px;margin-bottom:15px;border-left:5px solid #2196f3;"><h4 style="margin:0 0 5px;color:#1565c0;">🎯 सटीक करियर टाइप:</h4><p style="margin:0;font-size:17px;font-weight:bold;">${careerIcon} ${careerType}</p><p style="margin:5px 0 0;font-size:13px;color:#555;">${careerReason}</p></div>`;
+  html += '<h3>सफलता की संभावना</h3>';
+  html += `<div class="meter"><div class="meter-job" style="width:${jobPct}%">💼 ${jobPct}%</div><div class="meter-biz" style="width:${bizPct}%">📈 ${bizPct}%</div></div>`;
+  html += `<table><tr><th>क्षेत्र</th><th>Score</th><th>%</th></tr><tr><td>💼 सर्विस/नौकरी</td><td>${Math.round(job)}/115</td><td><b>${jobPct}%</b></td></tr><tr><td>📈 पारंपरिक व्यापार</td><td>${Math.round(biz)}/115</td><td><b>${bizPct}%</b></td></tr></table>`;
+  let vtxt, vcls;
+  if (jobPct>=60) { vtxt='✅ स्पष्ट सर्विस सेक्टर के योग'; vcls='#c8e6c9'; }
+  else if (bizPct>=60) { vtxt='✅ स्पष्ट पारंपरिक व्यापार के योग'; vcls='#ffe0b2'; }
+  else { vtxt='⚖️ मिश्रित योग'; vcls='#fff3e0'; }
+  html += `<div class="verdict" style="background:${vcls}">${vtxt}</div>`;
+  document.getElementById('verdictOut').innerHTML = html;
+}
+
+function downloadTxt() {
+  if (!calcData) { alert('पहले Calculate करें'); return; }
+  const {sav, bav, jobPct, bizPct, lagna, ishta, kashta, lord10} = calcData;
+  let txt = `===== नौकरी vs व्यवसाय - अष्टकवर्ग विश्लेषण =====\n`;
+  txt += `लग्न: ${RASHI_HI[lagna]}\n\n`;
+  txt += `----- TAB 1: SAV तुलना -----\n`;
+  txt += `6th (सर्विस): ${sav[5]} | 7th (व्यापार): ${sav[6]}\n`;
+  txt += `10th (स्थिरता): ${sav[9]} | 3rd (साहस): ${sav[2]} | 11th (लाभ): ${sav[10]}\n\n`;
+  txt += `----- TAB 2: BAV विश्लेषण -----\n`;
+  txt += `शनि 6th: ${bav.Saturn[5]} | शनि 10th: ${bav.Saturn[9]}\n`;
+  txt += `बुध 7th: ${bav.Mercury[6]} | बुध 10th: ${bav.Mercury[9]} | बुध 11th: ${bav.Mercury[10]}\n`;
+  txt += `दशमेश (${PLANET_HI[lord10]}) 10th: ${bav[lord10][9]}\n\n`;
+  txt += `----- TAB 3: इष्ट/कष्ट -----\n`;
+  for (const b of [6,7,10,11]) {
+    txt += `${b}th: इष्ट ${ishta[b-1]}, कष्ट ${kashta[b-1]}\n`;
+  }
+  txt += `\n----- TAB 4: अंतिम निष्कर्ष -----\n`;
+  txt += `सर्विस क्षेत्र: ${jobPct}% | व्यापार क्षेत्र: ${bizPct}%\n`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
+  a.download = 'Job-vs-Business.txt'; a.click();
+}
+function downloadPngTab(tabIdx) {
+  if (!calcData) { alert('पहले Calculate करें'); return; }
+  const curTab = document.querySelector('.tabcontent.active');
+  showTab(tabIdx);
+  setTimeout(() => {
+    const el = document.getElementById('tc' + tabIdx);
+    html2canvas(el).then(cv => {
+      const a = document.createElement('a'); a.href = cv.toDataURL();
+      a.download = 'Job-vs-Business-Tab' + (tabIdx+1) + '.png'; a.click();
+    });
+  }, 300);
+}
+function downloadPng() { downloadPngTab(4); }
+</script>
+</body>
+</html>
