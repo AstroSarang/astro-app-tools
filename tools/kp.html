@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<script src="../vendor/swisseph-local.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🔯 KP ज्योतिष महा-कैलकुलेटर v26</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   * { box-sizing: border-box; }
   body { font-family: 'Noto Sans Devanagari', sans-serif; background: #f5f5f5; margin: 0; padding: 16px; color: #222; }
@@ -89,7 +89,6 @@
     </div>
     <div class="row">
       <button class="btn" id="btnCalc" disabled>🔯 KP गणना करो</button>
-      <button class="btn btn-green" id="btnTxt" disabled>📄 TXT डाउनलोड</button>
     </div>
   </div>
 
@@ -100,6 +99,10 @@
         <button class="mode-btn" data-mode="verdicts" style="padding:12px 20px;border:none;font-size:15px;font-weight:bold;cursor:pointer;background:#e3f2fd;color:#1976d2">🎯 Events Verdicts</button>
         <button class="mode-btn" data-mode="timing" style="padding:12px 20px;border:none;font-size:15px;font-weight:bold;cursor:pointer;background:#e3f2fd;color:#1976d2">⏰ Time Qualification</button>
       </div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:10px;margin:0 0 12px 0">
+      <button class="btn btn-green" id="btnModeTxt" disabled>📄 TXT डाउनलोड</button>
+      <button class="btn" id="btnModePng" disabled>📸 Screenshot</button>
     </div>
     <div id="mode-verdicts" style="display:none">
     <div class="card">
@@ -151,7 +154,7 @@
 </div>
 
 <script type="module">
-const EPHEM_CDN = '../vendor/swisseph-browser.js';
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
 let swe = null, SEP = null, SLP = null, SID_MODE_LAHIRI = 1;
 
 // Constants
@@ -439,7 +442,7 @@ document.getElementById('btnCalc').addEventListener('click', async () => {
 
   renderTables();
   document.getElementById('results').style.display='block';
-  document.getElementById('btnTxt').disabled=false;
+  ['btnModeTxt','btnModePng'].forEach(id=>{const b=document.getElementById(id); if(b) b.disabled=false;});
   switchMode('kptables');
 });
 
@@ -1050,8 +1053,6 @@ function buildTiming(){
   const gocharVerdict = gocharGood===gocharTotal ? '✅ <b>गोचर अनुकूल</b> — सभी ग्रह सहायक' : gocharGood>0 ? '⚠️ <b>गोचर आंशिक</b> — कुछ ग्रह सहायक' : '❌ <b>गोचर प्रतिकूल</b> — कोई ग्रह सहायक नहीं';
   h += `<div style="margin-top:10px;padding:10px;background:#f5f5f5;border-radius:8px">${gocharVerdict}</div>`;
   h += `<div style="font-size:12px;margin-top:6px">Double transit: दोनों ग्रह अनुकूल हों तो प्रबल योग बनता है</div></div>`;
-  // TXT download
-  h += `<div class="card"><button class="btn" id="btnTimingTxt" style="padding:10px 20px;background:#6a1b9a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold">📥 Timing TXT डाउनलोड</button></div>`;
   return h;
 }
 
@@ -1091,8 +1092,6 @@ function renderTiming(){
     renderTiming();
   });
   const gd = null; // gochar uses main timing date now
-  const bt = document.getElementById('btnTimingTxt');
-  if(bt) bt.addEventListener('click', downloadTimingTxt);
 }
 function renderVerdicts(){
   const V = buildVerdicts();
@@ -1168,10 +1167,28 @@ function renderTables(){
   document.getElementById('houseSigTable').innerHTML=h+'</table>';
 }
 
-document.getElementById('btnTxt').addEventListener('click', ()=>{
+function downloadTablesTxt(){
   if(!lastResults) return;
-  const {allBodies, cuspData, pSig, hSig, ruling, verdicts} = lastResults;
-  let t='KP JYOTISH DETAILS v6\n====================\n\n';
+  const {allBodies, cuspData, pSig, hSig, ruling} = lastResults;
+  let t='KP TABLES v26\n==============\n\n';
+  t+='PLANET POSITIONS (KP Ayanamsa)\n';
+  t+='Planet | RL | NL | SL | SSL | Degree | Rashi | Nakshatra | Paada\n';
+  for(const b of allBodies) t+=`${b.name} | ${b.rl} | ${b.nl} | ${b.sl} | ${b.ssl} | ${fmtDeg(b.sid)} | ${RASHI_EN[b.rashi]} | ${b.pada}\n`;
+  t+='\nPLACIDUS BHAVA\nBhava | RL | NL | SL | SSL | Cusp\n';
+  for(const c of cuspData) t+=`${c.bhava} | ${c.rl} | ${c.nl} | ${c.sl} | ${c.ssl} | ${fmtDeg(c.cusp)}\n`;
+  t+=`\nRULING PLANETS: Lagna RL=${ruling.lagnaRL}, Lagna NL=${ruling.lagnaNL}, Moon RL=${ruling.moonRL}, Moon NL=${ruling.moonNL}, Day=${ruling.day}\n`;
+  t+='\nPLANET SIGNIFICATORS (A/B/C/D)\n';
+  for(const s of pSig) t+=`${s.name}: ${s.a} | ${s.b} | ${s.c} | ${s.d}\n`;
+  t+='\nHOUSE SIGNIFICATORS (1/2/3/4)\n';
+  for(const s of hSig) t+=`House ${s.h}: ${s.l1} | ${s.l2} | ${s.l3} | ${s.l4}\n`;
+  const blob=new Blob([t],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='KP-Tables.txt'; a.click();
+}
+function downloadVerdictsTxt(){
+  if(!lastResults) return;
+  const {verdicts} = lastResults;
+  let t='KP EVENT VERDICTS v26\n=====================\n\n';
   if(verdicts){
     t+='EVENT VERDICTS\n--------------\n';
     for(const [k,label] of [['vivah','VIVAH'],['santan','SANTAN'],['career','CAREER'],['dhan','DHAN'],['shiksha','SHIKSHA'],['videsh','VIDESH'],['swasthya','SWASTHYA'],['court','COURT'],['vahan','VAHAN']]){
@@ -1188,19 +1205,27 @@ document.getElementById('btnTxt').addEventListener('click', ()=>{
     }
     t+='\n';
   }
-  t+='PLANET POSITIONS (KP Ayanamsa)\n';
-  t+='Planet | RL | NL | SL | SSL | Degree | Rashi | Nakshatra | Paada\n';
-  for(const b of allBodies) t+=`${b.name} | ${b.rl} | ${b.nl} | ${b.sl} | ${b.ssl} | ${fmtDeg(b.sid)} | ${RASHI_EN[b.rashi]} | ${b.pada}\n`;
-  t+='\nPLACIDUS BHAVA\nBhava | RL | NL | SL | SSL | Cusp\n';
-  for(const c of cuspData) t+=`${c.bhava} | ${c.rl} | ${c.nl} | ${c.sl} | ${c.ssl} | ${fmtDeg(c.cusp)}\n`;
-  t+=`\nRULING PLANETS: Lagna RL=${ruling.lagnaRL}, Lagna NL=${ruling.lagnaNL}, Moon RL=${ruling.moonRL}, Moon NL=${ruling.moonNL}, Day=${ruling.day}\n`;
-  t+='\nPLANET SIGNIFICATORS (A/B/C/D)\n';
-  for(const s of pSig) t+=`${s.name}: ${s.a} | ${s.b} | ${s.c} | ${s.d}\n`;
-  t+='\nHOUSE SIGNIFICATORS (1/2/3/4)\n';
-  for(const s of hSig) t+=`House ${s.h}: ${s.l1} | ${s.l2} | ${s.l3} | ${s.l4}\n`;
-  const blob=new Blob([t],{type:'text/plain'});
+  const blob=new Blob([t],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download='KP_Details.txt'; a.click();
+  a.href=URL.createObjectURL(blob); a.download='KP-Verdicts.txt'; a.click();
+}
+function downloadModePng(modeDivId, filename){
+  const el = document.getElementById(modeDivId);
+  if(!el || typeof html2canvas==='undefined'){ alert('Screenshot library load nahi hui'); return; }
+  html2canvas(el).then(cv=>{
+    const a=document.createElement('a');
+    a.href=cv.toDataURL(); a.download=filename; a.click();
+  });
+}
+document.getElementById('btnModeTxt').addEventListener('click', ()=>{
+  if(activeMode==='verdicts') downloadVerdictsTxt();
+  else if(activeMode==='timing') downloadTimingTxt();
+  else downloadTablesTxt();
+});
+document.getElementById('btnModePng').addEventListener('click', ()=>{
+  const map = {kptables:['mode-kptables','KP-Tables.png'], verdicts:['mode-verdicts','KP-Verdicts.png'], timing:['mode-timing','KP-Timing.png']};
+  const [divId, fname] = map[activeMode] || map.kptables;
+  downloadModePng(divId, fname);
 });
 </script>
 </body>
