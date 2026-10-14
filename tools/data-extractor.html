@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Extractor - विवाह • संतान • करियर</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans Devanagari',sans-serif;background:#f5f5f5;padding:10px;color:#333}
+.container{max-width:1000px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.12)}
+.header{background:linear-gradient(135deg,#6a1b9a,#8e24aa);color:#fff;padding:18px;text-align:center}
+.header h1{font-size:22px;margin-bottom:5px}
+.header p{font-size:13px;opacity:0.9}
+#ephem-status{text-align:center;padding:8px;font-size:13px;background:#fff3e0}
+.tabs{display:flex;background:#f3e5f5;overflow-x:auto}
+.tab{flex:1;padding:13px 6px;text-align:center;cursor:pointer;font-size:15px;border:none;background:none;white-space:nowrap;font-family:inherit}
+.tab.active{background:#6a1b9a;color:#fff;font-weight:bold}
+.tabcontent{display:none;padding:18px}
+.tabcontent.active{display:block}
+h3{margin:16px 0 8px;color:#6a1b9a;font-size:16px;border-bottom:2px solid #e1bee7;padding-bottom:4px}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
+th,td{border:1px solid #ddd;padding:7px;text-align:left}
+th{background:#6a1b9a;color:#fff;width:40%}
+.btn{background:#4caf50;color:#fff;padding:10px 22px;border:none;border-radius:6px;cursor:pointer;font-size:15px;margin:8px 4px;font-family:inherit}
+.btn.blue{background:#2196f3}
+.btn.orange{background:#ff9800}
+.btn:disabled{background:#ccc;cursor:not-allowed}
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.input-grid label{font-size:14px}
+.input-grid input{width:100%;padding:9px;margin-top:4px;border:1px solid #ccc;border-radius:5px;font-size:15px;font-family:inherit}
+.note{background:#fff8e1;padding:10px;border-radius:6px;margin:10px 0;font-size:13px;border-left:4px solid #ffc107}
+@media(max-width:600px){.input-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container" id="mainContainer">
+<div class="header">
+<h1>📊 Data Extractor</h1>
+<p>विवाह • संतान • करियर - संपूर्ण ग्रह सूची • v1</p>
+</div>
+<div id="ephem-status">Swiss Ephemeris लोड हो रहा है...</div>
+
+<div class="tabs">
+<button class="tab" onclick="showTab(0)">📥 Input</button>
+<button class="tab" onclick="showTab(1)">💍 विवाह</button>
+<button class="tab" onclick="showTab(2)">👶 संतान</button>
+<button class="tab" onclick="showTab(3)">💼 करियर</button>
+</div>
+
+<div class="tabcontent active" id="tc0">
+<h3>🔗 Astro Code</h3>
+<div class="input-grid">
+<label>Astro Code<input type="text" id="astroCode" placeholder="AS1-..."></label>
+<label>&nbsp;<button class="btn blue" onclick="fillFromAstroCode()" style="width:100%">📥 भरो</button></label>
+</div>
+<h3>📅 जन्म विवरण</h3>
+<div class="input-grid">
+<label>जन्म तारीख<input type="date" id="bd-date"></label>
+<label>जन्म समय<input type="time" id="bd-time"></label>
+<label>अक्षांश (Lat)<input type="number" id="bd-lat" step="0.0001" placeholder="21.4624"></label>
+<label>देशांतर (Lon)<input type="number" id="bd-lon" step="0.0001" placeholder="79.2212"></label>
+<label>शहर<input type="text" id="bd-city" placeholder="शहर का नाम (जैसे Gondia)"></label>
+</div>
+<div class="note">🪐 ग्रह स्थिति Swiss Ephemeris से auto-calculate होगी (लाहिड़ी अयनांश)।</div>
+<div style="text-align:center;margin:15px 0">
+<button class="btn" id="btn-calc" onclick="calculateAll()" disabled>📊 Data निकालें</button>
+<div id="calcStatus" style="margin-top:10px;font-size:14px;color:#666">⏳ Ephemeris लोड होने का wait करें</div>
+</div>
+</div>
+
+<div class="tabcontent" id="tc1">
+<div id="marriageOut"><p style="text-align:center;color:#999;padding:30px">पहले Input tab में Calculate दबाएं</p></div>
+<div style="text-align:center;margin:15px 0">
+<button class="btn blue" onclick="downloadTxt('marriage')">📝 TXT</button>
+<button class="btn orange" onclick="downloadPngTab(1)">📸 PNG</button>
+</div>
+</div>
+
+<div class="tabcontent" id="tc2">
+<div id="childrenOut"><p style="text-align:center;color:#999;padding:30px">पहले Input tab में Calculate दबाएं</p></div>
+<div style="text-align:center;margin:15px 0">
+<button class="btn blue" onclick="downloadTxt('children')">📝 TXT</button>
+<button class="btn orange" onclick="downloadPngTab(2)">📸 PNG</button>
+</div>
+</div>
+
+<div class="tabcontent" id="tc3">
+<div id="careerOut"><p style="text-align:center;color:#999;padding:30px">पहले Input tab में Calculate दबाएं</p></div>
+<div style="text-align:center;margin:15px 0">
+<button class="btn blue" onclick="downloadTxt('career')">📝 TXT</button>
+<button class="btn orange" onclick="downloadPngTab(3)">📸 PNG</button>
+</div>
+</div>
+</div>
+
+<script>
+// ===== Constants =====
+const RASHI_HI = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+const PLANET_HI = {Sun:'सूर्य',Moon:'चंद्र',Mars:'मंगल',Mercury:'बुध',Jupiter:'गुरु',Venus:'शुक्र',Saturn:'शनि',Rahu:'राहु',Ketu:'केतु'};
+const PLANETS_9 = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+const LORD_OF_RASHI = ['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+const NAKSHATRAS = ['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती'];
+const NAK_LORDS = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+
+// ===== KP Logic (ported from kp-calculator-v26) =====
+const KP_AYA_OFFSET = 5 + 26.22/60;
+const KP_SIGN_LORD = ['Ma','Ve','Me','Mo','Su','Me','Ve','Ma','Ju','Sa','Sa','Ju'];
+const KP_NAK_LORDS = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const KP_VIM_YEARS = {Ke:7, Ve:20, Su:6, Mo:10, Ma:7, Ra:18, Ju:16, Sa:19, Me:17};
+const KP_VIM_ORDER = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const KP_SHORT = {Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
+const KP_FULL = {Su:'Sun',Mo:'Moon',Ma:'Mars',Me:'Mercury',Ju:'Jupiter',Ve:'Venus',Sa:'Saturn',Ra:'Rahu',Ke:'Ketu'};
+
+function kpGetSubLords(nakIdx) {
+  const total = 800.0, start = nakIdx % 9;
+  const res = []; let pos = 0;
+  for(let i=0; i<9; i++){
+    const lord = KP_VIM_ORDER[(start+i)%9];
+    const w = KP_VIM_YEARS[lord]/120*total;
+    res.push({lord, s:pos, e:pos+w}); pos += w;
+  }
+  return res;
+}
+function kpGetLords(absMin, nakIdx) {
+  const nakStart = nakIdx * 800;
+  const din = absMin - nakStart;
+  const subs = kpGetSubLords(nakIdx);
+  for(const sub of subs){
+    if(sub.s <= din && din < sub.e){
+      const si = KP_VIM_ORDER.indexOf(sub.lord);
+      const wtot = sub.e - sub.s;
+      let pos = sub.s;
+      for(let i=0; i<9; i++){
+        const ssl = KP_VIM_ORDER[(si+i)%9];
+        const w = KP_VIM_YEARS[ssl]/120*wtot;
+        if(pos <= din && din < pos+w) return {sl: sub.lord, ssl};
+        pos += w;
+      }
+    }
+  }
+  return {sl:'?', ssl:'?'};
+}
+
+// ===== Jaimini Logic (ported from jaimini-v3) =====
+const JM_RASHI_LORDS = ['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+function calcJaiminiKarakas(posDeg) {
+  // 7 karakas by degree (excluding Rahu/Ketu)
+  const planets = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+  const degs = planets.map(p => ({p, d: posDeg[p] % 30})).sort((a,b) => b.d - a.d);
+  const names = ['Atmakaraka','Amatyakaraka','Bhratrukaraka','Matrukaraka','Putrakaraka','Gnatikaraka','Darakaraka'];
+  const result = {};
+  degs.forEach((x,i) => result[names[i]] = x.p);
+  return result;
+}
+function calcArudhaPadas(lagnaRashi, pos) {
+  // Returns {1: bhava, 2: bhava, ...} for A1..A12
+  const normH = h => ((h-1)%12+12)%12+1;
+  const result = {};
+  for(let h=1; h<=12; h++) {
+    let rashiNum = ((lagnaRashi + h - 1) % 12 + 12) % 12 + 1; // 0-11 input
+    let lordKey = JM_RASHI_LORDS[rashiNum-1];
+    let lordRashi = pos[lordKey];
+    let houseOfLord = (lordRashi - lagnaRashi + 12) % 12 + 1;
+    let steps = (houseOfLord - h + 12) % 12 + 1;
+    let aHouse;
+    if(steps === 1 || steps === 7) aHouse = normH(h + 9);
+    else if(steps === 4) aHouse = houseOfLord;
+    else if(steps === 10) aHouse = normH(h + 3);
+    else aHouse = normH(houseOfLord + steps - 1);
+    let dist = (aHouse - h + 12) % 12 + 1;
+    if(dist === 1 || dist === 7) aHouse = normH(aHouse + 9);
+    result[h] = aHouse;
+  }
+  return result;
+}
+
+let chartData = null;
+
+function showTab(n) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===n));
+  document.querySelectorAll('.tabcontent').forEach((c,i) => c.classList.toggle('active', i===n));
+}
+
+// ===== Swiss Ephemeris (working pattern from job-business-v2) =====
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+(async function initEphem() {
+  const st = document.getElementById('ephem-status');
+  try {
+    const m = await import(/* @vite-ignore */EPHEM_CDN);
+    const swe = new m.SwissEphemeris();
+    await swe.init();
+    swe.setSiderealMode(m.SiderealMode.Lahiri);
+    window._swe = swe;
+    window._SEP = m.Planet;
+    st.textContent = '✅ Swiss Ephemeris तैयार (लाहिड़ी अयनांश)';
+    st.style.background = '#e8f5e9';
+    document.getElementById('btn-calc').disabled = false;
+    document.getElementById('calcStatus').textContent = '✅ तैयार - जन्म विवरण भरकर Data निकालें दबाएं';
+    document.getElementById('calcStatus').style.color = '#4caf50';
+  } catch(e) {
+    st.textContent = '⚠️ Ephemeris लोड नहीं हुआ: ' + e.message;
+    st.style.background = '#ffebee';
+  }
+})();
+
+function fillFromAstroCode() {
+  const code = document.getElementById('astroCode').value.trim();
+  const m = code.match(/AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-]\d{2})(\d{2})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])/);
+  if (!m) { alert('Astro Code format गलत है'); return; }
+  document.getElementById('bd-date').value = m[1]+'-'+m[2]+'-'+m[3];
+  document.getElementById('bd-time').value = m[4]+':'+m[5];
+  const lat = parseInt(m[9]) + parseInt(m[10])/60;
+  const lon = parseInt(m[12]) + parseInt(m[13])/60;
+  document.getElementById('bd-lat').value = (m[11]==='S' ? -lat : lat).toFixed(4);
+  document.getElementById('bd-lon').value = (m[14]==='W' ? -lon : lon).toFixed(4);
+  // Store timezone offset from Astro Code (e.g., +0530)
+  const tzSign = m[7][0] === '+' ? 1 : -1;
+  const tzHours = parseInt(m[7].substring(1));
+  const tzMins = parseInt(m[8]);
+  window._tzOffsetHours = tzSign * (tzHours + tzMins/60);
+}
+
+function getNakshatra(lon) {
+  const idx = Math.floor(lon / (360/27));
+  return {name: NAKSHATRAS[idx], lord: NAK_LORDS[idx], idx};
+}
+
+function getVargaRashi(sign, degInSign, varga) {
+  // Parashara equal division
+  const pada = Math.floor(degInSign / (30 / varga));
+  // Starting sign rules (APK-verified for D60, D6, D8, D11)
+  let start;
+  if (varga === 9) {
+    // D9 Navamsa: standard
+    const movable = [0,3,6,9];
+    if (movable.includes(sign)) start = sign;
+    else if ([1,4,7,10].includes(sign)) start = (sign + 8) % 12;
+    else start = (sign + 4) % 12;
+    return (start + pada) % 12;
+  }
+  const mult = {60:1, 10:10, 7:7}[varga] || 1;
+  if (varga === 60) return (sign + pada) % 12;
+  // D10 Dashamsha: Parashara odd/even rule (Error 7, 9 fix)
+  // Odd signs (0,2,4,6,8,10): start from same sign; Even signs: start from 9th (sign+8)
+  if (varga === 10) {
+    const start = (sign % 2 === 0) ? sign : (sign + 8) % 12;
+    return (start + pada) % 12;
+  }
+  if (varga === 7) return (sign * 7 + pada) % 12;
+  return (sign + pada) % 12;
+}
+
+async function calculateAll() {
+  const swe = window._swe, SEP = window._SEP;
+  if (!swe) { alert('Ephemeris तैयार नहीं है'); return; }
+  const dateVal = document.getElementById('bd-date').value;
+  const timeVal = document.getElementById('bd-time').value;
+  if (!dateVal || !timeVal) { alert('जन्म तारीख और समय भरें'); return; }
+  const [y,mo,d] = dateVal.split('-').map(Number);
+  const [hh,mm] = timeVal.split(':').map(Number);
+  const lat = parseFloat(document.getElementById('bd-lat').value);
+  const lonP = parseFloat(document.getElementById('bd-lon').value);
+  if (isNaN(lat) || isNaN(lonP)) { alert('अक्षांश और देशांतर भरें'); return; }
+
+  try {
+    const tzH = (typeof window._tzOffsetHours === 'number') ? window._tzOffsetHours : 5.5;
+    const utcMs = Date.UTC(y, mo-1, d, hh, mm) - (tzH * 3600000);
+    const ud = new Date(utcMs);
+    const jd = swe.julianDay(ud.getUTCFullYear(), ud.getUTCMonth()+1, ud.getUTCDate(),
+        ud.getUTCHours() + ud.getUTCMinutes()/60);
+    const ayan = swe.getAyanamsa(jd);
+    const norm360 = x => ((x % 360) + 360) % 360;
+    
+    const pos = {}, posDeg = {};
+    const nodeBody = 10; // Mean Node body number (gochar-v13 compatible)
+    const plMap = {Sun:'Sun',Moon:'Moon',Mars:'Mars',Mercury:'Mercury',Jupiter:'Jupiter',Venus:'Venus',Saturn:'Saturn'};
+    for (const p of PLANETS_9) {
+      let lon;
+      if (p === 'Rahu') {
+        lon = norm360(swe.calculatePosition(jd, nodeBody, 0).longitude - ayan);
+      } else if (p === 'Ketu') {
+        lon = norm360(swe.calculatePosition(jd, nodeBody, 0).longitude - ayan + 180);
+      } else {
+        const body = SEP[plMap[p]];
+        lon = norm360(swe.calculatePosition(jd, body, 0).longitude - ayan);
+      }
+      posDeg[p] = lon;
+      pos[p] = Math.floor(lon / 30);
+    }
+    const hs = swe.calculateHouses(jd, lat, lonP, 'P');
+    const lagnaDeg = norm360(hs.ascendant - ayan);
+    pos.Lagna = Math.floor(lagnaDeg / 30);
+    posDeg.Lagna = lagnaDeg;
+    
+    // Nakshatras
+    const nak = {};
+    for (const p of [...PLANETS_9, 'Lagna']) nak[p] = getNakshatra(posDeg[p]);
+    
+    // D-charts (rashi + longitude for bhava cusps)
+    const d9 = {}, d10 = {}, d7 = {}, d60 = {};
+    const d9Lon = {}, d10Lon = {}, d7Lon = {}, d60Lon = {};
+    const getVargaLon = (sign, degInSign, varga) => {
+      const rashi = getVargaRashi(sign, degInSign, varga);
+      const padaSize = 30 / varga;
+      const lonInRashi = (degInSign % padaSize) * varga;
+      return (rashi * 30 + lonInRashi) % 360;
+    };
+    for (const p of [...PLANETS_9, 'Lagna']) {
+      const degInSign = posDeg[p] % 30;
+      d9[p] = getVargaRashi(pos[p], degInSign, 9);
+      d10[p] = getVargaRashi(pos[p], degInSign, 10);
+      d7[p] = getVargaRashi(pos[p], degInSign, 7);
+      d60[p] = getVargaRashi(pos[p], degInSign, 60);
+      d9Lon[p] = getVargaLon(pos[p], degInSign, 9);
+      d10Lon[p] = getVargaLon(pos[p], degInSign, 10);
+      d7Lon[p] = getVargaLon(pos[p], degInSign, 7);
+      d60Lon[p] = getVargaLon(pos[p], degInSign, 60);
+    }
+    // D-chart bhava cusp nakshatra (Equal Houses, from lagna longitude)
+    const dCuspNak = (lagnaLon, bhavaNum) => {
+      const cuspLon = (lagnaLon + (bhavaNum-1)*30) % 360;
+      return getNakshatra(cuspLon);
+    };
+    
+    // Bhava mapping (whole sign)
+    const bhava = r => ((r - pos.Lagna) % 12 + 12) % 12 + 1;
+    const rashiOfBhava = b => (pos.Lagna + b - 1) % 12;
+    
+    // Planets in bhavas
+    const planetsInBhava = {};
+    for (let b = 1; b <= 12; b++) planetsInBhava[b] = [];
+    for (const p of PLANETS_9) {
+      const b = bhava(pos[p]);
+      planetsInBhava[b].push(p);
+    }
+    
+    // Aspects (Parashara: 7th full, 4th/8th 3/4, 5th/9th 1/2 - simplified to graha drishti)
+    // Special: Mars 4,7,8; Jupiter 5,7,9; Saturn 3,7,10
+    const aspectMap = {Sun:[7],Moon:[7],Mars:[4,7,8],Mercury:[7],Jupiter:[5,7,9],Venus:[7],Saturn:[3,7,10],Rahu:[5,7,9],Ketu:[5,7,9]};
+    const aspectedBy = {};
+    for (let b = 1; b <= 12; b++) aspectedBy[b] = [];
+    for (const p of PLANETS_9) {
+      const pb = bhava(pos[p]);
+      for (const asp of (aspectMap[p] || [7])) {
+        const tb = ((pb + asp - 2) % 12) + 1;
+        aspectedBy[tb].push(p);
+      }
+    }
+    
+    // KP calculations (Placidus cusps)
+    const kpAyan = ayan - KP_AYA_OFFSET/60;
+    const cuspsRaw = swe.calculateHouses(jd, lat, lonP, 'P');
+    // Rotate so index 0 = cusp 1
+    let cusps = cuspsRaw.cusps ? cuspsRaw.cusps.slice(1).concat([cuspsRaw.cusps[0]]) : [];
+    const kpCusps = [];
+    for (let i = 0; i < 12; i++) {
+      const cuspTrop = cusps[i] || 0;
+      const c = norm360(cuspTrop - kpAyan);
+      const rashi = Math.floor(c/30)%12;
+      const nakIdx = Math.floor(c/(360/27))%27;
+      const {sl, ssl} = kpGetLords(c*60, nakIdx);
+      kpCusps.push({bhava:i+1, cusp:c, rashi, nakIdx, rl:KP_SIGN_LORD[rashi], nl:KP_NAK_LORDS[nakIdx], sl, ssl});
+    }
+    const cslOf = h => kpCusps[h-1] ? kpCusps[h-1].sl : '?';
+    const nlOfCusp = h => kpCusps[h-1] ? kpCusps[h-1].nl : '?';
+    const sslOfCusp = h => kpCusps[h-1] ? kpCusps[h-1].ssl : '?';
+    
+    // Jaimini
+    const karakas = calcJaiminiKarakas(posDeg);
+    const arudha = calcArudhaPadas(pos.Lagna, pos);
+    
+    // Placidus house occupation for KP (using KP sidereal cusps)
+    const KP_AYA_DIFF = 5 + 26.22/60; // KP ayanamsa = Lahiri - 5'26.22"
+    // Error 16: KP longitude = Lahiri + offset (not minus)
+    const placidusBhava = (lonLahiri) => {
+      const lonKP = ((lonLahiri + KP_AYA_DIFF/60) % 360 + 360) % 360;
+      for (let i = 0; i < 12; i++) {
+        const c1 = kpCusps[i].cusp, c2 = kpCusps[(i+1)%12].cusp;
+        if (c1 < c2) { if (c1 <= lonKP && lonKP < c2) return i+1; }
+        else { if (lonKP >= c1 || lonKP < c2) return i+1; }
+      }
+      return 1;
+    };
+    chartData = {pos, posDeg, nak, d9, d10, d7, d60, d9Lon, d10Lon, d7Lon, d60Lon, dCuspNak, bhava, rashiOfBhava, planetsInBhava, aspectedBy, lagna: pos.Lagna, kpCusps, cslOf, nlOfCusp, sslOfCusp, karakas, arudha, placidusBhava};
+    
+    renderMarriage();
+    renderChildren();
+    renderCareer();
+    
+    document.getElementById('calcStatus').innerHTML = '✅ Data निकल गया - ' + new Date().toLocaleTimeString('hi-IN');
+    showTab(1);
+  } catch(e) {
+    alert('Calculation error: ' + e.message);
+    console.error(e);
+  }
+}
+
+function tbl(rows) {
+  let h = '<table>';
+  for (const [k,v] of rows) h += `<tr><th>${k}</th><td>${v}</td></tr>`;
+  return h + '</table>';
+}
+function ph(b) { // planets in bhava b as Hindi names
+  const arr = chartData.planetsInBhava[b];
+  return arr.length ? arr.map(p => PLANET_HI[p]).join(', ') : 'कोई नहीं';
+}
+function asp(b) { // aspected by
+  const arr = [...new Set(chartData.aspectedBy[b])];
+  return arr.length ? arr.map(p => PLANET_HI[p]).join(', ') : 'कोई नहीं';
+}
+function lordOf(bhavaNum) {
+  const r = chartData.rashiOfBhava(bhavaNum);
+  return LORD_OF_RASHI[r];
+}
+function fmtPlanet(p) {
+  return `${PLANET_HI[p]} (${RASHI_HI[chartData.pos[p]]})`;
+}
+
+
+const BHAVA_ORD = {1:'1ले',2:'2रे',3:'3रे',4:'4थे',5:'5वें',6:'6ठे',7:'7वें',8:'8वें',9:'9वें',10:'10वें',11:'11वें',12:'12वें'};
+// संबंध जांच: 10 नियम - भावेश(स्वयं), स्थिति, युति(भावेश के साथ), दृष्टि, परिवर्तन, नक्षत्र, भावेश का राशि स्वामी, भावेश पर दृष्टि, भावेश की दृष्टि, दृष्टि परिवर्तन
+function checkSambandh(planet, house) {
+  const types = [];
+  const pBhava = chartData.bhava(chartData.pos[planet]);
+  const pRashi = chartData.pos[planet];
+  const houseRashi = (chartData.pos['Lagna'] + house - 1) % 12;
+  const houseLord = lordOf(house);
+  
+  // 0. स्वयं भावेश - सबसे मजबूत संबंध
+  if (planet === houseLord) {
+    types.push('भावेश (स्वयं)');
+  }
+  
+  // 1. स्थिति - planet in house (Error 2: was 'युति', corrected to 'स्थिति')
+  if (pBhava === house) types.push('स्थिति');
+  
+  // 1b. युति (भावेश के साथ) - planet with house lord (Error 5)
+  const houseLordBhava = chartData.bhava(chartData.pos[houseLord]);
+  if (pBhava === houseLordBhava && planet !== houseLord) types.push('युति (भावेश के साथ)');
+  
+  // 2. दृष्टि - 7वीं + विशेष
+  const aspects = { 'Mars': [4,7,8], 'Jupiter': [5,7,9], 'Saturn': [3,7,10] };
+  const aspList = aspects[planet] || [7];
+  for (const a of aspList) {
+    const targetBhava = ((pBhava + a - 2) % 12) + 1;
+    if (targetBhava === house) {
+      types.push(a === 7 ? '7वीं दृष्टि' : 'विशेष दृष्टि (' + a + 'वीं)');
+    }
+  }
+  
+  // 3. राशि परिवर्तन - planet in house lord's sign AND house lord in planet's sign
+  const planetSignLord = LORD_OF_RASHI[pRashi];
+  const houseLordSign = chartData.pos[houseLord];
+  // Simplified: check if planet's dispositor is house lord and vice versa
+  if (LORD_OF_RASHI[pRashi] === houseLord && LORD_OF_RASHI[houseLordSign] === planet) {
+    types.push('परिवर्तन');
+  }
+  
+  // 4. नक्षत्र संबंध
+  const pNak = chartData.nak[planet];
+  // House lord's nakshatra check - if planet in house lord's nakshatra
+  if (pNak && pNak.lord === houseLord) {
+    if (planet === houseLord) {
+      types.push('नक्षत्र (स्व-नक्षत्र में)');
+    } else {
+      types.push('नक्षत्र (भावेश के नक्षत्र में)');
+    }
+  }
+  
+  // 5. भावेश का राशि स्वामी - planet is dispositor of house lord (Error 14, 7th rule)
+  if (LORD_OF_RASHI[chartData.pos[houseLord]] === planet && planet !== houseLord) {
+    types.push('भावेश का राशि स्वामी');
+  }
+
+  // 6/7/8. भावेश के साथ दृष्टि संबंध (3 नए नियम - 2026-10-14)
+  // 9. भावेश पर दृष्टि - planet aspects the bhavesh
+  // 10. भावेश की दृष्टि - bhavesh aspects the planet
+  // 8. भावेश के साथ दृष्टि परिवर्तन - mutual aspect (both)
+  if (planet !== houseLord) {
+    const planetAspects = aspects[planet] || [7];
+    const lordAspects = aspects[houseLord] || [7];
+    let planetAspectsLord = false;
+    let lordAspectsPlanet = false;
+    for (const a of planetAspects) {
+      const targetBhava = ((pBhava + a - 2) % 12) + 1;
+      if (targetBhava === houseLordBhava) planetAspectsLord = true;
+    }
+    for (const a of lordAspects) {
+      const targetBhava = ((houseLordBhava + a - 2) % 12) + 1;
+      if (targetBhava === pBhava) lordAspectsPlanet = true;
+    }
+    if (planetAspectsLord) types.push('भावेश पर दृष्टि');
+    if (lordAspectsPlanet) types.push('भावेश की दृष्टि');
+    if (planetAspectsLord && lordAspectsPlanet) types.push('भावेश के साथ दृष्टि परिवर्तन');
+  }
+
+  return types.length ? types.join(', ') : 'कोई संबंध नहीं';
+}
+
+// Planet's own KP lords: NL/SL/SSL of the planet's longitude (not the cusp)
+function planetKP(planet) {
+  const lonLahiri = chartData.posDeg[planet];
+  if (lonLahiri === undefined || lonLahiri === null || isNaN(lonLahiri)) return {nl:'?', sl:'?', ssl:'?'};
+  // Error 3/16: KP uses KP ayanamsa (Lahiri - 5'26.22"), not Lahiri
+  // KP sidereal lon = Lahiri lon + 5'26.22" (ayanamsa smaller => longitude larger)
+  const lon = ((lonLahiri + (5 + 26.22/60)/60) % 360 + 360) % 360;
+  const absMin = lon * 60;
+  const nakIdx = Math.floor(lon / (360/27)) % 27;
+  const nlFull = (chartData.nak[planet] && chartData.nak[planet].lord) ? chartData.nak[planet].lord : '?';
+  const lords = kpGetLords(absMin, nakIdx);
+  return {
+    nl: nlFull,
+    sl: KP_FULL[lords.sl] || lords.sl,
+    ssl: KP_FULL[lords.ssl] || lords.ssl
+  };
+}
+// CSL planet's KP lords for house h (NL/SL/SSL of the CSL planet itself)
+function cslPlanetKP(h) {
+  const cslShort = chartData.cslOf(h);
+  const planet = KP_FULL[cslShort];
+  if (!planet) return {nl:'?', sl:'?', ssl:'?'};
+  return planetKP(planet);
+}
+function cslPlanetName(h) {
+  const p = KP_FULL[chartData.cslOf(h)];
+  return p ? (PLANET_HI[p] || p) : chartData.cslOf(h);
+}
+function hiName(fullPlanet) {
+  return PLANET_HI[fullPlanet] || fullPlanet;
+}
+
+// KP सिग्निफिकेंटर (kp-calculator-v26 rules)
+// A: NL ग्रह जिस भाव में बैठा है | B: ग्रह स्वयं जिस भाव में | C: NL के स्वामित्व वाले भाव | D: ग्रह के स्वामित्व वाले भाव
+function getKPSignificators(planet) {
+  const nlPlanet = chartData.nak[planet].lord; // full name e.g. 'Ketu' (matches PLANETS_9 keys)
+  // KP uses Placidus occupation (not whole-sign) for A and B levels
+  const A = [chartData.placidusBhava(chartData.posDeg[nlPlanet])];
+  const B = [chartData.placidusBhava(chartData.posDeg[planet])];
+  const C = [], D = [];
+  // Error 17: C/D ownership uses WHOLE-SIGN (not Placidus cusp)
+  // Error 1 was only about A/B occupation. User expects whole-sign for ownership.
+  // House b (whole-sign) = (lagnaRashi + b - 1) % 12
+  const lagnaRashi = Math.floor(chartData.posDeg['Lagna'] / 30) % 12;
+  for (let b = 1; b <= 12; b++) {
+    const houseRashi = (lagnaRashi + b - 1) % 12;
+    const l = LORD_OF_RASHI[houseRashi];
+    if (l === nlPlanet) C.push(b);
+    if (l === planet) D.push(b);
+  }
+  return {A, B, C, D};
+}
+// किसी भाव के KP सिग्निफिकेंटर - level-wise (A/B/C/D में भाव आने वाले ग्रह)
+function houseKPSignificators(house) {
+  const res = {A: [], B: [], C: [], D: []};
+  for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) {
+    const s = getKPSignificators(p);
+    if (s.A.includes(house)) res.A.push(p);
+    if (s.B.includes(house)) res.B.push(p);
+    if (s.C.includes(house)) res.C.push(p);
+    if (s.D.includes(house)) res.D.push(p);
+  }
+  return res;
+}
+function fmtKPSig(house) {
+  const s = houseKPSignificators(house);
+  const f = arr => arr.length ? arr.map(p => PLANET_HI[p]).join(', ') : '-';
+  return 'A: ' + f(s.A) + ' | B: ' + f(s.B) + ' | C: ' + f(s.C) + ' | D: ' + f(s.D);
+}
+
+function renderMarriage() {
+  const lord7 = lordOf(7), r7 = chartData.rashiOfBhava(7);
+  let h = '<h3>A) 7वां भाव (विवाह)</h3>';
+  h += tbl([
+    ['सप्तम भाव का स्वामी', `${PLANET_HI[lord7]} (${RASHI_HI[r7]})`],
+    ['सप्तम भाव का नक्षत्र स्वामी', (()=>{const k=chartData.kpCusps[6]; return k ? `${PLANET_HI[KP_FULL[k.nl]]} (${NAKSHATRAS[k.nakIdx]})` : '-';})()],
+    ['सप्तम भाव में बैठे ग्रह', ph(7)],
+    ['सप्तम भाव पर दृष्टि रखने वाला ग्रह', asp(7)],
+    ['सप्तमेश जिस राशि मे बैठा है उस राशि का स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos[lord7]]]],
+    ['सप्तमेश जिस नक्षत्र में बैठा है उस नक्षत्र का स्वामी', PLANET_HI[chartData.nak[lord7].lord]],
+    ['सप्तमेश से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos[lord7]);const arr=chartData.planetsInBhava[b].filter(p=>p!==lord7);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['सप्तमेश पर दृष्टि रखने वाला ग्रह', asp(chartData.bhava(chartData.pos[lord7]))],
+    ['7वां CSL', cslPlanetName(7)],
+    ['7वां CSL का नक्षत्र स्वामी (NL)', hiName(cslPlanetKP(7).nl)],
+    ['7वां CSL का उप-स्वामी (SL)', hiName(cslPlanetKP(7).sl)],
+    ['7वां CSL का SSL', hiName(cslPlanetKP(7).ssl)],
+  ]);
+  h += '<h3>B) 2रा भाव (परिवार)</h3>';
+  const lord2 = lordOf(2);
+  h += tbl([
+    ['द्वितीयेश', `${PLANET_HI[lord2]} (${RASHI_HI[chartData.rashiOfBhava(2)]})`],
+    ['2रे भाव का नक्षत्र स्वामी', (()=>{const k=chartData.kpCusps[1]; return k ? `${PLANET_HI[KP_FULL[k.nl]]} (${NAKSHATRAS[k.nakIdx]})` : '-';})()],
+    ['2रे में बैठे ग्रह', ph(2)],
+    ['द्वितीयेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos[lord2]]]],
+    ['द्वितीयेश से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos[lord2]);const arr=chartData.planetsInBhava[b].filter(p=>p!==lord2);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['2रे भाव का सिग्निफिकेटर', fmtKPSig(2)],
+  ]);
+  h += '<h3>C) 11वां भाव (लाभ)</h3>';
+  const lord11 = lordOf(11);
+  h += tbl([
+    ['एकादशेश', `${PLANET_HI[lord11]} (${RASHI_HI[chartData.rashiOfBhava(11)]})`],
+    ['11वें भाव का नक्षत्र स्वामी', (()=>{const k=chartData.kpCusps[10]; return k ? `${PLANET_HI[KP_FULL[k.nl]]} (${NAKSHATRAS[k.nakIdx]})` : '-';})()],
+    ['11वें में बैठे ग्रह', ph(11)],
+    ['एकादशेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos[lord11]]]],
+    ['एकादशेश से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos[lord11]);const arr=chartData.planetsInBhava[b].filter(p=>p!==lord11);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['11वें भाव का सिग्निफिकेटर', fmtKPSig(11)],
+  ]);
+  h += '<h3>D) लग्न</h3>';
+  const lord1 = lordOf(1);
+  h += tbl([
+    ['लग्नेश', `${PLANET_HI[lord1]} (${RASHI_HI[chartData.lagna]})`],
+    ['लग्न का नक्षत्र स्वामी', (()=>{const k=chartData.kpCusps[0]; return k ? `${PLANET_HI[KP_FULL[k.nl]]} (${NAKSHATRAS[k.nakIdx]})` : '-';})()],
+    ['लग्न में बैठे ग्रह', ph(1)],
+    ['लग्नेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos[lord1]]]],
+    ['लग्नेश से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos[lord1]);const arr=chartData.planetsInBhava[b].filter(p=>p!==lord1);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+  ]);
+  h += '<h3>E) नैसर्गिक कारक</h3>';
+  const venRashi = chartData.pos['Venus'];
+  const monRashi = chartData.pos['Moon'];
+  const lord7fromVenus = LORD_OF_RASHI[(venRashi + 6) % 12];
+  const lord7fromMoon = LORD_OF_RASHI[(monRashi + 6) % 12];
+  h += tbl([
+    ['शुक्र का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[venRashi]]],
+    ['शुक्र का नक्षत्र स्वामी', PLANET_HI[chartData.nak['Venus'].lord]],
+    ['शुक्र से युत ग्रह', (()=>{const b=chartData.bhava(venRashi);const arr=chartData.planetsInBhava[b].filter(p=>p!=='Venus');return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['गुरु का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos['Jupiter']]]],
+    ['गुरु का नक्षत्र स्वामी', PLANET_HI[chartData.nak['Jupiter'].lord]],
+    ['गुरु से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos['Jupiter']);const arr=chartData.planetsInBhava[b].filter(p=>p!=='Jupiter');return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['शुक्र से सप्तम भाव का स्वामी', `${PLANET_HI[lord7fromVenus]} (${RASHI_HI[(venRashi+6)%12]})`],
+    ['चंद्रमा से सप्तम भाव का स्वामी', `${PLANET_HI[lord7fromMoon]} (${RASHI_HI[(monRashi+6)%12]})`],
+    ['5वें भाव संबंधित ग्रह', (() => {
+      const arr = [];
+      for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) {
+        const rel = checkSambandh(p, 5);
+        if (rel !== 'कोई संबंध नहीं') arr.push(PLANET_HI[p] + ' (' + rel + ')');
+      }
+      return arr.length ? arr.join('; ') : 'कोई नहीं';
+    })()],
+  ]);
+  h += '<h3>F) नवमांश (D9)</h3>';
+  const d9l = chartData.d9['Lagna'];
+  const d9lord7 = LORD_OF_RASHI[(d9l+6)%12];
+  const d9bhava = p => ((chartData.d9[p] - d9l) % 12 + 12) % 12 + 1;
+  const d9ph = b => { const arr = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) { if (d9bhava(p) === b) arr.push(PLANET_HI[p]); } return arr.length ? arr.join(', ') : 'कोई नहीं'; };
+  const d9asp = b => { const arr = []; const plist = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']; for (const p of plist) { const pb = d9bhava(p); const aspects = [7]; if (p==='Mars') aspects.push(4,8); if (p==='Jupiter') aspects.push(5,9); if (p==='Saturn') aspects.push(3,10); for (const a of aspects) { if (((pb + a - 2) % 12) + 1 === b) { arr.push(PLANET_HI[p] + (a!==7 ? ` (${a}वीं)` : '')); break; } } } return arr.length ? [...new Set(arr)].join(', ') : 'कोई नहीं'; };
+  const d9lord7Bhava = d9bhava(d9lord7);
+  const d9conj7 = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) { if (p !== d9lord7 && d9bhava(p) === d9lord7Bhava) d9conj7.push(PLANET_HI[p]); }
+  const d9lord1 = LORD_OF_RASHI[d9l];
+  const d9lord1Bhava = d9bhava(d9lord1);
+  const d9conj1 = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) { if (p !== d9lord1 && d9bhava(p) === d9lord1Bhava) d9conj1.push(PLANET_HI[p]); }
+  h += tbl([
+    ['D9 सप्तम भाव का स्वामी', PLANET_HI[d9lord7]],
+    ['D9 सप्तम भाव में बैठे ग्रह', d9ph(7)],
+    ['D9 सप्तम भाव पर दृष्टि', d9asp(7)],
+    ['D9 सप्तमेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.d9[d9lord7]]]],
+    ['D9 सप्तमेश से युत ग्रह', d9conj7.length ? d9conj7.join(', ') : 'कोई नहीं'],
+    ['D9 सप्तमेश पर दृष्टि', d9asp(d9lord7Bhava)],
+    ['D9 लग्न का स्वामी', PLANET_HI[d9lord1]],
+    ['D9 लग्नेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.d9[d9lord1]]]],
+    ['D9 लग्नेश से युत ग्रह', d9conj1.length ? d9conj1.join(', ') : 'कोई नहीं'],
+    ['D9 लग्न में बैठे ग्रह', d9ph(1)],
+    ['D9 2रे और 11वें भाव के स्वामी', `${PLANET_HI[LORD_OF_RASHI[(d9l+1)%12]]}, ${PLANET_HI[LORD_OF_RASHI[(d9l+10)%12]]}`],
+  ]);
+  h += '<h3>G) संबंध जांच</h3>';
+  const lord1m = lordOf(1);
+  const mRow = (pl, houses) => houses.map(b => BHAVA_ORD[b] + ': ' + checkSambandh(pl, b)).join(' | ');
+  h += tbl([
+    ['a) लग्नेश (' + PLANET_HI[lord1m] + ') का 7/2/11 से', mRow(lord1m, [7,2,11])],
+    ['b) शुक्र का 7/2/11 से', mRow('Venus', [7,2,11])],
+    ['गुरु का 7/2/11 से', mRow('Jupiter', [7,2,11])],
+    ['c) चंद्र का 7/2/11 से', mRow('Moon', [7,2,11])],
+    ['बुध का 7/2/11 से', mRow('Mercury', [7,2,11])],
+  ]);
+  document.getElementById('marriageOut').innerHTML = h;
+}
+
+function renderChildren() {
+  const lord5 = lordOf(5);
+  let h = '<h3>A) 5वां भाव (संतान)</h3>';
+  h += tbl([
+    ['पंचमेश', `${PLANET_HI[lord5]} (${RASHI_HI[chartData.rashiOfBhava(5)]})`],
+    ['पंचम भाव का नक्षत्र स्वामी', (()=>{const k=chartData.kpCusps[4]; return k ? `${PLANET_HI[KP_FULL[k.nl]]} (${NAKSHATRAS[k.nakIdx]})` : '-';})()],
+    ['5वें में बैठे ग्रह', ph(5)],
+    ['5वें पर दृष्टि', asp(5)],
+    ['पंचमेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos[lord5]]]],
+    ['पंचमेश का नक्षत्र स्वामी', PLANET_HI[chartData.nak[lord5].lord]],
+    ['पंचमेश से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos[lord5]);const arr=chartData.planetsInBhava[b].filter(p=>p!==lord5);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['पंचमेश पर दृष्टि', (()=>{const b=chartData.bhava(chartData.pos[lord5]);const arr=[...new Set(chartData.aspectedBy[b])].filter(p=>p!==lord5);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['5वां CSL', cslPlanetName(5)],
+    ['5वां CSL का NL', hiName(cslPlanetKP(5).nl)],
+    ['5वां CSL का SL', hiName(cslPlanetKP(5).sl)],
+    ['5वां CSL का SSL', hiName(cslPlanetKP(5).ssl)],
+  ]);
+  h += '<h3>B) 2रा भाव (परिवार)</h3>';
+  const lord2c = lordOf(2);
+  h += tbl([
+    ['2रे भाव का स्वामी', `${PLANET_HI[lord2c]} (${RASHI_HI[chartData.rashiOfBhava(2)]})`],
+    ['2रे में बैठे ग्रह', ph(2)],
+    ['2रे भाव का नक्षत्र स्वामी', (()=>{const k=chartData.kpCusps[1]; return k ? `${PLANET_HI[KP_FULL[k.nl]]} (${NAKSHATRAS[k.nakIdx]})` : '-';})()],
+    ['द्वितीयेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos[lord2c]]]],
+    ['द्वितीयेश से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos[lord2c]);const arr=chartData.planetsInBhava[b].filter(p=>p!==lord2c);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['2रे भाव का सिग्निफिकेटर', fmtKPSig(2)],
+  ]);
+  h += '<h3>C) 11वां भाव (लाभ)</h3>';
+  const lord11c = lordOf(11);
+  h += tbl([
+    ['11वें भाव का स्वामी', `${PLANET_HI[lord11c]} (${RASHI_HI[chartData.rashiOfBhava(11)]})`],
+    ['11वें में बैठे ग्रह', ph(11)],
+    ['11वें भाव का नक्षत्र स्वामी', (()=>{const k=chartData.kpCusps[10]; return k ? `${PLANET_HI[KP_FULL[k.nl]]} (${NAKSHATRAS[k.nakIdx]})` : '-';})()],
+    ['एकादशेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos[lord11c]]]],
+    ['एकादशेश से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos[lord11c]);const arr=chartData.planetsInBhava[b].filter(p=>p!==lord11c);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['11वें भाव का सिग्निफिकेटर', fmtKPSig(11)],
+  ]);
+  h += '<h3>D) लग्न</h3>';
+  const lord1c = lordOf(1);
+  h += tbl([
+    ['लग्नेश', PLANET_HI[lord1c]],
+    ['लग्न में बैठे ग्रह', ph(1)],
+    ['लग्न का नक्षत्र स्वामी', (()=>{const k=chartData.kpCusps[0]; return k ? `${PLANET_HI[KP_FULL[k.nl]]} (${NAKSHATRAS[k.nakIdx]})` : '-';})()],
+    ['लग्नेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos[lord1c]]]],
+    ['लग्नेश से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos[lord1c]);const arr=chartData.planetsInBhava[b].filter(p=>p!==lord1c);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+  ]);
+  h += '<h3>E) गुरु (संतान कारक)</h3>';
+  h += tbl([
+    ['गुरु का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos['Jupiter']]]],
+    ['गुरु का नक्षत्र स्वामी', PLANET_HI[chartData.nak['Jupiter'].lord]],
+    ['गुरु से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos['Jupiter']);const arr=chartData.planetsInBhava[b].filter(p=>p!=='Jupiter');return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+  ]);
+  h += '<h3>F) नवमांश (D9)</h3>';
+  const d9lc = chartData.d9['Lagna'];
+  const d9l5 = LORD_OF_RASHI[(d9lc+4)%12];
+  const d9cbhava = p => ((chartData.d9[p] - d9lc) % 12 + 12) % 12 + 1;
+  const d9cph = b => { const arr = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) { if (d9cbhava(p) === b) arr.push(PLANET_HI[p]); } return arr.length ? arr.join(', ') : 'कोई नहीं'; };
+  const d9casp = b => { const arr = []; const plist = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']; for (const p of plist) { const pb = d9cbhava(p); const aspects = [7]; if (p==='Mars') aspects.push(4,8); if (p==='Jupiter') aspects.push(5,9); if (p==='Saturn') aspects.push(3,10); for (const a of aspects) { if (((pb + a - 2) % 12) + 1 === b) { arr.push(PLANET_HI[p]); break; } } } return arr.length ? [...new Set(arr)].join(', ') : 'कोई नहीं'; };
+  const d9l5Bhava = d9cbhava(d9l5);
+  const d9cconj5 = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) { if (p !== d9l5 && d9cbhava(p) === d9l5Bhava) d9cconj5.push(PLANET_HI[p]); }
+  const d9lord1c = LORD_OF_RASHI[d9lc];
+  const d9lord1cBhava = d9cbhava(d9lord1c);
+  const d9cconj1 = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) { if (p !== d9lord1c && d9cbhava(p) === d9lord1cBhava) d9cconj1.push(PLANET_HI[p]); }
+  h += tbl([
+    ['D9 पंचम भाव का स्वामी', PLANET_HI[d9l5]],
+    ['D9 पंचम भाव में बैठे ग्रह', d9cph(5)],
+    ['D9 पंचम भाव पर दृष्टि', d9casp(5)],
+    ['D9 पंचमेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.d9[d9l5]]]],
+    ['D9 पंचमेश से युत ग्रह', d9cconj5.length ? d9cconj5.join(', ') : 'कोई नहीं'],
+    ['D9 पंचमेश पर दृष्टि', d9casp(d9l5Bhava)],
+    ['D9 लग्न का स्वामी', PLANET_HI[d9lord1c]],
+    ['D9 लग्नेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.d9[d9lord1c]]]],
+    ['D9 लग्नेश से युत ग्रह', d9cconj1.length ? d9cconj1.join(', ') : 'कोई नहीं'],
+    ['D9 लग्न में बैठे ग्रह', d9cph(1)],
+    ['D9 2रे और 11वें भाव के स्वामी', `${PLANET_HI[LORD_OF_RASHI[(d9lc+1)%12]]}, ${PLANET_HI[LORD_OF_RASHI[(d9lc+10)%12]]}`],
+  ]);
+  h += '<h3>G) सप्तांश (D7)</h3>';
+  const d7lagna = chartData.d7['Lagna'];
+  const d7l5 = LORD_OF_RASHI[(d7lagna+4)%12];
+  const d7bhava = p => ((chartData.d7[p] - d7lagna) % 12 + 12) % 12 + 1;
+  const d7ph = b => { const arr = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) { if (d7bhava(p) === b) arr.push(PLANET_HI[p]); } return arr.length ? arr.join(', ') : 'कोई नहीं'; };
+  const d7asp = b => { const arr = []; const plist = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']; for (const p of plist) { const pb = d7bhava(p); const aspects = [7]; if (p==='Mars') aspects.push(4,8); if (p==='Jupiter') aspects.push(5,9); if (p==='Saturn') aspects.push(3,10); for (const a of aspects) { if (((pb + a - 2) % 12) + 1 === b) { arr.push(PLANET_HI[p]); break; } } } return arr.length ? [...new Set(arr)].join(', ') : 'कोई नहीं'; };
+  const d7l5Bhava = d7bhava(d7l5);
+  const d7conj5 = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) { if (p !== d7l5 && d7bhava(p) === d7l5Bhava) d7conj5.push(PLANET_HI[p]); }
+  const d7lord1 = LORD_OF_RASHI[d7lagna];
+  const d7lord1Bhava = d7bhava(d7lord1);
+  const d7conj1 = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) { if (p !== d7lord1 && d7bhava(p) === d7lord1Bhava) d7conj1.push(PLANET_HI[p]); }
+  h += tbl([
+    ['D7 पंचम भाव का स्वामी', PLANET_HI[d7l5]],
+    ['D7 पंचम भाव में बैठे ग्रह', d7ph(5)],
+    ['D7 पंचम भाव पर दृष्टि', d7asp(5)],
+    ['D7 पंचमेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.d7[d7l5]]]],
+    ['D7 पंचमेश से युत ग्रह', d7conj5.length ? d7conj5.join(', ') : 'कोई नहीं'],
+    ['D7 पंचमेश पर दृष्टि', d7asp(d7l5Bhava)],
+    ['D7 लग्न का स्वामी', PLANET_HI[d7lord1]],
+    ['D7 लग्नेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.d7[d7lord1]]]],
+    ['D7 लग्नेश से युत ग्रह', d7conj1.length ? d7conj1.join(', ') : 'कोई नहीं'],
+    ['D7 लग्न में बैठे ग्रह', d7ph(1)],
+    ['D7 2रे और 11वें भाव के स्वामी', `${PLANET_HI[LORD_OF_RASHI[(d7lagna+1)%12]]}, ${PLANET_HI[LORD_OF_RASHI[(d7lagna+10)%12]]}`],
+  ]);
+  h += '<h3>H) संबंध जांच</h3>';
+  const cRow = (pl, houses) => houses.map(b => BHAVA_ORD[b] + ': ' + checkSambandh(pl, b)).join(' | ');
+  h += tbl([
+    ['a) लग्नेश (' + PLANET_HI[lord1c] + ') का 5/2/11 से', cRow(lord1c, [5,2,11])],
+    ['b) गुरु का 5/2/11 से', cRow('Jupiter', [5,2,11])],
+    ['c) चंद्र का 5/2/11 से', cRow('Moon', [5,2,11])],
+    ['शुक्र का 5/2/11 से', cRow('Venus', [5,2,11])],
+    ['बुध का 5/2/11 से', cRow('Mercury', [5,2,11])],
+  ]);
+    document.getElementById('childrenOut').innerHTML = h;
+}
+
+function renderCareer() {
+  const lord10 = lordOf(10);
+  let h = '<h3>A) दशम भाव (करियर)</h3>';
+  h += tbl([
+    ['दशमेश', `${PLANET_HI[lord10]} (${RASHI_HI[chartData.rashiOfBhava(10)]})`],
+    ['दशम भाव का नक्षत्र स्वामी', (()=>{const k=chartData.kpCusps[9]; return k ? `${PLANET_HI[KP_FULL[k.nl]]} (${NAKSHATRAS[k.nakIdx]})` : '-';})()],
+    ['10वें में बैठे ग्रह', ph(10)],
+    ['10वें पर दृष्टि', asp(10)],
+    ['दशमेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos[lord10]]]],
+    ['दशमेश का नक्षत्र स्वामी', PLANET_HI[chartData.nak[lord10].lord]],
+    ['दशमेश से युत ग्रह', (()=>{const lb=chartData.bhava(chartData.pos[lord10]);const arr=chartData.planetsInBhava[lb].filter(p=>p!==lord10);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['दशमेश पर दृष्टि', (()=>{const lb=chartData.bhava(chartData.pos[lord10]);const arr=[...new Set(chartData.aspectedBy[lb])].filter(p=>p!==lord10);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['10वां CSL', cslPlanetName(10)],
+    ['10वां CSL का NL', hiName(cslPlanetKP(10).nl)],
+    ['10वां CSL का SL', hiName(cslPlanetKP(10).sl)],
+    ['10वां CSL का SSL', hiName(cslPlanetKP(10).ssl)],
+    ['10वें भाव के KP सिग्निफिकेंटर', fmtKPSig(10)],
+  ]);
+  h += '<h3>B) दशमेश का विस्तृत विवरण</h3>';
+  h += tbl([
+    ['दशमेश का राशि स्वामी', PLANET_HI[LORD_OF_RASHI[chartData.pos[lord10]]]],
+    ['दशमेश का नक्षत्र स्वामी', PLANET_HI[chartData.nak[lord10].lord]],
+    ['दशमेश से युत ग्रह', (()=>{const b=chartData.bhava(chartData.pos[lord10]);const arr=chartData.planetsInBhava[b].filter(p=>p!==lord10);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+    ['दशमेश पर दृष्टि', (()=>{const b=chartData.bhava(chartData.pos[lord10]);const arr=[...new Set(chartData.aspectedBy[b])].filter(p=>p!==lord10);return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+  ]);
+  h += '<h3>C) 6ठा भाव (नौकरी/सेवा)</h3>';
+  const lord6 = lordOf(6);
+  h += tbl([
+    ['षष्ठेश', `${PLANET_HI[lord6]} (${RASHI_HI[chartData.rashiOfBhava(6)]})`],
+    ['6वें में बैठे ग्रह', ph(6)],
+    ['6वें भाव का नक्षत्र स्वामी', (()=>{const k=chartData.kpCusps[5]; return k ? `${PLANET_HI[KP_FULL[k.nl]]} (${NAKSHATRAS[k.nakIdx]})` : '-';})()],
+    ['6वें भाव के KP सिग्निफिकेंटर', fmtKPSig(6)],
+  ]);
+  h += '<h3>D) दशमांश (D10)</h3>';
+  const d10lagna = chartData.d10['Lagna'];
+  const d10_10rashi = (d10lagna+9)%12;
+  const d10_10nak = chartData.dCuspNak(chartData.d10Lon['Lagna'], 10); // Error 8: from bhava cusp
+  h += tbl([
+    ['D10 लग्न स्वामी', PLANET_HI[LORD_OF_RASHI[d10lagna]]],
+    ['D10 लग्न में बैठे ग्रह', (()=>{const arr=[];for(const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']){if(((chartData.d10[p]-d10lagna)%12+12)%12+1===1)arr.push(PLANET_HI[p]);}return arr.length?arr.join(', '):'कोई नहीं';})()],
+    ['D10 दशमेश', PLANET_HI[LORD_OF_RASHI[d10_10rashi]]],
+    ['D10 दशम का नक्षत्र स्वामी', `${PLANET_HI[d10_10nak.lord]} (${d10_10nak.name})`],
+    ['D10 10वें में बैठे ग्रह', (()=>{const arr=[];for(const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']){if(((chartData.d10[p]-d10lagna)%12+12)%12+1===10)arr.push(PLANET_HI[p]);}return arr.length?arr.join(', '):'कोई नहीं';})()],
+  ]);
+  h += '<h3>E) नवमांश (D9)</h3>';
+  const d9lagna = chartData.d9['Lagna'];
+  const d9_10nak = chartData.dCuspNak(chartData.d9Lon['Lagna'], 10); // Error 11: from bhava cusp
+  h += tbl([
+    ['D9 दशमेश', PLANET_HI[LORD_OF_RASHI[(d9lagna+9)%12]]],
+    ['D9 दशम का नक्षत्र स्वामी', `${PLANET_HI[d9_10nak.lord]} (${d9_10nak.name})`],
+    ['D9 10वें में बैठे ग्रह', (()=>{const arr=[];for(const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']){if(((chartData.d9[p]-d9lagna)%12+12)%12+1===10)arr.push(PLANET_HI[p]);}return arr.length?arr.join(', '):'कोई नहीं';})()],
+  ]);
+  h += '<h3>F) D60</h3>';
+  const d60lagna = chartData.d60['Lagna'];
+  const d60_10rashi = (d60lagna+9)%12;
+  const d60_10nak = chartData.dCuspNak(chartData.d60Lon['Lagna'], 10); // Error 12: from bhava cusp
+  h += tbl([
+    ['D60 दशमेश', PLANET_HI[LORD_OF_RASHI[d60_10rashi]]],
+    ['D60 दशम का नक्षत्र स्वामी', `${PLANET_HI[d60_10nak.lord]} (${d60_10nak.name})`],
+    ['D60 10वें में बैठे ग्रह', (()=>{const arr=[];for(const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']){if(((chartData.d60[p]-d60lagna)%12+12)%12+1===10)arr.push(PLANET_HI[p]);}return arr.length?arr.join(', '):'कोई नहीं';})()],
+  ]);
+  h += '<h3>G) सहायक भाव</h3>';
+  h += tbl([
+    ['एकादशेश', PLANET_HI[lordOf(11)]],
+    ['द्वितीयेश', PLANET_HI[lordOf(2)]],
+    ['2रे भाव के KP सिग्निफिकेंटर', fmtKPSig(2)],
+    ['11वें भाव के KP सिग्निफिकेंटर', fmtKPSig(11)],
+  ]);
+  h += '<h3>H) लग्न</h3>';
+  h += tbl([
+    ['लग्नेश', PLANET_HI[lordOf(1)]],
+    ['लग्न में बैठे ग्रह', ph(1)],
+    ['लग्नेश-दशमेश संबंध', checkSambandh(lordOf(1), 10)],
+  ]);
+  h += '<h3>I) नैसर्गिक कारक</h3>';
+  h += tbl([
+    ['शनि का राशि स्वामी, नक्षत्र स्वामी, युत ग्रह', `${PLANET_HI[LORD_OF_RASHI[chartData.pos['Saturn']]]}, ${PLANET_HI[chartData.nak['Saturn'].lord]}, ${(()=>{const b=chartData.bhava(chartData.pos['Saturn']);const arr=chartData.planetsInBhava[b].filter(p=>p!=='Saturn');return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()}`],
+    ['सूर्य का राशि स्वामी, नक्षत्र स्वामी, युत ग्रह', `${PLANET_HI[LORD_OF_RASHI[chartData.pos['Sun']]]}, ${PLANET_HI[chartData.nak['Sun'].lord]}, ${(()=>{const b=chartData.bhava(chartData.pos['Sun']);const arr=chartData.planetsInBhava[b].filter(p=>p!=='Sun');return arr.length?arr.map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()}`],
+    ['5वें भाव से संबंधित ग्रह', (() => {
+      const arr = [];
+      for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) {
+        const rel = checkSambandh(p, 5);
+        if (rel !== 'कोई संबंध नहीं') arr.push(PLANET_HI[p] + ' (' + rel + ')');
+      }
+      return arr.length ? arr.join('; ') : 'कोई नहीं';
+    })()],
+  ]);
+  h += '<h3>J) जैमिनी कारक</h3>';
+  const kk = chartData.karakas;
+  const akKey = kk['Atmakaraka'];
+  const kmRashi = chartData.d9[akKey]; // 0-11 : Karakamsa = Swamsa lagna (v3: akD9Rashi)
+  const lagnaR0 = chartData.pos['Lagna']; // 0-11
+  const km10Rashi = (kmRashi + 9) % 12;
+  const km10Bhava = ((km10Rashi - lagnaR0) % 12 + 12) % 12 + 1;
+  // Error 13: Karakamsa/Swamsa is D9 concept, use D9 positions (not D1 ph)
+  const d9ph_rashi = (r) => { const arr = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) { if (chartData.d9[p] === r) arr.push(PLANET_HI[p]); } return arr.length ? arr.join(', ') : 'कोई नहीं'; };
+  const a10Bhava = chartData.arudha[10];
+  const alBhava = chartData.arudha[1];
+  const al10Bhava = ((alBhava - 1 + 9) % 12) + 1;
+  h += tbl([
+    ['अमात्यकारक (AmK)', PLANET_HI[kk['Amatyakaraka']]],
+    ['आत्मकारक (AK)', PLANET_HI[akKey]],
+    ['कारकांश (Karakamsa)', RASHI_HI[kmRashi] + ' (AK नवमांश में)'],
+    ['स्वांश (Swamsa)', RASHI_HI[kmRashi] + ' (कारकांश के समान)'],
+    ['कारकांश से दशम का स्वामी', PLANET_HI[lordOf(km10Bhava)] + ' (' + RASHI_HI[km10Rashi] + ')'],
+    ['कारकांश से दशम में बैठे ग्रह', ph(km10Bhava)],
+    ['स्वांश से दशम का स्वामी', PLANET_HI[lordOf(km10Bhava)]],
+    ['स्वांश से दशम में बैठे ग्रह', d9ph_rashi(km10Rashi)],
+    ['A10 का स्वामी', PLANET_HI[lordOf(a10Bhava)]],
+    ['A10 में बैठे ग्रह', ph(a10Bhava)],
+    ['AL से दशम का स्वामी', PLANET_HI[lordOf(al10Bhava)]],
+    ['AL से दशम में बैठे ग्रह', ph(al10Bhava)],
+  ]);
+  h += '<h3>K) भृगु नंदी नाड़ी (BNN)</h3>';
+  const satBhava = chartData.bhava(chartData.pos['Saturn']);
+  const satConj = chartData.planetsInBhava[satBhava].filter(p => p !== 'Saturn');
+  h += tbl([
+    ['शनि से युत ग्रह', satConj.length ? satConj.map(p=>PLANET_HI[p]).join(', ') : 'कोई नहीं'],
+    ['शनि से 2रे में ग्रह', ph(((satBhava)%12)+1)],
+    ['शनि से 3रे में ग्रह', ph(((satBhava+1)%12)+1)],
+    ['शनि से 5वें में ग्रह (त्रिकोण)', ph(((satBhava+3)%12)+1)],
+    ['शनि से 9वें में ग्रह (त्रिकोण)', ph(((satBhava+7)%12)+1)],
+    ['शनि की दृष्टि वाले ग्रह (3/7/10)', (()=>{const arr=new Set();for(const a of [3,7,10]){const tb=((satBhava+a-2)%12)+1;for(const p of chartData.planetsInBhava[tb]){if(p!=='Saturn')arr.add(p);}}return arr.size?[...arr].map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
+  ]);
+  h += '<h3>L) संबंध जांच</h3>';
+  const lord1 = lordOf(1);
+  const lRow = (pl, houses) => houses.map(b => BHAVA_ORD[b] + ': ' + checkSambandh(pl, b)).join(' | ');
+  h += tbl([
+    ['a) लग्नेश (' + PLANET_HI[lord1] + ') का 10/2/6/11 से', lRow(lord1, [10,2,6,11])],
+    ['b) शनि का 10/2/6/11 से', lRow('Saturn', [10,2,6,11])],
+    ['सूर्य का 10/2/6/11 से', lRow('Sun', [10,2,6,11])],
+    ['c) दशमेश (' + PLANET_HI[lord10] + ') का 2/6/11 से', lRow(lord10, [2,6,11])],
+  ]);
+  document.getElementById('careerOut').innerHTML = h;
+}
+
+function downloadTxt(which) {
+  if (!chartData) { alert('पहले Calculate करें'); return; }
+  const el = document.getElementById(which === 'marriage' ? 'marriageOut' : which === 'children' ? 'childrenOut' : 'careerOut');
+  // Build formatted text with proper line spacing (not raw innerText)
+  let txt = '';
+  const title = which === 'marriage' ? 'विवाह Data' : which === 'children' ? 'संतान Data' : 'करियर Data';
+  txt += '========== ' + title + ' ==========\n\n';
+  for (const child of el.children) {
+    if (child.tagName === 'H3') {
+      txt += '\n' + child.innerText.trim() + '\n';
+      txt += '-'.repeat(child.innerText.trim().length) + '\n\n';
+    } else if (child.tagName === 'TABLE') {
+      for (const tr of child.rows) {
+        const th = tr.cells[0] ? tr.cells[0].innerText.trim() : '';
+        const td = tr.cells[1] ? tr.cells[1].innerText.trim() : '';
+        txt += th + ' : ' + td + '\n';
+      }
+      txt += '\n';
+    }
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
+  a.download = 'Data-' + which + '.txt'; a.click();
+}
+function downloadPngTab(tabIdx) {
+  if (!chartData) { alert('पहले Calculate करें'); return; }
+  showTab(tabIdx);
+  setTimeout(() => {
+    html2canvas(document.getElementById('tc' + tabIdx)).then(cv => {
+      const a = document.createElement('a'); a.href = cv.toDataURL();
+      a.download = 'Data-Tab' + tabIdx + '.png'; a.click();
+    });
+  }, 300);
+}
+</script>
+</body>
+</html>
