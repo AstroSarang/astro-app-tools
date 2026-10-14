@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<script src="../vendor/swisseph-local.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>वर्ग स्क्रीनशॉट टूल (D7/D9/D10) — Astro Sarang</title>
-<script src="../vendor/html2canvas.min.js"></script>
+<title>वर्ग स्क्रीनशॉट टूल (D7/D9/D10/D60) — Astro Sarang</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   * { box-sizing: border-box; }
   body { font-family: 'Noto Sans Devanagari', 'Mangal', sans-serif; background: #f4f6f8; color: #222; margin: 0; padding: 16px; }
@@ -44,7 +43,7 @@
 <div class="wrap">
 
   <h1>📸 वर्ग स्क्रीनशॉट टूल</h1>
-  <div class="sub">D7 / D9 / D10 — ग्रह स्थिति व भाव सारणी (ऐप जैसी)</div>
+  <div class="sub">D7 / D9 / D10 / D60 — ग्रह स्थिति व भाव सारणी (ऐप जैसी)</div>
 
   <div class="card">
     <h3>1️⃣ Astro Code डालें</h3>
@@ -62,6 +61,7 @@
       <button id="vb-D7" onclick="selectVarga('D7')">D-7<br><small>सप्तमांश</small></button>
       <button id="vb-D9" class="active" onclick="selectVarga('D9')">D-9<br><small>नवमांश</small></button>
       <button id="vb-D10" onclick="selectVarga('D10')">D-10<br><small>दशमांश</small></button>
+      <button id="vb-D60" onclick="selectVarga('D60')">D-60<br><small>षष्ट्यंश</small></button>
     </div>
   </div>
 
@@ -88,7 +88,7 @@
 </div>
 
 <script type="module">
-const EPHEM_CDN = '../vendor/swisseph-browser.js';
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
 let SE = null, SEP = null, SEH = null, SEL = null;
 
 /* ---------------- constants ---------------- */
@@ -100,8 +100,8 @@ const PLANETS = [
   {key:'Mercury', en:'Mercury'}, {key:'Jupiter', en:'Jupiter'}, {key:'Venus', en:'Venus'},
   {key:'Saturn', en:'Saturn'}, {key:'Rahu', en:'Rahu'}, {key:'Ketu', en:'Ketu'}
 ];
-const VARGA_NAMES = { D7:'Saptamsha', D9:'Navamsha', D10:'Dashamsha' };
-const VARGA_N = { D7:7, D9:9, D10:10 };
+const VARGA_NAMES = { D7:'Saptamsha', D9:'Navamsha', D10:'Dashamsha', D60:'Shashtiamsha' };
+const VARGA_N = { D7:7, D9:9, D10:10, D60:60 };
 
 let currentVarga = 'D9';
 let vargaData = null; // {lons:[10 sidereal], speeds:[10]}
@@ -120,6 +120,7 @@ function vargaSign(lon, varga) {
         case 'D7': pada = Math.floor(d / (30/7)); return (isOdd ? (s + pada) : (s + 6 + pada)) % 12;
         case 'D9': pada = Math.floor(d / (30/9)); return ([0,9,6,3][elem] + pada) % 12;
         case 'D10': pada = Math.floor(d / 3); return (isOdd ? (s + pada) : (s + 8 + pada)) % 12;
+        case 'D60': pada = Math.floor(d / (30/60)); return (s + pada) % 12;
         default: return s;
     }
 }
@@ -217,7 +218,7 @@ function fillFromCode() {
 
 function selectVarga(v) {
     currentVarga = v;
-    ['D7','D9','D10'].forEach(x => document.getElementById('vb-'+x).classList.toggle('active', x===v));
+    ['D7','D9','D10','D60'].forEach(x => document.getElementById('vb-'+x).classList.toggle('active', x===v));
     renderVarga();
 }
 
