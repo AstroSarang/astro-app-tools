@@ -117,9 +117,9 @@ function renderTab1(){
     h+=`<tr><td>कारकांश लग्न</td><td>${c1.karakamsha}</td><td>${c2.karakamsha}</td></tr>`;
     h+='<tr><td class="grp" colspan="3">KP विवरण - 7वां भाव</td></tr>';
     h+=`<tr><td>7वें भाव का CSL</td><td>${c1.kp7.csl}</td><td>${c2.kp7.csl}</td></tr>`;
-    h+=`<tr><td>CSL का नक्षत्र स्वामी (NL)</td><td>${c1.kp7.nl}</td><td>${c2.kp7.nl}</td></tr>`;
-    h+=`<tr><td>उप-स्वामी (SL)</td><td>${c1.kp7.sl}</td><td>${c2.kp7.sl}</td></tr>`;
-    h+=`<tr><td>SSL</td><td>${c1.kp7.ssl}</td><td>${c2.kp7.ssl}</td></tr>`;
+    h+=`<tr><td>7वें CSL का नक्षत्र स्वामी (NL)</td><td>${c1.kp7.nl}</td><td>${c2.kp7.nl}</td></tr>`;
+    h+=`<tr><td>7वें CSL का उप-स्वामी (SL)</td><td>${c1.kp7.sl}</td><td>${c2.kp7.sl}</td></tr>`;
+    h+=`<tr><td>7वें CSL का SSL</td><td>${c1.kp7.ssl}</td><td>${c2.kp7.ssl}</td></tr>`;
     h+='</table>';
     document.getElementById('out1').innerHTML=h;
 }
@@ -227,9 +227,9 @@ window.downloadTxt1=function(){
     t+=`कारकांश लग्न: व्यक्ति1=${c1.karakamsha} | व्यक्ति2=${c2.karakamsha}\n`;
     t+='\n--- KP: 7वां भाव ---\n';
     t+=`7वें भाव का CSL: व्यक्ति1=${c1.kp7.csl} | व्यक्ति2=${c2.kp7.csl}\n`;
-    t+=`CSL का नक्षत्र स्वामी (NL): व्यक्ति1=${c1.kp7.nl} | व्यक्ति2=${c2.kp7.nl}\n`;
-    t+=`उप-स्वामी (SL): व्यक्ति1=${c1.kp7.sl} | व्यक्ति2=${c2.kp7.sl}\n`;
-    t+=`SSL: व्यक्ति1=${c1.kp7.ssl} | व्यक्ति2=${c2.kp7.ssl}\n`;
+    t+=`7वें CSL का नक्षत्र स्वामी (NL): व्यक्ति1=${c1.kp7.nl} | व्यक्ति2=${c2.kp7.nl}\n`;
+    t+=`7वें CSL का उप-स्वामी (SL): व्यक्ति1=${c1.kp7.sl} | व्यक्ति2=${c2.kp7.sl}\n`;
+    t+=`7वें CSL का SSL: व्यक्ति1=${c1.kp7.ssl} | व्यक्ति2=${c2.kp7.ssl}\n`;
     dlTxt('Kundali-Milan-3-in-1-Tab1-Data-Table.txt',t);
 };
 window.downloadTxt2=function(){
@@ -572,12 +572,15 @@ async function computeChart(swe,bJD,lat,lon){
     const arudha=calcArudhas(planets,lsign);
     // 7th house KP
     const s7=(lsign+6)%12;
-    const kp7=calcKP7th(swe,bJD,lat,lon,ayan);
+    const kp7=calcKP7th(swe,bJD,lat,lon,ayan,planets);
     const moonP=planets[1];
+    // 14-Oct fix: सप्तम नक्षत्र 7th bhava cusp (lagna+180) से, राशि-शुरुआत (s7*30) से नहीं
+    const cusp7lon=norm360(lagna+180);
+    const h7NakInfo=nakInfo(cusp7lon);
     return {lagna,lsign,lagnaSign:RASHI[lsign],lagnaLord:SIGN_LORD[lsign],
         lagnaNak:lagNak.nak,lagnaNLord:lagNak.nlord,
         moonSign:RASHI[Math.floor(moonP.lon/30)],moonNak:moonP.nak,moonNLord:moonP.nlord,moonLon:moonP.lon,
-        h7Sign:RASHI[s7],h7Lord:SIGN_LORD[s7],h7Nak:nakInfo(s7*30).nak,h7NLord:nakInfo(s7*30).nlord,
+        h7Sign:RASHI[s7],h7Lord:SIGN_LORD[s7],h7Nak:h7NakInfo.nak,h7NLord:h7NakInfo.nlord,
         nvLagna:RASHI[nvLagna],nvLagnaLord:SIGN_LORD[nvLagna],nvH7:RASHI[(nvLagna+6)%12],nvH7Lord:SIGN_LORD[(nvLagna+6)%12],
         planets,chara,karakamsha,arudha,kp7,bJD};
 }
@@ -636,7 +639,7 @@ function kpGetLords(absMin,nakIdx){
     }
     return{sl:'?',ssl:'?'};
 }
-function calcKP7th(swe,bJD,lat,lon,ayan){
+function calcKP7th(swe,bJD,lat,lon,ayan,planets){
     // Verified pattern from kp-calculator-v26 (app-matched)
     const KP_OFF=(5+26.22/60)/60; // 5'26.22" in degrees
     const kpAya=ayan-KP_OFF;
@@ -651,12 +654,19 @@ function calcKP7th(swe,bJD,lat,lon,ayan){
         rotated=housesArr.slice(1).concat([housesArr[0]]);
     }
     const cusp7=norm360(rotated[6]-kpAya); // 7th cusp sidereal (KP)
-    const nakIdx=Math.floor(cusp7/(360/27))%27;
-    const ni=nakInfo(cusp7);
-    const {sl,ssl}=kpGetLords(cusp7*60,nakIdx);
+    const nakIdx7=Math.floor(cusp7/(360/27))%27;
+    const gotCsl=kpGetLords(cusp7*60,nakIdx7);
     // Hindi names
     const H={केतु:'केतु',शुक्र:'शुक्र',सूर्य:'सूर्य',चंद्र:'चंद्र',मंगल:'मंगल',राहु:'राहु',गुरु:'गुरु',शनि:'शनि',बुध:'बुध'};
-    return{csl:H[sl]||sl,nl:ni.nlord,sl:H[sl]||sl,ssl:H[ssl]||ssl};
+    const csl=H[gotCsl.sl]||gotCsl.sl;
+    // 13-Oct CSL hierarchy correction: NL/SL/SSL CSL ग्रह की अपनी longitude से, cusp से नहीं
+    const cslP=(planets||[]).find(p=>p.hi===csl);
+    if(!cslP)return{csl,nl:'?',sl:'?',ssl:'?'};
+    const kpLon=norm360(cslP.lon+KP_OFF); // CSL planet KP sidereal (KP ayanamsa chhota => longitude bada)
+    const nakIdx=Math.floor(kpLon/(360/27))%27;
+    const ni=nakInfo(kpLon);
+    const {sl,ssl}=kpGetLords(kpLon*60,nakIdx);
+    return{csl,nl:ni.nlord,sl:H[sl]||sl,ssl:H[ssl]||ssl};
 }
 </script>
 </body>
