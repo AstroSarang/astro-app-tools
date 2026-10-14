@@ -661,7 +661,97 @@ function renderMarriage() {
     ['D9 लग्न में बैठे ग्रह', d9ph(1)],
     ['D9 2रे और 11वें भाव के स्वामी', `${PLANET_HI[LORD_OF_RASHI[(d9l+1)%12]]}, ${PLANET_HI[LORD_OF_RASHI[(d9l+10)%12]]}`],
   ]);
-  h += '<h3>G) संबंध जांच</h3>';
+  // ===== जैमिनी ब्लॉक (विवाह) : G-M =====
+  const kk = chartData.karakas;
+  const dkP = kk['Darakaraka'], akP = kk['Atmakaraka'];
+  const dkR = chartData.pos[dkP], dkB = chartData.bhava(dkR);
+  const ulB = chartData.arudha[12], ulR = chartData.rashiOfBhava(ulB);
+  const a7B = chartData.arudha[7], a7R = chartData.rashiOfBhava(a7B);
+  const alB = chartData.arudha[1], alR = chartData.rashiOfBhava(alB);
+  const kmR = chartData.d9[akP]; // कारकांश/स्वांश राशि (AK का नवमांश)
+  const fmtR = r => `${RASHI_HI[r]} (${PLANET_HI[LORD_OF_RASHI[r]]})`;
+  const sapR = r => (r + 6) % 12;
+  const shubhPaap = p => {
+    if (p==='Jupiter'||p==='Venus') return 'शुभ';
+    if (p==='Sun'||p==='Mars'||p==='Saturn'||p==='Rahu'||p==='Ketu') return 'पाप';
+    if (p==='Mercury') {
+      const b = chartData.bhava(chartData.pos['Mercury']);
+      const paapYut = chartData.planetsInBhava[b].some(q => q!=='Mercury' && ['Sun','Mars','Saturn','Rahu','Ketu'].includes(q));
+      return paapYut ? 'पाप' : 'शुभ';
+    }
+    const elong = (chartData.posDeg['Moon'] - chartData.posDeg['Sun'] + 360) % 360;
+    return elong > 180 ? 'पाप' : 'शुभ'; // कृष्ण पक्ष (क्षीण) चंद्र → पाप
+  };
+  const phSP = b => { const a = chartData.planetsInBhava[b]; return a.length ? a.map(p => `${PLANET_HI[p]} (${shubhPaap(p)})`).join(', ') : 'कोई नहीं'; };
+  const argCell = (refB, ns) => ns.map(n => { const b = ((refB + n - 2) % 12) + 1; return `${BHAVA_ORD[n]} (${BHAVA_ORD[b]} भाव): ${phSP(b)}`; }).join(' | ');
+  const d9pr = r => { const a = []; for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu']) if (chartData.d9[p]===r) a.push(PLANET_HI[p]); return a.length ? a.join(', ') : 'कोई नहीं'; };
+
+  h += '<h3>G) दाराकारक (DK)</h3>';
+  const dkConj = chartData.planetsInBhava[dkB].filter(p => p!==dkP);
+  h += tbl([
+    ['दाराकारक ग्रह (सबसे कम अंश वाला)', `${PLANET_HI[dkP]} (${(chartData.posDeg[dkP]%30).toFixed(2)}°)`],
+    ['DK की राशि (स्वामी), भाव, नक्षत्र (स्वामी)', `${fmtR(dkR)}, ${BHAVA_ORD[dkB]} भाव, ${chartData.nak[dkP].name} (${PLANET_HI[chartData.nak[dkP].lord]})`],
+    ['DK से युत ग्रह', dkConj.length ? dkConj.map(p=>PLANET_HI[p]).join(', ') : 'कोई नहीं'],
+    ['DK का नवमांश', fmtR(chartData.d9[dkP])],
+  ]);
+  h += '<h3>H) उपपद लग्न (UL)</h3>';
+  h += tbl([
+    ['उपपद लग्न की राशि (स्वामी), भाव', `${fmtR(ulR)}, ${BHAVA_ORD[ulB]} भाव`],
+    ['UL में बैठे ग्रह', ph(ulB)],
+  ]);
+  h += '<h3>I) दारापद (A7)</h3>';
+  h += tbl([
+    ['A7 की राशि (स्वामी), भाव', `${fmtR(a7R)}, ${BHAVA_ORD[a7B]} भाव`],
+    ['A7 में बैठे ग्रह', ph(a7B)],
+  ]);
+  h += '<h3>J) स्वांश और कारकांश से सप्तम</h3>';
+  const km7R = sapR(kmR), km7B = chartData.bhava(km7R), km7L = LORD_OF_RASHI[km7R];
+  const km7LB = chartData.bhava(chartData.pos[km7L]);
+  const km7LConj = chartData.planetsInBhava[km7LB].filter(p => p!==km7L);
+  h += tbl([
+    ['स्वांश राशि', fmtR(kmR)],
+    ['कारकांश राशि', `${fmtR(kmR)} (स्वांश के समान)`],
+    ['कारकांश से सप्तम राशि (D1)', fmtR(km7R)],
+    ['स्वांश से सप्तम राशि (D9)', fmtR(km7R)],
+    ['कारकांश से सप्तम राशि में बैठे ग्रह (D1)', `${RASHI_HI[km7R]}: ${ph(km7B)}`],
+    ['स्वांश से सप्तम राशि में बैठे ग्रह (D9)', `${RASHI_HI[km7R]}: ${d9pr(km7R)}`],
+    ['सप्तमेश की स्थिति', `${PLANET_HI[km7L]}: ${BHAVA_ORD[km7LB]} भाव, ${RASHI_HI[chartData.pos[km7L]]} (${PLANET_HI[LORD_OF_RASHI[chartData.pos[km7L]]]}), ${chartData.nak[km7L].name} (${PLANET_HI[chartData.nak[km7L].lord]})`],
+    ['सप्तमेश से युत ग्रह', km7LConj.length ? km7LConj.map(p=>PLANET_HI[p]).join(', ') : 'कोई नहीं'],
+  ]);
+  h += '<h3>K) UL-DK संबंध</h3>';
+  const dkFromUl = ((dkB - ulB) % 12 + 12) % 12 + 1;
+  const kt = [1,4,5,7,9,10].includes(dkFromUl);
+  h += tbl([
+    ['क्या DK, UL से केंद्र/त्रिकोण (1/4/5/7/9/10) में है', `${kt?'हाँ':'नहीं'} (DK, UL से ${BHAVA_ORD[dkFromUl]} भाव में)`],
+  ]);
+  h += '<h3>L) अर्गला विश्लेषण</h3>';
+  h += tbl([
+    ['सप्तम भाव से 2रे/4थे/11वें/5वें में ग्रह (शुभ/पाप)', argCell(7,[2,4,11,5])],
+    ['सप्तम भाव पर अर्गला का विरोध (12वें/10वें/3रे/9वें में ग्रह)', argCell(7,[12,10,3,9])],
+    ['DK के भाव से 2रे/4थे/11वें/5वें में ग्रह (शुभ/पाप)', argCell(dkB,[2,4,11,5])],
+    ['DK पर अर्गला का विरोध (12वें/10वें/3रे/9वें में ग्रह)', argCell(dkB,[12,10,3,9])],
+    ['UL से 2रे/4थे/11वें/5वें में ग्रह (शुभ/पाप)', argCell(ulB,[2,4,11,5])],
+    ['UL पर अर्गला का विरोध (12वें/10वें/3रे/9वें में ग्रह)', argCell(ulB,[12,10,3,9])],
+  ]);
+  h += '<h3>M) सहायक राशियां (जैमिनी)</h3>';
+  h += tbl([
+    ['DK की राशि (स्वामी)', fmtR(dkR)],
+    ['DK से सप्तम राशि (स्वामी)', fmtR(sapR(dkR))],
+    ['UL की राशि (स्वामी)', fmtR(ulR)],
+    ['UL से सप्तम राशि (स्वामी)', fmtR(sapR(ulR))],
+    ['A7 की राशि (स्वामी)', fmtR(a7R)],
+    ['A1/AL से सप्तम राशि (स्वामी)', fmtR(sapR(alR))],
+    ['स्वांश/कारकांश से सप्तम राशि (स्वामी)', fmtR(sapR(kmR))],
+    ['गुरु की राशि (स्वामी)', fmtR(chartData.pos['Jupiter'])],
+    ['शुक्र की राशि (स्वामी)', fmtR(chartData.pos['Venus'])],
+    ['AK की राशि (स्वामी)', fmtR(chartData.pos[akP])],
+    ['A1/AL की राशि (स्वामी)', fmtR(alR)],
+    ['UL में बैठे ग्रह', ph(ulB)],
+    ['A7 में बैठे ग्रह', ph(a7B)],
+    ['UL से 7वीं राशि में बैठे ग्रह', `${RASHI_HI[sapR(ulR)]}: ${ph(chartData.bhava(sapR(ulR)))}`],
+    ['A7 से 7वीं राशि में बैठे ग्रह', `${RASHI_HI[sapR(a7R)]}: ${ph(chartData.bhava(sapR(a7R)))}`],
+  ]);
+  h += '<h3>N) संबंध जांच</h3>';
   const lord1m = lordOf(1);
   const mRow = (pl, houses) => houses.map(b => BHAVA_ORD[b] + ': ' + checkSambandh(pl, b)).join(' | ');
   h += tbl([
@@ -774,7 +864,79 @@ function renderChildren() {
     ['D7 लग्न में बैठे ग्रह', d7ph(1)],
     ['D7 2रे और 11वें भाव के स्वामी', `${PLANET_HI[LORD_OF_RASHI[(d7lagna+1)%12]]}, ${PLANET_HI[LORD_OF_RASHI[(d7lagna+10)%12]]}`],
   ]);
-  h += '<h3>H) संबंध जांच</h3>';
+  // ===== जैमिनी ब्लॉक (संतान) : H-L =====
+  const kk = chartData.karakas;
+  const pkP = kk['Putrakaraka'], akP = kk['Atmakaraka'];
+  const pkR = chartData.pos[pkP], pkB = chartData.bhava(pkR);
+  const akR = chartData.pos[akP], akB = chartData.bhava(akR);
+  const a5B = chartData.arudha[5], a5R = chartData.rashiOfBhava(a5B);
+  const alB = chartData.arudha[1], alR = chartData.rashiOfBhava(alB);
+  const ulB = chartData.arudha[12], ulR = chartData.rashiOfBhava(ulB);
+  const kmR = chartData.d9[akP]; // कारकांश/स्वांश राशि
+  const fmtR = r => `${RASHI_HI[r]} (${PLANET_HI[LORD_OF_RASHI[r]]})`;
+  const panR = r => (r + 4) % 12; // पंचम राशि
+  const shubhPaap = p => {
+    if (p==='Jupiter'||p==='Venus') return 'शुभ';
+    if (p==='Sun'||p==='Mars'||p==='Saturn'||p==='Rahu'||p==='Ketu') return 'पाप';
+    if (p==='Mercury') {
+      const b = chartData.bhava(chartData.pos['Mercury']);
+      const paapYut = chartData.planetsInBhava[b].some(q => q!=='Mercury' && ['Sun','Mars','Saturn','Rahu','Ketu'].includes(q));
+      return paapYut ? 'पाप' : 'शुभ';
+    }
+    const elong = (chartData.posDeg['Moon'] - chartData.posDeg['Sun'] + 360) % 360;
+    return elong > 180 ? 'पाप' : 'शुभ';
+  };
+  const phSP = b => { const a = chartData.planetsInBhava[b]; return a.length ? a.map(p => `${PLANET_HI[p]} (${shubhPaap(p)})`).join(', ') : 'कोई नहीं'; };
+  const argCell = (refB, ns) => ns.map(n => { const b = ((refB + n - 2) % 12) + 1; return `${BHAVA_ORD[n]} (${BHAVA_ORD[b]} भाव): ${phSP(b)}`; }).join(' | ');
+  const ktCheck = (fromB, toB) => { const rel = ((toB - fromB) % 12 + 12) % 12 + 1; const ok = [1,4,5,7,9,10].includes(rel); return `${ok?'हाँ':'नहीं'} (${BHAVA_ORD[rel]} भाव में)`; };
+
+  h += '<h3>H) पुत्रकारक (PK)</h3>';
+  const pkConj = chartData.planetsInBhava[pkB].filter(p => p!==pkP);
+  h += tbl([
+    ['पुत्रकारक ग्रह', PLANET_HI[pkP]],
+    ['PK की राशि (स्वामी), भाव, नक्षत्र (स्वामी)', `${fmtR(pkR)}, ${BHAVA_ORD[pkB]} भाव, ${chartData.nak[pkP].name} (${PLANET_HI[chartData.nak[pkP].lord]})`],
+    ['PK पर दृष्टि रखने वाले ग्रह', asp(pkB)],
+    ['PK से युत ग्रह', pkConj.length ? pkConj.map(p=>PLANET_HI[p]).join(', ') : 'कोई नहीं'],
+  ]);
+  h += '<h3>I) AK-PK संबंध</h3>';
+  h += tbl([
+    ['क्या PK, AK से केंद्र/त्रिकोण (1/4/5/7/9/10) में है', ktCheck(akB, pkB)],
+  ]);
+  h += '<h3>J) पुत्र पद (A5)</h3>';
+  h += tbl([
+    ['A5 की राशि (स्वामी), भाव', `${fmtR(a5R)}, ${BHAVA_ORD[a5B]} भाव`],
+    ['A5 में बैठे ग्रह', ph(a5B)],
+    ['क्या A5, AL से केंद्र/त्रिकोण (1/4/5/7/9/10) में है', ktCheck(alB, a5B)],
+    ['क्या A5, AK के भाव से केंद्र/त्रिकोण में है', ktCheck(akB, a5B)],
+    ['क्या A5, PK के भाव से केंद्र/त्रिकोण में है', ktCheck(pkB, a5B)],
+  ]);
+  h += '<h3>K) अर्गला विश्लेषण</h3>';
+  h += tbl([
+    ['पंचम भाव से 2रे/4थे/11वें/5वें में ग्रह (शुभ/पाप)', argCell(5,[2,4,11,5])],
+    ['पंचम भाव पर अर्गला का विरोध (12वें/10वें/3रे/9वें में ग्रह)', argCell(5,[12,10,3,9])],
+    ['PK के भाव से 2रे/4थे/11वें/5वें में ग्रह (शुभ/पाप)', argCell(pkB,[2,4,11,5])],
+    ['PK पर अर्गला का विरोध (12वें/10वें/3रे/9वें में ग्रह)', argCell(pkB,[12,10,3,9])],
+    ['A5 से 2रे/4थे/11वें/5वें में ग्रह (शुभ/पाप)', argCell(a5B,[2,4,11,5])],
+    ['A5 पर अर्गला का विरोध (12वें/10वें/3रे/9वें में ग्रह)', argCell(a5B,[12,10,3,9])],
+  ]);
+  h += '<h3>L) सहायक राशियां (जैमिनी)</h3>';
+  h += tbl([
+    ['पुत्रकारक (PK) की राशि (स्वामी)', fmtR(pkR)],
+    ['PK से पंचम राशि (स्वामी)', fmtR(panR(pkR))],
+    ['UL की राशि (स्वामी)', fmtR(ulR)],
+    ['UL से पंचम राशि (स्वामी)', fmtR(panR(ulR))],
+    ['A5 की राशि (स्वामी)', fmtR(a5R)],
+    ['A1/AL से पंचम राशि (स्वामी)', fmtR(panR(alR))],
+    ['स्वांश/कारकांश से पंचम राशि (स्वामी)', fmtR(panR(kmR))],
+    ['गुरु की राशि (स्वामी)', fmtR(chartData.pos['Jupiter'])],
+    ['AK की राशि (स्वामी)', fmtR(akR)],
+    ['A1/AL की राशि (स्वामी)', fmtR(alR)],
+    ['UL में बैठे ग्रह', ph(ulB)],
+    ['A5 में बैठे ग्रह', ph(a5B)],
+    ['UL से 5वीं राशि में बैठे ग्रह', `${RASHI_HI[panR(ulR)]}: ${ph(chartData.bhava(panR(ulR)))}`],
+    ['A5 से 5वीं राशि में बैठे ग्रह', `${RASHI_HI[panR(a5R)]}: ${ph(chartData.bhava(panR(a5R)))}`],
+  ]);
+  h += '<h3>M) संबंध जांच</h3>';
   const cRow = (pl, houses) => houses.map(b => BHAVA_ORD[b] + ': ' + checkSambandh(pl, b)).join(' | ');
   h += tbl([
     ['a) लग्नेश (' + PLANET_HI[lord1c] + ') का 5/2/11 से', cRow(lord1c, [5,2,11])],
@@ -899,7 +1061,63 @@ function renderCareer() {
     ['AL से दशम का स्वामी', PLANET_HI[lordOf(al10Bhava)]],
     ['AL से दशम में बैठे ग्रह', ph(al10Bhava)],
   ]);
-  h += '<h3>K) भृगु नंदी नाड़ी (BNN)</h3>';
+  // K-O: जैमिनी विस्तार (भाग 2.1, 2.2, 2.3, 2.5) - GL छोड़ा गया (Gemini के लिए), राशि-दृष्टि बाहर
+  const amkKey = kk['Amatyakaraka'];
+  const akR = chartData.pos[akKey], akB = chartData.bhava(akR);
+  const amkR = chartData.pos[amkKey], amkB = chartData.bhava(amkR);
+  const a10R = chartData.rashiOfBhava(a10Bhava);
+  const fmtRc = r => `${RASHI_HI[r]} (${PLANET_HI[LORD_OF_RASHI[r]]})`;
+  const shubhPaapC = p => {
+    if (p==='Jupiter'||p==='Venus') return 'शुभ';
+    if (p==='Sun'||p==='Mars'||p==='Saturn'||p==='Rahu'||p==='Ketu') return 'पाप';
+    if (p==='Mercury') {
+      const b = chartData.bhava(chartData.pos['Mercury']);
+      const paapYut = chartData.planetsInBhava[b].some(q => q!=='Mercury' && ['Sun','Mars','Saturn','Rahu','Ketu'].includes(q));
+      return paapYut ? 'पाप' : 'शुभ';
+    }
+    const elong = (chartData.posDeg['Moon'] - chartData.posDeg['Sun'] + 360) % 360;
+    return elong > 180 ? 'पाप' : 'शुभ';
+  };
+  const phSPc = b => { const a = chartData.planetsInBhava[b]; return a.length ? a.map(p => `${PLANET_HI[p]} (${shubhPaapC(p)})`).join(', ') : 'कोई नहीं'; };
+  const argCellC = (refB, ns) => ns.map(n => { const b = ((refB + n - 2) % 12) + 1; return `${BHAVA_ORD[n]} (${BHAVA_ORD[b]} भाव): ${phSPc(b)}`; }).join(' | ');
+  const ktCheckC = (fromB, toB) => { const rel = ((toB - fromB) % 12 + 12) % 12 + 1; const ok = [1,4,5,7,9,10].includes(rel); return `${ok?'हाँ':'नहीं'} (${BHAVA_ORD[rel]} भाव में)`; };
+  const ktCheck311 = (fromB, toB) => { const rel = ((toB - fromB) % 12 + 12) % 12 + 1; const ok = [1,3,4,5,7,9,10,11].includes(rel); return `${ok?'हाँ':'नहीं'} (${BHAVA_ORD[rel]} भाव में)`; };
+  const karakaDetail = (kp, label) => {
+    const kr = chartData.pos[kp], kb = chartData.bhava(kr);
+    const conj = chartData.planetsInBhava[kb].filter(p => p!==kp);
+    return [
+      [label + ' ग्रह', PLANET_HI[kp]],
+      [label + ' की राशि (स्वामी), भाव, नक्षत्र (स्वामी)', `${fmtRc(kr)}, ${BHAVA_ORD[kb]} भाव, ${chartData.nak[kp].name} (${PLANET_HI[chartData.nak[kp].lord]})`],
+      [label + ' पर दृष्टि रखने वाले ग्रह', asp(kb)],
+      [label + ' से युत ग्रह', conj.length ? conj.map(p=>PLANET_HI[p]).join(', ') : 'कोई नहीं'],
+      [label + ' का नवमांश', fmtRc(chartData.d9[kp])],
+    ];
+  };
+  h += '<h3>K) आत्मकारक (AK)</h3>';
+  h += tbl(karakaDetail(akKey, 'AK'));
+  h += '<h3>L) अमात्यकारक (AmK)</h3>';
+  h += tbl(karakaDetail(amkKey, 'AmK'));
+  h += '<h3>M) AK-AmK संबंध</h3>';
+  h += tbl([
+    ['क्या AmK, AK से केंद्र/त्रिकोण/3-11 (1/3/4/5/7/9/10/11) में है', ktCheck311(akB, amkB)],
+  ]);
+  h += '<h3>N) कर्म पद (A10)</h3>';
+  h += tbl([
+    ['A10 की राशि (स्वामी), भाव', `${fmtRc(a10R)}, ${BHAVA_ORD[a10Bhava]} भाव`],
+    ['क्या A10, AL से केंद्र/त्रिकोण (1/4/5/7/9/10) में है', ktCheckC(alBhava, a10Bhava)],
+    ['क्या A10, AK के भाव से केंद्र/त्रिकोण में है', ktCheckC(akB, a10Bhava)],
+    ['क्या A10, AmK के भाव से केंद्र/त्रिकोण में है', ktCheckC(amkB, a10Bhava)],
+  ]);
+  h += '<h3>O) अर्गला विश्लेषण</h3>';
+  h += tbl([
+    ['दशम भाव से 2रे/4थे/11वें/5वें में ग्रह (शुभ/पाप)', argCellC(10,[2,4,11,5])],
+    ['दशम भाव पर अर्गला का विरोध (12वें/10वें/3रे/9वें में ग्रह)', argCellC(10,[12,10,3,9])],
+    ['AmK के भाव से 2रे/4थे/11वें/5वें में ग्रह (शुभ/पाप)', argCellC(amkB,[2,4,11,5])],
+    ['AmK पर अर्गला का विरोध (12वें/10वें/3रे/9वें में ग्रह)', argCellC(amkB,[12,10,3,9])],
+    ['A10 से 2रे/4थे/11वें/5वें में ग्रह (शुभ/पाप)', argCellC(a10Bhava,[2,4,11,5])],
+    ['A10 पर अर्गला का विरोध (12वें/10वें/3रे/9वें में ग्रह)', argCellC(a10Bhava,[12,10,3,9])],
+  ]);
+  h += '<h3>P) भृगु नंदी नाड़ी (BNN)</h3>';
   const satBhava = chartData.bhava(chartData.pos['Saturn']);
   const satConj = chartData.planetsInBhava[satBhava].filter(p => p !== 'Saturn');
   h += tbl([
@@ -910,7 +1128,7 @@ function renderCareer() {
     ['शनि से 9वें में ग्रह (त्रिकोण)', ph(((satBhava+7)%12)+1)],
     ['शनि की दृष्टि वाले ग्रह (3/7/10)', (()=>{const arr=new Set();for(const a of [3,7,10]){const tb=((satBhava+a-2)%12)+1;for(const p of chartData.planetsInBhava[tb]){if(p!=='Saturn')arr.add(p);}}return arr.size?[...arr].map(p=>PLANET_HI[p]).join(', '):'कोई नहीं';})()],
   ]);
-  h += '<h3>L) संबंध जांच</h3>';
+  h += '<h3>Q) संबंध जांच</h3>';
   const lord1 = lordOf(1);
   const lRow = (pl, houses) => houses.map(b => BHAVA_ORD[b] + ': ' + checkSambandh(pl, b)).join(' | ');
   h += tbl([
