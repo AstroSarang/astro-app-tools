@@ -263,6 +263,8 @@
   }
 
   function markdownToStyledHtml(md){
+    /* v5: em dash (—) और en dash (–) को space में बदलो */
+    md = md.replace(/—/g, ' ').replace(/–/g, ' ').replace(/  +/g, ' ');
     var rawHtml = '';
     try {
       marked.setOptions({ breaks: true, gfm: true });
