@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<script src="../vendor/swisseph-local.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>षोडशवर्ग विश्लेषक</title>
-    <script src="../vendor/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; line-height: 1.6; padding: 20px; background-color: #f0f2f5; color: #1d2129; margin: 0; }
         .container { max-width: 950px; margin: 20px auto; background: #ffffff; padding: 35px 40px; border-radius: 10px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
@@ -116,43 +115,14 @@
 
     <!-- Shared: Astro Code + Birth Details -->
     <div class="ephem-section">
-        <label>🔗 Astro Code से भरें <span style="font-weight:normal; font-size:0.85em;">(Home page से copy करें)</span></label>
+        <label>🔗 Astro Code से भरें <span style="font-weight:normal; font-size:0.85em;">(D1 tool से copy करें)</span></label>
         <div class="c2-row">
             <label class="c2-f c2-grow">Astro Code<span class="c2-wrap"><input type="text" id="astro-code-in" placeholder="AS1-..." autocomplete="off" style="font-family:monospace;"></span></label>
             <button type="button" id="btn-applycode" class="c2-btn" style="background:#6a1b9a; color:#fff; border:none; border-radius:6px; padding:8px 16px; font-weight:bold; cursor:pointer;">📥 भरो</button>
         </div>
         <div id="code-error" class="error-msg"></div>
-        <div style="text-align:center; color:#9c5b00; font-size:0.85em; margin:10px 0 4px;">— या manual जन्म विवरण भरें —</div>
-        <label>🪐 जन्म विवरण से ग्रह स्थिति निकालें (Swiss Ephemeris)</label>
         <div id="ephem-status">⏳ Engine लोड हो रहा है…</div>
-        <div class="c2-grid">
-            <div class="c2-row">
-                <label class="c2-f">दिन<select id="bd-day"><option value="">--</option></select></label>
-                <label class="c2-f">माह<select id="bd-month"><option value="">--</option><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select></label>
-                <label class="c2-f">वर्ष<input type="number" id="bd-year" placeholder="1995"></label>
-                <span class="c2-sep"></span>
-                <label class="c2-f">घंटे<input type="number" id="bd-hh" placeholder="3"></label>
-                <label class="c2-f">मिनट<input type="number" id="bd-mm" placeholder="00"></label>
-                <label class="c2-f">सेकंड<input type="number" id="bd-ss" value="0"></label>
-                <button type="button" class="c2-btn" id="bd-ampm" data-val="AM">AM</button>
-                <span class="c2-sep"></span>
-                <button type="button" class="c2-btn" id="tz-sign" data-val="+">+</button>
-                <label class="c2-f">TZ घंटे<input type="number" id="tz-hh" value="5"></label>
-                <label class="c2-f">मिनट<input type="number" id="tz-mm" value="30"></label>
-            </div>
-            <div class="c2-dst">(Daylight saving (DST) लागू हो तो timezone उसी के अनुसार भरें)</div>
-            <div class="c2-row">
-                <label class="c2-f c2-grow">जन्म स्थान<span class="c2-wrap"><input type="text" id="birth-place" placeholder="शहर English में लिखें" autocomplete="off"><div id="place-results"></div></span></label>
-                <label class="c2-f">अक्षांश°<input type="number" id="lat-deg" placeholder="21"></label>
-                <button type="button" class="c2-btn" id="lat-dir" data-val="N">N</button>
-                <label class="c2-f">मिनट<input type="number" id="lat-min" placeholder="27"></label>
-                <label class="c2-f">देशांतर°<input type="number" id="lon-deg" placeholder="80"></label>
-                <button type="button" class="c2-btn" id="lon-dir" data-val="E">E</button>
-                <label class="c2-f">मिनट<input type="number" id="lon-min" placeholder="11"></label>
-            </div>
-        </div>
-        <button type="button" id="btn-ephem" disabled>🪐 ग्रह स्थिति निकालें व भरें</button>
-        <div class="instruction">बटन दबाते ही D1 + चुने हुए वर्ग के नंबर auto-fill होंगे, फिर गणना अपने आप बनेगी। Manual entry भी पहले जैसी चलती रहेगी।</div>
+        <div class="instruction">📥 भरो दबाते ही D1 + चुने हुए वर्ग के नंबर auto-fill होंगे, फिर गणना अपने आप बनेगी।</div>
         <div id="ephem-error" class="error-msg"></div>
     </div>
 
@@ -263,6 +233,7 @@
         </div>
     </div>
 
+    <div id="charts-box" style="display:none; margin:16px 0; text-align:center;"></div>
     <div id="output">परिणाम यहाँ प्रदर्शित होंगे...</div>
     <textarea id="output-text-for-copy" readonly></textarea>
 
@@ -437,6 +408,7 @@ function m1_onVargaSelect(vargaCode) {
 }
 
 function m1_analyze() {
+    drawCharts();
     const outputDiv = document.getElementById('output');
     const copyButton = document.getElementById('m1-copy-btn');
     const downloadButton = document.getElementById('m1-download-btn');
@@ -687,6 +659,7 @@ function m2_parseInput(inputStr) {
     return values.map(v => v - 1);
 }
 function m2_analyze() {
+    drawCharts();
     const outputDiv = document.getElementById('output');
     const copyBtn = document.getElementById('m2-copy-btn');
     const downBtn = document.getElementById('m2-download-btn');
@@ -806,84 +779,12 @@ function m2_download() {
 </script>
 
 <script>
-/* ============ जन्म स्थान: worldwide live search ============ */
-(function(){
-  var place=document.getElementById('birth-place'), box=document.getElementById('place-results');
-  var timer=null, ctrl=null;
-  (function(){ var s=document.getElementById('bd-day'); for(var d=1; d<=31; d++){ var o=document.createElement('option'); o.value=d; o.textContent=d; s.appendChild(o); } })();
-  [['bd-ampm',['AM','PM']],['tz-sign',['+','-']],['lat-dir',['N','S']],['lon-dir',['E','W']]].forEach(function(t){
-    var el=document.getElementById(t[0]), vals=t[1];
-    el.addEventListener('click', function(){ var i=(vals.indexOf(el.dataset.val)+1)%vals.length; el.dataset.val=vals[i]; el.textContent=vals[i]; });
-  });
-  function closeBox(){ box.style.display='none'; box.innerHTML=''; }
-  function setDms(dec, isLat){
-    var dir=dec>=0?(isLat?'N':'E'):(isLat?'S':'W');
-    var a=Math.abs(dec), d=Math.floor(a), m=Math.round((a-d)*60);
-    if(m===60){ d+=1; m=0; }
-    document.getElementById(isLat?'lat-deg':'lon-deg').value=d;
-    document.getElementById(isLat?'lat-min':'lon-min').value=m;
-    var dirEl=document.getElementById(isLat?'lat-dir':'lon-dir');
-    dirEl.dataset.val=dir; dirEl.textContent=dir;
-  }
-  function pick(label, la, lo){ clearTimeout(timer); place.value=label; setDms(la,true); setDms(lo,false); closeBox(); }
-  function render(items){
-    if(!items.length){ box.innerHTML='<div class="pr-none">कोई शहर नहीं मिला — इंटरनेट जांचें या lat/long manual भरें</div>'; }
-    else{
-      box.innerHTML=items.map(function(it,i){ return '<div class="pr-item" data-i="'+i+'">'+it.label+'</div>'; }).join('');
-      Array.prototype.forEach.call(box.querySelectorAll('.pr-item'), function(el){
-        el.addEventListener('mousedown', function(e){ e.preventDefault(); var it=items[+el.getAttribute('data-i')]; pick(it.label, it.lat, it.lon); });
-      });
-    }
-    box.style.display='block';
-  }
-  async function apiSearch(q){
-    var providers=[
-      { url:'https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=8&language=en&format=json',
-        parse:function(j){ return (j.results||[]).map(function(g){
-          var parts=[g.name]; if(g.admin1) parts.push(g.admin1); if(g.country) parts.push(g.country);
-          return {label:parts.join(', '), lat:+g.latitude.toFixed(4), lon:+g.longitude.toFixed(4)}; }); } },
-      { url:'https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=8&lang=en',
-        parse:function(j){ return (j.features||[]).map(function(f){
-          var p=f.properties||{}, parts=[p.name]; if(p.state) parts.push(p.state); if(p.country) parts.push(p.country);
-          var c=f.geometry&&f.geometry.coordinates;
-          return c?{label:parts.join(', '), lat:+c[1].toFixed(4), lon:+c[0].toFixed(4)}:null; }).filter(Boolean); } },
-      { url:'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=8',
-        parse:function(j){ return (Array.isArray(j)?j:[]).map(function(n){
-          return {label:String(n.display_name).split(',').slice(0,3).join(','), lat:+parseFloat(n.lat).toFixed(4), lon:+parseFloat(n.lon).toFixed(4)}; }); } }
-    ];
-    for(var i=0;i<providers.length;i++){
-      try{
-        if(ctrl) ctrl.abort();
-        ctrl=new AbortController();
-        var r=await fetch(providers[i].url,{signal:ctrl.signal});
-        if(!r.ok) continue;
-        var out=providers[i].parse(await r.json());
-        if(out.length) return out;
-      }catch(e){}
-    }
-    return [];
-  }
-  place.addEventListener('input', function(){
-    var qAtSchedule=place.value;
-    clearTimeout(timer);
-    if(qAtSchedule.trim().length<2){ closeBox(); return; }
-    box.innerHTML='<div class="pr-none">खोजा जा रहा है…</div>'; box.style.display='block';
-    timer=setTimeout(async function(){
-      if(place.value!==qAtSchedule || place.value.trim().length<2) return;
-      var remote=await apiSearch(place.value);
-      if(place.value===qAtSchedule) render(remote);
-    }, 350);
-  });
-  place.addEventListener('blur', function(){ setTimeout(closeBox, 150); });
-  place.addEventListener('focus', function(){ if(box.innerHTML) box.style.display='block'; });
-})();
 </script>
 
 <script type="module">
 /* ============ Swiss Ephemeris auto-fill (varga-aware) ============ */
-const EPHEM_CDN = '../vendor/swisseph-browser.js';
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
 const ephemStatus = document.getElementById('ephem-status');
-const btnEphem = document.getElementById('btn-ephem');
 const ephemError = document.getElementById('ephem-error');
 let SE=null, SEP=null, SEF=null, SEH=null, SEL=null;
 
@@ -896,150 +797,135 @@ try {
   await swe.init();
   swe.setSiderealMode(m.SiderealMode.Lahiri);
   window._swe = swe;
-  setStatus('✅ Engine तैयार — जन्म विवरण भरकर "ग्रह स्थिति निकालें व भरें" दबाएं', true);
-  btnEphem.disabled = false;
+  setStatus('✅ Engine तैयार — Astro Code डालकर "📥 भरो" दबाएं', true);
 } catch(e) {
   setStatus('⚠️ Engine लोड नहीं हुआ — इंटरनेट चालू करके पेज reload करें', false);
-  btnEphem.disabled = false;
-  btnEphem.textContent = '🔄 पुनः प्रयास करें (पेज reload होगा)';
-  btnEphem.addEventListener('click', ()=>location.reload());
 }
-setTimeout(()=>{ if(btnEphem.disabled) setStatus('⏳ Engine लोड हो रहा है… (नेटवर्क धीमा हो सकता है)', false); }, 45000);
+setTimeout(()=>{ const st=document.getElementById('ephem-status'); if(st && st.textContent.includes('लोड हो रहा')) setStatus('⏳ Engine लोड हो रहा है… (नेटवर्क धीमा हो सकता है)', false); }, 45000);
 
 const FLAGS = () => SEF.MoshierEphemeris | SEF.Speed;
 const norm360 = d => ((d % 360) + 360) % 360;
 const signNum = lon => Math.floor(norm360(lon) / 30) + 1;
 
-btnEphem.addEventListener('click', async ()=>{
-  if(!window._swe) return;
+/* Astro Code -> direct ephemeris (no manual fields) */
+function parseAstroCodeDirect(code){
+  const m=/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/.exec((code||'').trim());
+  if(!m) return null;
+  const d8=m[1], t6=m[2], tz=m[3], lat4=m[4], latDir=m[5], lon5=m[6], lonDir=m[7];
+  const Y=+d8.slice(0,4), mo=+d8.slice(4,6), dy=+d8.slice(6,8);
+  const h24=+t6.slice(0,2), mi=+t6.slice(2,4), se=+t6.slice(4,6);
+  const tzMin=(tz[0]==='-'?-1:1)*(+tz.slice(1,3)*60 + +tz.slice(3,5));
+  let lat=+lat4.slice(0,2)+(+lat4.slice(2,4))/60; if(latDir==='S') lat=-lat;
+  let lon=+lon5.slice(0,3)+(+lon5.slice(3,5))/60; if(lonDir==='W') lon=-lon;
+  return {Y, mo, dy, h24, mi, se, tzMin, lat, lon};
+}
+
+async function calcFromAstroCode(){
+  if(!window._swe) throw new Error('Ephemeris लोड नहीं हुआ — पेज refresh करें');
   ephemError.innerText='';
-  try{
-    const gv=id=>document.getElementById(id).value;
-    const day=parseInt(gv('bd-day')), mon=parseInt(gv('bd-month')), Y=parseInt(gv('bd-year'));
-    if(isNaN(day)||isNaN(mon)||isNaN(Y)) throw new Error('जन्म तारीख पूरी भरें (दिन / महीना / वर्ष)।');
-    if(Y<1800||Y>2200) throw new Error('वर्ष 1800–2200 के बीच भरें।');
-    const maxDay=new Date(Y, mon+1, 0).getDate();
-    if(day<1||day>maxDay) throw new Error('इस महीने में '+day+' तारीख नहीं होती।');
-    const hh=parseInt(gv('bd-hh')), mm=parseInt(gv('bd-mm'));
-    let ss=parseInt(gv('bd-ss')); if(isNaN(ss)||ss<0||ss>59) ss=0;
-    if(isNaN(hh)||hh<1||hh>12) throw new Error('घंटे 1–12 के बीच भरें।');
-    if(isNaN(mm)||mm<0||mm>59) throw new Error('मिनट 0–59 के बीच भरें।');
-    const h24=(hh%12)+(document.getElementById('bd-ampm').dataset.val==='PM'?12:0);
-    const tzSign=document.getElementById('tz-sign').dataset.val==='-'?-1:1;
-    const tzH=parseInt(gv('tz-hh')||'0'), tzM=parseInt(gv('tz-mm')||'0');
-    if(isNaN(tzH)||tzH<0||tzH>14||isNaN(tzM)||tzM<0||tzM>59) throw new Error('Timezone घंटे 0–14, मिनट 0–59 भरें।');
-    const tzMin=tzSign*(tzH*60+tzM);
-    const dms=(degId,minId,dirId,maxDeg,name)=>{
-      const d=parseFloat(gv(degId)), m=parseFloat(gv(minId)||'0'), dir=document.getElementById(dirId).dataset.val;
-      if(isNaN(d)||d<0||d>maxDeg) throw new Error(name+' डिग्री 0–'+maxDeg+' के बीच भरें।');
-      if(isNaN(m)||m<0||m>=60) throw new Error(name+' मिनट 0–59 के बीच भरें।');
-      let dec=d+m/60; if(dir==='S'||dir==='W') dec=-dec; return dec;
-    };
-    const lat=dms('lat-deg','lat-min','lat-dir',90,'अक्षांश'),
-          lon=dms('lon-deg','lon-min','lon-dir',180,'देशांतर');
-    let utc=new Date(Date.UTC(Y,mon,day,h24,mm,ss)); utc=new Date(utc.getTime()-tzMin*60000);
-    const swe=window._swe;
-    const jd=swe.julianDay(utc.getUTCFullYear(),utc.getUTCMonth()+1,utc.getUTCDate(),
-                           utc.getUTCHours()+utc.getUTCMinutes()/60+utc.getUTCSeconds()/3600);
-    const ayan=swe.getAyanamsa(jd), F=FLAGS();
-    const calc=(body)=>{ const p=swe.calculatePosition(jd,body,F); return norm360(p.longitude-ayan); };
-    const order=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
-    const bodyMap={Surya:SEP.Sun,Chandra:SEP.Moon,Mangal:SEP.Mars,Budh:SEP.Mercury,Guru:SEP.Jupiter,Shukra:SEP.Venus,Shani:SEP.Saturn,Rahu:SEL.MeanNode};
-    const L={};
-    order.forEach(k=>{ L[k]=calc(bodyMap[k]); });
-    L.Ketu=norm360(L.Rahu+180);
-    const hs=swe.calculateHouses(jd,lat,lon,SEH.Placidus);
-    const lagna=norm360(hs.ascendant-ayan);
+  const bc = parseAstroCodeDirect(document.getElementById('astro-code-in').value);
+  if(!bc) throw new Error('सही Astro Code डालें (AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W)');
+  const swe=window._swe;
+  let utc=new Date(Date.UTC(bc.Y,bc.mo-1,bc.dy,bc.h24,bc.mi,bc.se));
+  utc=new Date(utc.getTime()-bc.tzMin*60000);
+  const jd=swe.julianDay(utc.getUTCFullYear(),utc.getUTCMonth()+1,utc.getUTCDate(),
+                         utc.getUTCHours()+utc.getUTCMinutes()/60+utc.getUTCSeconds()/3600);
+  const ayan=swe.getAyanamsa(jd), F=FLAGS();
+  const calc=(body)=>{ const p=swe.calculatePosition(jd,body,F); return norm360(p.longitude-ayan); };
+  const order=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
+  const bodyMap={Surya:SEP.Sun,Chandra:SEP.Moon,Mangal:SEP.Mars,Budh:SEP.Mercury,Guru:SEP.Jupiter,Shukra:SEP.Venus,Shani:SEP.Saturn,Rahu:SEL.MeanNode};
+  const L={};
+  order.forEach(k=>{ L[k]=calc(bodyMap[k]); });
+  L.Ketu=norm360(L.Rahu+180);
+  const hs=swe.calculateHouses(jd,bc.lat,bc.lon,SEH.Placidus);
+  const lagna=norm360(hs.ascendant-ayan);
 
-    /* Store 10 sidereal longitudes for varga computation */
-    const lons10=[lagna].concat(order.map(k=>L[k]));
-    window._vargaLons = lons10;
+  /* Store 10 sidereal longitudes for varga computation */
+  const lons10=[lagna].concat(order.map(k=>L[k]));
+  window._vargaLons = lons10;
 
-    /* Fill D1 everywhere */
-    const d1nums = computeVargaNumbers(lons10, 'D1');
-    document.getElementById('m2-d1-input').value = d1nums.join(',');
+  /* Fill D1 everywhere */
+  const d1nums = computeVargaNumbers(lons10, 'D1');
+  document.getElementById('m2-d1-input').value = d1nums.join(',');
 
-    /* Fill selected varga in current mode + auto-run */
-    if (currentMode === 1) {
-        const cb = document.querySelector('.varga-cb:checked');
-        if (cb) {
-            const vnums = computeVargaNumbers(lons10, cb.value);
-            document.getElementById('m1-planet-input').value = vnums.join(',');
-            m1_analyze();
-            setStatus('✅ भरा गया: D1 + '+cb.value+' — गणना तैयार है', true);
-        } else {
-            setStatus('✅ D1 भरा गया — अब ऊपर से कोई वर्ग चुनें', true);
-        }
-    } else {
-        const vc = document.getElementById('m2-varga-select').value;
-        const vnums = computeVargaNumbers(lons10, vc);
-        document.getElementById('m2-varga-input').value = vnums.join(',');
-        m2_analyze();
-        setStatus('✅ भरा गया: D1 + '+vc+' — गणना तैयार है', true);
-    }
-  }catch(err){
-    ephemError.innerText=err.message||String(err);
+  /* Fill selected varga in current mode + auto-run */
+  if (currentMode === 1) {
+      const cb = document.querySelector('.varga-cb:checked');
+      if (cb) {
+          const vnums = computeVargaNumbers(lons10, cb.value);
+          document.getElementById('m1-planet-input').value = vnums.join(',');
+          m1_analyze();
+          setStatus('✅ भरा गया: D1 + '+cb.value+' — गणना तैयार है', true);
+      } else {
+          setStatus('✅ D1 भरा गया — अब ऊपर से कोई वर्ग चुनें', true);
+      }
+  } else {
+      const vc = document.getElementById('m2-varga-select').value;
+      const vnums = computeVargaNumbers(lons10, vc);
+      document.getElementById('m2-varga-input').value = vnums.join(',');
+      m2_analyze();
+      setStatus('✅ भरा गया: D1 + '+vc+' — गणना तैयार है', true);
   }
-});
+  drawCharts();
+}
+window.calcFromAstroCode = calcFromAstroCode;
 </script>
 
 <script>
+/* ============ Kundli Charts (D1 + Varga, no vakri marks) ============ */
+const _GS = {Surya:'सू', Chandra:'चं', Mangal:'मं', Budh:'बु', Guru:'गु', Shukra:'शु', Shani:'श', Rahu:'रा', Ketu:'के'};
+const _GO = ['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
+function _drawOneChart(nums10, title){
+  const lagnaRashi=nums10[0]-1;
+  const signPlanets=Array.from({length:12},()=>[]);
+  for(let i=0;i<9;i++) signPlanets[nums10[i+1]-1].push(_GS[_GO[i]]);
+  signPlanets[lagnaRashi].unshift('ल');
+  const houseOf=s=>((s-lagnaRashi+12)%12)+1;
+  const A={1:[200,105],2:[105,45],3:[45,105],4:[105,200],5:[45,295],6:[105,355],7:[200,295],8:[295,355],9:[355,295],10:[295,200],11:[355,105],12:[295,45]};
+  let inner='';
+  for(let s=0;s<12;s++){
+    const h=houseOf(s), [x,y]=A[h], pls=signPlanets[s];
+    inner+=`<text x="${x}" y="${y-16}" text-anchor="middle" font-size="13" fill="#a08c5b">${s+1}</text>`;
+    const lines=[]; for(let i=0;i<pls.length;i+=3) lines.push(pls.slice(i,i+3).join(' '));
+    lines.forEach((ln,i)=>{ inner+=`<text x="${x}" y="${y+4+i*20}" text-anchor="middle" font-size="16" font-weight="700" fill="#3b2f1e">${ln}</text>`; });
+  }
+  return `<div style="display:inline-block; margin:8px; vertical-align:top;"><div style="font-weight:bold; margin-bottom:6px;">${title}</div><svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="max-width:340px; width:100%;"><rect x="10" y="10" width="380" height="380" fill="#fffdf8" stroke="#9a5b00" stroke-width="2.5"/><g stroke="#c99b3f" stroke-width="1.4"><line x1="10" y1="10" x2="390" y2="390"/><line x1="390" y1="10" x2="10" y2="390"/><polygon points="200,10 390,200 200,390 10,200" fill="none"/></g>${inner}</svg></div>`;
+}
+function _parseNums(id){
+  const v=document.getElementById(id).value.trim().split(',').map(s=>parseInt(s.trim()));
+  return (v.length===10 && v.every(n=>n>=1&&n<=12)) ? v : null;
+}
+function drawCharts(){
+  const box=document.getElementById('charts-box');
+  const d1=_parseNums('m2-d1-input');
+  let varga=null, vargaName='';
+  if(currentMode===1){
+    const cb=document.querySelector('.varga-cb:checked');
+    if(cb){ varga=_parseNums('m1-planet-input'); vargaName=cb.value; }
+    /* Tab 1: सिर्फ चुने हुए वर्ग का chart */
+    if(!varga){ box.style.display='none'; box.innerHTML=''; return; }
+    box.innerHTML=_drawOneChart(varga,'📊 '+vargaName);
+    box.style.display='block';
+    return;
+  }
+  /* Tab 2: D1 + वर्ग दोनों charts */
+  const vc=document.getElementById('m2-varga-select').value;
+  varga=_parseNums('m2-varga-input'); vargaName=vc;
+  if(!d1 || !varga){ box.style.display='none'; box.innerHTML=''; return; }
+  box.innerHTML=_drawOneChart(d1,'📊 D1 - राशि')+_drawOneChart(varga,'📊 '+vargaName);
+  box.style.display='block';
+}
+
 /* ============ Astro Code (सभी tools में same) ============ */
-document.getElementById('btn-applycode').addEventListener('click', function(){
+document.getElementById('btn-applycode').addEventListener('click', async function(){
   const err=document.getElementById('code-error');
   err.innerText='';
-  const msg=applyAstroCode(document.getElementById('astro-code-in').value);
-  if(msg){ err.innerText=msg; return; }
-  const go=function(){ document.getElementById('btn-ephem').click(); };
-  if(window._swe){ go(); }
-  else{
-    err.innerText='⏳ Engine लोड हो रहा है… तैयार होते ही गणना होगी';
-    const iv=setInterval(function(){ if(window._swe){ clearInterval(iv); err.innerText=''; go(); } }, 500);
-    setTimeout(function(){ clearInterval(iv); }, 60000);
+  try{
+    await calcFromAstroCode();
+  }catch(e){
+    err.innerText=e.message||String(e);
   }
 });
-function makeAstroCode(){
-  const gv=id=>document.getElementById(id).value;
-  const p2=n=>String(n).padStart(2,'0');
-  const day=gv('bd-day'), mon=gv('bd-month'), Y=gv('bd-year');
-  if(!day||!mon||!Y) throw new Error('पहले जन्म तारीख भरें।');
-  const hh=parseInt(gv('bd-hh')), mm=parseInt(gv('bd-mm'));
-  let ss=parseInt(gv('bd-ss')); if(isNaN(ss)||ss<0||ss>59) ss=0;
-  if(isNaN(hh)||hh<1||hh>12) throw new Error('पहले जन्म समय भरें।');
-  if(isNaN(mm)||mm<0||mm>59) throw new Error('पहले जन्म समय भरें।');
-  const h24=(hh%12)+(document.getElementById('bd-ampm').dataset.val==='PM'?12:0);
-  const tzSign=document.getElementById('tz-sign').dataset.val;
-  const tzH=gv('tz-hh'), tzM=gv('tz-mm');
-  const latD=gv('lat-deg'), latM=gv('lat-min')||'0', latDir=document.getElementById('lat-dir').dataset.val;
-  const lonD=gv('lon-deg'), lonM=gv('lon-min')||'0', lonDir=document.getElementById('lon-dir').dataset.val;
-  if(latD===''||lonD==='') throw new Error('पहले अक्षांश/देशांतर भरें।');
-  return 'AS1-'+Y+p2(+mon+1)+p2(day)+'-'+p2(h24)+p2(mm)+p2(ss)+'-'+tzSign+p2(tzH)+p2(tzM)+'-'+p2(latD)+p2(latM)+latDir+'-'+String(lonD).padStart(3,'0')+p2(lonM)+lonDir;
-}
-function applyAstroCode(code){
-  const m=/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/.exec((code||'').trim());
-  if(!m) return 'कोड सही नहीं है — Home page से बना कोड paste करें।';
-  const d8=m[1], t6=m[2], tz=m[3], lat4=m[4], latDir=m[5], lon5=m[6], lonDir=m[7];
-  const Y=+d8.slice(0,4), mo=+d8.slice(4,6), dy=+d8.slice(6,8);
-  if(mo<1||mo>12) return 'कोड में तारीख गलत है।';
-  if(dy<1||dy>new Date(Y,mo,0).getDate()) return 'कोड में तारीख गलत है।';
-  const h24=+t6.slice(0,2), mi=+t6.slice(2,4), se=+t6.slice(4,6);
-  if(h24>23||mi>59||se>59) return 'कोड में समय गलत है।';
-  const tzH=+tz.slice(1,3), tzM=+tz.slice(3,5);
-  if(tzH>14||tzM>59) return 'कोड में timezone गलत है।';
-  const laD=+lat4.slice(0,2), laM=+lat4.slice(2,4), loD=+lon5.slice(0,3), loM=+lon5.slice(3,5);
-  if(laD>90||laM>59||loD>180||loM>59) return 'कोड में अक्षांश/देशांतर गलत है।';
-  const sv=(id,v)=>{document.getElementById(id).value=v;};
-  sv('bd-day',String(dy)); sv('bd-month',String(mo-1)); sv('bd-year',String(Y));
-  sv('bd-hh',String(h24%12===0?12:h24%12)); sv('bd-mm',String(mi).padStart(2,'0')); sv('bd-ss',String(se).padStart(2,'0'));
-  const ap=document.getElementById('bd-ampm'); ap.dataset.val=h24<12?'AM':'PM'; ap.textContent=ap.dataset.val;
-  const ts=document.getElementById('tz-sign'); ts.dataset.val=tz[0]; ts.textContent=tz[0];
-  sv('tz-hh',String(tzH)); sv('tz-mm',String(tzM).padStart(2,'0'));
-  sv('lat-deg',String(laD)); sv('lat-min',String(laM));
-  const ld=document.getElementById('lat-dir'); ld.dataset.val=latDir; ld.textContent=latDir;
-  sv('lon-deg',String(loD)); sv('lon-min',String(loM));
-  const od=document.getElementById('lon-dir'); od.dataset.val=lonDir; od.textContent=lonDir;
-  return null;
-}
 </script>
 
 </body>
