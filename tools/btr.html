@@ -99,35 +99,22 @@ select:focus,input:focus{border-color:#007bff;box-shadow:0 0 0 2px rgba(0,123,25
 </head>
 <body>
 <div class="container">
-<h1>BTR — जन्म समय सुधार <span class="ver-tag">v13</span></h1>
+<h1>BTR — जन्म समय सुधार <span class="ver-tag">v16</span></h1>
 <div class="sub">Swiss Ephemeris (Lahiri) + verified varga rules — exact गणना, कोई अंदाजा नहीं</div>
 
-<!-- shared inputs -->
+<!-- Astro Code (primary) -->
+<div class="form-row">
+<div class="form-group" style="flex:3"><label for="btr-astro">Astro Code:</label><input type="text" id="btr-astro" placeholder="AS1-19950214-030000-+0530-2119N-07951E"></div>
+<div class="form-group" style="flex:1;align-self:flex-end"><button id="astro-fill" class="action-buttons" style="margin:0;min-width:110px;padding:10px 12px;border:none;border-radius:6px;cursor:pointer;font-size:.95rem;color:#fff" onclick="fillAstro()">📥 भरो</button></div>
+</div>
+<!-- shared inputs (manual) -->
 <div class="form-row">
 <div class="form-group"><label for="btr-date">जन्म तिथि:</label><input type="date" id="btr-date"></div>
 <div class="form-group" style="position:relative"><label for="btr-city">शहर (English में लिखें — पूरी दुनिया):</label><input type="text" id="btr-city" placeholder="शहर का नाम लिखें" autocomplete="off"><div id="btr-place-results"></div></div>
 <div class="form-group"><label for="btr-lat">अक्षांश (उत्तर +, दशमलव):</label><input type="number" id="btr-lat" step="0.0001" placeholder="21.3167"></div>
 <div class="form-group"><label for="btr-lon">देशांतर (पूर्व +, दशमलव):</label><input type="number" id="btr-lon" step="0.0001" placeholder="79.8500"></div>
 </div>
-<div class="form-row">
-<div class="form-group" style="flex:3"><label for="btr-astro">Astro Code (वैकल्पिक):</label><input type="text" id="btr-astro" placeholder="AS1-19950214-030000-+0530-2119N-07951E"></div>
-<div class="form-group" style="flex:1;align-self:flex-end"><button id="astro-fill" class="action-buttons" style="margin:0;min-width:110px;padding:10px 12px;border:none;border-radius:6px;cursor:pointer;font-size:.95rem;color:#fff" onclick="fillAstro()">📥 भरो</button></div>
-</div>
 
-<div class="tab-bar">
-<button class="tab-btn active" id="tabbtn-scan" onclick="showTab('scan')">🔍 Window Scan</button>
-<button class="tab-btn" id="tabbtn-timeline" onclick="showTab('timeline')">📊 Timeline</button>
-<button class="tab-btn" id="tabbtn-scrub" onclick="showTab('scrub')">⏱ Time Scrub</button>
-<button class="tab-btn" id="tabbtn-charts" onclick="showTab('charts')">🗺️ Charts</button>
-</div>
-
-<!-- ============ SCAN TAB ============ -->
-<div class="tab-page active" id="tab-scan">
-<div class="form-row">
-<div class="form-group"><label for="btr-from">संभावित समय — से (HH:MM:SS):</label><input type="time" id="btr-from" step="1"></div>
-<div class="form-group"><label for="btr-to">संभावित समय — तक (HH:MM:SS):</label><input type="time" id="btr-to" step="1"></div>
-<div class="form-group"><label for="btr-varga">वर्ग कुंडली चुनें:</label><select id="btr-varga"></select></div>
-</div>
 
 <div class="switch-row" onclick="toggleManual()">
 <div class="switch" id="manual-switch"></div>
