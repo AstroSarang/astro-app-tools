@@ -489,7 +489,7 @@ window.calculate=async function(){
         const janmaNakIdx=Math.floor(natalMoon/(360/27));
 
         // Solar return
-        const srJD=await findSolarReturn(natalSun,ty,dm.mo,dm.d,swe);
+        const srJD=await findSolarReturn(natalSun,ty,ad.mo,ad.d,swe);
         if(!srJD)throw 'Solar return नहीं मिला।';
         const vLagna=norm360(swe.calculateHouses(srJD,lat,lon,'P').ascendant-swe.getAyanamsa(srJD));
         const vLagnaSign=Math.floor(vLagna/30);
@@ -509,7 +509,7 @@ window.calculate=async function(){
         const varshaMoon=planetLons['चंद्र'];
 
         // Muntha
-        const completedYears=ty-dm.y;
+        const completedYears=ty-ad.y;
         const munthaSign=(natalLagnaSign+completedYears)%12;
         const munthaBhava=((munthaSign-vLagnaSign)%12+12)%12+1;
 
@@ -541,7 +541,7 @@ window.calculate=async function(){
         // Mudda dasha
         const mudda=muddaDasha(srJD,completedYears,janmaNakIdx,varshaMoon,use360);
 
-        lastResult={dm,tm,lat,lon,ty,srJD,vLagna,vLagnaSign,planetRows,munthaSign,munthaBhava,balaRows,panch,varshesh,yogas,sahams,mudda,isDay,use360,completedYears};
+        lastResult={ad,lat,lon,ty,srJD,vLagna,vLagnaSign,planetRows,munthaSign,munthaBhava,balaRows,panch,varshesh,yogas,sahams,mudda,isDay,use360,completedYears};
 
         // Render
         let h='';
