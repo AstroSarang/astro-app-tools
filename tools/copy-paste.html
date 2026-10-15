@@ -346,6 +346,14 @@
           el.style.fontSize = '16pt';
           el.style.color = '#000000';
           el.style.margin = '0 0 10px 0';
+          /* v4: standalone **bold** line = heading (Asha file style) */
+          var kids = el.childNodes;
+          if(kids.length===1 && kids[0].nodeType===1 && (kids[0].tagName==='STRONG'||kids[0].tagName==='B')){
+            el.style.fontSize = '17pt';
+            el.style.color = '#980000';
+            el.style.fontWeight = 'bold';
+            el.style.margin = '12px 0 6px 0';
+          }
         } else if(tag==='LI'){
           el.style.fontSize = '16pt';
           el.style.color = '#000000';
