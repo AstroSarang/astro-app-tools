@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>मास्टर डेटा डाउनलोडर — Astro Sarang</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{font-family:'Noto Sans Devanagari',sans-serif;background:#f5f0e8;margin:0;padding:16px;color:#333}
+.con{max-width:900px;margin:0 auto}
+.head{background:linear-gradient(135deg,#6b21a8,#a855f7);color:#fff;padding:20px;border-radius:12px;text-align:center;margin-bottom:16px}
+.head h1{margin:0;font-size:24px}
+.head .sub{opacity:.9;margin-top:4px}
+.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.card h3{margin:0 0 12px;color:#6b21a8}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input[type=text]{flex:1;min-width:200px;padding:10px;border:2px solid #ddd;border-radius:8px;font-size:16px}
+button{padding:10px 18px;border:none;border-radius:8px;font-size:15px;cursor:pointer;font-weight:bold}
+.btn-fill{background:#16a34a;color:#fff}
+.btn-pdf{background:#dc2626;color:#fff}
+.btn-zip{background:#2563eb;color:#fff}
+.btn-sel{background:#6b21a8;color:#fff}
+.btn-clr{background:#6b7280;color:#fff}
+.btn-gen{background:#ea580c;color:#fff;font-size:17px;padding:12px 28px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.tool{border:2px solid #e5e7eb;border-radius:8px;margin-bottom:8px;overflow:hidden}
+.tool-head{display:flex;align-items:center;gap:10px;padding:12px;cursor:pointer;background:#fafafa}
+.tool-head:hover{background:#f3f4f6}
+.tool-head input{width:20px;height:20px}
+.tool-head .tname{font-weight:bold;font-size:16px;flex:1}
+.tool-head .arrow{color:#6b21a8}
+.tool-tabs{display:none;padding:8px 12px 12px 42px;background:#fff;border-top:1px solid #eee}
+.tool.open .tool-tabs{display:block}
+.tab-cb{display:flex;align-items:center;gap:8px;padding:6px 0}
+.tab-cb input{width:18px;height:18px}
+#status{margin-top:12px;padding:12px;border-radius:8px;display:none}
+#status.working{display:block;background:#fef3c7;color:#92400e}
+#status.done{display:block;background:#d1fae5;color:#065f46}
+#status.error{display:block;background:#fee2e2;color:#991b1b}
+#frames{position:absolute;left:-9999px;top:0;width:1200px}
+.progress{margin-top:8px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="con">
+<div class="head">
+<h1>📦 मास्टर डेटा डाउनलोडर</h1>
+<div class="sub">सभी टूल्स का डेटा एक साथ - PDF या ZIP में</div>
+</div>
+
+<div class="card">
+<h3>🔗 Astro Code</h3>
+<div class="row">
+<input type="text" id="astroCode" placeholder="AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W">
+<button class="btn-fill" onclick="fillAll()">📥 भरो</button>
+</div>
+<div style="margin-top:8px;font-size:13px;color:#666">एक बार डालो - सभी selected tools में auto-fill होगा</div>
+</div>
+
+<div class="card">
+<h3>🛠️ टूल्स चुनें</h3>
+<div class="row" style="margin-bottom:12px">
+<button class="btn-sel" onclick="selectAll(true)">सभी चुनें</button>
+<button class="btn-clr" onclick="selectAll(false)">साफ करें</button>
+</div>
+<div id="toolList"></div>
+</div>
+
+<div class="card" style="text-align:center">
+<button class="btn-gen" id="btnGo" onclick="generateAll()">⚙️ डेटा तैयार करो</button>
+<div id="status"></div>
+<div class="progress" id="progress"></div>
+</div>
+
+<div class="card" style="text-align:center;display:none" id="dlCard">
+<h3>📥 डाउनलोड</h3>
+<div class="row" style="justify-content:center">
+<button class="btn-pdf" onclick="downloadPDF()">📄 PDF डाउनलोड</button>
+<button class="btn-zip" onclick="downloadZIP()">📦 ZIP डाउनलोड</button>
+</div>
+<div style="margin-top:8px;font-size:13px;color:#666">PDF: सबका डेटा एक file में | ZIP: हर टूल की अलग PNG + TXT</div>
+</div>
+</div>
+
+<div id="frames"></div>
+
+<script>
+// ============ TOOL CONFIG ============
+const BASE = 'https://astrosarang.github.io/astro-app-tools/tools/';
+const TOOLS = [
+  {id:'d1', name:'D1 विश्लेषण', file:'d1.html', tabs:[
+    {id:'main', name:'मुख्य विश्लेषण', out:'mainOut'}
+  ]},
+  {id:'varga-shot', name:'D7/D9/D10/D60 स्क्रीनशॉट', file:'d9d7d10d60.html', tabs:[
+    {id:'d7', name:'D7 सप्तमांश', out:'vargaOut'},
+    {id:'d9', name:'D9 नवमांश', out:'vargaOut'},
+    {id:'d10', name:'D10 दशमांश', out:'vargaOut'},
+    {id:'d60', name:'D60 षष्ट्यंश', out:'vargaOut'}
+  ]},
+  {id:'shodash', name:'षोडशवर्ग', file:'shodashvarga.html', tabs:[
+    {id:'main', name:'सभी वर्ग', out:'mainOut'}
+  ]},
+  {id:'chalit', name:'चलित/PN-PB-MB', file:'chalit.html', tabs:[
+    {id:'main', name:'चलित', out:'mainOut'}
+  ]},
+  {id:'jaimini', name:'जैमिनी', file:'jaimini.html', tabs:[
+    {id:'main', name:'जैमिनी विश्लेषण', out:'mainOut'}
+  ]},
+  {id:'bnn', name:'BNN-योग दोष', file:'bnn.html', tabs:[
+    {id:'main', name:'BNN विश्लेषण', out:'mainOut'}
+  ]},
+  {id:'kp', name:'KP', file:'kp.html', tabs:[
+    {id:'tables', name:'KP Tables', out:'planetTable'},
+    {id:'sig', name:'Significators', out:'houseSigTable'}
+  ]},
+  {id:'extractor', name:'डेटा एक्सट्रैक्टर', file:'data-extractor.html', tabs:[
+    {id:'marriage', name:'विवाह', out:'marriageOut'},
+    {id:'children', name:'संतान', out:'childrenOut'},
+    {id:'career', name:'करियर', out:'careerOut'}
+  ]},
+  {id:'job', name:'नौकरी व्यवसाय', file:'job-business.html', tabs:[
+    {id:'main', name:'मुख्य', out:'verdictOut'}
+  ]},
+  {id:'dasha', name:'दशा', file:'dashas.html', tabs:[
+    {id:'main', name:'दशा विवरण', out:'mainOut'}
+  ]},
+  {id:'gochar', name:'गोचर', file:'gochars.html', tabs:[
+    {id:'main', name:'गोचर विश्लेषण', out:'mainOut'}
+  ]},
+];
+
+let generatedData = []; // [{toolName, tabName, pngDataUrl, txt}]
+
+// ============ UI BUILD ============
+function buildToolList() {
+  const el = document.getElementById('toolList');
+  el.innerHTML = '';
+  TOOLS.forEach((t, ti) => {
+    const div = document.createElement('div');
+    div.className = 'tool';
+    div.id = 'tool-' + t.id;
+    let tabsHtml = '';
+    t.tabs.forEach((tb, tabi) => {
+      const checked = tabi === 0 ? 'checked' : '';
+      tabsHtml += `<div class="tab-cb"><input type="checkbox" id="tab-${t.id}-${tb.id}" ${checked} onchange="onTabChange('${t.id}')"> <label for="tab-${t.id}-${tb.id}">${tb.name}</label></div>`;
+    });
+    div.innerHTML = `
+      <div class="tool-head" onclick="toggleTool('${t.id}')">
+        <input type="checkbox" id="cb-${t.id}" onclick="event.stopPropagation();onToolChange('${t.id}')">
+        <span class="tname">${ti+1}. ${t.name}</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="tool-tabs">${tabsHtml}</div>`;
+    el.appendChild(div);
+  });
+}
+
+function toggleTool(id) {
+  document.getElementById('tool-' + id).classList.toggle('open');
+}
+
+function onToolChange(id) {
+  const cb = document.getElementById('cb-' + id);
+  const tool = TOOLS.find(t => t.id === id);
+  // When tool is checked, first tab auto-checks (already default)
+  // Expand to show tabs
+  if (cb.checked) {
+    document.getElementById('tool-' + id).classList.add('open');
+  }
+}
+
+function onTabChange(toolId) {
+  // If any tab is checked, ensure tool is checked
+  const tool = TOOLS.find(t => t.id === toolId);
+  const anyChecked = tool.tabs.some(tb => document.getElementById(`tab-${toolId}-${tb.id}`).checked);
+  document.getElementById('cb-' + toolId).checked = anyChecked;
+}
+
+function selectAll(sel) {
+  TOOLS.forEach(t => {
+    document.getElementById('cb-' + t.id).checked = sel;
+    t.tabs.forEach((tb, i) => {
+      // First tab auto-check when selecting all, others unchecked
+      document.getElementById(`tab-${t.id}-${tb.id}`).checked = sel && i === 0;
+    });
+    if (sel) document.getElementById('tool-' + t.id).classList.add('open');
+  });
+}
+
+function getSelection() {
+  const sel = [];
+  TOOLS.forEach(t => {
+    if (!document.getElementById('cb-' + t.id).checked) return;
+    const tabs = t.tabs.filter(tb => document.getElementById(`tab-${t.id}-${tb.id}`).checked);
+    if (tabs.length) sel.push({tool: t, tabs});
+  });
+  return sel;
+}
+
+// ============ GENERATION ENGINE ============
+function setStatus(msg, cls) {
+  const el = document.getElementById('status');
+  el.className = cls || '';
+  el.innerHTML = msg;
+  if (cls) el.style.display = 'block';
+}
+
+function fillAll() {
+  const code = document.getElementById('astroCode').value.trim();
+  if (!code) { alert('पहले Astro Code डालें'); return; }
+  setStatus('✅ Astro Code तैयार: ' + code, 'done');
+}
+
+async function generateAll() {
+  const code = document.getElementById('astroCode').value.trim();
+  if (!code) { alert('पहले Astro Code डालें'); return; }
+  
+  const sel = getSelection();
+  if (!sel.length) { alert('कम से कम एक टूल चुनें'); return; }
+  
+  generatedData = [];
+  document.getElementById('dlCard').style.display = 'none';
+  document.getElementById('btnGo').disabled = true;
+  setStatus('⏳ डेटा तैयार हो रहा है...', 'working');
+  
+  const framesEl = document.getElementById('frames');
+  framesEl.innerHTML = '';
+  
+  let done = 0, total = 0;
+  sel.forEach(s => total += s.tabs.length);
+  
+  for (const s of sel) {
+    for (const tb of s.tabs) {
+      document.getElementById('progress').innerHTML = `प्रगति: ${done}/${total} - ${s.tool.name} (${tb.name})`;
+      try {
+        const data = await processToolTab(s.tool, tb, code);
+        if (data) generatedData.push(data);
+      } catch(e) {
+        console.error('Failed:', s.tool.name, tb.name, e);
+      }
+      done++;
+    }
+  }
+  
+  framesEl.innerHTML = '';
+  document.getElementById('btnGo').disabled = false;
+  document.getElementById('progress').innerHTML = '';
+  
+  if (generatedData.length) {
+    setStatus(`✅ ${generatedData.length} sections तैयार!`, 'done');
+    document.getElementById('dlCard').style.display = 'block';
+  } else {
+    setStatus('❌ कोई डेटा तैयार नहीं हो सका', 'error');
+  }
+}
+
+function processToolTab(tool, tab, astroCode) {
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => resolve(null), 60000); // 60s timeout
+    
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '1200px';
+    iframe.style.height = '800px';
+    iframe.style.border = 'none';
+    document.getElementById('frames').appendChild(iframe);
+    
+    iframe.onload = async () => {
+      try {
+        // Wait for page to settle
+        await sleep(2000);
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        
+        // Fill Astro Code
+        const astroInput = doc.getElementById('astroCode');
+        if (astroInput) {
+          astroInput.value = astroCode;
+          astroInput.dispatchEvent(new Event('input', {bubbles:true}));
+          astroInput.dispatchEvent(new Event('change', {bubbles:true}));
+        }
+        
+        // Try to trigger calculate - look for common buttons
+        await sleep(1000);
+        const calcBtn = doc.getElementById('btn-calc') || 
+                        doc.querySelector('[onclick*="calculate"]') ||
+                        doc.querySelector('button.btn-fill');
+        if (calcBtn) calcBtn.click();
+        
+        // Wait for calculation
+        await sleep(4000);
+        
+        // Switch to tab if needed (for tools with tab switching)
+        // This is tool-specific; for now capture the output div
+        
+        // Capture screenshot of output
+        const outEl = doc.getElementById(tab.out);
+        let pngDataUrl = null;
+        let txt = '';
+        
+        if (outEl) {
+          try {
+            const canvas = await html2canvas(outEl, {scale:1, useCORS:true});
+            pngDataUrl = canvas.toDataURL('image/png');
+          } catch(e) { console.error('Screenshot failed:', e); }
+          txt = outEl.innerText || '';
+        }
+        
+        clearTimeout(timeout);
+        iframe.remove();
+        resolve({
+          toolName: tool.name,
+          tabName: tab.name,
+          pngDataUrl,
+          txt: txt.trim()
+        });
+      } catch(e) {
+        console.error(e);
+        clearTimeout(timeout);
+        iframe.remove();
+        resolve(null);
+      }
+    };
+    
+    iframe.onerror = () => {
+      clearTimeout(timeout);
+      iframe.remove();
+      resolve(null);
+    };
+    
+    iframe.src = BASE + tool.file;
+  });
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ============ PDF DOWNLOAD ============
+async function downloadPDF() {
+  if (!generatedData.length) return;
+  setStatus('⏳ PDF बन रहा है...', 'working');
+  
+  try {
+    const { PDFDocument } = window['pdf-lib'] || {};
+    // Use jsPDF instead for simplicity
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageW = 210, pageH = 297;
+    let first = true;
+    
+    // Title page
+    pdf.setFontSize(22);
+    pdf.text('Astro Sarang - Master Data Report', 105, 40, {align:'center'});
+    pdf.setFontSize(14);
+    pdf.text('Astro Code: ' + document.getElementById('astroCode').value, 105, 55, {align:'center'});
+    pdf.text('Date: ' + new Date().toLocaleDateString('hi-IN'), 105, 65, {align:'center'});
+    
+    for (const d of generatedData) {
+      if (!d.pngDataUrl) continue;
+      if (!first) pdf.addPage();
+      first = false;
+      
+      // Section header
+      pdf.setFontSize(16);
+      pdf.text(d.toolName + ' - ' + d.tabName, 10, 15);
+      
+      // Add image
+      const imgProps = pdf.getImageProperties(d.pngDataUrl);
+      const imgW = pageW - 20;
+      const imgH = (imgProps.height * imgW) / imgProps.width;
+      
+      let yPos = 22;
+      let remainingH = imgH;
+      let srcY = 0;
+      const srcH = imgProps.height;
+      
+      // Handle multi-page images
+      while (remainingH > 0) {
+        const pageAvailH = pageH - yPos - 10;
+        const hToDraw = Math.min(remainingH, pageAvailH);
+        
+        // For simplicity, add whole image scaled to fit, may span pages
+        if (imgH <= pageH - 32) {
+          pdf.addImage(d.pngDataUrl, 'PNG', 10, yPos, imgW, imgH);
+          break;
+        } else {
+          // Long image - add scaled to page width, continue on next page
+          // Simplified: just add and let it overflow, then add page
+          pdf.addImage(d.pngDataUrl, 'PNG', 10, yPos, imgW, imgH);
+          break;
+        }
+      }
+      if (d !== generatedData[generatedData.length-1]) pdf.addPage();
+    }
+    
+    pdf.save('Master-Data-Report.pdf');
+    setStatus('✅ PDF डाउनलोड हो गया!', 'done');
+  } catch(e) {
+    console.error(e);
+    setStatus('❌ PDF बनाने में error: ' + e.message, 'error');
+  }
+}
+
+// ============ ZIP DOWNLOAD ============
+async function downloadZIP() {
+  if (!generatedData.length) return;
+  setStatus('⏳ ZIP बन रहा है...', 'working');
+  
+  try {
+    const zip = new JSZip();
+    const code = document.getElementById('astroCode').value.trim().replace(/[^a-zA-Z0-9]/g, '_');
+    
+    generatedData.forEach((d, i) => {
+      const fname = `${String(i+1).padStart(2,'0')}_${d.toolName}_${d.tabName}`.replace(/[^a-zA-Z0-9_\-]/g, '_');
+      if (d.pngDataUrl) {
+        const base64 = d.pngDataUrl.split(',')[1];
+        zip.file(fname + '.png', base64, {base64: true});
+      }
+      if (d.txt) {
+        zip.file(fname + '.txt', d.txt);
+      }
+    });
+    
+    const blob = await zip.generateAsync({type: 'blob'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Master-Data-' + code + '.zip';
+    a.click();
+    setStatus('✅ ZIP डाउनलोड हो गया!', 'done');
+  } catch(e) {
+    console.error(e);
+    setStatus('❌ ZIP बनाने में error: ' + e.message, 'error');
+  }
+}
+
+// ============ INIT ============
+buildToolList();
+</script>
+</body>
+</html>
