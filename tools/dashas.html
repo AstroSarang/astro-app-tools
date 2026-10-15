@@ -48,29 +48,17 @@ th{background:#e3f2fd}
 </head>
 <body>
 <div class="container">
-<h1>🪐 दशा कैलकुलेटर v4</h1>
+<h1>🪐 दशा कैलकुलेटर v5</h1>
 <p style="text-align:center;color:#666;font-size:.9em">App-verified logic • 365.256364 days/year • Master Timeline</p>
 
-<!-- Birth Details -->
+<!-- Birth Details (Astro-Code-only v5) -->
 <div class="ephem">
 <h3>📥 जन्म विवरण</h3>
 <div class="row">
 <div class="f">Astro Code<input id="astro-code" class="grow" placeholder="AS1-..."></div>
-<button class="btn" onclick="fillFromCode()" style="padding:8px 12px">भरो</button>
+<button class="btn" onclick="fillFromCode()" style="padding:8px 12px">📥 भरो</button>
 </div>
-<div class="row">
-<div class="f">दिन<select id="bd-day"></select></div>
-<div class="f">महीना<select id="bd-month"></select></div>
-<div class="f">वर्ष<input id="bd-year" type="number" placeholder="1995" style="width:70px"></div>
-<div class="f">घंटा<input id="bd-hh" type="number" min="0" max="23" placeholder="3" style="width:50px"></div>
-<div class="f">मिनट<input id="bd-mm" type="number" min="0" max="59" placeholder="0" style="width:50px"></div>
-<div class="f">AM/PM<select id="bd-ampm"><option>AM</option><option>PM</option></select></div>
-</div>
-<div class="row">
-<div class="f">अक्षांश (Lat)<input id="bd-lat" type="number" step="0.01" placeholder="21.19" style="width:70px"></div>
-<div class="f">देशांतर (Lon)<input id="bd-lon" type="number" step="0.01" placeholder="79.51" style="width:70px"></div>
-<div class="f" style="font-size:.8em;color:#666;justify-content:flex-end">चर दशा के लग्न हेतु</div>
-</div>
+<div class="note">Astro Code से auto-calculate होगा — किसी भी देश का सही calculate होगा।</div>
 <div id="ephem-status">Swiss Ephemeris लोड हो रहा है...</div>
 <button id="btn-ephem" onclick="calcFromBirth()" disabled>ग्रह स्थिति निकालें व दशा बनाएं</button>
 </div>
@@ -733,13 +721,6 @@ function testSetBirth() {
     birthData = {birthDate: new Date(1995, 1, 14), moonLon: 101.51, nakIdx: 7, remFrac: 0.3868};
     vimCalc(); yogCalc(); triCalc(); ashCalc();
 }
-// Init dropdowns
-(function() {
-    const d = document.getElementById('bd-day');
-    for (let i = 1; i <= 31; i++) d.innerHTML += `<option>${i}</option>`;
-    const mo = document.getElementById('bd-month');
-    ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'].forEach((m,i) => mo.innerHTML += `<option value="${i+1}">${m}</option>`);
-})();
 </script>
 
 <script type="module">
@@ -752,17 +733,13 @@ async function calcFromBirth() {
     try {
         if (!window._swe) throw new Error('Ephemeris लोड नहीं हुआ, पेज refresh करें');
         const swe = window._swe;
-        const day = parseInt(document.getElementById('bd-day').value);
-        const mon = parseInt(document.getElementById('bd-month').value);
-        const yr = parseInt(document.getElementById('bd-year').value);
-        let hh = parseInt(document.getElementById('bd-hh').value || '0');
-        const mm = parseInt(document.getElementById('bd-mm').value || '0');
-        const ampm = document.getElementById('bd-ampm').value;
-        if (ampm === 'PM' && hh < 12) hh += 12;
-        if (ampm === 'AM' && hh === 12) hh = 0;
-        if (!day || !mon || !yr) throw new Error('जन्म तिथि पूरी भरें');
+        const ad = window._astroData;
+        if (!ad) throw new Error('पहले Astro Code भरकर 📥 भरो दबाएं');
+        const yr = ad.y, mon = ad.mo, day = ad.d;
+        const hh = ad.hh, mm = ad.mi;
+        const tzH = ad.tzH;
         
-        const utcMs = Date.UTC(yr, mon-1, day, hh, mm) - (5.5 * 3600000);
+        const utcMs = Date.UTC(yr, mon-1, day, hh, mm) - (tzH * 3600000);
         const ud = new Date(utcMs);
         const jd = swe.julianDay(ud.getUTCFullYear(), ud.getUTCMonth()+1, ud.getUTCDate(),
             ud.getUTCHours() + ud.getUTCMinutes()/60);
@@ -787,9 +764,9 @@ async function calcFromBirth() {
             saturn: Math.floor(calcLon(SEP.Saturn) / 30),
         };
         
-        // Lagna - use lat/lon from inputs (default Gondia)
-        const lat = parseFloat(document.getElementById('bd-lat').value) || 21.19;
-        const lon = parseFloat(document.getElementById('bd-lon').value) || 79.51;
+        // Lagna - use lat/lon from Astro Code
+        const lat = ad.lat;
+        const lon = ad.lon;
         const hs = swe.calculateHouses(jd, lat, lon, 'P');
         const lagnaRashi = Math.floor(norm360(hs.ascendant - ayan) / 30);
         
@@ -803,19 +780,20 @@ function fillFromCode() {
     // AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W
     const m = code.match(/^AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-]\d{4})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])/);
     if (!m) { alert('सही Astro Code डालें'); return; }
-    document.getElementById('bd-year').value = m[1];
-    document.getElementById('bd-month').value = parseInt(m[2]);
-    document.getElementById('bd-day').value = parseInt(m[3]);
-    let hh = parseInt(m[4]);
-    document.getElementById('bd-ampm').value = hh >= 12 ? 'PM' : 'AM';
-    if (hh > 12) hh -= 12; if (hh === 0) hh = 12;
-    document.getElementById('bd-hh').value = hh;
-    document.getElementById('bd-mm').value = m[5];
-    // Lat/Lon: DDMMN -> degrees
+    const tzSign = m[7][0] === '+' ? 1 : -1;
+    const tzH = tzSign * (parseInt(m[7].substring(1,3)) + parseInt(m[7].substring(3))/60);
     const lat = parseInt(m[8]) + parseInt(m[9])/60;
     const lon = parseInt(m[11]) + parseInt(m[12])/60;
-    document.getElementById('bd-lat').value = lat.toFixed(2);
-    document.getElementById('bd-lon').value = lon.toFixed(2);
+    // Store parsed birth data directly (no manual inputs in v5)
+    window._astroData = {
+        y: parseInt(m[1]), mo: parseInt(m[2]), d: parseInt(m[3]),
+        hh: parseInt(m[4]), mi: parseInt(m[5]), ss: parseInt(m[6]),
+        tzH: tzH,
+        lat: (m[10]==='S' ? -lat : lat),
+        lon: (m[13]==='W' ? -lon : lon)
+    };
+    // Auto-calculate after successful fill
+    calcFromBirth();
 }
 // Init ephemeris
 (async function initEphem() {
