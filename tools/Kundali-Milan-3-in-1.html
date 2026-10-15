@@ -65,13 +65,11 @@ window.calculate=async function(){
         document.getElementById('status').textContent='गणना हो रही है…';
         const persons=[];
         for(const p of [1,2]){
-            const dm=parseDMY(document.getElementById('p'+p+'-date').value);
-            if(!dm)throw 'व्यक्ति '+p+': तिथि dd-mm-yyyy में लिखें।';
-            const tm=String(document.getElementById('p'+p+'-time').value||'').trim().match(/^(\d{1,2}):(\d{2})$/);
-            if(!tm)throw 'व्यक्ति '+p+': समय HH:MM में लिखें।';
-            const lat=parseFloat(document.getElementById('p'+p+'-lat').value),lon=parseFloat(document.getElementById('p'+p+'-lon').value);
-            if(!(lat>-90&&lat<90&&lon>-180&&lon<180))throw 'व्यक्ति '+p+': Lat/Lon सही भरें।';
-            const bJD=jdFromYMDH(dm.y,dm.mo,dm.d,(+tm[1])+(+tm[2])/60-5.5);
+            const pd=(window._personData&&window._personData[p])||null;
+            if(!pd)throw 'व्यक्ति '+p+': पहले Astro Code भरकर 📥 भरो दबाएं।';
+            const lat=pd.lat,lon=pd.lon;
+            if(!(lat>-90&&lat<90&&lon>-180&&lon<180))throw 'व्यक्ति '+p+': Lat/Lon सही नहीं।';
+            const bJD=jdFromYMDH(pd.yy,pd.mm,pd.dd,(pd.hh)+(pd.mi)/60-pd.tzH);
             const chart=await computeChart(swe,bJD,lat,lon);
             const mds=vimshottariTimeline(bJD,chart.moonLon);
             persons.push({n:p,chart,mds});
@@ -351,19 +349,7 @@ h2{color:#8e44ad;font-size:1.1rem;margin-bottom:8px}
 <input type="text" id="p1-code" placeholder="AS1-..." style="flex:1">
 <button class="btn" style="width:auto;margin:0;padding:9px 14px;white-space:nowrap" onclick="fillFromCode(1)">📥 भरो</button>
 </div>
-<label>जन्म तिथि (dd-mm-yyyy):</label>
-<input type="text" id="p1-date" placeholder="dd-mm-yyyy">
-<label>जन्म समय (HH:MM):</label>
-<input type="text" id="p1-time" placeholder="HH:MM">
-<label>स्थान / Lat / Lon:</label>
-<div class="place-wrap">
-<input type="text" id="p1-place" placeholder="शहर का नाम (English)" autocomplete="off">
-<div class="place-results" id="p1-place-results"></div>
-</div>
-<div class="dual">
-<div><input type="number" id="p1-lat" step="0.01" placeholder="Lat"></div>
-<div><input type="number" id="p1-lon" step="0.01" placeholder="Lon"></div>
-</div>
+<div class="note" id="p1-info" style="font-size:12px;color:#666;margin-top:4px"></div>
 </div>
 <div class="person">
 <h3>👤 व्यक्ति 2 (वधू / माता)</h3>
@@ -372,19 +358,7 @@ h2{color:#8e44ad;font-size:1.1rem;margin-bottom:8px}
 <input type="text" id="p2-code" placeholder="AS1-..." style="flex:1">
 <button class="btn" style="width:auto;margin:0;padding:9px 14px;white-space:nowrap" onclick="fillFromCode(2)">📥 भरो</button>
 </div>
-<label>जन्म तिथि (dd-mm-yyyy):</label>
-<input type="text" id="p2-date" placeholder="dd-mm-yyyy">
-<label>जन्म समय (HH:MM):</label>
-<input type="text" id="p2-time" placeholder="HH:MM">
-<label>स्थान / Lat / Lon:</label>
-<div class="place-wrap">
-<input type="text" id="p2-place" placeholder="शहर का नाम (English)" autocomplete="off">
-<div class="place-results" id="p2-place-results"></div>
-</div>
-<div class="dual">
-<div><input type="number" id="p2-lat" step="0.01" placeholder="Lat"></div>
-<div><input type="number" id="p2-lon" step="0.01" placeholder="Lon"></div>
-</div>
+<div class="note" id="p2-info" style="font-size:12px;color:#666;margin-top:4px"></div>
 </div>
 </div>
 <button class="btn" onclick="calculate()">🔱 तीनों Tabs की गणना करें</button>
@@ -425,9 +399,12 @@ function showErr(m){document.getElementById('err').textContent=m;}
 function parseAstroCode(code){
     const m=String(code||'').trim().match(/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/i);
     if(!m)return null;
+    const tzSign=m[3][0]==='+'?1:-1;
+    const tzH=tzSign*(parseInt(m[3].slice(1,3))+parseInt(m[3].slice(3))/60);
     return{
         dd:+m[1].slice(6,8),mm:+m[1].slice(4,6),yy:+m[1].slice(0,4),
         hh:+m[2].slice(0,2),mi:+m[2].slice(2,4),
+        tzH:tzH,
         lat:(+m[4].slice(0,2)+(+m[4].slice(2))/60)*(m[5].toUpperCase()==='S'?-1:1),
         lon:(+m[6].slice(0,3)+(+m[6].slice(3))/60)*(m[7].toUpperCase()==='W'?-1:1)
     };
@@ -436,11 +413,16 @@ window.fillFromCode=function(p){
     const pc=parseAstroCode(document.getElementById('p'+p+'-code').value);
     if(!pc){showErr('व्यक्ति '+p+': गलत Astro Code format');return;}
     showErr('');
+    // Store parsed data directly (no manual inputs in v2)
+    if(!window._personData)window._personData={};
+    window._personData[p]=pc;
     const pad=n=>String(n).padStart(2,'0');
-    document.getElementById('p'+p+'-date').value=`${pad(pc.dd)}-${pad(pc.mm)}-${pc.yy}`;
-    document.getElementById('p'+p+'-time').value=`${pad(pc.hh)}:${pad(pc.mi)}`;
-    document.getElementById('p'+p+'-lat').value=pc.lat.toFixed(2);
-    document.getElementById('p'+p+'-lon').value=pc.lon.toFixed(2);
+    document.getElementById('p'+p+'-info').textContent=
+        `${pad(pc.dd)}-${pad(pc.mm)}-${pc.yy} ${pad(pc.hh)}:${pad(pc.mi)} (UTC${pc.tzH>=0?'+':''}${pc.tzH})`;
+    // Auto-calculate when both persons are filled
+    if(window._personData[1]&&window._personData[2]){
+        window.calculate();
+    }
 };
 /* ================= Worldwide city search ================= */
 function setupCitySearch(p){
