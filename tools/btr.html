@@ -422,7 +422,14 @@ function fillAstro(){
     document.getElementById('btr-lon').value=lon.toFixed(4);
     document.getElementById('btr-city').value='';
     _tzH=(mA[7]==='-'?-1:1)*(parseInt(mA[8],10)+parseInt(mA[9],10)/60);
-    setStatus('Astro Code से तिथि व स्थान भर दिया।');
+    // v15: auto-set scan window = birth time ±15 minutes
+    const bh=parseInt(mA[4],10),bm=parseInt(mA[5],10),bs=parseInt(mA[6],10);
+    const birthSec=bh*3600+bm*60+bs;
+    const pad=n=>String(n).padStart(2,'0');
+    const fmt=s=>{s=((s%86400)+86400)%86400;return pad(Math.floor(s/3600))+':'+pad(Math.floor(s%3600/60))+':'+pad(s%60);};
+    document.getElementById('btr-from').value=fmt(birthSec-900);
+    document.getElementById('btr-to').value=fmt(birthSec+900);
+    setStatus('Astro Code से तिथि, समय window (±15 min) व स्थान भर दिया।');
 }
 function sharedInputs(){
     const dateV=document.getElementById('btr-date').value;
