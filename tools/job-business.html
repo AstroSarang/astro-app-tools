@@ -62,14 +62,7 @@ th{background:#3f51b5;color:#fff}
 <label>Astro Code<input type="text" id="astroCode" placeholder="AS1-..."></label>
 <label>&nbsp;<button class="btn blue" onclick="fillFromAstroCode()" style="width:100%">📥 भरो</button></label>
 </div>
-<h3>📅 जन्म विवरण</h3>
-<div class="input-grid">
-<label>जन्म तारीख<input type="date" id="bd-date"></label>
-<label>जन्म समय<input type="time" id="bd-time"></label>
-<label>अक्षांश (Lat)<input type="number" id="bd-lat" step="0.0001" placeholder="21.4624"></label>
-<label>देशांतर (Lon)<input type="number" id="bd-lon" step="0.0001" placeholder="79.2212"></label>
-</div>
-<div class="note">🪐 ग्रह स्थिति Swiss Ephemeris से auto-calculate होगी (लाहिड़ी अयनांश)।</div>
+<div class="note">🪐 Astro Code से Swiss Ephemeris द्वारा auto-calculate होगा (लाहिड़ी अयनांश)। किसी भी देश का सही calculate होगा।</div>
 <div style="text-align:center;margin:15px 0">
 <button class="btn" id="btn-calc" onclick="calculateAll()" disabled>🧮 विश्लेषण करें</button>
 <div id="calcStatus" style="margin-top:10px;font-size:14px;color:#666">⏳ Ephemeris लोड होने का wait करें</div>
@@ -167,28 +160,32 @@ function fillFromAstroCode() {
   const code = document.getElementById('astroCode').value.trim();
   const m = code.match(/AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-]\d{2})(\d{2})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])/);
   if (!m) { alert('Astro Code format गलत है'); return; }
-  document.getElementById('bd-date').value = m[1]+'-'+m[2]+'-'+m[3];
-  document.getElementById('bd-time').value = m[4]+':'+m[5];
+  const y = parseInt(m[1]), mo = parseInt(m[2]), d = parseInt(m[3]);
+  const hh = parseInt(m[4]), mm = parseInt(m[5]);
   const lat = parseInt(m[9]) + parseInt(m[10])/60;
   const lon = parseInt(m[12]) + parseInt(m[13])/60;
-  document.getElementById('bd-lat').value = (m[11]==='S' ? -lat : lat).toFixed(4);
-  document.getElementById('bd-lon').value = (m[14]==='W' ? -lon : lon).toFixed(4);
+  const tzSign = m[7][0] === '+' ? 1 : -1;
+  const tzH = tzSign * (parseInt(m[7].substring(1)) + parseInt(m[8])/60);
+  // Store parsed birth data directly (no manual inputs in v3)
+  window._astroData = {
+    y, mo, d, hh, mm,
+    lat: (m[11]==='S' ? -lat : lat),
+    lonP: (m[14]==='W' ? -lon : lon),
+    tzH
+  };
+  // Auto-calculate after successful fill
+  calculateAll();
 }
 
 async function calculateAll() {
   const swe = window._swe, SEP = window._SEP;
   if (!swe) { alert('Ephemeris तैयार नहीं है'); return; }
-  const dateVal = document.getElementById('bd-date').value;
-  const timeVal = document.getElementById('bd-time').value;
-  if (!dateVal || !timeVal) { alert('जन्म तारीख और समय भरें'); return; }
-  const [y,mo,d] = dateVal.split('-').map(Number);
-  const [hh,mm] = timeVal.split(':').map(Number);
-  const lat = parseFloat(document.getElementById('bd-lat').value);
-  const lonP = parseFloat(document.getElementById('bd-lon').value);
-  if (isNaN(lat) || isNaN(lonP)) { alert('अक्षांश और देशांतर भरें'); return; }
+  const ad = window._astroData;
+  if (!ad) { alert('पहले Astro Code भरकर 📥 भरो दबाएं'); return; }
+  const {y, mo, d, hh, mm, lat, lonP, tzH} = ad;
 
   try {
-    const utcMs = Date.UTC(y, mo-1, d, hh, mm) - (5.5 * 3600000);
+    const utcMs = Date.UTC(y, mo-1, d, hh, mm) - (tzH * 3600000);
     const ud = new Date(utcMs);
     const jd = swe.julianDay(ud.getUTCFullYear(), ud.getUTCMonth()+1, ud.getUTCDate(),
         ud.getUTCHours() + ud.getUTCMinutes()/60);
