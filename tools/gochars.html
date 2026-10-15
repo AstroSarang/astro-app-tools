@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>गोचर कैलकुलेटर v15 (Live Transit + विश्लेषण)</title>
+<title>गोचर कैलकुलेटर v16 (Live Transit + विश्लेषण)</title>
 <style>
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;padding:15px;background:#f0f2f5;color:#1d2129;margin:0}
 .container{max-width:950px;margin:15px auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 15px rgba(0,0,0,.08)}
@@ -56,7 +56,7 @@ tr.imp-row{background:#fff8e1;font-weight:600}
 </head>
 <body>
 <div class="container">
-<h1>🪐 गोचर कैलकुलेटर v15</h1>
+<h1>🪐 गोचर कैलकुलेटर v16</h1>
 <p style="text-align:center;color:#666;font-size:.9em">Swiss Ephemeris (Live) • लाहिड़ी अयनांश • राहु/केतु मध्यम (Mean)</p>
 
 <!-- Mode Selector -->
@@ -188,7 +188,7 @@ function setMode(mode) {
     document.getElementById('normal-ui').style.display = mode === 'normal' ? 'block' : 'none';
     document.getElementById('analysis-ui').style.display = mode === 'normal' ? 'none' : 'block';
     document.getElementById('double-focus').style.display = mode === 'double' ? 'flex' : 'none';
-    document.getElementById('manual-shadbala-ui').style.display = mode === 'normal' ? 'none' : 'block';
+    document.getElementById('manual-shadbala-ui').style.display = (mode === 'vivah' || mode === 'santan') ? 'block' : 'none';
     document.getElementById('gochar-out').innerHTML = '';
 }
 window.setMode = setMode;
