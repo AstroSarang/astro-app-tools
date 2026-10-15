@@ -115,6 +115,20 @@ select:focus,input:focus{border-color:#007bff;box-shadow:0 0 0 2px rgba(0,123,25
 <div class="form-group"><label for="btr-lon">देशांतर (पूर्व +, दशमलव):</label><input type="number" id="btr-lon" step="0.0001" placeholder="79.8500"></div>
 </div>
 
+<div class="tab-bar">
+<button class="tab-btn active" id="tabbtn-scan" onclick="showTab('scan')">🔍 Window Scan</button>
+<button class="tab-btn" id="tabbtn-timeline" onclick="showTab('timeline')">📊 Timeline</button>
+<button class="tab-btn" id="tabbtn-scrub" onclick="showTab('scrub')">⏱ Time Scrub</button>
+<button class="tab-btn" id="tabbtn-charts" onclick="showTab('charts')">🗺️ Charts</button>
+</div>
+
+<!-- ============ SCAN TAB ============ -->
+<div class="tab-page active" id="tab-scan">
+<div class="form-row">
+<div class="form-group"><label for="btr-from">संभावित समय — से (HH:MM:SS):</label><input type="time" id="btr-from" step="1"></div>
+<div class="form-group"><label for="btr-to">संभावित समय — तक (HH:MM:SS):</label><input type="time" id="btr-to" step="1"></div>
+<div class="form-group"><label for="btr-varga">वर्ग कुंडली चुनें:</label><select id="btr-varga"></select></div>
+</div>
 
 <div class="switch-row" onclick="toggleManual()">
 <div class="switch" id="manual-switch"></div>
