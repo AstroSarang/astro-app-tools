@@ -70,26 +70,7 @@
       <button class="btn" id="btnFillCode">📥 भरो</button>
     </div>
     <div class="status" id="ephemStatus">⏳ Swiss Ephemeris लोड हो रहा है...</div>
-  </div>
-
-  <div class="card">
-    <h2>📅 जन्म विवरण (Manual)</h2>
-    <div class="row">
-      <div class="field"><label>दिन</label><input type="number" id="dd" min="1" max="31" placeholder="DD" style="width:60px"></div>
-      <div class="field"><label>महीना</label><input type="number" id="mm" min="1" max="12" placeholder="MM" style="width:60px"></div>
-      <div class="field"><label>साल</label><input type="number" id="yy" min="1900" max="2100" placeholder="YYYY" style="width:80px"></div>
-      <div class="field"><label>घंटा</label><input type="number" id="hh" min="0" max="23" placeholder="HH" style="width:60px"></div>
-      <div class="field"><label>मिनट</label><input type="number" id="mi" min="0" max="59" placeholder="MM" style="width:60px"></div>
-      <div class="field"><label>सेकंड</label><input type="number" id="ss" min="0" max="59" placeholder="SS" style="width:60px"></div>
-    </div>
-    <div class="row">
-      <div class="field"><label>अक्षांश (Lat °)</label><input type="number" id="lat" step="0.01" placeholder="Lat" style="width:90px"></div>
-      <div class="field"><label>देशांतर (Lon °)</label><input type="number" id="lon" step="0.01" placeholder="Lon" style="width:90px"></div>
-      <div class="field"><label>Timezone</label><input type="text" id="tz" placeholder="+5:30" style="width:80px"></div>
-    </div>
-    <div class="row">
-      <button class="btn" id="btnCalc" disabled>🔯 KP गणना करो</button>
-    </div>
+    <div style="font-size:0.85em; color:#666; margin-top:8px;">📥 भरो दबाते ही KP गणना अपने आप होगी। किसी भी देश का सही calculate होगा।</div>
   </div>
 
   <div id="results" style="display:none;">
@@ -182,7 +163,6 @@ let lastResults = null;
     SLP = m.LunarPoint;
     try { SID_MODE_LAHIRI = m.SiderealMode.Lahiri; } catch(e) { SID_MODE_LAHIRI = 1; }
     st.textContent = '✅ Swiss Ephemeris तैयार (KP Ayanamsa)';
-    document.getElementById('btnCalc').disabled = false;
   } catch(e) {
     st.textContent = '❌ Ephemeris लोड नहीं हुआ: ' + e.message;
   }
@@ -201,20 +181,10 @@ function parseAstroCode(code) {
   };
 }
 
-document.getElementById('btnFillCode').addEventListener('click', () => {
+document.getElementById('btnFillCode').addEventListener('click', async () => {
   const p = parseAstroCode(document.getElementById('astroCode').value);
   if(!p){ alert('❌ गलत Astro Code format'); return; }
-  document.getElementById('dd').value = p.dd;
-  document.getElementById('mm').value = p.mm;
-  document.getElementById('yy').value = p.yy;
-  document.getElementById('hh').value = p.hh;
-  document.getElementById('mi').value = p.mi;
-  document.getElementById('ss').value = p.ss;
-  document.getElementById('lat').value = p.lat.toFixed(2);
-  document.getElementById('lon').value = p.lon.toFixed(2);
-  document.getElementById('tz').value = p.tz;
-  // Auto-click calculate after Astro Code fill
-  document.getElementById('btnCalc').click();
+  await runKPCalc(p.dd, p.mm, p.yy, p.hh, p.mi, p.ss, p.lat, p.lon, p.tz);
 });
 
 function toJulian(yy, mm, dd, hh, mi, ss, tzStr) {
@@ -271,13 +241,8 @@ function fmtDeg(absDeg) {
   return `${d2}:${String(m2).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
 }
 
-document.getElementById('btnCalc').addEventListener('click', async () => {
+async function runKPCalc(dd,mm,yy,hh,mi,ss,lat,lon,tz){
   if(!swe){ alert('Ephemeris तैयार नहीं'); return; }
-  const dd=+document.getElementById('dd').value, mm=+document.getElementById('mm').value,
-        yy=+document.getElementById('yy').value, hh=+document.getElementById('hh').value,
-        mi=+document.getElementById('mi').value, ss=+document.getElementById('ss').value,
-        lat=+document.getElementById('lat').value, lon=+document.getElementById('lon').value,
-        tz=document.getElementById('tz').value;
   const jd = toJulian(yy,mm,dd,hh,mi,ss,tz);
 
   // KP Ayanamsa = Lahiri - 5'26.22"
@@ -444,7 +409,7 @@ document.getElementById('btnCalc').addEventListener('click', async () => {
   document.getElementById('results').style.display='block';
   ['btnModeTxt','btnModePng'].forEach(id=>{const b=document.getElementById(id); if(b) b.disabled=false;});
   switchMode('kptables');
-});
+}
 
 // ===== v6: Event Verdict Logic =====
 const PLANET_HINDI = {Su:'सूर्य',Mo:'चंद्र',Ma:'मंगल',Me:'बुध',Ju:'गुरु',Ve:'शुक्र',Sa:'शनि',Ra:'राहु',Ke:'केतु'};
