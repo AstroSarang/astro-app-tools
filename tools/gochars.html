@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>गोचर कैलकुलेटर v17 (Live Transit + विश्लेषण)</title>
+<title>गोचर कैलकुलेटर v18 (Live Transit + विश्लेषण)</title>
 <style>
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;padding:15px;background:#f0f2f5;color:#1d2129;margin:0}
 .container{max-width:950px;margin:15px auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 15px rgba(0,0,0,.08)}
@@ -56,7 +56,7 @@ tr.imp-row{background:#fff8e1;font-weight:600}
 </head>
 <body>
 <div class="container">
-<h1>🪐 गोचर कैलकुलेटर v17</h1>
+<h1>🪐 गोचर कैलकुलेटर v18</h1>
 <p style="text-align:center;color:#666;font-size:.9em">Swiss Ephemeris (Live) • लाहिड़ी अयनांश • राहु/केतु मध्यम (Mean)</p>
 
 <!-- Mode Selector -->
@@ -1525,9 +1525,21 @@ function downloadTxt() {
     const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    const mode = document.getElementById('analysis-mode')?.value || 'general';
-    const names = {general:'Gochar_Samanya', vivah:'Gochar_Vivah', santan:'Gochar_Santan', double:'Gochar_DoubleTransit'};
-    a.download = (names[mode] || 'Gochar') + '.txt';
+    // v18: Fix filename per tab (currentMode), Double_Transit with focus suffix
+    const mode = (typeof currentMode !== 'undefined') ? currentMode : 'normal';
+    let fname = 'Gochar';
+    if (mode === 'normal') fname = 'Gochar_Samanya';
+    else if (mode === 'vivah') fname = 'Gochar_Vivah';
+    else if (mode === 'santan') fname = 'Gochar_Santan';
+    else if (mode === 'double') {
+        fname = 'Gochar_Double_Transit';
+        const wV = document.getElementById('dt-vivah')?.checked;
+        const wS = document.getElementById('dt-santan')?.checked;
+        if (wV && wS) fname += '_Vivah_Santan';
+        else if (wV) fname += '_Vivah';
+        else if (wS) fname += '_Santan';
+    }
+    a.download = fname + '.txt';
     a.click();
 }
 
