@@ -88,34 +88,17 @@ h3{color:#5e35b1;margin:12px 0 6px;font-size:1em}
 <div class="card">
 <h2>👤 जातक का विवरण <span class="phase-tag">जन्म विवरण</span></h2>
 <div id="person1-block">
-<label>Astro Code (optional)</label>
+<label>Astro Code</label>
 <div class="row"><div style="flex:3"><input id="p1-code" placeholder="AS1-YYYYMMDD-HHMMSS..."></div><div><button type="button" class="btn" style="margin:0;padding:9px" onclick="fillAstro(1)">📥 भरो</button></div></div>
-<div class="row">
-<div><label>जन्म तारीख</label><input type="date" id="p1-date"></div>
-<div><label>जन्म समय</label><input type="time" id="p1-time" value="12:00"></div>
-</div>
-<label>शहर (English में टाइप करें)</label><div class="pr-box"><input id="p1-city" placeholder="City name..." autocomplete="off"><div class="pr-results" id="p1-city-results"></div></div>
-<div class="row">
-<div><label>अक्षांश (Lat)</label><input type="number" id="p1-lat" step="0.01" placeholder="21.14"></div>
-<div><label>देशांतर (Lon)</label><input type="number" id="p1-lon" step="0.01" placeholder="79.65"></div>
-</div>
 <div id="p1-derived" style="font-size:.88em;color:#5e35b1;margin-top:8px"></div>
 </div>
 <div id="person2-block" style="display:none;margin-top:15px;border-top:2px dashed #e1bee7;padding-top:15px">
 <h3>👰 वधू / दूसरा जातक</h3>
-<label>Astro Code (optional)</label>
+<label>Astro Code</label>
 <div class="row"><div style="flex:3"><input id="p2-code" placeholder="AS1-..."></div><div><button type="button" class="btn" style="margin:0;padding:9px" onclick="fillAstro(2)">📥 भरो</button></div></div>
-<div class="row">
-<div><label>जन्म तारीख</label><input type="date" id="p2-date"></div>
-<div><label>जन्म समय</label><input type="time" id="p2-time" value="12:00"></div>
-</div>
-<label>शहर (English में टाइप करें)</label><div class="pr-box"><input id="p2-city" placeholder="City name..." autocomplete="off"><div class="pr-results" id="p2-city-results"></div></div>
-<div class="row">
-<div><label>अक्षांश</label><input type="number" id="p2-lat" step="0.01"></div>
-<div><label>देशांतर</label><input type="number" id="p2-lon" step="0.01"></div>
-</div>
 <div id="p2-derived" style="font-size:.88em;color:#5e35b1;margin-top:8px"></div>
 </div>
+<div class="note">Astro Code से auto-calculate होगा — किसी भी देश का सही calculate होगा।</div>
 </div>
 
 <div class="card">
@@ -218,12 +201,19 @@ window.fillAstro=function(n){
     const code=document.getElementById('p'+n+'-code').value.trim();
     const mt=code.match(/AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-])(\d{2})(\d{2})-(\d{2,3})(\d{2})([NS])-(\d{2,3})(\d{2})([EW])/);
     if(!mt){alert('Astro Code format गलत है');return;}
-    document.getElementById('p'+n+'-date').value=`${mt[1]}-${mt[2]}-${mt[3]}`;
-    document.getElementById('p'+n+'-time').value=`${mt[4]}:${mt[5]}`;
+    const tzSign=mt[7]==='+'?1:-1;
+    const tzH=tzSign*(parseInt(mt[8])+parseInt(mt[9])/60);
     let lat=parseInt(mt[10])+parseInt(mt[11])/60; if(mt[12]==='S')lat=-lat;
     let lon=parseInt(mt[13])+parseInt(mt[14])/60; if(mt[15]==='W')lon=-lon;
-    document.getElementById('p'+n+'-lat').value=lat.toFixed(2);
-    document.getElementById('p'+n+'-lon').value=lon.toFixed(2);
+    // Store parsed birth data directly (no manual inputs in v2)
+    if(!window._personData)window._personData={};
+    window._personData[n]={
+        y:parseInt(mt[1]),mo:parseInt(mt[2]),d:parseInt(mt[3]),
+        hh:parseInt(mt[4]),mi:parseInt(mt[5]),ss:parseInt(mt[6]),
+        tzH:tzH,lat:lat,lon:lon
+    };
+    document.getElementById('p'+n+'-derived').textContent=
+        `✓ ${mt[3]}-${mt[2]}-${mt[1]} ${mt[4]}:${mt[5]} (UTC${tzH>=0?'+':''}${tzH})`;
 };
 
 // Swiss Ephemeris helpers
@@ -413,17 +403,16 @@ window.findMuhurat=async function(){
     try{
         st.textContent='Swiss Ephemeris लोड हो रहा...';
         await initSwe();
-        // Get birth details
+        // Get birth details (Astro-Code-only v2)
         async function getPerson(n){
-            const ds=document.getElementById(`p${n}-date`).value;
-            const ts=document.getElementById(`p${n}-time`).value||'12:00';
-            const lat=parseFloat(document.getElementById(`p${n}-lat`).value);
-            const lon=parseFloat(document.getElementById(`p${n}-lon`).value);
-            if(!ds||isNaN(lat)||isNaN(lon))throw new Error(`व्यक्ति ${n} का विवरण अधूरा है`);
-            const [yy,mm,dd]=ds.split('-').map(Number);
-            const [hh,mi]=ts.split(':').map(Number);
-            // Convert IST to UT (subtract 5.5 hours)
-            let utH=hh+mi/60-5.5;
+            const pd=(window._personData&&window._personData[n])||null;
+            if(!pd)throw new Error(`व्यक्ति ${n} का Astro Code भरकर 📥 भरो दबाएं`);
+            const lat=pd.lat, lon=pd.lon;
+            if(isNaN(lat)||isNaN(lon))throw new Error(`व्यक्ति ${n} का विवरण अधूरा है`);
+            const yy=pd.y,mm=pd.mo,dd=pd.d;
+            const hh=pd.hh,mi=pd.mi;
+            // Convert birth timezone to UT
+            let utH=hh+mi/60-pd.tzH;
             let uyy=yy,umm=mm,udd=dd;
             if(utH<0){utH+=24;udd--;if(udd<1){umm--;if(umm<1){umm=12;uyy--;}udd=new Date(uyy,umm,0).getDate();}}
             const jd=swe.julianDay(uyy,umm,udd,utH);
@@ -602,16 +591,15 @@ window.checkDate=async function(){
         const lat=parseFloat(document.getElementById('chk-lat').value);
         const lon=parseFloat(document.getElementById('chk-lon').value);
         if(!ds||isNaN(lat)||isNaN(lon)){out.innerHTML='<div class="err">तारीख और स्थान भरें</div>';return;}
-        // Get birth persons (reuse Tab1 inputs)
+        // Get birth persons (Astro-Code-only v2)
         async function getP(n){
-            const dsv=document.getElementById(`p${n}-date`).value;
-            const tsv=document.getElementById(`p${n}-time`).value||'12:00';
-            const la=parseFloat(document.getElementById(`p${n}-lat`).value);
-            const lo=parseFloat(document.getElementById(`p${n}-lon`).value);
-            if(!dsv||isNaN(la))throw new Error(`व्यक्ति ${n} का जन्म विवरण Tab 1 में भरें`);
-            const [yy,mm,dd]=dsv.split('-').map(Number);
-            const [hh,mi]=tsv.split(':').map(Number);
-            let utH=hh+mi/60-5.5,uyy=yy,umm=mm,udd=dd;
+            const pd=(window._personData&&window._personData[n])||null;
+            if(!pd)throw new Error(`व्यक्ति ${n} का Astro Code Tab 1 में भरकर 📥 भरो दबाएं`);
+            const la=pd.lat, lo=pd.lon;
+            if(isNaN(la))throw new Error(`व्यक्ति ${n} का जन्म विवरण Tab 1 में भरें`);
+            const yy=pd.y,mm=pd.mo,dd=pd.d;
+            const hh=pd.hh,mi=pd.mi;
+            let utH=hh+mi/60-pd.tzH,uyy=yy,umm=mm,udd=dd;
             if(utH<0){utH+=24;udd--;if(udd<1){umm--;if(umm<1){umm=12;uyy--;}udd=new Date(uyy,umm,0).getDate();}}
             const jd=swe.julianDay(uyy,umm,udd,utH);
             const moonLon=sidereal((await swe.calculatePosition(jd,SEP.Moon)).longitude);
@@ -751,7 +739,7 @@ function wireCitySearch(prefix){
     place.addEventListener('blur',()=>setTimeout(closeBox,150));
     place.addEventListener('focus',()=>{if(box.innerHTML)box.style.display='block';});
 }
-['p1','p2','ev','chk'].forEach(wireCitySearch);
+['ev','chk'].forEach(wireCitySearch);
 
 </script>
 </body>
