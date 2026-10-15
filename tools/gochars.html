@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>गोचर कैलकुलेटर v16 (Live Transit + विश्लेषण)</title>
+<title>गोचर कैलकुलेटर v17 (Live Transit + विश्लेषण)</title>
 <style>
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;padding:15px;background:#f0f2f5;color:#1d2129;margin:0}
 .container{max-width:950px;margin:15px auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 15px rgba(0,0,0,.08)}
@@ -56,7 +56,7 @@ tr.imp-row{background:#fff8e1;font-weight:600}
 </head>
 <body>
 <div class="container">
-<h1>🪐 गोचर कैलकुलेटर v16</h1>
+<h1>🪐 गोचर कैलकुलेटर v17</h1>
 <p style="text-align:center;color:#666;font-size:.9em">Swiss Ephemeris (Live) • लाहिड़ी अयनांश • राहु/केतु मध्यम (Mean)</p>
 
 <!-- Mode Selector -->
@@ -86,28 +86,6 @@ tr.imp-row{background:#fff8e1;font-weight:600}
 <div id="ephem-status">Swiss Ephemeris लोड हो रहा है...</div>
 <button id="btn-ephem" onclick="calcNatal()" disabled>ग्रह स्थिति निकालें</button>
 <div id="natal-summary"></div>
-</div>
-
-<!-- Manual Shadbala override (added 2026-10-12 per user request) -->
-<div class="ephem" id="manual-shadbala-ui" style="margin-top:10px;display:none">
-<h3>✋ मैनुअल षड्बल (ऐप से देखकर भरें)</h3>
-<div class="row" style="align-items:center;gap:10px">
-<label class="switch"><input type="checkbox" id="manual-shadbala-toggle" onchange="toggleManualShadbala()"><span class="slider"></span></label>
-<span style="font-weight:600">मैनुअल षड्बल इस्तेमाल करें</span>
-<span style="font-size:.8em;color:#666">(चालू करने पर नीचे के मान भावबल में इस्तेमाल होंगे)</span>
-</div>
-<div id="manual-shadbala-inputs" style="display:none;margin-top:8px">
-<div class="bal-grid" style="grid-template-columns:repeat(4,1fr)">
-<div class="f">सूर्य<input id="ms-sun" type="number" step="0.01" placeholder="356.23"></div>
-<div class="f">चंद्र<input id="ms-moon" type="number" step="0.01" placeholder="388.04"></div>
-<div class="f">मंगल<input id="ms-mars" type="number" step="0.01" placeholder="356.32"></div>
-<div class="f">बुध<input id="ms-mercury" type="number" step="0.01" placeholder="401.22"></div>
-<div class="f">गुरु<input id="ms-jupiter" type="number" step="0.01" placeholder="327.83"></div>
-<div class="f">शुक्र<input id="ms-venus" type="number" step="0.01" placeholder="267.03"></div>
-<div class="f">शनि<input id="ms-saturn" type="number" step="0.01" placeholder="492.63"></div>
-</div>
-<div style="font-size:.8em;color:#666;margin-top:6px">ऐप के Shadbala टैब से 7 ग्रहों के कुल षड्बल भरें। भावबल (Bhava-Adhipati Bala) में यही मान इस्तेमाल होंगे।</div>
-</div>
 </div>
 
 <!-- गोचर तिथि व ग्रह -->
@@ -188,7 +166,6 @@ function setMode(mode) {
     document.getElementById('normal-ui').style.display = mode === 'normal' ? 'block' : 'none';
     document.getElementById('analysis-ui').style.display = mode === 'normal' ? 'none' : 'block';
     document.getElementById('double-focus').style.display = mode === 'double' ? 'flex' : 'none';
-    document.getElementById('manual-shadbala-ui').style.display = (mode === 'vivah' || mode === 'santan') ? 'block' : 'none';
     document.getElementById('gochar-out').innerHTML = '';
 }
 window.setMode = setMode;
@@ -598,40 +575,8 @@ function fmtD(d) {
 }
 
 // Manual Shadbala toggle (added 2026-10-12 per user request)
-// When enabled, v13_exactShadbalaTotals returns these values directly,
-// so Bhava Bala (which uses Shadbala of bhava lord) becomes exact.
-window.useManualShadbala = false;
-window.manualShadbala = null;
-function toggleManualShadbala() {
-  const on = document.getElementById('manual-shadbala-toggle').checked;
-  document.getElementById('manual-shadbala-inputs').style.display = on ? 'block' : 'none';
-  window.useManualShadbala = on;
-  if (on) {
-    const ids = ['ms-sun','ms-moon','ms-mars','ms-mercury','ms-jupiter','ms-venus','ms-saturn'];
-    const vals = ids.map(id => {
-      const el = document.getElementById(id);
-      const v = el ? parseFloat(el.value) : NaN;
-      return isNaN(v) ? 0 : v;
-    });
-    window.manualShadbala = vals;
-  } else {
-    window.manualShadbala = null;
-  }
-}
-window.toggleManualShadbala = toggleManualShadbala;
-// Refresh manual values when user types (if toggle is on)
-document.addEventListener('input', function(e) {
-  if (e.target && e.target.id && e.target.id.indexOf('ms-') === 0) {
-    if (window.useManualShadbala) {
-      const ids = ['ms-sun','ms-moon','ms-mars','ms-mercury','ms-jupiter','ms-venus','ms-saturn'];
-      window.manualShadbala = ids.map(id => {
-        const el = document.getElementById(id);
-        const v = el ? parseFloat(el.value) : NaN;
-        return isNaN(v) ? 0 : v;
-      });
-    }
-  }
-});
+// Manual BAL entry: user can edit BAL directly in results table (v17).
+// Values stored in window.manualBal = {rowKey: value}. Used by updateBal().
 
 function fillFromCode() {
     const code = document.getElementById('astro-code').value.trim();
@@ -1370,17 +1315,6 @@ function v13_chestaEmpirical(planets, pakshaBala, jd) {
 // v13: Compute exact Shadbala totals for all 7 planets using the APK-verified module.
 // Returns array of 7 totals [Sun..Saturn].
 function v13_exactShadbalaTotals(plon, natal, sunCtx, ayanamsa) {
-  // Manual override: if user enabled manual Shadbala, use those values directly.
-  // (Added 2026-10-12 per user request - for charts where auto calc mismatches)
-  if (window.useManualShadbala && window.manualShadbala) {
-    const m = window.manualShadbala;
-    if (m.length === 7 && m.every(v => typeof v === 'number' && !isNaN(v))) {
-      v13_exactShadbalaTotals._last = {sthana: [0,0,0,0,0,0,0], dig: [0,0,0,0,0,0,0],
-        kala: [0,0,0,0,0,0,0], chesta: [0,0,0,0,0,0,0],
-        naisargika: [0,0,0,0,0,0,0], drik: [0,0,0,0,0,0,0], total: m.slice(), manual: true};
-      return m.slice();
-    }
-  }
   const M = window.ShadbalaV13;
   const planets = [plon.Sun, plon.Moon, plon.Mars, plon.Mercury, plon.Jupiter, plon.Venus, plon.Saturn];
   const lagnaLon = natal.cusps[0];   // 1st cusp = lagna longitude (sidereal)
@@ -1570,7 +1504,25 @@ function transitEffects(tRashi, natal, planetKey, mode) {
 
 function downloadTxt() {
     if (!window._gocharText) { alert('पहले "गोचर निकालें" दबाएं'); return; }
-    const blob = new Blob([window._gocharText], {type: 'text/plain;charset=utf-8'});
+    let txt = window._gocharText;
+    // v17: Apply manual BAL edits to TXT (in table row order)
+    const inputs = document.querySelectorAll('#gochar-out .bal-edit');
+    if (inputs.length) {
+        let idx = 0;
+        txt = txt.replace(/BAL=(\d+) गुणवत्ता=(\w+)/g, function(m, oldBal, oldQ) {
+            if (idx < inputs.length) {
+                const inp = inputs[idx++];
+                const newBal = parseFloat(inp.value);
+                if (!isNaN(newBal)) {
+                    const sav = parseFloat(inp.dataset.sav);
+                    const newQ = qualityOf(sav, newBal);
+                    return 'BAL=' + Math.round(newBal) + ' गुणवत्ता=' + newQ;
+                }
+            }
+            return m;
+        });
+    }
+    const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     const mode = document.getElementById('analysis-mode')?.value || 'general';
@@ -1773,6 +1725,32 @@ function qualityOf(sav, bal) {
     if (sav > 28) return 'Medium';
     return 'Low';
 }
+// v17: Manual BAL entry - user edits BAL directly in table (app values).
+// Recalculates quality + conclusion for that row, updates TXT on download.
+window.manualBal = {};
+function updateBal(input) {
+    const row = input.closest('tr');
+    const sav = parseFloat(input.dataset.sav);
+    const bal = parseFloat(input.value);
+    if (isNaN(bal)) return;
+    const key = input.dataset.key;
+    window.manualBal[key] = bal;
+    const q = qualityOf(sav, bal);
+    const qCls = q === 'High' ? 'high' : q === 'Medium' ? 'med' : 'low';
+    const qCell = row.querySelector('.q-cell');
+    if (qCell) { qCell.textContent = q; qCell.className = 'q-cell ' + qCls; }
+    // Update conclusion: प्रबल संभावना if active and (High/Medium)
+    const nkCell = row.querySelector('.nk-cell');
+    if (nkCell) {
+        const prabhav = row.querySelector('.prabhav-cell').textContent;
+        const active = prabhav && prabhav.trim() !== '—' && prabhav.trim() !== '';
+        const nk = (active && (q === 'High' || q === 'Medium')) ? 'प्रबल संभावना' : 'न्यून';
+        nkCell.textContent = nk;
+        nkCell.className = 'nk-cell ' + (nk === 'प्रबल संभावना' ? 'high' : 'low');
+    }
+    input.style.background = '#e8f5e9';
+}
+window.updateBal = updateBal;
 
 // ===== Vivah Analysis =====
 async function calcVivah(startDate, endDate, prog, out) {
@@ -1784,15 +1762,17 @@ async function calcVivah(startDate, endDate, prog, out) {
 
     let html = `<div class="ctx">💒 विवाह विश्लेषण: ${fmtD(startDate)} से ${fmtD(endDate)}<br>लग्न: ${RASHI_HI[natalData.lagna]} • चंद्र: ${RASHI_HI[natalData.moon]}</div>`;
     html += `<div style="overflow-x:auto"><table style="min-width:900px;font-size:.82em"><tr>
-        <th>गोचर भाव (L/M)</th><th>समय (अवधि)</th><th>SAV</th><th>BAV</th><th>BAL</th>
+        <th>गोचर भाव (L/M)</th><th>समय (अवधि)</th><th>SAV</th><th>BAV</th><th>BAL ✏️</th>
         <th>गुणवत्ता</th><th>विवाह पर प्रभाव</th><th>सहायक भावों पर प्रभाव</th><th>अंतिम निष्कर्ष</th></tr>`;
     let txt = `विवाह विश्लेषण (गुरु गोचर)\n${'='.repeat(60)}\nअवधि: ${fmtD(startDate)} से ${fmtD(endDate)}\nलग्न: ${RASHI_HI[natalData.lagna]} | चंद्र: ${RASHI_HI[natalData.moon]}\n${'='.repeat(60)}\n`;
 
+    let rowIdx = 0;
     for (const p of periods) {
         const bhL = (p.rashi - natalData.lagna + 12) % 12 + 1;
         const bhM = (p.rashi - natalData.moon + 12) % 12 + 1;
         const s = sav[p.rashi];
         const bav = bavJup[bhL - 1];
+        const rowKey = 'vivah-' + (rowIdx++);
         const bal = Math.round(balBhava[bhL - 1]); // v3: real APK Shadbala BAL
         const q = qualityOf(s, bal);
         const qCls = q === 'High' ? 'high' : q === 'Medium' ? 'med' : 'low';
@@ -1810,8 +1790,8 @@ async function calcVivah(startDate, endDate, prog, out) {
         const nkCls = nishkarsh === 'प्रबल संभावना' ? 'high' : 'low';
 
         html += `<tr><td>${RASHI_HI[p.rashi]}<br>(${bhL}/${bhM})</td><td>${fmtD(p.from)}<br>से ${fmtD(p.to)}</td>
-            <td>${s}</td><td>${bav}</td><td>${bal}</td><td class="${qCls}">${q}</td>
-            <td>${prabhav}</td><td>${sahayak}</td><td class="${nkCls} conclusion">${nishkarsh}</td></tr>`;
+            <td>${s}</td><td>${bav}</td><td><input type="number" class="bal-edit" value="${bal}" data-sav="${s}" data-key="${rowKey}" onchange="updateBal(this)" style="width:75px;padding:4px;border:1px solid #ccc;border-radius:4px" title="ऐप से देखकर BAL भरें"></td><td class="q-cell ${qCls}">${q}</td>
+            <td class="prabhav-cell">${prabhav}</td><td>${sahayak}</td><td class="nk-cell ${nkCls}">${nishkarsh}</td></tr>`;
         txt += `\n${RASHI_HI[p.rashi]} (${bhL}/${bhM}): ${fmtD(p.from)} से ${fmtD(p.to)}\n`;
         txt += `  SAV=${s} BAV=${bav} BAL=${bal} गुणवत्ता=${q}\n  प्रभाव: ${prabhav} | निष्कर्ष: ${nishkarsh}\n`;
     }
@@ -1834,16 +1814,18 @@ async function calcSantan(startDate, endDate, prog, out) {
 
     let html = `<div class="ctx">👶 संतान विश्लेषण: ${fmtD(startDate)} से ${fmtD(endDate)}<br>लग्न: ${RASHI_HI[natalData.lagna]} • चंद्र: ${RASHI_HI[natalData.moon]}</div>`;
     html += `<div style="overflow-x:auto"><table style="min-width:900px;font-size:.82em"><tr>
-        <th>गोचर भाव (L/M)</th><th>समय (अवधि)</th><th>SAV</th><th>BAV</th><th>BAL</th>
+        <th>गोचर भाव (L/M)</th><th>समय (अवधि)</th><th>SAV</th><th>BAV</th><th>BAL ✏️</th>
         <th>गुणवत्ता</th><th>संतान पर प्रभाव</th><th>सहायक भावों पर प्रभाव</th><th>अंतिम निष्कर्ष</th></tr>`;
     let txt = `संतान विश्लेषण (गुरु गोचर)\n${'='.repeat(60)}\nअवधि: ${fmtD(startDate)} से ${fmtD(endDate)}\nलग्न: ${RASHI_HI[natalData.lagna]} | चंद्र: ${RASHI_HI[natalData.moon]}\n${'='.repeat(60)}\n`;
 
     const panchamesh = RASHI_LORD[(natalData.lagna + 4) % 12];
+    let rowIdx = 0;
     for (const p of periods) {
         const bhL = (p.rashi - natalData.lagna + 12) % 12 + 1;
         const bhM = (p.rashi - natalData.moon + 12) % 12 + 1;
         const s = sav[p.rashi];
         const bav = bavJup[bhL - 1];
+        const rowKey = 'santan-' + (rowIdx++);
         const bal = Math.round(balBhava[bhL - 1]); // v3: real APK Shadbala BAL
         const q = qualityOf(s, bal);
         const qCls = q === 'High' ? 'high' : q === 'Medium' ? 'med' : 'low';
@@ -1863,8 +1845,8 @@ async function calcSantan(startDate, endDate, prog, out) {
         const nkCls = nishkarsh === 'प्रबल संभावना' ? 'high' : 'low';
 
         html += `<tr><td>${RASHI_HI[p.rashi]}<br>(${bhL}/${bhM})</td><td>${fmtD(p.from)}<br>से ${fmtD(p.to)}</td>
-            <td>${s}</td><td>${bav}</td><td>${bal}</td><td class="${qCls}">${q}</td>
-            <td>${prabhav}</td><td>${sahayak}</td><td class="${nkCls} conclusion">${nishkarsh}</td></tr>`;
+            <td>${s}</td><td>${bav}</td><td><input type="number" class="bal-edit" value="${bal}" data-sav="${s}" data-key="${rowKey}" onchange="updateBal(this)" style="width:75px;padding:4px;border:1px solid #ccc;border-radius:4px" title="ऐप से देखकर BAL भरें"></td><td class="q-cell ${qCls}">${q}</td>
+            <td class="prabhav-cell">${prabhav}</td><td>${sahayak}</td><td class="nk-cell ${nkCls}">${nishkarsh}</td></tr>`;
         txt += `\n${RASHI_HI[p.rashi]} (${bhL}/${bhM}): ${fmtD(p.from)} से ${fmtD(p.to)}\n`;
         txt += `  SAV=${s} BAV=${bav} BAL=${bal} गुणवत्ता=${q}\n  प्रभाव: ${prabhav} | निष्कर्ष: ${nishkarsh}\n`;
     }
