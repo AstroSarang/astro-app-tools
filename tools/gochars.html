@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>गोचर कैलकुलेटर v18 (Live Transit + विश्लेषण)</title>
+<title>गोचर कैलकुलेटर v19 (Live Transit + विश्लेषण)</title>
 <style>
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;padding:15px;background:#f0f2f5;color:#1d2129;margin:0}
 .container{max-width:950px;margin:15px auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 15px rgba(0,0,0,.08)}
@@ -56,7 +56,7 @@ tr.imp-row{background:#fff8e1;font-weight:600}
 </head>
 <body>
 <div class="container">
-<h1>🪐 गोचर कैलकुलेटर v18</h1>
+<h1>🪐 गोचर कैलकुलेटर v19</h1>
 <p style="text-align:center;color:#666;font-size:.9em">Swiss Ephemeris (Live) • लाहिड़ी अयनांश • राहु/केतु मध्यम (Mean)</p>
 
 <!-- Mode Selector -->
@@ -1505,18 +1505,22 @@ function transitEffects(tRashi, natal, planetKey, mode) {
 function downloadTxt() {
     if (!window._gocharText) { alert('पहले "गोचर निकालें" दबाएं'); return; }
     let txt = window._gocharText;
-    // v17: Apply manual BAL edits to TXT (in table row order)
-    const inputs = document.querySelectorAll('#gochar-out .bal-edit');
-    if (inputs.length) {
+    // v19: Apply manual SAV/BAV/BAL edits to TXT (in table row order)
+    const balInputs = document.querySelectorAll('#gochar-out .bal-edit');
+    if (balInputs.length) {
         let idx = 0;
-        txt = txt.replace(/BAL=(\d+) गुणवत्ता=(\w+)/g, function(m, oldBal, oldQ) {
-            if (idx < inputs.length) {
-                const inp = inputs[idx++];
-                const newBal = parseFloat(inp.value);
-                if (!isNaN(newBal)) {
-                    const sav = parseFloat(inp.dataset.sav);
-                    const newQ = qualityOf(sav, newBal);
-                    return 'BAL=' + Math.round(newBal) + ' गुणवत्ता=' + newQ;
+        txt = txt.replace(/SAV=(\d+) BAV=(\d+) BAL=(\d+) गुणवत्ता=(\S+)/g, function(m, oldS, oldB, oldBal, oldQ) {
+            if (idx < balInputs.length) {
+                const row = balInputs[idx++].closest('tr');
+                const savI = row.querySelector('.sav-edit');
+                const bavI = row.querySelector('.bav-edit');
+                const balI = row.querySelector('.bal-edit');
+                const s = savI ? Math.round(parseFloat(savI.value)) : parseInt(oldS);
+                const b = bavI ? Math.round(parseFloat(bavI.value)) : parseInt(oldB);
+                const bl = balI ? Math.round(parseFloat(balI.value)) : parseInt(oldBal);
+                if (!isNaN(s) && !isNaN(bl)) {
+                    const newQ = qualityOf(s, bl);
+                    return 'SAV=' + s + ' BAV=' + b + ' BAL=' + bl + ' गुणवत्ता=' + newQ;
                 }
             }
             return m;
@@ -1740,13 +1744,23 @@ function qualityOf(sav, bal) {
 // v17: Manual BAL entry - user edits BAL directly in table (app values).
 // Recalculates quality + conclusion for that row, updates TXT on download.
 window.manualBal = {};
-function updateBal(input) {
+// v19: Manual SAV/BAV/BAL entry - user edits values directly in table.
+// Recalculates quality + conclusion for that row. Used by recalcAll().
+window.manualVals = {};
+function updateRow(input) {
     const row = input.closest('tr');
-    const sav = parseFloat(input.dataset.sav);
-    const bal = parseFloat(input.value);
-    if (isNaN(bal)) return;
+    const savInp = row.querySelector('.sav-edit');
+    const bavInp = row.querySelector('.bav-edit');
+    const balInp = row.querySelector('.bal-edit');
+    const sav = savInp ? parseFloat(savInp.value) : NaN;
+    const bal = balInp ? parseFloat(balInp.value) : NaN;
+    if (isNaN(sav) || isNaN(bal)) return;
     const key = input.dataset.key;
-    window.manualBal[key] = bal;
+    window.manualVals[key] = {
+        sav: sav,
+        bav: bavInp ? parseFloat(bavInp.value) : null,
+        bal: bal
+    };
     const q = qualityOf(sav, bal);
     const qCls = q === 'High' ? 'high' : q === 'Medium' ? 'med' : 'low';
     const qCell = row.querySelector('.q-cell');
@@ -1762,7 +1776,17 @@ function updateBal(input) {
     }
     input.style.background = '#e8f5e9';
 }
-window.updateBal = updateBal;
+window.updateRow = updateRow;
+// v19: Recalculate all rows from current input values
+function recalcAll() {
+    document.querySelectorAll('#gochar-out .bal-edit').forEach(function(inp) {
+        updateRow(inp);
+        inp.style.background = '';
+    });
+}
+window.recalcAll = recalcAll;
+// Keep old name as alias
+window.updateBal = updateRow;
 
 // ===== Vivah Analysis =====
 async function calcVivah(startDate, endDate, prog, out) {
@@ -1774,7 +1798,7 @@ async function calcVivah(startDate, endDate, prog, out) {
 
     let html = `<div class="ctx">💒 विवाह विश्लेषण: ${fmtD(startDate)} से ${fmtD(endDate)}<br>लग्न: ${RASHI_HI[natalData.lagna]} • चंद्र: ${RASHI_HI[natalData.moon]}</div>`;
     html += `<div style="overflow-x:auto"><table style="min-width:900px;font-size:.82em"><tr>
-        <th>गोचर भाव (L/M)</th><th>समय (अवधि)</th><th>SAV</th><th>BAV</th><th>BAL ✏️</th>
+        <th>गोचर भाव (L/M)</th><th>समय (अवधि)</th><th>SAV ✏️</th><th>BAV ✏️</th><th>BAL ✏️</th>
         <th>गुणवत्ता</th><th>विवाह पर प्रभाव</th><th>सहायक भावों पर प्रभाव</th><th>अंतिम निष्कर्ष</th></tr>`;
     let txt = `विवाह विश्लेषण (गुरु गोचर)\n${'='.repeat(60)}\nअवधि: ${fmtD(startDate)} से ${fmtD(endDate)}\nलग्न: ${RASHI_HI[natalData.lagna]} | चंद्र: ${RASHI_HI[natalData.moon]}\n${'='.repeat(60)}\n`;
 
@@ -1802,12 +1826,12 @@ async function calcVivah(startDate, endDate, prog, out) {
         const nkCls = nishkarsh === 'प्रबल संभावना' ? 'high' : 'low';
 
         html += `<tr><td>${RASHI_HI[p.rashi]}<br>(${bhL}/${bhM})</td><td>${fmtD(p.from)}<br>से ${fmtD(p.to)}</td>
-            <td>${s}</td><td>${bav}</td><td><input type="number" class="bal-edit" value="${bal}" data-sav="${s}" data-key="${rowKey}" onchange="updateBal(this)" style="width:75px;padding:4px;border:1px solid #ccc;border-radius:4px" title="ऐप से देखकर BAL भरें"></td><td class="q-cell ${qCls}">${q}</td>
+            <td><input type="number" class="sav-edit" value="${s}" data-key="${rowKey}" onchange="updateRow(this)" style="width:60px;padding:4px;border:1px solid #ccc;border-radius:4px" title="SAV भरें"></td><td><input type="number" class="bav-edit" value="${bav}" data-key="${rowKey}" onchange="updateRow(this)" style="width:60px;padding:4px;border:1px solid #ccc;border-radius:4px" title="BAV भरें"></td><td><input type="number" class="bal-edit" value="${bal}" data-key="${rowKey}" onchange="updateRow(this)" style="width:75px;padding:4px;border:1px solid #ccc;border-radius:4px" title="ऐप से देखकर BAL भरें"></td><td class="q-cell ${qCls}">${q}</td>
             <td class="prabhav-cell">${prabhav}</td><td>${sahayak}</td><td class="nk-cell ${nkCls}">${nishkarsh}</td></tr>`;
         txt += `\n${RASHI_HI[p.rashi]} (${bhL}/${bhM}): ${fmtD(p.from)} से ${fmtD(p.to)}\n`;
         txt += `  SAV=${s} BAV=${bav} BAL=${bal} गुणवत्ता=${q}\n  प्रभाव: ${prabhav} | निष्कर्ष: ${nishkarsh}\n`;
     }
-    html += `</table></div><p class="note">BAL: ${balSourceLabel()}<br>
+    html += `</table></div><div style="text-align:center;margin:10px 0"><button class="btn" onclick="recalcAll()" style="background:#6a1b9a">🔄 Recalculate (सभी rows)</button></div><p class="note">SAV/BAV/BAL: ✏️ वाले खाने manually edit कर सकते हैं<br>BAL: ${balSourceLabel()}<br>
         गुणवत्ता: SAV &gt; 28 और BAL &gt; 500 = High | सिर्फ SAV &gt; 28 = Medium | वरना Low</p>`;
     txt += `\nBAL: ${balSourceLabel()}\n`;
     prog.textContent = '';
@@ -1826,7 +1850,7 @@ async function calcSantan(startDate, endDate, prog, out) {
 
     let html = `<div class="ctx">👶 संतान विश्लेषण: ${fmtD(startDate)} से ${fmtD(endDate)}<br>लग्न: ${RASHI_HI[natalData.lagna]} • चंद्र: ${RASHI_HI[natalData.moon]}</div>`;
     html += `<div style="overflow-x:auto"><table style="min-width:900px;font-size:.82em"><tr>
-        <th>गोचर भाव (L/M)</th><th>समय (अवधि)</th><th>SAV</th><th>BAV</th><th>BAL ✏️</th>
+        <th>गोचर भाव (L/M)</th><th>समय (अवधि)</th><th>SAV ✏️</th><th>BAV ✏️</th><th>BAL ✏️</th>
         <th>गुणवत्ता</th><th>संतान पर प्रभाव</th><th>सहायक भावों पर प्रभाव</th><th>अंतिम निष्कर्ष</th></tr>`;
     let txt = `संतान विश्लेषण (गुरु गोचर)\n${'='.repeat(60)}\nअवधि: ${fmtD(startDate)} से ${fmtD(endDate)}\nलग्न: ${RASHI_HI[natalData.lagna]} | चंद्र: ${RASHI_HI[natalData.moon]}\n${'='.repeat(60)}\n`;
 
@@ -1857,12 +1881,12 @@ async function calcSantan(startDate, endDate, prog, out) {
         const nkCls = nishkarsh === 'प्रबल संभावना' ? 'high' : 'low';
 
         html += `<tr><td>${RASHI_HI[p.rashi]}<br>(${bhL}/${bhM})</td><td>${fmtD(p.from)}<br>से ${fmtD(p.to)}</td>
-            <td>${s}</td><td>${bav}</td><td><input type="number" class="bal-edit" value="${bal}" data-sav="${s}" data-key="${rowKey}" onchange="updateBal(this)" style="width:75px;padding:4px;border:1px solid #ccc;border-radius:4px" title="ऐप से देखकर BAL भरें"></td><td class="q-cell ${qCls}">${q}</td>
+            <td><input type="number" class="sav-edit" value="${s}" data-key="${rowKey}" onchange="updateRow(this)" style="width:60px;padding:4px;border:1px solid #ccc;border-radius:4px" title="SAV भरें"></td><td><input type="number" class="bav-edit" value="${bav}" data-key="${rowKey}" onchange="updateRow(this)" style="width:60px;padding:4px;border:1px solid #ccc;border-radius:4px" title="BAV भरें"></td><td><input type="number" class="bal-edit" value="${bal}" data-key="${rowKey}" onchange="updateRow(this)" style="width:75px;padding:4px;border:1px solid #ccc;border-radius:4px" title="ऐप से देखकर BAL भरें"></td><td class="q-cell ${qCls}">${q}</td>
             <td class="prabhav-cell">${prabhav}</td><td>${sahayak}</td><td class="nk-cell ${nkCls}">${nishkarsh}</td></tr>`;
         txt += `\n${RASHI_HI[p.rashi]} (${bhL}/${bhM}): ${fmtD(p.from)} से ${fmtD(p.to)}\n`;
         txt += `  SAV=${s} BAV=${bav} BAL=${bal} गुणवत्ता=${q}\n  प्रभाव: ${prabhav} | निष्कर्ष: ${nishkarsh}\n`;
     }
-    html += `</table></div><p class="note">BAL: ${balSourceLabel()}<br>
+    html += `</table></div><div style="text-align:center;margin:10px 0"><button class="btn" onclick="recalcAll()" style="background:#6a1b9a">🔄 Recalculate (सभी rows)</button></div><p class="note">SAV/BAV/BAL: ✏️ वाले खाने manually edit कर सकते हैं<br>BAL: ${balSourceLabel()}<br>
         गुणवत्ता: SAV &gt; 28 और BAL &gt; 500 = High | सिर्फ SAV &gt; 28 = Medium | वरना Low</p>`;
     prog.textContent = '';
     out.innerHTML = html;
