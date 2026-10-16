@@ -153,6 +153,15 @@
         </div>
     </div>
 
+    <div style="margin:15px 0;">
+        <label style="font-weight:600;">भाषा (Language):</label>
+        <select id="lang" onchange="if(document.getElementById('finalPrompt').value) generateMatchmakingPrompt();" style="padding:10px; border:1px solid #ccc; border-radius:6px; font-size:16px; margin-left:10px;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
+
     <button id="createBtn" onclick="generateMatchmakingPrompt()">Generate Prompt (प्रॉम्प्ट बनाएँ)</button>
 
     <!-- Output Section -->
@@ -181,21 +190,50 @@
             // 2. Construct the Template
             // Using logic: Name -> vNameH, File -> [vFile], Txt Data -> [vFile Data]
 
-            var promptText = `विषय: कुंडली मिलान के लिए डेटा का विश्लेषण।
-कार्य: मैं आपको कुल 4 फाइलें प्रदान कर रहा हूँ, जिनमें दो व्यक्तियों - पति (${vNameH}) और पत्नी (${bNameH}) - की कुंडली का विवरण है। आपको इन फाइलों की सामग्री को ध्यान से पढ़ना है और पुष्टि करनी है कि आपने डेटा को समझ लिया है, ताकि हम अगले चरण में विस्तृत विश्लेषण कर सकें।
+            var lang = document.getElementById('lang').value || 'hi';
+            var promptText;
+            if(lang === 'en'){
+                promptText = `Subject: Data Analysis for Kundli Milan.
+Task: I am providing 4 files with horoscope details of Husband (${vNameH}) and Wife (${bNameH}). Read carefully and confirm understanding for next step detailed analysis.
 
-प्रदान की गई फाइलें:
-पति (${vNameH}) - कुंडली PDF: [${vFile}] - इस PDF में ${vNameH} की जन्म कुंडली है।
-पति (${vNameH}) - Chat Txt: [${vFile} Data] - इस txt में ${vNameH} की कुंडली के विस्तृत विश्लेषण का डेटा है जो हमारी पिछली बातचीत से लिया गया है।
-पत्नी (${bNameH}) - कुंडली PDF: [${bFile}] - इस PDF में ${bNameH} की जन्म कुंडली है।
-पत्नी (${bNameH}) - Chat Txt : [${bFile} Data] - इस txt में ${bNameH} की कुंडली के विस्तृत विश्लेषण का डेटा है जो हमारी पिछली बातचीत से लिया गया है।
+Files:
+Husband (${vNameH}) - Horoscope PDF: [${vFile}]
+Husband (${vNameH}) - Chat Txt: [${vFile} Data]
+Wife (${bNameH}) - Horoscope PDF: [${bFile}]
+Wife (${bNameH}) - Chat Txt: [${bFile} Data]
 
-ध्यान दें: कुंडली PDF और विश्लेषण के स्क्रीनशॉट की PDF फाइल में कुछ जानकारी की पुनरावृत्ति (repetition) हो सकती है। आपको दोनों फाइलों का डेटा मिलाकर प्रत्येक व्यक्ति के लिए एक संपूर्ण संदर्भ बनाना है।
+Note: Some repetition may exist between PDFs. Combine both for complete reference per person.
 
-आपका तत्काल कार्य:
-इन चारों फाइलों की सामग्री का विश्लेषण करें।
-प्रत्येक व्यक्ति (${vNameH} और ${bNameH}) के लिए मुख्य ज्योतिषीय विवरण (जैसे लग्न, राशि, नक्षत्र, और मंगल की स्थिति) को संक्षेप में बताएं, ताकि मैं यह जाँच सकूँ कि आपने डेटा सही से समझा है।
-अंत में केवल यह लिखकर पुष्टि करें: "डेटा सफलतापूर्वक लोड और विश्लेषित कर लिया गया है। मैं कुंडली मिलान के लिए आपके प्रश्नों की प्रतीक्षा कर रहा हूँ।"`;
+Task: Analyze all four files. Summarize key details (lagna, rashi, nakshatra, Mars) for each person (${vNameH} and ${bNameH}).
+Finally confirm: "Data successfully loaded and analyzed. I await your questions for kundli milan."`;
+            } else if(lang === 'mr'){
+                promptText = `विषय: कुंडली मिलनासाठी डेटाचे विश्लेषण.
+कार्य: मी 4 फाइल्स देत आहे - पती (${vNameH}) आणि पत्नी (${bNameH}) यांच्या कुंडलीचा तपशील. काळजीपूर्वक वाचा आणि समजल्याची पुष्टी करा.
+
+फाइल्स:
+पती (${vNameH}) - कुंडली PDF: [${vFile}]
+पती (${vNameH}) - Chat Txt: [${vFile} Data]
+पत्नी (${bNameH}) - कुंडली PDF: [${bFile}]
+पत्नी (${bNameH}) - Chat Txt: [${bFile} Data]
+
+टीप: PDF मध्ये काही पुनरावृत्ती असू शकते. प्रत्येक व्यक्तीसाठी संपूर्ण संदर्भ तयार करा.
+
+कार्य: चारही फाइल्सचे विश्लेषण करा. प्रत्येक व्यक्तीसाठी (${vNameH} आणि ${bNameH}) मुख्य तपशील (लग्न, राशी, नक्षत्र, मंगळ) थोडक्यात सांगा.
+शेवटी पुष्टी करा: "डेटा यशस्वीरित्या लोड केला आहे. मी कुंडली मिलनासाठी प्रश्नांची वाट पाहत आहे."`;
+            } else {
+                promptText = `विषय: कुंडली मिलान के लिए डेटा का विश्लेषण।
+कार्य: मैं आपको कुल 4 फाइलें प्रदान कर रहा हूँ - पति (${vNameH}) और पत्नी (${bNameH}) की कुंडली का विवरण। ध्यान से पढ़ें और समझने की पुष्टि करें।
+
+फाइलें:
+पति (${vNameH}) - कुंडली PDF: [${vFile}]
+पति (${vNameH}) - Chat Txt: [${vFile} Data]
+पत्नी (${bNameH}) - कुंडली PDF: [${bFile}]
+पत्नी (${bNameH}) - Chat Txt: [${bFile} Data]
+
+ध्यान दें: PDF में कुछ पुनरावृत्ति हो सकती है। प्रत्येक व्यक्ति के लिए संपूर्ण संदर्भ बनाएं।
+
+कार्य: चारों फाइलों का विश्लेषण करें। प्रत्येक व्यक्ति (${vNameH} और ${bNameH}) के मुख्य विवरण (लग्न, राशि, नक्षत्र, मंगल) संक्षेप में बताएं।
+अंत में पुष्टि करें: "डेटा सफलतापूर्वक लोड कर लिया गया है। मैं कुंडली मिलान के प्रश्नों की प्रतीक्षा कर रहा हूँ।"`; }
 
             // 3. Output
             document.getElementById('finalPrompt').value = promptText;
@@ -209,13 +247,26 @@
         }
     }
 
+    function showCopyFeedback(btn, success){
+        var origText = btn.innerHTML;
+        var origBg = btn.style.background;
+        btn.innerHTML = success ? "✓ कॉपी हो गया!" : "✗ कॉपी नहीं हुआ";
+        btn.style.background = success ? "#2e7d32" : "#c62828";
+        setTimeout(function(){ btn.innerHTML = origText; btn.style.background = origBg; }, 2000);
+    }
     function copyToClipboard() {
         var copyText = document.getElementById("finalPrompt");
-        copyText.select();
-        copyText.setSelectionRange(0, 99999); 
-        navigator.clipboard.writeText(copyText.value).then(function() {
-            alert("मिलान प्रॉम्प्ट कॉपी हो गया है!");
-        });
+        var btn = document.getElementById("copyBtn");
+        var val = copyText.value;
+        if(!val){ alert("पहले प्रॉम्प्ट बनाएं!"); return; }
+        if(navigator.clipboard && window.isSecureContext){
+            navigator.clipboard.writeText(val).then(function(){ showCopyFeedback(btn, true); }).catch(function(){ fallbackCopy(copyText, btn); });
+        } else { fallbackCopy(copyText, btn); }
+    }
+    function fallbackCopy(el, btn){
+        el.focus(); el.select(); el.setSelectionRange(0, 99999);
+        try{ var ok = document.execCommand('copy'); showCopyFeedback(btn, ok); }
+        catch(e){ showCopyFeedback(btn, false); }
     }
 </script>
 
