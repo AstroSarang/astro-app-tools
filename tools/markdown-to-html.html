@@ -117,9 +117,26 @@
             document.getElementById('count' + i).textContent = "";
         }
 
-        // सभी 3 बॉक्स एक साथ खाली करने का फंक्शन
+        // सभी 3 बॉक्स एक साथ खाली करने का फंक्शन (popup-confirm की जगह two-tap)
+        var RESET_ALL_LABEL = '🔄 सभी रीसेट';
+        var resetArmTimer = null;
         function resetAllBoxes() {
-            if (!confirm('क्या सभी 3 बॉक्स खाली कर दें?')) { return; }
+            var btn = document.getElementById('resetAllBtn');
+            if (!btn.dataset.armed) {
+                btn.dataset.armed = '1';
+                btn.textContent = '⚠️ पक्का? फिर दबाएं';
+                btn.style.backgroundColor = '#a71d2a';
+                resetArmTimer = setTimeout(function () {
+                    delete btn.dataset.armed;
+                    btn.textContent = RESET_ALL_LABEL;
+                    btn.style.backgroundColor = '';
+                }, 3000);
+                return;
+            }
+            clearTimeout(resetArmTimer);
+            delete btn.dataset.armed;
+            btn.textContent = RESET_ALL_LABEL;
+            btn.style.backgroundColor = '';
             for (var i = 1; i <= TOTAL; i++) { resetBox(i); }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
