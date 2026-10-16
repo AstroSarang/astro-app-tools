@@ -176,7 +176,7 @@
     const PLANETS_DISPLAY = { 'Surya': 'सूर्य', 'Chandra': 'चंद्र', 'Mangal': 'मंगल', 'Budh': 'बुध', 'Guru': 'गुरु', 'Shukra': 'शुक्र', 'Shani': 'शनि', 'Rahu': 'राहु', 'Ketu': 'केतु' };
     const RASHI_LORDS = { 0: 'Mangal', 1: 'Shukra', 2: 'Budh', 3: 'Chandra', 4: 'Surya', 5: 'Budh', 6: 'Shukra', 7: 'Mangal', 8: 'Guru', 9: 'Shani', 10: 'Shani', 11: 'Guru' };
     const PLANET_ASPECTS = { 'Surya': [7], 'Chandra': [7], 'Mangal': [4, 7, 8], 'Budh': [7], 'Guru': [5, 7, 9], 'Shukra': [7], 'Shani': [3, 7, 10], 'Rahu': [5, 7, 9], 'Ketu': [5, 7, 9] };
-    const DIGNITIES = { ucch: { 'Surya': 0, 'Chandra': 1, 'Mangal': 9, 'Budh': 5, 'Guru': 3, 'Shukra': 11, 'Shani': 6 }, neech: { 'Surya': 6, 'Chandra': 7, 'Mangal': 3, 'Budh': 11, 'Guru': 9, 'Shani': 0 }, swagrihi: { 'Surya': [4], 'Chandra': [3], 'Mangal': [0, 7], 'Budh': [2, 5], 'Guru': [8, 11], 'Shukra': [1, 6], 'Shani': [9, 10] } };
+    const DIGNITIES = { ucch: { 'Surya': 0, 'Chandra': 1, 'Mangal': 9, 'Budh': 5, 'Guru': 3, 'Shukra': 11, 'Shani': 6 }, neech: { 'Surya': 6, 'Chandra': 7, 'Mangal': 3, 'Budh': 11, 'Guru': 9, 'Shukra': 5, 'Shani': 0 }, swagrihi: { 'Surya': [4], 'Chandra': [3], 'Mangal': [0, 7], 'Budh': [2, 5], 'Guru': [8, 11], 'Shukra': [1, 6], 'Shani': [9, 10] } };
     const NAISARGIKA_MITRA = { 'Surya': ['Chandra', 'Mangal', 'Guru'], 'Chandra': ['Surya', 'Budh'], 'Mangal': ['Surya', 'Chandra', 'Guru'], 'Budh': ['Surya', 'Shukra', 'Rahu', 'Ketu'], 'Guru': ['Surya', 'Chandra', 'Mangal', 'Ketu'], 'Shukra': ['Budh', 'Shani', 'Rahu', 'Ketu'], 'Shani': ['Budh', 'Shukra', 'Rahu', 'Ketu'], 'Rahu': ['Budh', 'Shukra', 'Shani', 'Guru'], 'Ketu': ['Mangal', 'Guru', 'Shukra', 'Shani'] };
     const NAISARGIKA_SHATRU = { 'Surya': ['Shani', 'Shukra', 'Rahu', 'Ketu'], 'Chandra': [], 'Mangal': ['Budh', 'Rahu', 'Ketu'], 'Budh': ['Chandra'], 'Guru': ['Budh', 'Shukra', 'Rahu'], 'Shukra': ['Surya', 'Chandra', 'Mangal'], 'Shani': ['Surya', 'Chandra', 'Mangal'], 'Rahu': ['Surya', 'Chandra', 'Mangal'], 'Ketu': ['Surya', 'Chandra', 'Budh'] };
 
@@ -624,7 +624,8 @@
                         const dig = getDignityInfo(pKey, pRashiIdx, houseNum, d.planetPositions, d.houseRashis, d.planetsInHouse, d.moonAbsoluteHouse, false);
                         if (dig.text) detail += ` ${pName} ${dig.text} है।`;
                         const rel = getRelationship(pKey, pRashiIdx);
-                        if (rel && rel.text) detail += ` (${rel.text} राशि)`;
+                        const isSpecialDetail = dig.cssClass && ['ucch','neech','neechabhanga','swagrihi'].includes(dig.cssClass);
+                        if (rel && rel.text && !isSpecialDetail) detail += ` (${rel.text} राशि)`;
                     }
                     // Vakri/Asta/Vargottama from checkboxes
                     const st = d.planetStates[pKey] || {};
