@@ -128,14 +128,14 @@
         </div>
         <div class="col">
             <label>2. लिंग (Gender):</label>
-            <select id="gender">
+            <select id="gender" onchange="autoSetSpouse()">
                 <option value="जातक">जातक (Male)</option>
                 <option value="जातिका">जातिका (Female)</option>
             </select>
         </div>
         <div class="col">
             <label>3. जीवनसाथी (Spouse):</label>
-            <select id="spouse">
+            <select id="spouse" disabled style="background:#f0f0f0; cursor:not-allowed;" title="लिंग के अनुसार ऑटो-सेट">
                 <option value="पत्नी">पत्नी (Wife)</option>
                 <option value="पति">पति (Husband)</option>
             </select>
@@ -215,6 +215,15 @@
             c4: `तपशीलवार समग्र KP निष्कर्ष :`
         }
     };
+
+    function autoSetSpouse(){
+        var g = document.getElementById('gender').value;
+        var s = document.getElementById('spouse');
+        // जातक -> पत्नी, जातिका -> पति
+        s.value = (g === 'जातक') ? 'पत्नी' : 'पति';
+    }
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', function(){ autoSetSpouse(); });
 
     function generatePrompt() {
         // 1. Get Variable Inputs
