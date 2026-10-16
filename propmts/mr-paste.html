@@ -177,7 +177,7 @@
     <div id="outputArea">
         <h3 style="margin-bottom:5px;">आपका तैयार प्रॉम्प्ट:</h3>
         <textarea id="finalPrompt" readonly></textarea>
-        <button id="copyBtn" onclick="copyToClipboard(this)">Copy Prompt (प्रॉम्प्ट कॉपी करें)</button>
+        <button id="copyBtn" onclick="copyToClipboard()">Copy Prompt (प्रॉम्प्ट कॉपी करें)</button>
     </div>
 
 </div>
@@ -303,19 +303,19 @@ ${blockKP}`;
         const origBg = btn.style.background;
         if(success){
             btn.innerHTML = "✓ कॉपी हो गया!";
-            btn.style.backgroundColor = "#1b5e20";
+            btn.style.background = "#2e7d32";
         } else {
             btn.innerHTML = "✗ कॉपी नहीं हुआ";
-            btn.style.backgroundColor = "#b71c1c";
+            btn.style.background = "#c62828";
         }
         setTimeout(()=>{
             btn.innerHTML = origText;
-            btn.style.backgroundColor = "";
+            btn.style.background = origBg;
         }, 2000);
     }
-    function copyToClipboard(clickedBtn) {
+    function copyToClipboard() {
         const copyText = document.getElementById("finalPrompt");
-        const btn = clickedBtn || document.getElementById("copyBtn");
+        const btn = document.getElementById("copyBtn") || event.target;
         const val = copyText.value;
         if(!val){ alert("पहले प्रॉम्प्ट बनाएं!"); return; }
         // Try modern clipboard API first
