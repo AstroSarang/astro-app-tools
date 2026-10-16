@@ -207,8 +207,8 @@
             var lang = document.getElementById('lang').value || 'hi';
             var t = T[lang] || T.hi;
             var gLabel = gender;
-            if(lang==='en'){ gLabel = (gender==='जातक'?'native (male)':'native (female)'); }
-            if(lang==='mr'){ gLabel = (gender==='जातक'?'जातक (पुरुष)':'जातिका (महिला)'); }
+            if(lang==='en'){ gLabel = gender; }
+            if(lang==='mr'){ gLabel = gender; }
 
             var section1 = t.s1(name, gLabel) + "\n\n" + dParashari;
             var section2 = t.c1 + "\n" + t.s2(name, gLabel) + "\n\n" + dJaimini;
