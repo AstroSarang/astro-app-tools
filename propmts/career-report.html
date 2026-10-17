@@ -98,6 +98,14 @@
 <body>
 
     <h1>Career Report Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
     <div class="container" id="prompt-container">
         <!-- Prompts will be loaded here -->
     </div>
@@ -106,7 +114,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+        const rawData_hi = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -129,7 +137,7 @@
 19] मुख्य करियर कस्पल सब-लॉर्ड (Career CSL) सारांश: उपरोक्त तालिकाओं से केवल 6ठे (नौकरी), 7वें (व्यापार) और 10वें (कर्म) भाव के CSL, नक्षत्र स्वामी (NL), उप-स्वामी (SL) और उप-उप स्वामी (SSL) को अलग से एक छोटी सूची में लिखें।
 
 कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
-------------------------------------------
+----------
 उपरोक्त चैट और  PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
 
 लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
@@ -143,7 +151,7 @@
 
 
 आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
------------------------------------------
+----------
 txt फाइल से निम्मलिखित जानकारी को एक के बाद एक बिना बदलाव के जैसी की वैसी लिखे :
 
 1] Jaimini Complete Report
@@ -154,7 +162,7 @@ txt फाइल से निम्मलिखित जानकारी क
 6] D1_to_D9_Analysis
 7] D1_to_D10_Analysis
 8] D1_to_D60_Analysis
------------------------------------------
+----------
 कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (षोडशवर्ग कुंडलिया) को अपनी मेमोरी में सुरक्षित कर लें।
 
 निर्देश:
@@ -164,9 +172,9 @@ txt फाइल से निम्मलिखित जानकारी क
 3] पुष्टि (Verification) के लिए: केवल यह बताएं कि कौन-कौन सी षोडशवर्ग कुंडलिया सेव की गयी है।
 
 मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
------------------------------------------
+----------
 चलित कुंडली देखकर बताईये की चलित कुंडली में D1 कुंडली से क्या बदला है और इसका क्या प्रभाव पड़ेगा :
------------------------------------------
+----------
 ➤ PN, PB, MB का जीवन पर प्रभाव (Impact on Life)
 
 विषय: वैदिक ज्योतिष - ग्रह एवं भावों के लिए पुष्कर नवांश (PN), पुष्कर भाग (PB) और मृत्यु भाग (MB) की गणना एवं फलादेश।
@@ -185,12 +193,12 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ​▸ दशा फल: वर्तमान या आगामी महादशा में इन अमृत/विष बिंदुओं का क्या प्रभाव पड़ेगा?
 
 ​▸ ​निष्कर्ष: समग्र रूप से कुंडली में 'अमृत' (PB) और 'विष' (MB) का संतुलन कितना है?
------------------------------------------
+----------
 1] जातक के कुंडली के सभी शुभ योगो की पहले सूचि तयार करें, बाद में सभी शुभ योगों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो शुभ योग है वो भी लेने है.txt से भी लेने है.
 2] जातक के कुंडली के सभी दोषों की पहले सूचि तयार करें, बाद में सभी दोषों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो दोष है वो भी लेने है.txt से भी लेने है.
------------------------------------------
+----------
 जन्म नक्षत्र को आधार मानकर नवतारा चक्र बनाइए और विश्लेषण कीजिए कि कुंडली के सभी 9 ग्रह किन-किन ताराओं (संपत, विपत, वध आदि) के नक्षत्रों में बैठे हैं, और उस तारा के अनुसार प्रत्येक ग्रह अपना कैसा (शुभ/अशुभ) फल देगा? [PDF पेज No 28]
------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), अष्टकवर्ग और जैमिनी कारकत्व के आधार पर होना चाहिए।
 
 प्रत्येक ग्रह के लिए निम्नलिखित जानकारी प्रदान करें:
@@ -219,7 +227,7 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
-------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर D1 के सभी 12 भावों का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल, अष्टकवर्ग के आधार पर होना चाहिए।
 
 
@@ -237,7 +245,7 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ➤ निष्कर्ष : समग्र रूप से भाव मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी भाव के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
-------------------------------------------
+----------
 ➤ समान्य जानकारी तालिका बनाइये :
 
 ►D1 लग्न भाव राशी और नक्षत्र
@@ -278,8 +286,8 @@ TXT गणनाओं के आधार पर निम्नलिखित
 
 ➤ निष्कर्ष : 
 ▸ D1,D9 के लग्न के प्रभावशाली ग्रह और  D10 के लग्न के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ? 
-▸ D1,D9 के दशम भाव के प्रभावशाली ग्रह और  D10 के दशम भाव के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ? 
-------------------------------------------
+▸ D1,D9 के दशम भाव के प्रभावशाली ग्रह और  D10 के दशम भाव के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ?
+----------
 कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (विंशोत्तरी, योगिनी,चर दशा और गोचर) को अपनी मेमोरी में सुरक्षित कर लें।
 
 निर्देश:
@@ -293,7 +301,7 @@ TXT गणनाओं के आधार पर निम्नलिखित
 गोचर (गुरु/शनि - लग्न व चंद्र से):
 
 मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
-------------------------------------------
+----------
 उपरोक्त चैट्स में दिए गए और एक्सट्रैक्ट किए गए ज्योतिषीय डेटा (Vimshottari, Yogini, Chara Dasha और Gochar Analysis) के आधार पर, आगामी 7 वर्षों की एक विस्तृत 'मास्टर समय-सारणी' तैयार करें।
 
 ​तालिका का प्रारूप और कॉलम बिल्कुल निम्न प्रकार होने चाहिए:
@@ -303,7 +311,7 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ​डेटा प्रोसेसिंग के लिए महत्वपूर्ण नियम:
 
 ​दशा परिवर्तन: यदि किसी एक वर्ष के भीतर अंतर्दशा (AD) बदलती है, तो उसे एक ही सेल में 'Slash' (/) के साथ दिखाएं (जैसे: बुध AD / केतु AD)।
-------------------------------------------
+----------
 उपरोक्त सभी विवरण से जानकारी निकालिए, विश्लेषण नहीं करना है, "विश्लेषण:" वाले पॉइंट का विश्लेषण नही करना है बस जैसा का वैसा लिखना है. साथ में दृष्टी डाल रहे ग्रहों को छोड़कर, बाकि ग्रह की अवस्था (उच्च-नीच-निचभंग, शत्रु-मित्र-सम राशी; अस्त-वक्री-वर्गोत्तम) भी ब्राकेट में लिखे. जवाबों के साथ सवाल भी लिखें और 'to be continued...' भी बस जैसा का वैसा लिखना है.
 
 भाग 1: पराशरी ज्योतिष के अनुसार करियर का विश्लेषण
@@ -412,7 +420,7 @@ to be continued...
 विश्लेषण: जातक का अंतिम आर्थिक स्तर (Wealth Status) कैसा रहेगा? क्या कुंडली में असाधारण धन (करोड़पति योग) है या धन के लिए लगातार संघर्ष करना पड़ेगा? धन का मुख्य स्रोत क्या होगा?
 
 to be continued...
------------------------------------------
+----------
 उपरोक्त सभी विवरण से जानकारी निकालिए, विश्लेषण नहीं करना है, "विश्लेषण:" वाले पॉइंट का विश्लेषण नही करना है बस जैसा का वैसा लिखना है. जवाबों के साथ सवाल भी लिखें और 'to be continued...' भी बस जैसा का वैसा लिखना है.
 
 भाग 2: जैमिनी ज्योतिष के अनुसार करियर का विश्लेषण
@@ -485,7 +493,7 @@ to be continued...
 विश्लेषण: जातक को करियर में कितनी 'पावर', 'अथॉरिटी' और 'सामाजिक प्रतिष्ठा' मिलेगी? क्या जातक किसी बड़े संगठन में उच्च अधिकारी (CEO/Director), लीडर या सरकारी क्षेत्र में शीर्ष पद (Class-1 Officer) प्राप्त करने की क्षमता रखता है, या उसे अधीनस्थों (subordinates) के रूप में कार्य करना पड़ेगा?
 
 to be continued...
------------------------------------------
+----------
 उपरोक्त सभी विवरण से जानकारी निकालिए, विश्लेषण नहीं करना है, "विश्लेषण:" वाले पॉइंट का विश्लेषण नही करना है बस जैसा का वैसा लिखना है, साथ में ग्रह की अवस्था (उच्च, नीच, निचभंग, अस्त, वक्री, शत्रु-मित्र-सम राशी) भी ब्राकेट में लिखे. जवाबों के साथ सवाल भी लिखें और 'to be continued...' भी बस जैसा का वैसा लिखना है. 
 
 भाग 3: भृगु नंदी नाड़ी (BNN) के अनुसार करियर का विश्लेषण
@@ -514,7 +522,7 @@ to be continued...
 विश्लेषण: करियर की विशिष्ट प्रकृति का निर्धारण। (जैसे, शनि+बुध = व्यापार/लेखा, शनि+मंगल = इंजीनियरिंग/निर्माण)।
 
 to be continued...
------------------------------------------
+----------
 उपरोक्त सभी विवरण से जानकारी निकालिए, विश्लेषण नहीं करना है, "विश्लेषण:" वाले पॉइंट का विश्लेषण नही करना है बस जैसा का वैसा लिखना है, साथ में ग्रह अगर वक्री हो तो उसे भी ब्राकेट में लिखे. जवाबों के साथ सवाल भी लिखें और 'to be continued...' भी बस जैसा का वैसा लिखना है.
 
 भाग 4: कृष्णमूर्ति पद्धति (KP) के अनुसार करियर का विश्लेषण
@@ -608,11 +616,11 @@ C] विश्लेषण और फलादेश निर्देश:
 ➤ निजी क्षेत्र (Private Sector): यदि 10th/6th CSL का सूर्य या चंद्रमा से कोई संबंध न हो, और वे राहु/केतु या बुध से जुड़े हों, तो स्पष्ट करें कि सफलता प्राइवेट सेक्टर या मल्टीनेशनल कंपनी (MNC) में मिलेगी।
 
 to be continued...
-------------------------------------------
+----------
 सभी चारों प्रणाली (भाग 1-4) की जानकारी को क्रॉस चेक करके सुनिश्चित करिए की वो सही है या कोई त्रुटी है ? जो त्रुटी हो उसकी ही सूचि दीजिए सिर्फ.
-------------------------------------------
+----------
 उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
-------------------------------------------
+----------
 यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
 
 1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
@@ -621,9 +629,9 @@ to be continued...
 4] System instructions में दिए गए आदेशों का भी पालन करे.
 
 क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
-------------------------------------------
+----------
 https://sites.google.com/view/astropropmt/Career-Report/CR-Paste
-------------------------------------------
+----------
 ➤ D60 (षष्टियंश) - पूर्व पुण्य और अंतिम परिणाम (Karmic Legacy) 
 ​
 अगर D1 और D10 में राजयोग हैं, लेकिन D60 में वह ग्रह शापित है, तो करियर में ऊंचाई पर जाकर भी गिरावट आ सकती है। यह 'सस्टेनेबल सक्सेस' (टिकाऊ सफलता) देखने के D60 का विश्लेषण । 
@@ -636,7 +644,7 @@ https://sites.google.com/view/astropropmt/Career-Report/CR-Paste
 यह विश्लेषण सीधे तौर पर यह बताएगा कि D1/D10 के शक्तिशाली राजयोग D60 में कितने मजबूत हैं।
 
 ➤ विस्तारपूर्वक समग्र D60 निष्कर्ष
-------------------------------------------
+----------
 भाग 5: निष्कर्ष और समग्र अवलोकन
 
 ➤ चारों प्रणालियों का सारांश: प्रत्येक प्रणाली से करियर के बारे में मुख्य निष्कर्ष क्या हैं?
@@ -644,7 +652,7 @@ https://sites.google.com/view/astropropmt/Career-Report/CR-Paste
 ➤ करियर का ग्राफ: करियर में उन्नति के मुख्य दशक (जैसे 25-35, 35-45 वर्ष) कौन से होंगे? कब संघर्ष और कब सफलता की संभावना है?
 ➤ D60 कुंडली का समर्थन और अंतिम परिणाम ?
 ➤ अंतिम सलाह: जातक के लिए सबसे उपयुक्त करियर पथ (नौकरी/व्यापार), बचने वाले क्षेत्र और सफलता के लिए आवश्यक उपाय या रत्न (यदि आवश्यक हो)।
-------------------------------------------
+----------
 ------------------------------------------
 कृपया निम्लिखित सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
 
@@ -655,7 +663,7 @@ https://sites.google.com/view/astropropmt/Career-Report/CR-Paste
 5] सूर्य का भिन्नाष्टकवर्ग (BAV) तालिका।
 6] मंगल का भिन्नाष्टकवर्ग (BAV) तालिका।
 7] सर्वाष्टकवर्ग तालिका
-------------------------------------------
+----------
 उपरोक्त जानकारी के आधार पर, आपको एक विशेषज्ञ ज्योतिषी की भूमिका निभानी है और बताएं कि यह कुंडली 'मजदूर/निम्न श्रेणी' की है या 'उच्च अधिकारी/व्यवसायी' की है।
 
 1] प्रथम चरण: लग्न और लग्नेश का बल (क्षमता - Capacity)
@@ -726,7 +734,7 @@ https://sites.google.com/view/astropropmt/Career-Report/CR-Paste
 
 ➤  अंत में बताएं कि यह कुंडली 'मजदूर/निम्न श्रेणी' की है या 'उच्च अधिकारी/व्यवसायी' की।
 ➤  यदि ग्रह पीड़ित हैं, तो करियर की बाधाओं को दूर करने के सटीक ज्योतिषीय उपाय सुझाएं।
-------------------------------------------
+----------
 उपरोक्त कुण्डली और अष्टकवर्ग जानकारी के आधार पर, आपको एक विशेषज्ञ ज्योतिषी की भूमिका निभानी है। आपका कार्य यह विश्लेषण करना है कि जातक के लिए आधुनिक समय के अनुसार कौन सा करियर पथ (Corporate Job, Freelancing/YouTube, Consultancy, या Traditional Business) सबसे अधिक सफल रहेगा। 
 (नोट: विश्लेषण से पहले जातक के 'लग्न' की पहचान करें ताकि दशमेश का सही पता चल सके)।
 
@@ -780,7 +788,7 @@ C] दशमेश (10th Lord): लग्न के अनुसार दशम
 5] सफलता की संभावना (प्रतिशत में - दोनों का योग 100% होना चाहिए):
 - 💼 सर्विस सेक्टर (नौकरी / कंसल्टेंसी / डिजिटल क्रिएटर): [XX]%
 - 📈 पारंपरिक व्यापार (दुकान / ट्रेडिंग / पार्टनरशिप): [YY]%
-------------------------------------------
+----------
 जातक के निम्नलिखित करियर संबंधित ग्रहों की सूची दीजिए:
 
 A) दशम भाव (कर्म/करियर का केंद्र)
@@ -876,8 +884,7 @@ L) संबंध जांच (Connection Check)
 a) क्या लग्नेश का 10वें, 2रे, 6ठे या 11वें भाव/भावेश से मजबूत संबंध बन रहा है?
 b) क्या नैसर्गिक कारक शनि और सूर्य का 10वें, 2रे, 6ठे या 11वें भाव/भावेश से मजबूत संबंध बन रहा है?
 c) क्या दशमेश का 2रे, 6ठे या 11वें भाव/भावेश से मजबूत संबंध बन रहा है?
-
-------------------------------------------
+----------
 1] अब पहले निकाले गए सभी ग्रहों को सूचीबद्ध कीजिये।
 (इस सूची में जो ग्रह बार-बार आ रहे हैं, वे विशेष रूप से महत्वपूर्ण हैं।)
 
@@ -900,7 +907,7 @@ Group B - मध्यम प्रभावशाली ग्रह (Supportin
 Group C - सहायक और उत्प्रेरक ग्रह (Trigger/Situational Planets):
 ये ग्रह विशेष परिस्थितियों में या अपनी दशा-अंतर्दशा में करियर को प्रभावित करते हैं। ये करियर में मोड़ या विशेष घटनाओं के कारक बन सकते हैं।
 (उदाहरण: दशमेश का Dispositor, नक्षत्र स्वामी, D10 में अन्य महत्वपूर्ण ग्रह, 5वें भाव का स्वामी, शनि से 3रे/12वें भाव में स्थित ग्रह (BNN))।
-------------------------------------------
+----------
 आपको प्रदान की गई ग्रहों (Group A/B/C) की सूची और एक बाहरी ज्ञान स्रोत (Career_Fields.txt नामक फाइल) का उपयोग करके कुंडली से निकाले गए करियर के मुख्य प्रभावशाली ग्रहों का विश्लेषण करना है। जातक के लिए सबसे उपयुक्त करियर क्षेत्रों की एक विस्तृत, प्राथमिकता-आधारित (Prioritized) सूची बनानी है। आपका अंतिम लक्ष्य केवल सामान्य क्षेत्र बताना नहीं, बल्कि Career_Fields.txt से विशिष्ट और उपयुक्त नौकरी/व्यवसाय के नाम सुझाना है। आपका उत्तर केवल क्षेत्रों की सूची नहीं होना चाहिए, बल्कि यह समझाना चाहिए कि ग्रहों का संयुक्त प्रभाव उन क्षेत्रों की ओर क्यों इशारा करता है। उस फाइल में प्रत्येक ग्रह से जुड़े कार्यक्षेत्रों की एक विस्तृत सूची है। आपको अपनी सामान्य जानकारी का भी उपयोग करना है। और उपरोक्त में हुयी चर्चा विश्लेषण का भी उपयोग करना है।   (विश्लेषण में 'TXT फाइल' का उल्लेख ना करें, यह सिर्फ सन्दर्भ के लिए है)
 
 विश्लेषण की प्रक्रिया (Step-by-Step Analysis Process):
@@ -965,9 +972,9 @@ Group C - सहायक और उत्प्रेरक ग्रह (Trigg
 ➧ निष्कर्ष: एक या दो वाक्यों में बताएं कि इसे वैकल्पिक क्यों माना जाना चाहिए।
 
 ➢ अंतिम निर्देश: आपका लक्ष्य जातक को स्पष्टता देना है। सिर्फ विकल्प न दें, बल्कि एक विशेषज्ञ की तरह मार्गदर्शन करें कि उनके लिए सबसे अच्छा क्या है और क्यों, और यह भी बताएं कि उस क्षेत्र में कौन से विशिष्ट पद उनकी कुंडली के अनुसार सबसे उपयुक्त हैं।
-------------------------------------------
+----------
 उपरोक्त जानकारी में दिए गए मुख्य ग्रहों के संयुक्त प्रभाव और संलग्न Career_Fields.txt फाइल के आधार पर, जातक के लिए 10 सबसे उपयुक्त नौकरी और व्यवसाय के नामों की एक सूची बनाएं। (विश्लेषण में 'TXT फाइल' का उल्लेख ना करें, यह सिर्फ सन्दर्भ के लिए है)
-------------------------------------------
+----------
 मारक पहचान: क्या यह ग्रह द्वितीयेश (2nd lord) या सप्तमेश (7th lord) होकर मारकेश की भूमिका में है? यदि हाँ, तो कौन सी - द्वितीयेश (सामान्य मारक) या सप्तमेश (प्रबल मारक)?
 
 बाधक पहचान: क्या यह ग्रह लग्न के स्वभाव (चर, स्थिर, द्विस्वभाव) के अनुसार बाधक भाव (11वें, 9वें, या 7वें) का स्वामी है?
@@ -1024,94 +1031,94 @@ Group C - सहायक और उत्प्रेरक ग्रह (Trigg
 कर्म का पाठ (Karmic Lesson): यह ग्रह जीवन में क्या 'कार्मिक सबक' सिखाने आया है? (जैसे: 'वैराग्य' या 'अलगाव' का सबक)।
 
 ऊर्जा का रूपांतरण (Energy Channeling): क्या जातक इस ग्रह की नकारात्मक ऊर्जा को एक उच्च उद्देश्य के लिए उपयोग कर सकता है? (जैसे: 'मारक' शनि की ऊर्जा को 'अध्यात्म' या 'अस्पताल सेवा' में लगाना)।
-------------------------------------------
+----------
 अब हम जातक के करियर और नौकरी/व्यापार के संभावित समय का विश्लेषण करेंगे, उसके पहले ध्यान रखने योग्य बातें :
 
 1] ध्यान रहे अभी 2026 चल रहा है और जातिका/जातक xyz 00 साल की/का है, उसने xyz परीक्षा दी है,
 क्या आप तैयार है, करियर का विश्लेषण करने के लिए, सिर्फ इतना बताईये.
-------------------------------------------
+----------
 उपरोक्त चैट और पीडीएफ की और शुरू से आपको दी गयी सभी जानकारी के आधार पर निम्मलिखित सवालों का गहन और विस्तार से विश्लेषण करके निष्कर्ष सहित देना है, ध्यान रहे विश्लेषण संदर्भ के आलावा भी अपने बुद्धि का उपयोग करते हुए आवश्यकता अनुसार ज्योतिष ज्योतिष प्रणाली का उपयोग करते हुए होनी चाहिए। 
 और क्या निर्देश है जिनका आपको सख्ती से पालन करना है वो आपको याद है ?  कौनसे है ?
 तो पहला सवाल दू ?
-------------------------------------------
+----------
 1] व्यक्ति की जन्मकुंडली के अनुसार करियर चुनाव और संभावित क्षेत्र क्या है, जॉब बनाम बिजनेस की संभावनाओं का विस्तृत विश्लेषण?
 (स्रोत: पराशरी - दशमेश, दशम भाव, बलवान ग्रह; जैमिनी - AmK, कारकांश लग्न; BNN - शनि का संबंध (विशेषकर बुध/सूर्य/मंगल से); KP - 10वें CSL का नक्षत्र स्वामी, 2-6-10-11 के सिग्निफिकेटर, D60,SAV-BAV-BAL)
-------------------------------------------
+----------
 2] व्यक्ति के अंदर कौन सी स्वाभाविक प्रतिभाएं, कौशल और क्षमताएं (Strengths) हैं जो करियर में सहायक होंगी?
 (स्रोत: पराशरी - लग्न/लग्नेश का बल, दशमेश की प्रकृति; जैमिनी - आत्मकारक (AK) की प्रकृति; BNN - गुरु और उसके सहयोगी ग्रह; KP - लग्न CSL और उसके सिग्निफिकेटर)
-------------------------------------------
+----------
 3] व्यक्ति के करियर में क्या कमजोरियाँ या नकारात्मक पहलू (Weaknesses) हो सकते हैं जिन पर ध्यान देने की आवश्यकता है?
 (स्रोत: पराशरी - दशमेश का पाप ग्रहों से पीड़ित होना, त्रिक भावों में स्थिति; जैमिनी - AmK पर पाप अर्गला या दृष्टि; BNN - शनि का पाप ग्रहों से संबंध; KP - 10वें CSL का 8, 12 भावों को सिग्निफाई करना)
-------------------------------------------
+----------
 4] शिक्षा और कौशल विकास का व्यक्ति के करियर पर क्या प्रभाव पड़ेगा और किन क्षेत्रों में पढ़ाई लाभकारी होगी?
 (स्रोत: पराशरी - पंचम भाव/पंचमेश और नवम भाव/नवमेश का दशम भाव से संबंध,D5 (पंचमांश - ज्ञान से अधिकार); जैमिनी - AmK का संबंध; BNN - गुरु का बुध/शुक्र से संबंध)
 ➤ क्या व्यक्ति अपनी शिक्षा और ज्ञान का करियर में सफलतापूर्वक उपयोग कर पाएगा? उसकी वास्तविक विशेषज्ञता किस क्षेत्र में हो सकती है?
 (स्रोत:  D24, सिद्धांश का लग्न और लग्नेश, सिद्धांश में बलवान ग्रह (जैसे, बुध - वाणिज्य, गुरु - ज्ञान, शुक्र - कला, शनि - तकनीकी)। D1 के दशमेश का D24 के लग्नेश या प्रमुख ग्रहों से कोई संबंध है?)
-------------------------------------------
+----------
 5] क्या व्यक्ति के लिए नौकरी/सेवा (Job/Service) करना अधिक उपयुक्त रहेगा या अपना व्यवसाय (Business) शुरू करना? नौकरी/व्यवसाय का प्रतिशत?
 (स्रोत: पराशरी - षष्ठम भाव (सेवा) बनाम सप्तम भाव (साझेदारी) और दशम भाव का बल,D7 (साझेदारी हेतु); जैमिनी - AmK की प्रकृति; KP - 6वें भाव (नौकरी) बनाम 7वें भाव (व्यापार) के सिग्निफिकेटर्स का बल (KP Section A), सेल्फ एमप्लोमेंट में रिस्क लेने की क्षमता D3 का तीसरा भाव, SAV-BAV-BAL, BNN - शनि का बुध/शुक्र (व्यापार) बनाम मंगल/सूर्य (सेवा) से संबंध)
-------------------------------------------
+----------
 6] यदि जातक नौकरी करता है, तो क्या कुंडली में सरकारी नौकरी (Government Job) के प्रबल योग हैं? इसकी संभावना कितने प्रतिशत है?
 (स्रोत: पराशरी - सूर्य/मंगल का बल, D1, D9, D10; जैमिनी - AK/AmK का सूर्य/मंगल होना; BNN - सूर्य का शनि/गुरु से संबंध; KP - 10वें CSL का 6, 10, 11 को सिग्निफाई करना)
-------------------------------------------
+----------
 7] यदि व्यवसाय है, तो किस प्रकार का व्यवसाय या उद्योग व्यक्ति के लिए सबसे अनुकूल है?
 (स्रोत: (प्रश्न 1 के समान) पराशरी - दशमेश का कारकत्व; जैमिनी - कारकांश लग्न से दशम भाव; BNN - शनि से संबंधित ग्रह; KP - 10वें CSL का नक्षत्र स्वामी और सिग्निफिकेटर ग्रह, 7वें CSL का नक्षत्र स्वामी और उप-उप स्वामी (SSL) (KP Section B3), सेल्फ एमप्लोमेंट में रिस्क लेने की क्षमता D3 का तीसरा भाव)
-------------------------------------------
+----------
 8] करियर में उन्नति, पदोन्नति और प्रगति (Growth and Promotion) कब संभावित है और इसके लिए क्या कारक जिम्मेदार होंगे?
 (स्रोत: पराशरी - दशा/गोचर का दशम/एकादश भाव से संबंध; जैमिनी - चर दशा; BNN - गुरु/शनि का गोचर; KP - 2, 6, 10, 11 के प्रबल सिग्निफिकेटर ग्रहों की वर्तमान या आगामी दशाएं (KP Section C))
-------------------------------------------
+----------
 9] करियर से आर्थिक लाभ, आय के स्रोत और वित्तीय स्थिरता कैसी रहेगी? धन संबंधित योग कैसे हैं?
 (स्रोत: पराशरी - धन/लाभ भाव (2, 11) का दशमेश से संबंध, धन योग; जैमिनी - AmK पर शुभ अर्गला; KP - 2, 6, 11 भावों के सिग्निफिकेटर्स का बल, KP - 11वें CSL (इच्छा पूर्ति) का 2, 6, 10 से संबंध)
 ➤ व्यक्ति की वास्तविक धन संचय क्षमता कैसी है और क्या आय के स्रोत नैतिक होंगे?
 (स्रोत: D2, होरा लग्न में कौन से ग्रह हैं? (सूर्य की होरा में क्रूर ग्रह और चंद्र की होरा में सौम्य ग्रह धन संचय के लिए अच्छे हैं) D1 के धनेश (2nd Lord) और लाभेश (11th Lord) की होरा में क्या स्थिति है?)
-------------------------------------------
+----------
 10] क्या करियर में किसी प्रकार की वित्तीय चुनौतियाँ या नुकसान के योग हैं? यदि हाँ, तो कब और कैसे?
 (स्रोत: पराशरी - दशमेश का द्वादशेश (व्यय) से संबंध,दरिद्र योग, D12 (व्यय/हानि), D8 (संकट); जैमिनी - AmK पर पाप अर्गला; KP - 5, 8, 12 (विशेषकर 7वें और 10वें CSL के संदर्भ में के प्रबल सिग्निफिकेटर ग्रहों की दशाएं))
-------------------------------------------
+----------
 11] नौकरी में संतुष्टि (Job Satisfaction) के योग कैसे हैं? किन बातों से व्यक्ति अपने काम में संतुष्ट रहेगा या किन कारणों से असंतोष हो सकता है?
 (स्रोत: पराशरी - चतुर्थ भाव (सुख) का दशम भाव से संबंध, चतुर्थ भाव का दशम से संबंध, चन्द्रमा (मानसिक शांति) की स्थिति, D4 (सुख/शांति); D9/D10 का सामंजस्य; जैमिनी - आत्मकारक (AK) और अमात्यकारक (AmK) का सामंजस्यपूर्ण संबंध; BNN - गुरु का शनि से संबंध)
-------------------------------------------
+----------
 12] कार्यस्थल पर सहकर्मियों, वरिष्ठों और अधीनस्थों (Colleagues, Bosses, Subordinates) के साथ संबंध कैसे रहेंगे? क्या कोई संघर्ष या सहयोग के योग हैं?
 (स्रोत: पराशरी - दशम भाव में ग्रह, तृतीय (सहकर्मी), षष्ठम (अधीनस्थ), नवम (गुरु/बॉस), D3 (सहकर्मी/पराक्रम); जैमिनी - AmK का चर राशियों में होना; KP - दशा स्वामियों का 3, 9, 12 भावों को सिग्निफाई करना)
 ➤ नौकरी में आने वाली छिपी हुई बाधाएं क्या हैं? क्या कार्यस्थल पर शत्रुता या स्वास्थ्य संबंधी समस्याएं करियर को प्रभावित करेंगी?
 (स्रोत: D6, षष्ठांश का लग्न और लग्नेश, षष्ठांश में किन पाप ग्रहों (मंगल, शनि, राहु) का प्रभाव अधिक है? D1 का दशमेश या लग्नेश षष्ठांश में पीड़ित है?)
-------------------------------------------
+----------
 13] क्या करियर के संबंध में यात्रा (Travel) या स्थान परिवर्तन (Relocation) के योग हैं? यदि हाँ, तो किस दिशा या स्थान पर जाना अनुकूल रहेगा?
 (स्रोत: पराशरी - दशमेश का चर राशियों या तृतीय/नवम/द्वादश भाव से संबंध, D4 (नए स्थान पर सुख); जैमिनी - AmK का चर राशियों में होना; KP - दशा स्वामियों का 3, 9, 12 भावों को सिग्निफाई करना)
 ➤ नौकरी में आने वाली छिपी हुई बाधाएं क्या हैं? क्या कार्यस्थल पर शत्रुता या स्वास्थ्य संबंधी समस्याएं करियर को प्रभावित करेंगी?
 (स्रोत: D6, षष्ठांश का लग्न और लग्नेश, षष्ठांश में कौन से ग्रह उच्च, स्वराशि या बलवान हैं? क्या D1 के दशमेश या आत्मकारक का एकादशांश के लग्न या लाभ भाव से कोई संबंध है?)
-------------------------------------------
+----------
 14] करियर में कौन-कौन सी प्रमुख चुनौतियाँ, बाधाएं या कठिन समय (Challenges and Obstacles) आ सकते हैं और उनका सामना कैसे करें?
 (स्रोत: पराशरी - शनि/राहु/केतु का दशम भाव/दशमेश पर प्रभाव, D8 (अचानक संकट), D30 (दुर्भाग्य/चारित्रिक दोष); D10/D6 में पाप ग्रह; जैमिनी - AmK पर पाप अर्गला; BNN - शनि का पाप ग्रहों से संबंध; KP - 10वें CSL का 8, 12 भावों से संबंध)
-------------------------------------------
+----------
 15] करियर में महत्वपूर्ण घटनाएँ (जैसे पहली नौकरी, नौकरी बदलना, बड़ा प्रमोशन, व्यवसाय की शुरुआत/बदलाव) कब घटित हो सकती हैं?
 (स्रोत: (प्रश्न 8 के समान) सभी प्रणालियों के समय निर्धारण तकनीकों का संयुक्त विश्लेषण - दशा और गोचर)
-------------------------------------------
+----------
 16] वर्तमान ग्रह दशाएं (Planetary Periods/Dashas) और गोचर (Transits) व्यक्ति के करियर को कैसे प्रभावित कर रहे हैं और भविष्य में उनका क्या प्रभाव होगा?
 (स्रोत: सभी प्रणालियों का समय निर्धारण विश्लेषण, विशेष रूप से वर्तमान और आगामी दशाओं का करियर से संबंधित भावों और ग्रहों पर प्रभाव, D10 पर वर्तमान प्रभाव)
-------------------------------------------
+----------
 17] करियर में सफलता, मान-सम्मान और प्रतिष्ठा (Success, Honor, Reputation) के योग कैसे हैं? क्या किसी विशिष्ट क्षेत्र में प्रसिद्धि मिलेगी?
 (स्रोत: पराशरी - दशम भाव में राजयोग, सूर्य का बल; जैमिनी - आरूढ़ लग्न (AL) और कर्म पद (A10) का संबंध, कारकांश लग्न में शुभ ग्रह, AmK का बल; A10; KP - दशा स्वामियों का 1, 10, 11 भावों से प्रबल संबंध)
 ➤ क्या व्यक्ति को अपने काम के लिए वास्तविक श्रेय, पुरस्कार और सम्मान मिलेगा, या केवल पद और जिम्मेदारी ही मिलेगी?
 (स्रोत: D11, एकादशांश का लग्न और लग्नेश, एकादशांश में कौन से ग्रह उच्च, स्वराशि या बलवान हैं? क्या D1 के दशमेश या आत्मकारक का एकादशांश के लग्न या लाभ भाव से कोई संबंध है?)
-------------------------------------------
+----------
 18] क्या करियर के माध्यम से व्यक्ति अपने जीवन के बड़े उद्देश्यों और महत्वाकांक्षाओं (Goals and Ambitions) को प्राप्त कर पाएगा?
 (स्रोत: जैमिनी - आत्मकारक (AK) और अमात्यकारक (AmK) का सामंजस्यपूर्ण संबंध; पराशरी - लग्नेश और दशमेश का बल और शुभ संबंध;D9/D10 का सामंजस्य, D20 (आध्यात्मिक उद्देश्य), D60)
-------------------------------------------
+----------
 19] करियर में सर्वोच्च पद (Peak Position) और अधिकार (Authority) प्राप्ति के योग कैसे हैं? क्या जातक अपने क्षेत्र में एक लीडर या उच्च अधिकारी बन पाएगा?
 (स्रोत: पराशरी - सूर्य/बृहस्पति का बल, राजयोग, D10; जैमिनी - AmK का AK से संबंध, घटिका लग्न (GL) में बैठे ग्रह, GL पर अमात्यकारक (AmK) और आत्मकारक (AK) का प्रभाव; BNN - सूर्य-गुरु-शनि का संबंध; KP - 10वें/11वें CSL का 1, 6, 10, 11 को सिग्निफाई करना)
-------------------------------------------
+----------
 20] करियर संबंधी किसी विशेष समस्या या बाधा के लिए क्या ज्योतिषीय उपाय, रत्न या पूजा पाठ सुझाए जा सकते हैं?
 (स्रोत: 'मारक/बाधक पहचान और उपाय प्रणाली' (Step 1-5), कमजोर या पीड़ित ग्रहों की पहचान (विशेषकर लग्नेश, दशमेश, AmK, शनि, D10 में पीड़ित ग्रह) और उनके नकारात्मक प्रभाव को कम करने के लिए उपाय)
-------------------------------------------
+----------
 ➤ जातक ने अपने बारे में जानकरी दी है और जातक के कुछ सवाल है, पहले दी हुयी जानकारी को सूचीबद्ध कीजिये, उसके बाद सभी सवाल सूचीबद्ध कीजिये :
-------------------------------------------
+----------
 अब दी हुयी जानकारी का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर कीजिये, एक एक घटना का विस्तार से विश्लेषण होना चाहिए, अगर उपाय आवश्यक हो तो उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
-------------------------------------------
+----------
 अब दिए हुए सवालो का जवाब गहन शोध करके लिखिए विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक सवाल का विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक सवाल का विस्तार से विश्लेषण होना चाहिए,उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
-------------------------------------------
+----------
 सुरवात से पुछे गए जातक के जीवन संबधी सभी सवालों के विश्लेषण का शोर्ट में निष्कर्ष दीजिए
-------------------------------------------
+----------
 अब तक किये गए सभी निम्मलिखित घटनाओं और सवालों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
 
 1] व्यक्ति की जन्मकुंडली के अनुसार करियर चुनाव और संभावित क्षेत्र क्या है, जॉब बनाम बिजनेस की संभावनाओं का विस्तृत विश्लेषण?
@@ -1159,9 +1166,2124 @@ Group C - सहायक और उत्प्रेरक ग्रह (Trigg
 20] करियर संबंधी किसी विशेष समस्या या बाधा के लिए क्या ज्योतिषीय उपाय, रत्न या पूजा पाठ सुझाए जा सकते हैं?
 
 
-जातक के प्रश्न :
+जातक के प्रश्न :`;
+        const rawData_en = `This PDF is the kundali of native xyz. You must save all the information from it, so that the kundali can be analyzed. While analyzing, do not write the page reference of the PDF, but do give a list of which page the following information is on - meaning it will be easier for you to find it later as well:
 
-`;
+1] Planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra lord, Jaimini chara karakatva)
+2] Sarvashtakavarga table
+3] Shadbala table (sthana bala, dig bala, kala bala, cheshta bala, naisargika bala, drishti bala)
+4] Bhava bala table 
+5] Vimshopak bala table (shodash varga, shad varga, sapta varga and dasha varga)
+6] Jaimini arudha pada (rashi-based)
+7] Vimshottari mahadasha-antardasha chart
+8] Yogini dasha-antardasha chart
+9] Chara dasha-antardasha chart
+10] Krishnamurti Paddhati (KP) bhava position table {bhava-rashi-lord-nakshatra lord-sub lord-sub-sub lord-Cusp-rashi-nakshatra-pada}
+11] Krishnamurti Paddhati (KP) planet position table {bhava-rashi-lord-nakshatra lord-sub lord-sub-sub lord-Cusp-rashi-nakshatra-pada}
+12] Krishnamurti Paddhati (KP) house significator planets position table
+13] Krishnamurti Paddhati (KP) planet significator position table
+14] D1's 12 bhava rashi-nakshatra (Bhava Cusp)
+15] D9 planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra lord) 
+16] D9's 12 bhava rashi-nakshatra (Bhava Cusp) 
+17] D10 planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra lord) 
+18] D10's 12 bhava rashi-nakshatra (Bhava Cusp) 
+19] Main career Cuspal Sub-Lord (Career CSL) summary: from the above tables, write separately in a small list only the CSL, nakshatra lord (NL), sub-lord (SL) and sub-sub lord (SSL) of the 6th (job), 7th (business) and 10th (karma) bhavas.
+
+Please present all tables in a simple and readable table format.
+----------
+From the above chat and PDF, write the rashi placed in the twelve bhavas of the lagna kundali, the bhava lords, and the planets placed there; also write which planets are uchcha, neecha, vakri, neecha-bhanga, asta, vargottama. Also write the nakshatra positions (do not write uchcha, neecha, vakri for Rahu-Ketu).
+
+The writing pattern will be as follows, which will be only for example, shown in "":
+
+"First bhava (lagna):
+In this bhava there is Simha rashi, therefore the lagnesh is Surya.
+In this bhava the planets Surya and Rahu are placed.
+Surya: swagrihi (in his own house) in Simha rashi. Surya is placed in Magha nakshatra. Surya, being the lord of the first bhava (Simha), is sitting in lagna. Surya's drishti is on the seventh bhava (Kumbha).
+Rahu: in Simha rashi (considered an enemy rashi for Rahu). Rahu is placed in Magha nakshatra. Rahu's drishti is on the fifth bhava (Dhanu), the seventh bhava (Kumbha) and the ninth bhava (Mesha).
+This bhava is under the full drishti of Ketu (from the seventh bhava)."
+
+
+For your convenience, a txt file has been given: "D1_Analysis"
+----------
+Write the following information from the txt file one after another, exactly as-is without any change:
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D10 Analysis
+5] D60 Analysis
+6] D1_to_D9_Analysis
+7] D1_to_D10_Analysis
+8] D1_to_D60_Analysis
+----------
+Please save the astrological data (Shodashvarga kundalis) given in all the attached text files into your memory.
+
+Instructions:
+
+1] There is no need to rewrite this data in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: only tell which Shodashvarga kundalis have been saved.
+
+After this, I will ask specific questions directly related to analysis; then you must use this entire data.
+----------
+Looking at the chalit kundali, tell what has changed in the chalit kundali compared to the D1 kundali and what its effect will be:
+----------
+➤ Impact of PN, PB, MB on life (Impact on Life)
+
+Subject: Vedic astrology - calculation and phaladesh of Pushkar navamsha (PN), Pushkar bhaga (PB) and Mrityu bhaga (MB) for planets and bhavas.
+
+Based on the TXT calculations, write the impact on the following areas:
+
+​▸ Divine protection (Divine Protection): Which bhavas/planets are protected by Pushkar energy, and in which areas of life will help come 'without asking'?
+
+​▸ Conflicts and obstacles (MB Impact): In which areas of life can planets in Mrityu bhaga create obstacles like 'landmines'?
+
+​▸ Start vs result (Start vs Middle): Based on the Pushkar difference between the bhava's 'start' and 'middle', tell how the beginning of a task will be and how its end will be?
+
+▸ In the calculation of PN and PB, check whether their 'bhavesh' is in MB?
+(If the bhava's lord (Bhavesh) is in Mrityu bhaga, then even if the bhava is Pushkar, the result will be obstructed)
+
+​▸ Dasha phal: What will be the effect of these amrit/vish points in the current or upcoming mahadasha?
+
+​▸ ​Conclusion: Overall, how is the balance of 'amrit' (PB) and 'vish' (MB) in the kundali?
+----------
+1] First prepare a list of all the shubha yogas in the native's kundali, then analyze in detail the formation method of all the shubha yogas and the probable results based on their bhavas and the strength of the planets; a list of some yogas and doshas is given at the end of the PDF - take the shubha yogas from them as well. Take from the txt as well.
+2] First prepare a list of all the doshas in the native's kundali, then analyze in detail the formation method of all the doshas and the probable results based on their bhavas and the strength of the planets; a list of some yogas and doshas is given at the end of the PDF - take the doshas from them as well. Take from the txt as well.
+----------
+Based on the janma nakshatra, make the navatara chakra and analyze in the nakshatras of which taras (sampat, vipat, vadha etc.) all 9 planets of the kundali are placed, and according to that tara, what kind of (shubha/ashubha) result each planet will give? [PDF Page No 28]
+----------
+Please provide a list of astrological facts/figures for all 9 planets (Surya, Chandra, Mangal, Budha, Guru, Shukra, Shani, Rahu, Ketu) based on the birth details from all the above chats and PDF. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on the kundali's phalit, shadbala, Vimshopak bala (shodash varga), ashtakavarga and Jaimini karakatva.
+
+Provide the following information for each planet:
+1. [Planet name]
+➤ Jaimini karakatva:
+➤ Bhava ownership: (which bhavas it is the lord of)
+➤ Position: (in which bhava and rashi)
+➤ Position in rashi: (mitra, shatru, sama, uchcha, neecha, mooltrikona, swarashi)
+➤ Nakshatra and pada: (in which nakshatra and which pada the planet is, and the effect of the nakshatra lord.)
+➤ Drishti: (on which bhavas/planets it casts drishti) 
+➤ Drishti on [planet name]: (which planets cast drishti)
+➤ Yuti: (with which planets it is in yuti)
+➤ Avastha (degree/latitude): (the degree and the name of the avastha, like bala, kumara etc.)
+➤ Emotional/avastha strength: vakri/asta/neecha/neecha-bhanga/vargottama position: (yes/no or the name of the position)
+➤ Navamsha position:  (in which rashi and nakshatra (lord) the planet is in the navamsha kundali, and its effect.)
+➤ Strength in navamsha: afflicted/strong
+➤ Position change and effect in chalit 
+➤ Bhavabala: (value only)
+➤ Shadbala :  (value in rupa and how its strength is - better than average, rank etc.)
+➤ Bhinnashtakavarga (BAV) points: (value between 0-8): (based on points: practical strength - weak/average/strong)
+➤ Vimshopak bala (shodash varga): (value and its rank among the planets, if applicable.)
+➤ Position and effect in Pushkar navamsha (PN)/Pushkar bhaga (PB)/Mrityu bhaga (MB) :
+​➤ Navatara position and effect: (based on the janma nakshatra, in which tara - like sampat, vipat, sadhak etc. - this planet is placed, and due to that specific tara, what auspiciousness or obstacles will come in its natural and bhava results.)
+➤ Brief answer of probable result in gochar and dasha : (in general, what kind of result that planet will give in its dasha/antardasha and gochar - good, bad, or average.
+
+➤ Conclusion : Overall, is the planet strong or afflicted? (percentage)
+
+➤ Finally, the conclusion regarding all planets being strong and afflicted (based on percentages)
+----------
+Please provide a list of astrological facts/figures for all 12 bhavas of D1 based on the birth details from all the above chats and PDF. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on karakatva, bhava bala, ashtakavarga.
+
+
+Provide the following information for each bhava:
+
+1. First bhava (lagna):  rashi name [Arudha pada]
+➤ Karakatva: 
+➤ Bhava lord (lagnesh):
+➤ Bhavesh's position: 
+➤ Placed planets: 
+➤ Drishti on bhava: 
+➤ Bhava bala: value in rupa and how its strength is - better than average, rank etc. (weak or strong bhava in the kundali).
+➤ Sarvashtakavarga (SAV) points: (total points) (bhava's capacity: 'uttam' if more than 28, 'challenging' if less than 25)
+➤ Position and effect in Pushkar navamsha (PN)/Pushkar bhaga (PB):
+➤ Conclusion : Overall, is the bhava strong or afflicted? (percentage)
+
+➤ Finally, the conclusion regarding all bhavas being strong and afflicted (based on percentages)
+----------
+➤ Make a general information table:
+
+►D1 lagna bhava rashi and nakshatra
+►D1 dasham bhava rashi and nakshatra
+►D9 lagna bhava rashi and nakshatra
+►D9 dasham bhava rashi and nakshatra
+►D10 lagna bhava rashi and nakshatra
+►D10 dasham bhava rashi and nakshatra
+
+►Chandra rashi 
+►Chandra nakshatra
+►Chandra nakshatra lord
+
+►D1 lagna bhava nakshatra lord
+►D1 lagnesh  
+►D1 dasham bhava nakshatra lord
+►D1 dashamesh
+►D9 lagna bhava nakshatra lord
+►D9 lagnesh  
+►D9 dasham bhava nakshatra lord
+►D9 dashamesh
+►D10 lagna bhava nakshatra lord
+►D10 lagnesh  
+►D10 dasham bhava nakshatra lord
+►D10 dashamesh
+
+➤ After making the table, analyze the following points. 
+
+▸ Between the planet sitting in lagna of both D1 and D9, the lagnesh and the lagna nakshatra lord - which is stronger? 
+▸ Among the planet sitting in lagna, the lagnesh, and the lagna nakshatra lord in D1 and D9, which planet is the most influential and ultimately directs the person's personality?
+
+▸ In D10, among the planet sitting in lagna, the lagnesh, and the lagna nakshatra lord, which planet is the most influential and ultimately directs the person's D10?
+
+▸ Between the planet sitting in the dasham bhava of both D1 and D9, the dashamesh and the dasham bhava nakshatra lord - which is stronger? 
+▸ Among the planet sitting in the dasham bhava, the dashamesh and the dasham bhava nakshatra lord in D1 and D9, which planet is the most influential and ultimately directs the person's career?
+
+▸ In D10, among the planet sitting in the dasham bhava, the dashamesh and the dasham bhava nakshatra lord, which planet is the most influential and ultimately directs the person's career?
+
+➤ Conclusion : 
+▸ Between the influential planet of lagna of D1, D9 and the influential planet of lagna of D10 - which is more influential? 
+▸ Between the influential planet of the dasham bhava of D1, D9 and the influential planet of the dasham bhava of D10 - which is more influential?
+----------
+Please save the astrological data (Vimshottari, Yogini, Chara dasha and Gochar) given in all the attached text files into your memory.
+
+Instructions:
+
+1] There is no need to rewrite this data in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: write only the current status of 2026 in the format given below:
+Vimshottari (MD-AD-PD):
+Yogini (MD-AD-PD):
+Chara dasha (MD-AD-PD):
+Gochar (Guru/Shani - from lagna and Chandra):
+
+After this, I will ask specific questions directly related to analysis; then you must use this entire data.
+----------
+Based on the astrological data (Vimshottari, Yogini, Chara Dasha and Gochar Analysis) given and extracted in the above chats, prepare a detailed 'master time-table' of the upcoming 7 years.
+
+​The format and columns of the table must be exactly as follows:
+
+​| Time (year) | Vimshottari dasha (MD-AD) | Yogini dasha (MD-AD) | Chara dasha (MD-AD) | Guru gochar (bhava from lagna/Chandra) | Shani gochar (bhava from lagna/Chandra) |
+
+​Important rules for data processing:
+
+​Dasha change: If the antardasha (AD) changes within a single year, show it in the same cell with a 'Slash' (/) (like: Budha AD / Ketu AD).
+----------
+Extract information from all the above details; no analysis is to be done. Do not analyze the point titled "Analysis:" - just write it as it is. Also, excluding the planets casting drishti, write the state of the other planets (uchcha-neecha-neecha-bhanga, shatru-mitra-sama rashi; asta-vakri-vargottama) in brackets. Write the questions along with the answers, and write 'to be continued...' just as-is as well.
+
+Part 1: Career analysis according to Parashari astrology
+
+(This part is for understanding the foundation, capacity and destiny of career.)
+
+1] Dashamesh (lord of the 10th bhava):
+➤ Which planet is the lord of the dasham bhava?
+➤ In which rashi-bhava is the dashamesh planet placed?  (especially its position in kendra/trikona)
+➤ In which nakshatra (lord) is the dashamesh planet placed?
+➤ With which planets is the dashamesh planet in yuti?
+➤ In which nakshatra (lord) is the planet in yuti with the dashamesh placed?
+➤ Which planets cast drishti on the dashamesh?
+➤ Is there enmity/friendship/equality between the lagnesh and the dashamesh?
+
+Analysis: the direction of career, the level of success, and the native's attitude towards career.
+
+2] Dasham bhava (karma bhava):
+➤ In which rashi and nakshatra (lord) is the dasham bhava placed?
+➤ Which planets are placed in the dasham bhava?
+➤ In which nakshatra (lord) is the planet placed in the dasham bhava?
+➤ Which planets are casting drishti on the dasham bhava?
+
+Analysis: the nature of the workplace, the environment of the workplace, and the prestige received in career.
+
+to be continued...
+
+3] Analysis of the navamsha kundali (D9) - destiny and inner capacity in career
+
+A) Dasham bhava and dashamesh in D9:
+➤ In which rashi and nakshatra (lord) is the dasham bhava placed in navamsha?
+➤ Which planets are placed in the dasham bhava in navamsha? (along with their nakshatra-lords)
+➤ Which planets cast drishti on the dasham bhava in navamsha?
+➤ Who is the dashamesh planet in navamsha, and in which bhava, rashi and nakshatra (lord) is it placed?
+➤ With which planets is the dashamesh in yuti or receiving drishti in navamsha?
+➤ In which nakshatra is the planet in yuti with the dashamesh placed in navamsha?
+
+B) Lagna and lagnesh in D9:
+➤ In which rashi and nakshatra (lord) is lagna placed in navamsha?
+➤ Which planets are placed in the lagna bhava in navamsha? (nakshatra-lord)
+➤ In which bhava, rashi and nakshatra (lord) is the lagnesh planet placed in navamsha?
+➤ With which planets is the lagnesh in yuti or receiving drishti in navamsha?
+➤ What is the position of Shani, Budha and Surya in navamsha?
+
+C) Position of D1's dashamesh in navamsha (D9):
+➤ In which bhava, rashi and nakshatra (lord) is D1's dashamesh placed in navamsha (D9)?
+➤ In navamsha (D9), with whom is D1's dashamesh sitting?
+➤ In navamsha (D9), which planets cast drishti on D1's dashamesh?
+
+Analysis: an accurate assessment of the subtlety of career, real capacity, and the success/failure received in professional life.
+
+to be continued...
+
+4] Analysis of the dashamsha kundali (D10) - karma, profession and prestige
+
+A) Dasham bhava and dashamesh in D10:
+➤ In which rashi and nakshatra (lord) is the dasham bhava placed in dashamsha?
+➤ Which planets are placed in the dasham bhava in dashamsha? (along with their nakshatra-lords)
+➤ Which planets cast drishti on the dasham bhava in dashamsha?
+➤ Who is the dashamesh planet in dashamsha, and in which bhava, rashi and nakshatra (lord) is it placed?
+➤ With which planets is the dashamesh in yuti or receiving drishti in dashamsha?
+➤ In which nakshatra is the planet in yuti with the dashamesh placed in dashamsha?
+
+B) Lagna and lagnesh in D10:
+➤ In which rashi and nakshatra (lord) is lagna placed in dashamsha?
+➤ Which planets are placed in the lagna bhava in dashamsha? (nakshatra-lord)
+➤ In which bhava, rashi and nakshatra (lord) is the lagnesh planet placed in dashamsha?
+➤ With which planets is the lagnesh in yuti or receiving drishti in dashamsha?
+➤ What is the position of Shani, Budha and Surya in dashamsha?
+
+C) Analysis of the janma kundali's (D1) planets in D10:
+➤ (In D10) In which bhava, rashi and nakshatra (lord) is the janma kundali's dashamesh placed?
+➤ In dashamsha (D10), with whom is D1's dashamesh sitting?
+➤ In dashamsha (D10), which planets cast drishti on D1's dashamesh?
+
+Analysis: real karma, the environment of the workplace, position and "social prestige". An accurate assessment of what the person will actually do and what status they will get.
+
+to be continued...
+
+5] Lagna and lagnesh:
+➤ What is the strength of lagna/lagnesh?
+➤ What is the lagnesh's relation with the dasham bhava or the dashamesh?
+
+Analysis: how the native's own capacity, effort and personality will affect career.
+
+6] Strength of planets and the karaka planets of career:
+➤ Which is the strongest planet in the kundali (according to shadbala)?
+➤ What is the position (rashi, bhava, nakshatra-lord) of Surya (atma, sarkar), Mangal (urja, sahas), Budha (buddhi, vyapar), Guru (gyan, salahkar), Shukra (kala, vilasita) and Shani (seva, anushasan)?
+
+Analysis: which planets will naturally lead the native towards a particular field.
+
+to be continued...
+
+7] Bhavas of wealth and gains:
+➤ The position of the dwitiya bhava (sanchit dhan) and the ekadash bhava (aay/labh) and their lords (rashi, bhava, nakshatra-lord).
+➤ Does the dashamesh have a relation with the wealth/gain bhavas? (dhana yoga)
+
+Analysis: the possibility of economic gain from career and the sources of income.
+
+8] Analysis of Indu lagna (Indu Lagna - Wealth Point):
+➤ In which rashi and bhava is Indu lagna placed in the kundali?
+➤ Which planets are placed in Indu lagna and which planets cast drishti on Indu lagna (shubha or ashubha)?
+➤ Where and in what state (uchcha/neecha/swarashi) is the lord of Indu lagna placed?
+➤ Is any direct relation forming between the dashamesh (career), shashthesh (job), or saptamesh (business) and Indu lagna?
+
+Analysis: How will the native's final economic level (Wealth Status) be? Is there extraordinary wealth (crorepati yoga) in the kundali, or will there be continuous struggle for wealth? What will be the main source of wealth?
+
+to be continued...
+----------
+Extract information from all the above details; no analysis is to be done. Do not analyze the point titled "Analysis:" - just write it as it is. Write the questions along with the answers, and write 'to be continued...' just as-is as well.
+
+Part 2: Career analysis according to Jaimini astrology
+
+(This part is for understanding position, authority, the purpose of the soul and public image in career.)
+
+1] Atmakaraka (AK) and Amatyakaraka (AmK) - purpose of the soul and the advisor:
+A] Atmakaraka (AK):
+
+➤ Which is the atmakaraka planet by the Jaimini method? (the planet with the most degrees)
+➤ In which rashi and bhava is the atmakaraka placed?
+➤ With which planets (chara karakas) is the atmakaraka in yuti?
+➤ Which rashis' Jaimini rashi drishti is on the atmakaraka? (chara, sthira, dwiswabhava)
+➤ In which navamsha is the atmakaraka placed?
+➤ In which nakshatra is the atmakaraka placed?
+
+B] Amatyakaraka (AmK):
+
+➤ Which is the amatyakaraka planet by the Jaimini method? (the planet with the second-most degrees)
+➤ In which rashi and bhava is the amatyakaraka placed?
+➤ With which planets (chara karakas) is the amatyakaraka in yuti?
+➤ Which rashis' Jaimini rashi drishti is on the amatyakaraka? (chara, sthira, dwiswabhava)
+➤ In which navamsha is the amatyakaraka placed?
+➤ In which nakshatra is the amatyakaraka placed?
+
+Analysis: AmK shows the native's soul's basic purpose and the direction of life. AmK represents that advisor or medium (career/ministers) who helps in achieving that purpose.
+
+to be continued...
+
+2] Mutual relation between AK and AmK - harmony in purpose and path:
+➤ Are AK and AmK placed in shubha bhavas from each other (like kendra 1, 4, 7, 10; trikona 1, 5, 9; or a 3/11 relation)?
+➤ Are they casting Jaimini rashi drishti on each other?
+
+Analysis: This relation shows ease and success in career. If the relation is shubha, then career progresses with the satisfaction of the soul and the person remains happy with their work. An ashubha relation is a sign of inner conflict and dissatisfaction.
+
+3] Karma pada (A10) - professional image and public prestige:
+➤ In which rashi and bhava is A10 (karmapada) placed?
+➤ Which planets (chara karakas) are placed in A10?
+➤ Which rashis' Jaimini rashi drishti is on A10? (chara, sthira, dwiswabhava) (the influence of shubha planets gives fame; the influence of paap planets gives dispute or conflict).
+➤ Is A10 forming a relation with lagna arudha (AL), atmakaraka (AK) or amatyakaraka (AmK)?
+
+Analysis: This shows how the world sees your work and position. It gives an accurate assessment of the fame, social prestige and public image received from career.
+
+to be continued...
+
+4] Karakamsha lagna (Karakamsa Lagna) - hidden talent and destiny:
+➤ Which rashi and planets are in the dasham bhava from karakamsha lagna?
+➤ Where is the karakamsha dashamesh placed?
+➤ With which planets is the karakamsha dashamesh in yuti?
+
+Analysis: This indicates the native's hidden talent, inner desires and the real direction of career. The dasham bhava from karakamsha shows the person's final karma and destiny.
+
+5] Argala analysis - invisible intervention and the flow of resources:
+
+➤ Argala on the dasham bhava: which planets are continuously giving support or obstruction to the "institution" of career (like office, company)?
+➤ Argala on amatyakaraka (AmK): analysis of the support or obstruction received from senior officials, advisors or colleagues in career.
+➤ Argala on A10 (karma pada): which forces are strengthening or weakening your public image and prestige from behind the scenes?
+
+Analysis: detecting the invisible support received in career, the flow of resources, and the hidden obstacles.
+
+to be continued...
+
+6] Ghatika lagna (Ghatika Lagna - GL) - power, authority and high position:
+➤ In which rashi and bhava is ghatika lagna (GL) placed?
+➤ Which planets are placed in ghatika lagna?
+➤ Which rashis' (chara, sthira, dwiswabhava) Jaimini drishti is on ghatika lagna?
+➤ Is any relation (yuti or Jaimini drishti) forming between amatyakaraka (AmK) or atmakaraka (AK) and ghatika lagna?
+➤ Which planets are in the dasham bhava from ghatika lagna?
+
+Analysis: How much 'power', 'authority' and 'social prestige' will the native get in career? Does the native have the capacity to attain a senior officer (CEO/Director) post in a big organization, a leader, or a top post (Class-1 Officer) in the government sector, or will they have to work as a subordinate (subordinates)?
+
+to be continued...
+----------
+Extract information from all the above details; no analysis is to be done. Do not analyze the point titled "Analysis:" - just write it as it is. Also write the state of the planet (uchcha, neecha, neecha-bhanga, asta, vakri, shatru-mitra-sama rashi) in brackets. Write the questions along with the answers, and write 'to be continued...' just as-is as well. 
+
+Part 3: Career analysis according to Bhrigu Nandi Nadi (BNN)
+
+(This part is for understanding career based on the flow of planets and the patterns of life.)
+
+1] Position and relations of Shani (karma karaka):
+➤ In which rashi is Shani (and at what degree)?
+➤ In which planet's nakshatra is Shani?
+➤ Which planets are in yuti with Shani?
+➤ Which planets are in the second and twelfth rashis from Shani?
+➤ Which planets are in trikona (1-5-9) from Shani?
+
+Analysis: the basic field of the native's karma, the nature of the profession (service, technology, iron etc.) and the discipline/conflict coming in career.
+
+to be continued...
+
+2] Relation between Guru (jiva karaka) and Shani:
+➤ What is the mutual relation between Guru and Shani (yuti, 2-12, 1-5-9)?
+
+Analysis: the relation between the native's life (Guru) and karma (Shani). This tells whether career will be satisfying or a burden.
+
+3] Effect of other career-related planets:
+➤ What is the relation of Surya, Budha or Mangal with Shani? (Surya - authority, Budha - business, Mangal - technology).
+
+Analysis: determination of the specific nature of career. (Like, Shani+Budha = business/accounts, Shani+Mangal = engineering/construction).
+
+to be continued...
+----------
+Extract information from all the above details; no analysis is to be done. Do not analyze the point titled "Analysis:" - just write it as it is. Also, if a planet is retrograde, write it in brackets too. Write the questions along with the answers, and write 'to be continued...' just as-is as well.
+
+Part 4: Career analysis according to Krishnamurti Paddhati (KP)
+
+(This part is for an accurate assessment of career events and the promise of success.)
+
+1] Promise of career (Promise of Profession)
+
+A] Overall promise of career (Overall Promise of Profession):
+➤ Who is the cuspal sub-lord (CSL) of the 10th bhava?
+➤ Which bhavas is this CSL signifying? (especially the relation of bhavas 2, 6, 10, 11).
+
+Analysis: Is there a promise of a stable and successful career in the kundali? (Bhavas 2, 6, 10, 11 show income and service/position, while 5, 8, 12 show obstacles). (What is the percentage probability of the promise of successful career out of 100?)
+
+B] Promise of job (Promise of Job):
+➤ Who is the cuspal sub-lord (CSL) of the 6th bhava?
+➤ Which bhavas is this 6th CSL signifying?
+➤ Is it connected with the job-favourable bhavas (2, 6, 10, 11) or with the bhavas of job loss/obstruction (1, 5, 9, 12)?
+
+Analysis: Is there a clear promise of stability and success in job (Job/Service) for the native? (What is the percentage probability of the promise of successful job out of 100?)
+
+C] Promise of business (Promise of Business):
+➤ Who is the cuspal sub-lord (CSL) of the 7th bhava?
+➤ Which bhavas is this 7th CSL signifying?
+➤ Is it connected with the business-favourable bhavas (2, 7, 10, 11) or with the bhavas of business loss/ruin (5, 8, 12)?
+
+Analysis: Will the native be able to succeed in independent business (Business), or should they avoid taking risks? (What is the percentage probability of the promise of successful business out of 100?)
+
+to be continued...
+
+2] Nature of profession (Nature of Profession):
+
+A] Nature of the overall profession (Nature of Profession):
+➤ Who is the nakshatra lord of the 10th CSL and where is it placed?
+➤ Who is the sub-lord (SL) of the 10th CSL and where is it placed?
+➤ Who is the sub-sub lord (SSL) of the 10th CSL and where is it placed?
+➤ Which are the main planets signifying the career-related bhavas (2, 6, 10, 11), and what is their position?
+➤ Which are the strongest significator planets of bhavas 2, 6, 10, 11?
+
+Analysis: accurate determination of job, business or independent profession. Finding the work field from the nature of the planets.
+
+B] Nature of job (Nature of Job):
+➤ Who is the nakshatra lord of the 6th CSL and where is it placed?
+➤ Who is the sub-lord (SL) of the 6th CSL and where is it placed?
+➤ Who is the sub-sub lord (SSL) of the 6th CSL and where is it placed?
+
+Analysis: If the native does a job, what type of job (like: technical, administrative, service) should they do?
+
+C] Nature of business (Nature of Business):
+➤ Who is the nakshatra lord of the 7th  CSL and where is it placed?
+➤ Who is the sub-lord (SL) of the 7th  CSL and where is it placed?
+➤ Who is the sub-sub lord (SSL) of the 7th  CSL and where is it placed?
+
+Analysis: If the native does business, which type of business (like: partnership, trading, consultancy, manufacturing) will suit them the most?
+
+to be continued...
+
+3] Time of promotion and success (Timing of Promotion):
+
+A] Promotion and timing in job (Timing of Promotion in Job):
+➤ Which are the strong significator (Significator) planets of bhavas 2, 6, 10, 11?
+➤ At present, or in the future, when is the dasha/antardasha/pratyantar dasha of these significator planets coming?
+➤ When is the relation of Shani and Guru with the dasha lords or important cusps happening in gochar?
+
+Analysis: determination of the probable timing of promotion, job change or important events in career.
+
+B] Big success and timing in business (Timing of Success in Business):
+➤ Which are the strong significator (Significator) planets of bhavas 2, 7, 10, 11?
+➤ At present, or in the future, when is the dasha/antardasha/pratyantar dasha of these significator planets coming?
+➤ When is the relation of Shani and Guru with the important cusps of business (especially 7 and 11) happening in gochar?
+Analysis: the probable timing of big profit in business, expansion, or the finalization of a big deal.
+
+to be continued...
+
+4] Promise of government job (Promise of Government Job):
+
+A] Analysis of the CSL (Cuspal Sub-Lord) of the 10th bhava:
+➤ Which planet is the CSL of the 10th bhava?
+➤ Is this 10th CSL connected with Surya (Sun) or Chandra (Moon) directly, or through its nakshatra lord (NL)? (Surya is the primary karaka of government, Chandra of public sector/administration).
+➤ Are Surya (Sun) or Chandra (Moon) themselves connected with the 10th CSL through their nakshatra lord (NL) or rashi lord (RL)? (reverse connection check).
+➤ Is this 10th CSL strongly signifying bhavas 2, 6, 10 or 11?
+
+B] Analysis of the CSL of the 6th bhava (job/service):
+➤ Which planet is the CSL of the 6th bhava?
+➤ Is a relation of the 6th CSL forming with Surya or Shani (the karaka of service)?
+➤ Is the 6th CSL a significator of bhavas 2, 6, 10, 11?
+
+C] Analysis and phaladesh instructions:
+➤ Strong yoga (Strong Promise): If both the 10th and 6th CSL are connected with Surya and they are showing bhavas 2, 6, 10, 11, then clearly state that there is a 100% promise of a high-level government job in the janma kundali.
+➤ Medium/contractual (Contractual/State Govt): If, instead of Surya, there is the influence of Mangal (police/army) or Guru (education/justice) and bhavas 6, 10, 11 are active, then state the possibility of state government or public sector (PSU).
+➤ Private sector (Private Sector): If the 10th/6th CSL has no relation with Surya or Chandra, and they are connected with Rahu/Ketu or Budha, then clarify that success will come in the private sector or a multinational company (MNC).
+
+to be continued...
+----------
+Cross-check the information of all four systems (Parts 1-4) and ensure whether it is correct or there is any error. Give only the list of whatever errors there are.
+----------
+Give a short list of all the information received by you so far for kundali analysis, as given above.
+----------
+Ensure that you will strictly follow the following orders,
+
+1] Cross-check the data before giving the output.
+2] Do not do any kind of sugar-coating (Sugar-coating). If there is any dosha, conflict or negative yoga in the kundali, state it in clear and harsh words. I do not want to please the client, but to tell the truth. Keep in mind it should not be completely negative; maintaining a balance of positive and negative, tell what is true.
+3] Do not begin your answer with any greeting or conversational phrase (like 'definitely', 'sure', 'is as follows' etc.). Your answer must begin directly with the requested information.
+4] Also follow the orders given in the System instructions.
+
+Are you ready? Just tell which orders you will follow.
+----------
+https://sites.google.com/view/astropropmt/Career-Report/CR-Paste
+----------
+➤ D60 (Shashtiamsha) - Past Merits and Final Outcome (Karmic Legacy)
+​
+If there are Rajayogas in D1 and D10, but that planet is cursed in D60, then even after reaching heights in career, a fall can occur. This is the D60 analysis to see 'sustainable success'.
+
+1] D60 Lagna and Lagna Lord - The Karmic Blueprint
+
+2] D60 10th House and 10th Lord - The Karmic Action
+
+3] Positions of Rajayoga-forming planets in D60
+This analysis will directly tell how strong the powerful Rajayogas of D1/D10 are in D60.
+
+➤ Detailed comprehensive D60 conclusion
+----------
+Part 5: Conclusion and Overall Overview
+
+➤ Summary of all four systems: What are the key career conclusions from each system?
+➤ Consensus conclusions: Which career areas are indicated equally across all systems?
+➤ Career graph: Which will be the main decades of career advancement (e.g., ages 25-35, 35-45)? When is struggle likely and when is success likely?
+➤ Support of the D60 chart and final outcome?
+➤ Final advice: the most suitable career path (job/business) for the native, areas to avoid, and necessary remedies or gemstones (if required).
+----------
+------------------------------------------
+Please present all the following tables in a simple and readable table format.
+
+1] Guru's Bhinnashtakavarga (BAV) table.
+2] Shani's Bhinnashtakavarga (BAV) table.
+3] Budha's Bhinnashtakavarga (BAV) table.
+4] Shukra's Bhinnashtakavarga (BAV) table.
+5] Surya's Bhinnashtakavarga (BAV) table.
+6] Mangal's Bhinnashtakavarga (BAV) table.
+7] Sarvashtakavarga table
+----------
+Based on the above information, you must play the role of an expert astrologer and tell whether this kundali is of a 'laborer/lower class' or a 'high officer/businessman'.
+
+1] First stage: Strength of Lagna and Lagna lord (Capacity)
+(Before looking at career, it is most important to see the native's personality and struggle power.)
+
+➤ Analyze the position of the Lagna lord (rashi, bhava, yuti, bhava-strength/avastha strength).
+➤ Is the Lagna lord afflicted (in the 6th, 8th, 12th bhavas or under the influence of cruel planets)?
+➤ Does the native have the willpower to achieve success?
+
+➢ Analysis: If the Lagna lord is strong, the person will fight through struggles and rise up. If the Lagna lord is weak, no matter how good the 10th bhava is, the person cannot take its full benefit.
+
+2] Second stage: 10th bhava and 10th lord (nature of karma)
+(To know the direction of the profession.)
+
+➤ Planets placed in the 10th bhava: these planets decide the initial nature of the career.
+➤ Analyze the position (rashi, bhava, yuti, bhava-strength/avastha strength) and strength of the 10th lord.
+➤ Is the 10th lord afflicted (in the 6th, 8th, 12th bhavas or under the influence of cruel planets)?
+➤ Position of the 10th lord: where is the 10th lord placed? (E.g., if the 10th lord is in the 2nd house, the person will earn wealth from family business or speech).
+➤ Drishti on the 10th bhava: which planets' drishti is on the 10th bhava?
+➤ Is any 'Rajayoga' or 'Duryoga' forming here?
+
+➢ Analysis: If the 10th bhava and 10th lord are strong, the person will fight through struggles and rise up. If the 10th lord is weak, no matter how good the Lagna lord is, the person cannot take its full benefit.
+
+3] Third stage: Affliction of planets and Karakas
+(Role of the afflicted planets)
+
+➤ Surya: Will the person give 'orders'? Will the native have authority? (Government job, high position)
+➤ Shani: Will Shani make the native do hard labor, or will it make him a disciplined leader? (Job, construction, service).
+➤ Budha: Look at Budha's position (is it 'combust'? Is it giving business intelligence?). Will the 'mind' be used? (Business, writing, coding).
+➤ Mangal: Does the native have the ability to take courageous decisions? (Valor)
+➤ Guru: Will there be work of 'advice' or 'knowledge'? (Teaching, consultancy).
+
+➢ Analysis: If these planets are 'afflicted' (combust, debilitated, or with Rahu/Ketu), there will be obstacles in the work related to that planet. For example, if Surya is afflicted, the person will never get along with the boss.
+
+4] Fourth stage: Dashamsha kundali (D-10 Chart)
+(Dashamsha kundali D-10 Chart - micro analysis)
+
+➤ What is the position of the Lagna kundali (D-1) 10th lord in the D-10 chart?
+➤ What is the position of the 10th and 10th lord in D-10?
+➤ Is stability seen in career, or repeated ups and downs?
+
+➢ Analysis: The Lagna kundali (D-1) only shows 'possibility', but the real fruit of that possibility is hidden in D-10. If the D-1 10th lord is placed strong in D-10, the person will reach great heights in career.
+
+5] Fifth stage: Amatyakaraka (AmK) (Jaimini astrology) - this is the most important planet for career.
+(Micro analysis of the soul's purpose)
+
+➤ What is the position of Amatyakaraka (AmK)?
+➤ What is the position of Karmapada (A10)?
+
+➢ Analysis: AmK shows the native's soul's core purpose and life direction. AmK represents the advisor or medium (career/ministers) who helps achieve that purpose.
+
+6] Sixth stage: Ashtakavarga and time (Dasha)
+(Strength of bhavas)
+
+➤ Compare the points of the 10th and 11th bhavas in Ashtakavarga. How is the Shadbala score of the 10th lord and Lagna lord?
+➤ How is the Shadbala score of the 10th lord and Lagna lord?
+
+➢ Analysis: Analysis of strength and capacity
+
+7] Seventh stage: Wealth yogas and gains (Wealth & Gains)
+
+➤ Analyze the lords of the 2nd bhava (accumulated wealth) and 11th bhava (income).
+➤ For business, a strong 11th bhava is necessary, and for a job, stability of the 2nd bhava is necessary.
+
+➢ Analysis: Analysis of wealth accumulation and income
+
+8] Eighth stage: Conclusion and solution
+
+➤ Finally tell whether this kundali is of a 'laborer/lower class' or a 'high officer/businessman'.
+➤ If planets are afflicted, suggest precise astrological remedies to remove career obstacles.
+----------
+Based on the above kundali and ashtakavarga information, you must play the role of an expert astrologer. Your task is to analyze which career path (Corporate Job, Freelancing/YouTube, Consultancy, or Traditional Business) will be most successful for the native according to modern times.
+(Note: Before analysis, identify the native's 'lagna' so that the 10th lord can be correctly identified).
+
+➤ Analysis process (Step-by-Step Process):
+
+► 1. "Gap-Based" comparative analysis of Sarvashtakavarga (SAV) (Gap-Based Logic):
+To decide the exact direction of career, look at the gap between bhavas:
+A] 6th (service/job) vs 7th (business/partnership): see which of the two is stronger and what the gap in points between them is.
+B] 10th (stability/brand) vs 3rd (courage/digital/media): see whether risk-taking will suit the person or stability.
+C] 11th (gains): see whether gains (11th) lean towards the 6th or the 7th.
+
+► 2. Identifying the precise career type (Micro-Niche):
+Decide the native's exact profession based on the rules given below:
+- Independent work / YouTube / Freelancing: if the 3rd bhava is very strong (28+) and the 6th bhava is stronger than the 7th. (The person will work alone in digital/media).
+- Consultancy / Advisory / Service: if the 6th bhava is much stronger than the 7th (big gap) and the 10th/11th bhavas are also strong. (The person will sell their advice/service).
+- Permanent job / Corporate Job: if the 10th bhava (stability) is very strong (30+) and the 6th bhava is more than the 7th.
+- Traditional business / Partnership: if the 7th bhava (28+) is clearly much stronger than the 6th bhava.
+
+► 3. Supportive analysis of Bhinnashtakavarga (BAV) (Supportive Triggers):
+A] Shani (job karaka): Shani's score in the 6th and 10th bhavas (4+ is auspicious).
+B] Budha (business/media karaka): Budha's score in the 3rd and 7th bhavas (4+ is auspicious).
+C] 10th lord (10th Lord): Identify the 10th lord according to lagna and see its score in the 10th bhava.
+(Note: BAV is only supportive; the final decision will depend only on the SAV gap).
+
+► 4. Auspiciousness of bhavas (Bhava Shubhta - 28 Bindu Rule):
+According to the authentic rule of ashtakavarga, 28 bindus in any bhava are considered average.
+- Weigh the points of the 6th, 7th, 10th and 11th bhavas on this rule.
+- 28 or more points make a bhava auspicious and easy in giving results. Points below 28 indicate struggle (hardship). Tell in which area there is ease and in which there is struggle.
+
+➤ Output format (Output Format):
+
+1] SAV gap-based analysis:
+- 6th vs 7th (gap and winner):
+- 10th vs 3rd (gap and winner):
+- Support of the 11th bhava:
+
+2] Auspiciousness of bhavas (based on the 28-bindu rule):
+- 6th (service): [points] - [auspicious/struggling]
+- 7th (business): [points] - [auspicious/struggling]
+- 10th (career): [points] - [auspicious/struggling]
+- 11th (gains): [points] - [auspicious/struggling]
+
+3] BAV (Bhinnashtakavarga) support:
+- Shani (6th/10th):
+- Budha (3rd/7th):
+- 10th lord ([planet's name]):
+
+4] 🎯 Precise conclusion (Micro-Niche):
+- [Give your final conclusion here. Clearly tell whether the native should do a corporate job, freelancing/YouTube, consultancy, or traditional business and why.]
+
+5] Probability of success (in percentage - the sum of both must be 100%):
+- 💼 Service sector (job / consultancy / digital creator): [XX]%
+- 📈 Traditional business (shop / trading / partnership): [YY]%
+----------
+Give the list of the following career-related planets of the native:
+
+A) 10th bhava (center of karma/career)
+
+1] Lord of the 10th bhava (10th lord)
+2] Nakshatra lord of the 10th bhava
+3] Planets placed in the 10th bhava
+4] Planets aspecting the 10th bhava
+5] Lord of the rashi in which the 10th lord is placed (Dispositor)
+6] Lord of the nakshatra in which the 10th lord is placed
+7] Planets in yuti with the 10th lord
+8] Planets aspecting the 10th lord
+9] Cuspal sub-lord (CSL) of the 10th bhava
+9] Cuspal sub-lord (CSL) of the 10th bhava
+10] Nakshatra lord (NL) of the 10th CSL
+11] Sub-lord (SL) of the 10th CSL
+12] SSL of the 10th CSL
+13] KP significators of the 10th bhava
+
+B) 10th lord (main manager of career)
+
+1] Lord of the rashi in which the 10th lord is placed (Dispositor)
+2] Lord of the nakshatra in which the 10th lord is placed
+3] Planets in yuti with the 10th lord
+4] Planets aspecting the 10th lord
+
+C) 6th bhava (job/service)
+
+1] Lord of the 6th bhava
+2] Planets placed in the 6th bhava
+3] Nakshatra lord of the 6th bhava
+4] Significator planet of the 6th bhava
+
+D) Dashamsha kundali (D10 - micro analysis of career)
+
+1] Lagna lord of D10
+2] Planets placed in the lagna of D10
+3] Lord of the 10th bhava in D10
+4] Nakshatra lord of the 10th bhava in D10
+5] Planets placed in the 10th bhava of D10
+6] Strong planets (exalted, swagrihi, vargottama) in D10
+
+E) Navamsha kundali (D9 - analysis of career fortune)
+
+1] Lord of the 10th bhava in D9
+2] Nakshatra lord of the 10th bhava in D9
+3] Planets placed in the 10th bhava of D9
+
+F) D60 kundali (D60 - career in past merits)
+
+1] Lord of the 10th bhava in D60
+2] Nakshatra lord of the 10th bhava in D60
+3] Planets placed in the 10th bhava of D60
+
+G) Supporting bhavas (wealth, gains)
+
+1] Lord of the 11th bhava (gains/ambition) and planets placed in it
+2] Lord of the 2nd bhava (wealth/speech) and planets placed in it
+3] KP significators of the 2nd bhava
+4] KP significators of the 11th bhava
+
+H) Lagna (one's own role in career)
+
+1] Lord of lagna (lagna lord)
+2] Planets placed in lagna
+3] Relation between lagna lord and 10th lord (friend, enemy, yuti, drishti)
+
+I) Natural karakas (inner motivation and path)
+
+1] Rashi lord, nakshatra lord and yuti planets of Shani, the natural karaka of karma
+2] Rashi lord, nakshatra lord and yuti planets of Surya, the natural karaka of authority and position
+3] Planets related to the 5th bhava (for intellect and creativity)
+
+J) Jaimini karakas (inner strength)
+
+1] Jaimini Amatyakaraka (AmK - main advisor of career)
+2] Jaimini Atmakaraka (AK - purpose of the soul)
+3] Lord of the 10th bhava from Karakamsha lagna and planets placed in the 10th bhava
+4] Lord of the 10th bhava from Swamsha lagna and planets placed in the 10th bhava
+5] Lord of Karma Arudha (A10) and planets placed in A10
+6] Lord of the 10th bhava from Arudha lagna (AL/A1) and planets placed in the 10th bhava
+
+K) Bhrigu Nandi Nadi (BNN - flow of karma)
+
+1] Planets in yuti with Shani (karma karaka) (especially Guru).
+2] Planets placed in the 2nd bhava from Shani (wealth/authority obtained from karma).
+3] Planets placed in the 3rd bhava from Shani (valor and communication done for karma).
+4] Planets in trikona (5th and 9th bhavas) from Shani (support of fortune and intellect in karma).
+5] Planets on which Shani's drishti (3, 7, 10) is falling.
+
+L) Connection check
+
+a) Is the lagna lord forming a strong connection with the 10th, 2nd, 6th or 11th bhava/lord?
+b) Are the natural karakas Shani and Surya forming a strong connection with the 10th, 2nd, 6th or 11th bhava/lord?
+c) Is the 10th lord forming a strong connection with the 2nd, 6th or 11th bhava/lord?
+----------
+1] Now list all the planets extracted earlier.
+(Planets that appear repeatedly in this list are especially important.)
+
+2] Now assess the D1 strength of the listed planets.
+(Including their combust, retrograde, debilitated-debilitation-cancellation, vargottama, enemy-friend-neutral rashi, chalit position, D9 position, PN-PB-MB position, SAV-BAV, shadbala)
+
+3] Now describe the combined influence of all planets.
+(Planets that are strong and powerful in D1 as well are especially important. And they can give good results as career.)
+
+4] Now examine the combined influence of all planets and arrange them in order of influencing career:
+
+Group A - Main influential planets (Core Career Planets):
+These are the planets that define the foundation, direction and main theme of career. The native's entire career will revolve around these planets.
+(Examples: 10th lord, Amatyakaraka (AmK), any strong planet placed in the 10th bhava, planet in yuti with Shani (BNN), nakshatra lord of the 10th CSL, lagna lord of D10).
+
+Group B - Moderately influential planets (Supporting Planets):
+These planets assist the main planets, adding skills, opportunities and resources to career. They influence the environment and outcomes of career.
+(Examples: lagna lord, Atmakaraka (AK), lords of the 2nd/6th/11th bhavas, natural karakas Surya/Guru, planets placed in the 2nd/trikona from Shani (BNN), planets aspecting the 10th lord).
+
+Group C - Supportive and triggering planets (Trigger/Situational Planets):
+These planets influence career in special circumstances or in their dasha-antardasha. They can become factors of turns or special events in career.
+(Examples: Dispositor of the 10th lord, nakshatra lord, other important planets in D10, lord of the 5th bhava, planets placed in the 3rd/12th bhavas from Shani (BNN)).
+----------
+Using the list of planets (Group A/B/C) provided to you and an external knowledge source (a file named Career_Fields.txt), you have to analyze the main influential planets for career extracted from the kundali. You have to make a detailed, prioritized list of the most suitable career areas for the native. Your final goal is not just to tell general areas, but to suggest specific and suitable job/business names from Career_Fields.txt. Your answer should not be just a list of areas, but should explain why the combined influence of planets points towards those areas. That file has a detailed list of work areas associated with each planet. You have to use your general knowledge as well. And also use the discussion analysis done above. (Do not mention the 'TXT file' in the analysis; it is only for reference)
+
+Analysis process (Step-by-Step Analysis Process):
+
+Extracting keywords: First, using the Career_Fields.txt file and your knowledge, identify the basic nature and main karakatwas (Keywords) of all planets of Group A and Group B. (E.g., Guru = knowledge, advice; Shani = structure, law; Mangal = action, management).
+
+Creating a hybrid profile: Instead of listing the areas of different planets, combine their keywords to make a joint career profile. You have to think what kind of professional the combined energies of these planets create.
+
+(Example: the combination of Guru (knowledge) + Shani (structure) + Mangal (action) indicates a person who plays a managerial or leadership (Mangal) role in a large organization (Shani) using their expertise (Guru).)
+
+Specific career mapping (most important step): Now, based on the hybrid profile you created, carefully scan the Career_Fields.txt file. Make a list of those specific career names, positions or businesses that match this profile the most. You must include these names in your final answer.
+
+Refining the analysis: Make the created hybrid profile more precise by understanding their strength, capacity, power based on the discussion in the above chat.
+
+Prioritizing: Based on this deep analysis, identify the 3-4 most powerful career paths and divide them into three categories (Tiers) as per the format given below.
+
+Output format (Required Output Format):
+You have to give your final answer only in the following "tier system":
+
+Your top career paths: priority and analysis:
+
+➤ Tier 1: Best and highest priority fields (Tier 1: Best and Highest Priority Fields)
+
+(These are the 1 or 2 areas that match the energy of almost all the main planets of your kundali and have the highest probability of success.)
+
+► Career path 1: [name of career area, e.g., Corporate Management / Strategy and Administration]
+
+➧ Specific positions in this area (as per Career_Fields.txt): [write 2-4 specific names from the file here, e.g., 'CEO', 'Managing Director (MD)', 'Senior Administrative Officer (IAS)', 'Department Head']
+
+➧ Probability of success: [give a percentage, e.g., 90%]
+
+➧ Astrological reason (why?): Explain in detail here how the combined influence of Group A and B planets supports this career path. Tell the story of the combination of planets.
+
+➧ Conclusion: Tell in one or two sentences why this area is best for you.
+
+➤ Tier 2: Strong and secondary priority fields (Tier 2: Strong and Secondary Priority Fields)
+
+(These are areas that are very strong, but perhaps not as broad as Tier 1 or are more based on a specific planet combination.)
+
+► Career path 2: [name of career area, e.g., Corporate Law / Law and Justice]
+
+➧ Specific positions in this area (as per Career_Fields.txt): [write 2-4 specific names from the file here, e.g., 'Judge', 'Corporate Lawyer', 'Government Lawyer']
+
+➧ Probability of success: [give a percentage, e.g., 75%]
+
+➧ Astrological reason (why?): Explain which planets support this area and why it is slightly different from Tier 1.
+
+➧ Conclusion: Tell in one or two sentences why this is a strong secondary option.
+
+➤ Tier 3: Considerable or alternative fields (Tier 3: Considerable or Alternative Fields)
+
+(These are areas that have potential, but may need some precautions or are slightly away from your main energy.)
+
+► Career path 3: [name of career area, e.g., Independent Consultancy / Education and Advice]
+
+➧ Specific positions in this area (as per Career_Fields.txt): [write 2-4 specific names from the file here, e.g., 'Professor', 'Consultant', 'Motivational Speaker']
+
+➧ Probability of success: [give a percentage, e.g., 40% (with precautions)]
+
+➧ Astrological reason (why?): Explain both the positive and negative astrological aspects of this area. Tell under what conditions success can be achieved in it.
+
+➧ Conclusion: Tell in one or two sentences why this should be considered alternative.
+
+➢ Final instruction: Your goal is to give clarity to the native. Do not just give options, but guide like an expert about what is best for them and why, and also tell which specific positions in that area are most suitable according to their kundali.
+----------
+Based on the combined influence of the key planets given in the above information and the attached Career_Fields.txt file, make a list of the 10 most suitable job and business names for the native. (Do not mention the 'TXT file' in the analysis; it is only for reference)
+----------
+Maraka identification: Is this planet playing the role of marakesha by being the 2nd lord or 7th lord? If yes, which one - 2nd lord (ordinary maraka) or 7th lord (strong maraka)?
+
+Badhaka identification: Is this planet the lord of the badhaka bhava (11th, 9th, or 7th) according to the nature of lagna (chara, sthira, dwiswabhava)?
+
+Dual role: Is this planet playing both maraka and badhaka roles? (Especially as 7th lord for dwiswabhava lagna).
+
+Functional auspiciousness: On the contrary, is this planet an auspicious 'yogakaraka' planet by being the lord of kendra/trikona? Or is it extremely auspicious by being the lord of only a trikona?
+
+2. Assessing the intensity of negativity/positivity (Assessing the Intensity):
+
+Influence of malefic planets: Is there drishti of natural malefic planets (Shani, Mangal, Rahu, Ketu) on this planet or is it in yuti with them? If yes, how is this increasing its negativity?
+
+Influence of benefic planets: Is there drishti of natural benefic planets (Guru, Shukra, benefic Budha) on this planet or is it with them? Is this giving any reduction or protection (Mitigation) in the maraka/badhaka effect?
+
+Bhava position: In which bhava of the kundali is this planet placed? Has it become more inauspicious by sitting in trika bhavas (6, 8, 12), or is its position somewhat better by sitting in kendra/trikona?
+
+Rashi strength: Is this planet extremely afflicted by being in its debilitated rashi, or is its negativity reduced by being in its exalted/own rashi? Or has it become more powerful and effective?
+
+3. Activation and potential results (Activation and Potential Results):
+
+Dasha activation: What kind of troubles, obstacles or problems (in health, relationships, career, etc.) can be seen in the mahadasha or antardasha of this planet?
+
+Gochar effect: When large planets like Shani or Rahu pass over this maraka/badhaka planet in gochar, can they activate its negative results?
+Affected areas: Based on its natural karakatwa (e.g., Shukra - relationships/vehicles, Shani - career/disease) and its bhava lordship, which specific areas of life will this planet affect the most?
+
+4. Overall conclusion (Overall Conclusion):
+Final assessment: After analyzing all the above points, what rating would you give this planet as a functional malefic planet on a scale of 1 to 10? (Where 1 is very mild and 10 is extremely harmful).
+
+5: Counseling and remedies (Counseling and Remedies)
+(This section focuses on how to manage the "challenge" (identified in Steps 1-4).)
+
+5.1. Astrological pacification (Astrological Pacification):
+
+Mantra/Japa: Is chanting the beej mantra or Vedic mantra of this planet (or its ruling deity) necessary for pacification?
+
+Stotra: Will reciting a specific stotra (e.g., 'Shani Mahatmya' for Shani or 'Vishnu Sahasranama' for Budha) during dasha-antardasha be protective?
+
+Daan: To pacify the negative effect of this planet, which items (color, grain, metal) should be donated and when (on which day)?
+
+5.2. Gemstones and wearing (Gems and Wearing) - [most important caution]:
+
+Gemstone prohibition: Is this planet (being maraka/badhaka) one of those planets whose gemstone should not be worn under any circumstances? (Write clearly: because wearing the gemstone of a strong marakesha is "giving more power to a powerful enemy".)
+
+Alternative wearing: Instead of pacifying this planet, would it be a better remedy to wear the gemstone of the kundali's 'protector' planet (like lagna lord or 9th lord)?
+
+5.3. Behavioral remedies (Behavioral Remedies / The Counseling):
+
+Awareness: How should the native remain alert about the negative nature of this planet? (E.g., "Your speech (Budha) itself is your marakesha, so practice thinking before speaking.")
+
+Modification: Which habits will the native have to change? (E.g., "Your Guru (badhakesha) is giving you 'obstruction' by making you 'idealistic'. Your remedy is to reduce expecting 'perfection' from others and become flexible.")
+
+5.4. Spiritual/Karmic remedies (Spiritual/Karmic Remedies):
+
+Karmic lesson: What 'karmic lesson' has this planet come to teach in life? (E.g., the lesson of 'detachment' or 'separation').
+
+Energy channeling: Can the native use this planet's negative energy for a higher purpose? (E.g., channeling the energy of 'maraka' Shani into 'spirituality' or 'hospital service').
+----------
+Now we will analyze the native's career and the possible timing of job/business; before that, points to keep in mind:
+
+1] Note that currently 2026 is going on and the native xyz is 00 years old, has given the xyz exam,
+are you ready to analyze the career, just tell this much.
+----------
+Based on the above chat and PDF and all the information given to you from the start, the following questions have to be analyzed deeply and in detail, with conclusions; note that the analysis should use your intellect beyond the reference and use the required astrology systems as needed.
+And do you remember the instructions that you must strictly follow? Which ones?
+So, shall I give the first question?
+----------
+1] What is the career choice and potential areas according to the person's birth kundali, detailed analysis of job vs business possibilities?
+(Source: Parashari - 10th lord, 10th bhava, strong planets; Jaimini - AmK, Karakamsha lagna; BNN - Shani's connections (especially with Budha/Surya/Mangal); KP - nakshatra lord of the 10th CSL, significators of 2-6-10-11, D60, SAV-BAV-BAL)
+----------
+2] What natural talents, skills and abilities (Strengths) does the person have within that will help in career?
+(Source: Parashari - strength of lagna/lagna lord, nature of 10th lord; Jaimini - nature of Atmakaraka (AK); BNN - Guru and its supporting planets; KP - lagna CSL and its significators)
+----------
+3] What weaknesses or negative aspects (Weaknesses) can there be in the person's career that need attention?
+(Source: Parashari - 10th lord afflicted by malefic planets, position in trika bhavas; Jaimini - malefic argala or drishti on AmK; BNN - Shani's connection with malefic planets; KP - 10th CSL signifying the 8th, 12th bhavas)
+----------
+4] What impact will education and skill development have on the person's career, and in which areas will study be beneficial?
+(Source: Parashari - relation of 5th bhava/5th lord and 9th bhava/9th lord with the 10th bhava, D5 (Panchamamsha - authority through knowledge); Jaimini - AmK's connection; BNN - Guru's connection with Budha/Shukra)
+➤ Will the person be able to successfully use their education and knowledge in career? In which area could their real expertise be?
+(Source: D24, lagna and lagna lord of Siddhamsha, strong planets in Siddhamsha (e.g., Budha - commerce, Guru - knowledge, Shukra - arts, Shani - technical). Is there any connection of D1's 10th lord with D24's lagna lord or major planets?)
+----------
+5] Will it be more suitable for the person to do a job/service (Job/Service) or start their own business (Business)? Percentage of job/business?
+(Source: Parashari - 6th bhava (service) vs 7th bhava (partnership) and strength of the 10th bhava, D7 (for partnership); Jaimini - nature of AmK; KP - strength of significators of the 6th bhava (job) vs 7th bhava (business) (KP Section A), ability to take risk in self-employment - 3rd bhava of D3, SAV-BAV-BAL, BNN - Shani's connection with Budha/Shukra (business) vs Mangal/Surya (service))
+----------
+6] If the native does a job, are there strong yogas for a government job (Government Job) in the kundali? What is its probability in percentage?
+(Source: Parashari - strength of Surya/Mangal, D1, D9, D10; Jaimini - AK/AmK being Surya/Mangal; BNN - Surya's connection with Shani/Guru; KP - 10th CSL signifying 6, 10, 11)
+----------
+7] If it is a business, which type of business or industry is most favorable for the person?
+(Source: (same as question 1) Parashari - karakatwa of the 10th lord; Jaimini - 10th bhava from Karakamsha lagna; BNN - planets related to Shani; KP - nakshatra lord and significator planets of the 10th CSL, nakshatra lord and sub-sub-lord (SSL) of the 7th CSL (KP Section B3), ability to take risk in self-employment - 3rd bhava of D3)
+----------
+8] When is advancement, promotion and progress (Growth and Promotion) likely in the career, and which factors will be responsible for it?
+(Source: Parashari - relation of dasha/gochar with 10th/11th bhava; Jaimini - Chara dasha; BNN - Jupiter/Saturn transit; KP - current or upcoming dashas of strong significator planets of 2, 6, 10, 11 (KP Section C))
+----------
+9] How will financial gain, sources of income and financial stability be through the career? How are the wealth-related yogas?
+(Source: Parashari - relation of wealth/gains bhavas (2, 11) with 10th lord, dhana yogas; Jaimini - benefic argala on AmK; KP - strength of significators of 2, 6, 11 bhavas, KP - relation of 11th CSL (wish fulfilment) with 2, 6, 10)
+➤ What is the person's actual capacity for wealth accumulation, and will the sources of income be ethical?
+(Source: D2, which planets are in the hora lagna? (cruel planets in Sun's hora and benefic planets in Moon's hora are good for wealth accumulation) What is the position of D1's dhana lord (2nd Lord) and gains lord (11th Lord) in hora?)
+----------
+10] Are there any indications of financial challenges or losses in the career? If yes, when and how?
+(Source: Parashari - relation of 10th lord with 12th lord (expenditure), daridra yoga, D12 (expenditure/loss), D8 (crisis); Jaimini - malefic argala on AmK; KP - dashas of strong significator planets of 5, 8, 12 (especially with reference to the 7th and 10th CSLs))
+----------
+11] How are the indications for job satisfaction (Job Satisfaction)? With what aspects will the person remain satisfied in their work, or due to what causes may dissatisfaction arise?
+(Source: Parashari - relation of 4th bhava (happiness) with 10th bhava, relation of 4th bhava with 10th, position of Moon (mental peace), D4 (happiness/peace); harmony of D9/D10; Jaimini - harmonious relation of atmakaraka (AK) and amatyakaraka (AmK); BNN - relation of Jupiter with Saturn)
+----------
+12] How will relations with colleagues, seniors and subordinates (Colleagues, Bosses, Subordinates) be at the workplace? Are there any indications of conflict or cooperation?
+(Source: Parashari - planets in 10th bhava, 3rd (colleagues), 6th (subordinates), 9th (guru/boss), D3 (colleagues/valour); Jaimini - AmK in movable rashis; KP - dasha lords signifying 3, 9, 12 bhavas)
+➤ What are the hidden obstacles coming in the job? Will enmity or health-related problems at the workplace affect the career?
+(Source: D6, lagna and lagna lord of shashtamsha, which malefic planets (Mars, Saturn, Rahu) have more influence in shashtamsha? Is D1's 10th lord or lagna lord afflicted in shashtamsha?)
+----------
+13] Are there indications of travel (Travel) or relocation (Relocation) in connection with the career? If yes, in which direction or to which place will going be favourable?
+(Source: Parashari - relation of 10th lord with movable rashis or 3rd/9th/12th bhava, D4 (happiness at a new place); Jaimini - AmK in movable rashis; KP - dasha lords signifying 3, 9, 12 bhavas)
+➤ What are the hidden obstacles coming in the job? Will enmity or health-related problems at the workplace affect the career?
+(Source: D6, lagna and lagna lord of shashtamsha, which planets are exalted, in own rashi or strong in shashtamsha? Is there any relation of D1's 10th lord or atmakaraka with the lagna or gains bhava of ekadashamsha?)
+----------
+14] What major challenges, obstacles or difficult times (Challenges and Obstacles) may come in the career, and how to face them?
+(Source: Parashari - influence of Saturn/Rahu/Ketu on 10th bhava/10th lord, D8 (sudden crises), D30 (misfortune/character flaws); malefic planets in D10/D6; Jaimini - malefic argala on AmK; BNN - relation of Saturn with malefic planets; KP - relation of 10th CSL with 8, 12 bhavas)
+----------
+15] When may important events (like first job, job change, major promotion, start/change of business) occur in the career?
+(Source: (same as question 8) combined analysis of the timing techniques of all systems - dasha and gochar)
+----------
+16] How are the current planetary periods (Planetary Periods/Dashas) and transits (Transits) affecting the person's career, and what will be their influence in the future?
+(Source: timing analysis of all systems, especially the influence of current and upcoming dashas on career-related bhavas and planets, current influence on D10)
+----------
+17] How are the indications for success, honour and reputation (Success, Honor, Reputation) in the career? Will fame be gained in any specific field?
+(Source: Parashari - rajayogas in 10th bhava, strength of Sun; Jaimini - relation of arudha lagna (AL) and karma pada (A10), benefic planets in karakamsha lagna, strength of AmK; A10; KP - strong relation of dasha lords with 1, 10, 11 bhavas)
+➤ Will the person get real credit, awards and honour for their work, or only position and responsibility?
+(Source: D11, lagna and lagna lord of ekadashamsha, which planets are exalted, in own rashi or strong in ekadashamsha? Is there any relation of D1's 10th lord or atmakaraka with the lagna or gains bhava of ekadashamsha?)
+----------
+18] Will the person be able to achieve life's great goals and ambitions (Goals and Ambitions) through the career?
+(Source: Jaimini - harmonious relation of atmakaraka (AK) and amatyakaraka (AmK); Parashari - strength and benefic relation of lagna lord and 10th lord; harmony of D9/D10, D20 (spiritual purpose), D60)
+----------
+19] How are the indications for attaining the highest position (Peak Position) and authority (Authority) in the career? Will the native be able to become a leader or a high officer in their field?
+(Source: Parashari - strength of Sun/Jupiter, rajayogas, D10; Jaimini - relation of AmK with AK, planets placed in ghatika lagna (GL), influence of amatyakaraka (AmK) and atmakaraka (AK) on GL; BNN - relation of Sun-Jupiter-Saturn; KP - 10th/11th CSL signifying 1, 6, 10, 11)
+----------
+20] What astrological remedies, gems or puja-path can be suggested for any special problem or obstacle related to the career?
+(Source: 'Maraka/Badhaka identification and remedy system' (Step 1-5), identification of weak or afflicted planets (especially lagna lord, 10th lord, AmK, Saturn, afflicted planets in D10) and remedies to reduce their negative influence)
+----------
+➤ The native has given information about themselves and the native has some questions; first list the information given, then list all the questions :
+----------
+Now, after doing in-depth research on the given information, do the astrological analysis in detail with conclusions; each event must be analysed in detail, with remedies if remedies are necessary; first answer the first question, I will ask the rest later.
+----------
+Now write the answers to the given questions with in-depth research; do it with detailed analysis and conclusions, giving detailed analysis and a conclusion for each question; each question must be analysed in detail, with remedies; first answer the first question, I will ask the rest later.
+----------
+Give, in short, the conclusion of the analysis of all the native's life-related questions asked from the beginning.
+----------
+Now rewrite all the following events and questions discussed so far and give their brief answers, because this list will be placed at the very beginning of this analysis, so that the native reads the short answers first and finds the section whose analysis they want to read with references...
+
+1] What is the career choice and probable fields according to the person's birth chart, a detailed analysis of the possibilities of job versus business?
+
+2] What are the person's natural talents, skills and abilities (Strengths) that will help in the career?
+
+3] What weaknesses or negative aspects (Weaknesses) may the person have in the career, which need attention?
+
+4] What impact will education and skill development have on the person's career, and in which fields will study be beneficial?
+➤ Will the person be able to successfully use their education and knowledge in their career? In which field can their real expertise lie?
+
+5] For the person, will doing a job/service (Job/Service) be more suitable, or starting one's own business (Business)?
+
+6] If the native does a job, are there strong indications of a government job (Government Job) in the kundali? What is its percentage probability?
+
+7] If business, which type of business or industry is most favourable for the person?
+
+8] When is advancement, promotion and progress (Growth and Promotion) likely in the career, and which factors will be responsible for it?
+
+9] How will financial gain, sources of income and financial stability be through the career? How are the wealth-related yogas?
+➤ What is the person's actual capacity for wealth accumulation, and will the sources of income be ethical?
+
+10] Are there any indications of financial challenges or losses in the career? If yes, when and how?
+
+11] How are the indications for job satisfaction (Job Satisfaction)? With what aspects will the person remain satisfied in their work, or due to what causes may dissatisfaction arise?
+
+12] How will relations with colleagues, seniors and subordinates (Colleagues, Bosses, Subordinates) be at the workplace? Are there any indications of conflict or cooperation?
+➤ What are the hidden obstacles coming in the job? Will enmity or health-related problems at the workplace affect the career?
+
+13] Are there indications of travel (Travel) or relocation (Relocation) in connection with the career? If yes, in which direction or to which place will going be favourable?
+
+14] What major challenges, obstacles or difficult times (Challenges and Obstacles) may come in the career, and how to face them?
+
+15] When may important events (like first job, job change, major promotion, start/change of business) occur in the career?
+
+16] How are the current planetary periods (Planetary Periods/Dashas) and transits (Transits) affecting the person's career, and what will be their influence in the future?
+
+17] How are the indications for success, honour and reputation (Success, Honor, Reputation) in the career? Will fame be gained in any specific field?
+➤ Will the person get real credit, awards and honour for their work, or only position and responsibility?
+
+18] Will the person be able to achieve life's great goals and ambitions (Goals and Ambitions) through the career?
+
+19] How are the indications for attaining the highest position (Peak Position) and authority (Authority) in the career? Will the native be able to become a leader or a high officer in their field?
+
+20] What astrological remedies, gems or puja-path can be suggested for any special problem or obstacle related to the career?
+
+
+Questions of the native :`;
+        const rawData_mr = `ही PDF जातक xyz ची कुंडली आहे. यातील सर्व माहिती तुम्हाला सेव्ह करून घ्यायची आहे, जेणेकरून कुंडलीचे विश्लेषण होऊ शकेल. विश्लेषण करताना PDF च्या पानाचा संदर्भ लिहू नका, परंतु खालील माहिती कोणत्या पानावर आहे, याची यादी द्या - म्हणजे तुम्हालाही पुढे शोधायला सोपे जाईल:
+
+1] ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तालिका
+3] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+4] भाव बल तालिका 
+5] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+6] जैमिनी आरूढ पद (राशी आधारित)
+7] विंशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] चर दशा अंतर्दशा चार्ट
+10] कृष्णमूर्ति पद्धति (KP) भाव स्थिती तालिका {भाव-राशी-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशी-नक्षत्र-पद}
+11] कृष्णमूर्ति पद्धति (KP) ग्रह स्थिती तालिका {भाव-राशी-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशी-नक्षत्र-पद}
+12] कृष्णमूर्ति पद्धति (KP) घराचे सैगनिफिकेटर ग्रह स्थिती तालिका
+13] कृष्णमूर्ति पद्धति (KP) ग्रह सैगनिफिकेटर स्थिती तालिका
+14] D1 च्या 12 भावांचे राशी-नक्षत्र (Bhava Cusp)
+15] D9 ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) 
+16] D9 च्या 12 भावांचे राशी-नक्षत्र (Bhava Cusp) 
+17] D10 ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) 
+18] D10 च्या 12 भावांचे राशी-नक्षत्र (Bhava Cusp) 
+19] मुख्य करियर कस्पल सब-लॉर्ड (Career CSL) सारांश: वरील तालिकांमधून फक्त 6व्या (नोकरी), 7व्या (व्यापार) आणि 10व्या (कर्म) भावाचे CSL, नक्षत्र स्वामी (NL), उप-स्वामी (SL) आणि उप-उप स्वामी (SSL) वेगळ्या छोट्या यादीत लिहा.
+
+कृपया सर्व तालिका सोप्या आणि वाचनीय टेबल फॉरमॅटमध्ये सादर करा.
+----------
+वरील चॅट आणि PDF मधील लग्न कुंडलीच्या बारा भावांमधील राशी, भाव स्वामी आणि ग्रह उपस्थिती लिहा; कोणता ग्रह उच्च, नीच, वक्री, नीचभंग, अस्त, वर्गोत्तम आहे तेही लिहा. नक्षत्रातील स्थितीही लिहा (राहू-केतूला उच्च, नीच, वक्री लिहू नका).
+
+लेखनाचा नमुना खालील राहील, जो फक्त उदाहरणासाठी आहे, जो "" मध्ये दर्शवला आहे:
+
+"पहिला भाव (लग्न):
+या भावात सिंह राशी आहे, म्हणून लग्नेश सूर्य आहे.
+या भावात सूर्य आणि राहू ग्रह स्थित आहेत.
+सूर्य: सिंह राशीत स्वगृही (आपल्याच घरात) आहे. सूर्य मघा नक्षत्रात स्थित आहे. सूर्य प्रथम भावाचा (सिंह) स्वामी असून लग्नात बसला आहे. सूर्याची दृष्टी सातव्या भावावर (कुंभ) आहे.
+राहू: सिंह राशीत (राहूसाठी शत्रू राशी मानली जाते). राहू मघा नक्षत्रात स्थित आहे. राहूची दृष्टी पाचव्या भावावर (धनु), सातव्या भावावर (कुंभ) आणि नवव्या भावावर (मेष) आहे.
+या भावावर केतूची (सातव्या भावातून) पूर्ण दृष्टी आहे."
+
+
+तुमच्या सोयीसाठी txt फाइल दिली आहे: "D1_Analysis"
+----------
+txt फाइलमधील खालील माहिती एकामागून एक बदल न करता जशीच्या तशी लिहा:
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D10 Analysis
+5] D60 Analysis
+6] D1_to_D9_Analysis
+7] D1_to_D10_Analysis
+8] D1_to_D60_Analysis
+----------
+कृपया संलग्न (Attached) सर्व टेक्स्ट फाइलांमधील ज्योतिषीय डेटा (षोडशवर्ग कुंडल्या) तुमच्या मेमरीमध्ये सुरक्षित करून घ्या.
+
+निर्देश:
+
+1] हा डेटा आत्ताच चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही ते वाचले आहे याची पुष्टी करा.
+3] पुष्टीसाठी (Verification): फक्त कोणकोणत्या षोडशवर्ग कुंडल्या सेव्ह केल्या आहेत ते सांगा.
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन; तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+चलित कुंडली पाहून सांगा की चलित कुंडलीमध्ये D1 कुंडलीपेक्षा काय बदलले आहे आणि त्याचा काय परिणाम होईल:
+----------
+➤ PN, PB, MB चा जीवनावर प्रभाव (Impact on Life)
+
+विषय: वैदिक ज्योतिष - ग्रह आणि भावांसाठी पुष्कर नवांश (PN), पुष्कर भाग (PB) आणि मृत्यु भाग (MB) ची गणना आणि फलादेश.
+
+TXT गणनांच्या आधारे खालील क्षेत्रांवर प्रभाव लिहा:
+
+​▸ दैवीय सुरक्षा (Divine Protection): कोणते भाव/ग्रह पुष्कर ऊर्जेने सुरक्षित आहेत आणि जीवनाच्या कोणत्या क्षेत्रांमध्ये 'न मागता' मदत मिळेल?
+
+​▸ संघर्ष आणि अडथळे (MB Impact): मृत्यु भागातील ग्रह जीवनाच्या कोणत्या क्षेत्रांमध्ये 'लँडमाइन'सारखे अडथळे निर्माण करू शकतात?
+
+​▸ सुरुवात विरुद्ध परिणाम (Start vs Middle): भावाच्या 'प्रारंभ' आणि 'मध्य' च्या पुष्कर फरकावरून सांगा की कार्याची सुरुवात कशी असेल आणि त्याचा शेवट कसा असेल?
+
+▸ PN आणि PB च्या गणनेत पहा की त्यांचा 'भावेश' MB मध्ये आहे का?
+(भावाचा स्वामी (Bhavesh) मृत्यु भागात असेल, तर भाव पुष्कर असूनही फलात अडथळा येईल)
+
+​▸ दशा फल: सध्याच्या किंवा आगामी महादशेमध्ये या अमृत/विष बिंदूंचा काय परिणाम होईल?
+
+​▸ ​निष्कर्ष: एकंदरीत कुंडलीमध्ये 'अमृत' (PB) आणि 'विष' (MB) चा समतोल किती आहे?
+----------
+1] प्रथम जातकाच्या कुंडलीतील सर्व शुभ योगांची यादी तयार करा, नंतर सर्व शुभ योगांच्या बनण्याच्या पद्धतीचे आणि त्यांच्या भावांच्या तसेच ग्रहांच्या क्षमतेवर आधारित संभाव्य परिणामाचे सविस्तर विश्लेषण करा; pdf च्या शेवटी काही योग आणि दोषांची यादी दिली आहे, त्यातून जे शुभ योग आहेत तेही घ्या. txt मधूनही घ्या.
+2] प्रथम जातकाच्या कुंडलीतील सर्व दोषांची यादी तयार करा, नंतर सर्व दोषांच्या बनण्याच्या पद्धतीचे आणि त्यांच्या भावांच्या तसेच ग्रहांच्या क्षमतेवर आधारित संभाव्य परिणामाचे सविस्तर विश्लेषण करा; pdf च्या शेवटी काही योग आणि दोषांची यादी दिली आहे, त्यातून जे दोष आहेत तेही घ्या. txt मधूनही घ्या.
+----------
+जन्म नक्षत्राला आधार मानून नवतारा चक्र बनवा आणि विश्लेषण करा की कुंडलीतील सर्व 9 ग्रह कोणकोणत्या तारांच्या (संपत, विपत, वध इ.) नक्षत्रांत बसले आहेत, आणि त्या तारानुसार प्रत्येक ग्रह आपले कसे (शुभ/अशुभ) फल देईल? [PDF पेज No 28]
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म विवरणांच्या आधारे सर्व ९ ग्रहांचे (सूर्य, चंद्र, मंगळ, बुध, गुरू, शुक्र, शनी, राहू, केतू) ज्योतिषीय तथ्ये/आकड्यांची यादी द्या. माहिती संक्षिप्त आणि बिंदुवार असावी, सविस्तर स्पष्टीकरणाची गरज नाही. ही यादी कुंडलीचे फलित, षड्बल, विमशोपक बल (षोडश वर्ग), अष्टकवर्ग आणि जैमिनी कारकत्व यावर आधारित असावी.
+
+प्रत्येक ग्रहासाठी खालील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ जैमिनी कारकत्व:
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रू, सम, उच्च, नीच, मूलत्रिकोण, स्वराशी)
+➤ नक्षत्र आणि पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी) 
+➤ [ग्रहाचे नाव] वर दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांसोबत युतीत आहे)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इ.)
+➤ भावनात्मक/अवस्था शक्ती: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (हो/नाही किंवा स्थितीचे नाव)
+➤ नवमांश स्थिती:  (नवमांश कुंडलीत ग्रह कोणत्या राशीत, नक्षत्रात (स्वामी) आहे आणि त्याचा प्रभाव.)
+➤ नवमांशातील शक्ती: पीडित/बलवान
+➤ चलितमधील स्थिती बदल आणि प्रभाव 
+➤ भावबल: (फक्त मान)
+➤ षड्बल :  (रूपातील मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इ.)
+➤ भिन्नाष्टक वर्ग (BAV) बिंदू: (0-8 दरम्यान मान): (बिंदूंच्या आधारे: व्यावहारिक शक्ती - कमकुवत/सरासरी/शक्तिशाली)
+➤ विमशोपक बल (षोडश वर्ग): (मान आणि ग्रहांमध्ये त्याचा रँक, जर लागू असेल तर.)
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB)/मृत्यु भाग (MB) मधील स्थिती आणि प्रभाव :
+​➤ नवतारा स्थिती आणि प्रभाव: (जन्म नक्षत्राच्या आधारे हा ग्रह कोणत्या ताऱ्यात - जसे संपत, विपत, साधक इ. - बसला आहे, आणि त्या विशिष्ट ताऱ्यामुळे त्याच्या नैसर्गिक व भाव फलांमध्ये कशी शुभता किंवा अडथळे येतील.)
+➤ गोचर आणि दशेमधील संभाव्य फलाचे संक्षिप्त उत्तर : (सामान्यतः तो ग्रह आपल्या दशा/अंतर्दशा आणि गोचरमध्ये कसे फल देईल - चांगले, वाईट, किंवा मध्यम.
+
+➤ निष्कर्ष : एकंदरीत ग्रह मजबूत आहे की पीडित आहे? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रहांच्या बलवान आणि पीडित असण्याबद्दल निष्कर्ष (टक्केवारीच्या आधारे)
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म विवरणांच्या आधारे D1 च्या सर्व 12 भावांची ज्योतिषीय तथ्ये/आकड्यांची यादी द्या. माहिती संक्षिप्त आणि बिंदुवार असावी, सविस्तर स्पष्टीकरणाची गरज नाही. ही यादी कारकत्व, भाव बल, अष्टकवर्ग यावर आधारित असावी.
+
+
+प्रत्येक भावासाठी खालील माहिती द्या:
+
+1. पहिला भाव (लग्न):  राशीचे नाव [आरूढ पद]
+➤ कारकत्व: 
+➤ भाव स्वामी (लग्नेश):
+➤ भावेशाची स्थिती: 
+➤ स्थित ग्रह: 
+➤ भावावर दृष्टी: 
+➤ भाव बल: रूपातील मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इ. (कुंडलीतील कमकुवत अथवा मजबूत भाव).
+➤ सर्वाष्टकवर्ग (SAV) बिंदू: (एकूण बिंदू) (भावाची क्षमता: 28 पेक्षा जास्त असल्यास 'उत्तम', 25 पेक्षा कमी असल्यास 'आव्हानात्मक')
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB) मधील स्थिती आणि प्रभाव:
+➤ निष्कर्ष : एकंदरीत भाव मजबूत आहे की पीडित आहे? (टक्केवारी)
+
+➤ शेवटी सर्व भावांच्या बलवान आणि पीडित असण्याबद्दल निष्कर्ष (टक्केवारीच्या आधारे)
+----------
+➤ सामान्य माहिती तालिका बनवा:
+
+►D1 लग्न भाव राशी आणि नक्षत्र
+►D1 दशम भाव राशी आणि नक्षत्र
+►D9 लग्न भाव राशी आणि नक्षत्र
+►D9 दशम भाव राशी आणि नक्षत्र
+►D10 लग्न भाव राशी आणि नक्षत्र
+►D10 दशम भाव राशी आणि नक्षत्र
+
+►चंद्र राशी 
+►चंद्र नक्षत्र
+►चंद्र नक्षत्र स्वामी
+
+►D1 लग्न भाव नक्षत्र स्वामी
+►D1 लग्नेश  
+►D1 दशम भाव नक्षत्र स्वामी
+►D1 दशमेश
+►D9 लग्न भाव नक्षत्र स्वामी
+►D9 लग्नेश  
+►D9 दशम भाव नक्षत्र स्वामी
+►D9 दशमेश
+►D10 लग्न भाव नक्षत्र स्वामी
+►D10 लग्नेश  
+►D10 दशम भाव नक्षत्र स्वामी
+►D10 दशमेश
+
+➤ तालिका बनवल्यानंतर खालील मुद्द्यांचे विश्लेषण करा. 
+
+▸ D1 आणि D9 दोन्हींच्या लग्नात बसलेला ग्रह, लग्नेश आणि लग्न नक्षत्र स्वामी यांच्यापैकी कोण मजबूत आहे? 
+▸ D1 आणि D9 मध्ये लग्नात बसलेला ग्रह, लग्नेश, आणि लग्न नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वात प्रभावशाली आहे आणि व्यक्तीच्या व्यक्तिमत्त्वाला अंतिमतः निर्देशित करतो?
+
+▸ D10 मध्ये लग्नात बसलेला ग्रह, लग्नेश, आणि लग्न नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वात प्रभावशाली आहे आणि व्यक्तीच्या D10 ला अंतिमतः निर्देशित करतो?
+
+▸ D1 आणि D9 दोन्हींच्या दशम भावात बसलेला ग्रह, दशमेश आणि दशम भाव नक्षत्र स्वामी यांच्यापैकी कोण मजबूत आहे? 
+▸ D1 आणि D9 मध्ये दशम भावात बसलेला ग्रह, दशमेश आणि दशम भाव नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वात प्रभावशाली आहे आणि व्यक्तीच्या करिअरला अंतिमतः निर्देशित करतो?
+
+▸ D10 मध्ये दशम भावात बसलेला ग्रह, दशमेश आणि दशम भाव नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वात प्रभावशाली आहे आणि व्यक्तीच्या करिअरला अंतिमतः निर्देशित करतो?
+
+➤ निष्कर्ष : 
+▸ D1, D9 च्या लग्नाचा प्रभावशाली ग्रह आणि D10 च्या लग्नाचा प्रभावशाली ग्रह यांपैकी कोण अधिक प्रभावशाली आहे? 
+▸ D1, D9 च्या दशम भावाचा प्रभावशाली ग्रह आणि D10 च्या दशम भावाचा प्रभावशाली ग्रह यांपैकी कोण अधिक प्रभावशाली आहे?
+----------
+कृपया संलग्न (Attached) सर्व टेक्स्ट फाइलांमधील ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, चर दशा आणि गोचर) तुमच्या मेमरीमध्ये सुरक्षित करून घ्या.
+
+निर्देश:
+
+1] हा डेटा आत्ताच चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही ते वाचले आहे याची पुष्टी करा.
+3] पुष्टीसाठी (Verification): फक्त 2026 ची सध्याची स्थिती खाली दिलेल्या फॉरमॅटमध्ये लिहून द्या:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD-PD):
+चर दशा (MD-AD-PD):
+गोचर (गुरू/शनी - लग्न व चंद्रापासून):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन; तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+वरील चॅट्समध्ये दिलेल्या आणि काढलेल्या ज्योतिषीय डेटाच्या (Vimshottari, Yogini, Chara Dasha आणि Gochar Analysis) आधारे, आगामी 7 वर्षांची एक सविस्तर 'मास्टर वेळापत्रक' तयार करा.
+
+​तालिकेचे स्वरूप आणि कॉलम अगदी खालीलप्रमाणे असावेत:
+
+​| वेळ (वर्ष) | विंशोत्तरी दशा (MD-AD) | योगिनी दशा (MD-AD) | चर दशा (MD-AD) | गुरू गोचर (लग्न/चंद्रापासून भाव) | शनी गोचर (लग्न/चंद्रापासून भाव) |
+
+​डेटा प्रोसेसिंगसाठी महत्त्वाचे नियम:
+
+​दशा बदल: एखाद्या वर्षात अंतर्दशा (AD) बदलली तर ती एकाच सेलमध्ये 'Slash' (/) सहित दाखवा (जसे: बुध AD / केतू AD).
+----------
+उपरोक्त सर्व विवरणांमधून माहिती काढा, विश्लेषण करायचे नाही. "विश्लेषण:" वाल्या मुद्द्याचे विश्लेषण करू नका - फक्त जसे आहे तसे लिहा. तसेच दृष्टी टाकत असलेल्या ग्रहांना वगळून, बाकी ग्रहांची अवस्था (उच्च-नीच-नीचभंग, शत्रू-मित्र-सम राशी; अस्त-वक्री-वर्गोत्तम) ब्रॅकेटमध्ये लिहा. उत्तरांसोबत प्रश्नही लिहा आणि 'to be continued...' देखील फक्त जसे आहे तसे लिहा.
+
+भाग 1: पराशरी ज्योतिषानुसार करियरचे विश्लेषण
+
+(हा भाग करियरची पायाभूत गोष्ट, क्षमता आणि भाग्य समजून घेण्यासाठी आहे.)
+
+1] दशमेश (10व्या भावाचा स्वामी):
+➤ कोणता ग्रह दशम भावाचा स्वामी आहे?
+➤ दशमेश ग्रह कोणत्या राशी-भावात स्थित आहे?  (विशेषतः केंद्र/त्रिकोणातील स्थिती)
+➤ दशमेश ग्रह कोणत्या नक्षत्रात (स्वामी) स्थित आहे?
+➤ दशमेश ग्रहाची युती कोणत्या ग्रहांशी होत आहे?
+➤ दशमेशासोबत युतीत असलेला ग्रह कोणत्या नक्षत्रात (स्वामी) स्थित आहे?
+➤ दशमेशावर कोणत्या ग्रहांची दृष्टी आहे?
+➤ लग्नेश आणि दशमेश यांच्यामध्ये शत्रुत्व/मैत्री/समता आहे का?
+
+विश्लेषण: करियरची दिशा, यशाची पातळी आणि करियरबद्दल जातकाचा दृष्टिकोन.
+
+2] दशम भाव (कर्म भाव):
+➤ दशम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ दशम भावात कोणकोणते ग्रह स्थित आहेत?
+➤ दशम भावात स्थित असलेला ग्रह कोणत्या नक्षत्रात (स्वामी) स्थित आहे?
+➤ दशम भावावर कोणकोणते ग्रह दृष्टी टाकत आहेत?
+
+विश्लेषण: कार्यक्षेत्राचे स्वरूप, कामाच्या ठिकाणचे वातावरण आणि करियरमध्ये मिळणारी प्रतिष्ठा.
+
+to be continued...
+
+3] नवमांश कुंडली (D9) चे विश्लेषण - करियरमधील भाग्य आणि आंतरिक क्षमता
+
+A) D9 मधील दशम भाव आणि दशमेश:
+➤ नवमांशात दशम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ नवमांशात दशम भावात कोणकोणते ग्रह स्थित आहेत? (त्यांच्या नक्षत्र-स्वामींसह)
+➤ नवमांशात दशम भावावर कोणत्या ग्रहांची दृष्टी आहे?
+➤ नवमांशात दशमेश ग्रह कोण आहे आणि तो कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ नवमांशात दशमेशाची युती किंवा दृष्टी कोणत्या ग्रहांशी होत आहे?
+➤ नवमांशात दशमेशासोबत युतीत असलेला ग्रह कोणत्या नक्षत्रात स्थित आहे?
+
+B) D9 मधील लग्न आणि लग्नेश:
+➤ नवमांशात लग्न कोणत्या राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ नवमांशात लग्न भावात कोणकोणते ग्रह स्थित आहेत? (नक्षत्र-स्वामी)
+➤ नवमांशात लग्नेश ग्रह कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ नवमांशात लग्नेशाची युती किंवा दृष्टी कोणत्या ग्रहांशी होत आहे?
+➤ नवमांशात शनी, बुध आणि सूर्याची स्थिती काय आहे?
+
+C) D1 च्या दशमेशाची नवमांश (D9) मधील स्थिती:
+➤ (D9) नवमांशात D1 चा दशमेश कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ (D9) नवमांशात D1 चा दशमेश कोणासोबत बसला आहे?
+➤ (D9) नवमांशात D1 च्या दशमेशावर कोणत्या ग्रहांची दृष्टी आहे?
+
+विश्लेषण: करियरची सूक्ष्मता, वास्तविक क्षमता आणि व्यावसायिक जीवनात मिळणाऱ्या यश/अपयशाचे अचूक मूल्यांकन.
+
+to be continued...
+
+4] दशमांश कुंडली (D10) चे विश्लेषण - कर्म, पेशा आणि प्रतिष्ठा
+
+A) D10 मधील दशम भाव आणि दशमेश:
+➤ दशमांशात दशम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ दशमांशात दशम भावात कोणकोणते ग्रह स्थित आहेत? (त्यांच्या नक्षत्र-स्वामींसह)
+➤ दशमांशात दशम भावावर कोणत्या ग्रहांची दृष्टी आहे?
+➤ दशमांशात दशमेश ग्रह कोण आहे आणि तो कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ दशमांशात दशमेशाची युती किंवा दृष्टी कोणत्या ग्रहांशी होत आहे?
+➤ दशमांशात दशमेशासोबत युतीत असलेला ग्रह कोणत्या नक्षत्रात स्थित आहे?
+
+B) D10 मधील लग्न आणि लग्नेश:
+➤ दशमांशात लग्न कोणत्या राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ दशमांशात लग्न भावात कोणकोणते ग्रह स्थित आहेत? (नक्षत्र-स्वामी)
+➤ दशमांशात लग्नेश ग्रह कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ दशमांशात लग्नेशाची युती किंवा दृष्टी कोणत्या ग्रहांशी होत आहे?
+➤ दशमांशात शनी, बुध आणि सूर्याची स्थिती काय आहे?
+
+C) जन्म कुंडली (D1) च्या ग्रहांचे D10 मधील विश्लेषण:
+➤ (D10 मध्ये) जन्म कुंडलीचा दशमेश कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ (D10) दशमांशात D1 चा दशमेश कोणासोबत बसला आहे?
+➤ (D10) दशमांशात D1 च्या दशमेशावर कोणत्या ग्रहांची दृष्टी आहे?
+
+विश्लेषण: वास्तविक कर्म, कामाच्या ठिकाणचे वातावरण, पद आणि "सामाजिक प्रतिष्ठा". व्यक्ती प्रत्यक्षात काय करेल आणि त्याला काय दर्जा मिळेल याचे अचूक मूल्यांकन.
+
+to be continued...
+
+5] लग्न आणि लग्नेश:
+➤ लग्न/लग्नेशाचे बल काय आहे?
+➤ लग्नेशाचा दशम भाव किंवा दशमेशाशी काय संबंध आहे?
+
+विश्लेषण: जातकाची स्वतःची क्षमता, प्रयत्न आणि व्यक्तिमत्त्व करियरवर कसा परिणाम करेल.
+
+6] ग्रहांचे बल आणि करियरचे कारक ग्रह:
+➤ कुंडलीत सर्वात बलवान ग्रह कोणता आहे (षड्बलानुसार)?
+➤ सूर्य (आत्मा, सरकार), मंगळ (ऊर्जा, धैर्य), बुध (बुद्धी, व्यापार), गुरू (ज्ञान, सल्लागार), शुक्र (कला, विलासिता) आणि शनी (सेवा, शिस्त) यांची स्थिती (राशी, भाव, नक्षत्र-स्वामी) काय आहे?
+
+विश्लेषण: कोणते ग्रह जातकाला नैसर्गिकरित्या विशिष्ट क्षेत्राकडे नेतील.
+
+to be continued...
+
+7] धन आणि लाभाचे भाव:
+➤ द्वितीय भाव (संचित धन) आणि एकादश भाव (आय/लाभ) आणि त्यांच्या स्वामींची (राशी, भाव, नक्षत्र-स्वामी) स्थिती.
+➤ दशमेशाचा धन/लाभ भावांशी संबंध आहे का? (धन योग)
+
+विश्लेषण: करियरमधून आर्थिक लाभाची शक्यता आणि उत्पन्नाचे स्रोत.
+
+8] इंदु लग्न (Indu Lagna - Wealth Point) चे विश्लेषण:
+➤ कुंडलीत इंदु लग्न कोणत्या राशीत आणि भावात स्थित आहे?
+➤ इंदु लग्नात कोणकोणते ग्रह स्थित आहेत आणि इंदु लग्नावर कोणत्या ग्रहांची दृष्टी आहे (शुभ किंवा अशुभ)?
+➤ इंदु लग्नाचा स्वामी कुठे आणि कोणत्या स्थितीत (उच्च/नीच/स्वराशी) बसला आहे?
+➤ दशमेश (करियर), षष्ठेश (नोकरी), किंवा सप्तमेश (व्यापार) यांचा इंदु लग्नाशी कोणताही थेट संबंध बनत आहे का?
+
+विश्लेषण: जातकाचे अंतिम आर्थिक पातळी (Wealth Status) कसे राहील? कुंडलीत असाधारण धन (करोडपती योग) आहे की धनासाठी सतत संघर्ष करावा लागेल? धनाचा मुख्य स्रोत काय असेल?
+
+to be continued...
+----------
+उपरोक्त सर्व विवरणांमधून माहिती काढा, विश्लेषण करायचे नाही. "विश्लेषण:" वाल्या मुद्द्याचे विश्लेषण करू नका - फक्त जसे आहे तसे लिहा. उत्तरांसोबत प्रश्नही लिहा आणि 'to be continued...' देखील फक्त जसे आहे तसे लिहा.
+
+भाग 2: जैमिनी ज्योतिषानुसार करियरचे विश्लेषण
+
+(हा भाग करियरमधील पद, अधिकार, आत्म्याचा उद्देश आणि सार्वजनिक प्रतिमा समजून घेण्यासाठी आहे.)
+
+1] आत्मकारक (AK) आणि अमात्यकारक (AmK) - आत्म्याचा उद्देश आणि सल्लागार:
+A] आत्मकारक (AK):
+
+➤ जैमिनी पद्धतीने आत्मकारक ग्रह कोणता आहे? (सर्वात जास्त अंश असलेला ग्रह)
+➤ आत्मकारक कोणत्या राशीत आणि भावात स्थित आहे?
+➤ आत्मकारकासोबत कोणकोणत्या ग्रहांची (चर कारक) युती आहे?
+➤ आत्मकारकावर कोणत्या राशींची जैमिनी राशी दृष्टी आहे? (चर, स्थिर, द्विस्वभाव)
+➤ आत्मकारक कोणत्या नवमांशात स्थित आहे?
+➤ आत्मकारक कोणत्या नक्षत्रात स्थित आहे?
+
+B] अमात्यकारक (AmK):
+
+➤ जैमिनी पद्धतीने अमात्यकारक ग्रह कोणता आहे? (दुसऱ्या क्रमांकाचा सर्वात जास्त अंश असलेला ग्रह)
+➤ अमात्यकारक कोणत्या राशीत आणि भावात स्थित आहे?
+➤ अमात्यकारकासोबत कोणकोणत्या ग्रहांची (चर कारक) युती आहे?
+➤ अमात्यकारकावर कोणत्या राशींची जैमिनी राशी दृष्टी आहे? (चर, स्थिर, द्विस्वभाव)
+➤ अमात्यकारक कोणत्या नवमांशात स्थित आहे?
+➤ अमात्यकारक कोणत्या नक्षत्रात स्थित आहे?
+
+विश्लेषण: AmK जातकाच्या आत्म्याचा मूळ उद्देश आणि जीवनाची दिशा दर्शवतो. AmK त्या सल्लागाराचे किंवा माध्यमाचे (करियर/मंत्री) प्रतिनिधित्व करतो जो तो उद्देश साध्य करण्यात मदत करतो.
+
+to be continued...
+
+2] AK आणि AmK चा परस्पर संबंध - उद्देश आणि मार्गातील सुसंगती:
+➤ AK आणि AmK एकमेकांपासून शुभ भावांमध्ये स्थित आहेत का (जसे केंद्र 1, 4, 7, 10; त्रिकोण 1, 5, 9; किंवा 3/11 चा संबंध)?
+➤ ते एकमेकांवर जैमिनी राशी दृष्टी टाकत आहेत का?
+
+विश्लेषण: हा संबंध करियरमधील सहजता आणि यश दर्शवतो. संबंध शुभ असेल तर करियर आत्म्याच्या समाधानासोबत पुढे जातो आणि व्यक्ती आपल्या कामावर खूश राहते. अशुभ संबंध आंतरिक संघर्ष आणि असंतोषाचे लक्षण आहे.
+
+3] कर्म पद (A10) - व्यावसायिक प्रतिमा आणि सार्वजनिक प्रतिष्ठा:
+➤ A10 (कर्मपद) कोणत्या राशीत आणि भावात स्थित आहे?
+➤ A10 मध्ये कोणकोणते ग्रह (चर कारक) स्थित आहेत?
+➤ A10 वर कोणत्या राशींची जैमिनी राशी दृष्टी आहे? (चर, स्थिर, द्विस्वभाव) (शुभ ग्रहांचा प्रभाव प्रसिद्धी देतो, पाप ग्रहांचा प्रभाव वाद किंवा संघर्ष देतो).
+➤ A10 चा लग्न आरूढ (AL), आत्मकारक (AK) किंवा अमात्यकारक (AmK) यांच्याशी संबंध बनत आहे का?
+
+विश्लेषण: हे दर्शवते की जग तुमचे काम आणि पद कसे पाहते. हे करियरमधून मिळणाऱ्या प्रसिद्धी, सामाजिक प्रतिष्ठा आणि सार्वजनिक प्रतिमेचे अचूक मूल्यांकन करते.
+
+to be continued...
+
+4] कारकांश लग्न (Karakamsa Lagna) - लपलेली प्रतिभा आणि भाग्य:
+➤ कारकांश लग्नापासून दशम भावात कोणती राशी आणि ग्रह आहेत?
+➤ कारकांश दशमेश कुठे स्थित आहे?
+➤ कारकांश दशमेश कोणत्या ग्रहांशी युतीत आहे?
+
+विश्लेषण: हे जातकाची लपलेली प्रतिभा, आंतरिक इच्छा आणि करियरची वास्तविक दिशा दर्शवते. कारकांशापासून दशम भाव व्यक्तीचे अंतिम कर्म आणि भाग्य दर्शवतो.
+
+5] अर्गला विश्लेषण - अदृश्य हस्तक्षेप आणि संसाधनांचा प्रवाह:
+
+➤ दशम भावावर अर्गला: करियरच्या "संस्थेला" (जसे ऑफिस, कंपनी) कोणत्या ग्रहांकडून सतत सहकार्य किंवा अडथळा मिळत आहे?
+➤ अमात्यकारक (AmK) वर अर्गला: करियरमध्ये वरिष्ठ अधिकाऱ्यांकडून, सल्लागारांकडून किंवा सहकाऱ्यांकडून मिळणाऱ्या सहकार्याचा किंवा अडथळ्याचा विश्लेषण.
+➤ A10 (कर्म पद) वर अर्गला: तुमची सार्वजनिक प्रतिमा आणि प्रतिष्ठा कोणत्या शक्ती पडद्यामागून मजबूत करत आहेत किंवा कमकुवत करत आहेत?
+
+विश्लेषण: करियरमध्ये मिळणारे अदृश्य सहकार्य, संसाधनांचा प्रवाह आणि लपलेल्या अडथळ्यांचा शोध.
+
+to be continued...
+
+6] घटिका लग्न (Ghatika Lagna - GL) - सत्ता, अधिकार आणि उच्च पद:
+➤ घटिका लग्न (GL) कोणत्या राशीत आणि भावात स्थित आहे?
+➤ घटिका लग्नात कोणकोणते ग्रह स्थित आहेत?
+➤ घटिका लग्नावर कोणत्या राशींची (चर, स्थिर, द्विस्वभाव) जैमिनी दृष्टी आहे?
+➤ अमात्यकारक (AmK) किंवा आत्मकारक (AK) यांचा घटिका लग्नाशी कोणताही संबंध (युती किंवा जैमिनी दृष्टी) बनत आहे का?
+➤ घटिका लग्नापासून दशम भावात कोणते ग्रह आहेत?
+
+विश्लेषण: जातकाला करियरमध्ये किती 'पॉवर', 'अथॉरिटी' आणि 'सामाजिक प्रतिष्ठा' मिळेल? जातकाकडे एखाद्या मोठ्या संस्थेत उच्च अधिकारी (CEO/Director), लीडर किंवा सरकारी क्षेत्रात शीर्ष पद (Class-1 Officer) मिळवण्याची क्षमता आहे का, की त्याला अधीनस्थ (subordinates) म्हणून काम करावे लागेल?
+
+to be continued...
+----------
+उपरोक्त सर्व विवरणांमधून माहिती काढा, विश्लेषण करायचे नाही. "विश्लेषण:" वाल्या मुद्द्याचे विश्लेषण करू नका - फक्त जसे आहे तसे लिहा, तसेच ग्रहाची अवस्था (उच्च, नीच, नीचभंग, अस्त, वक्री, शत्रू-मित्र-सम राशी) ब्रॅकेटमध्ये लिहा. उत्तरांसोबत प्रश्नही लिहा आणि 'to be continued...' देखील फक्त जसे आहे तसे लिहा. 
+
+भाग 3: भृगु नंदी नाडी (BNN) नुसार करियरचे विश्लेषण
+
+(हा भाग ग्रहांच्या प्रवाहावर आणि जीवनाच्या नमुन्यांवर आधारित करियर समजून घेण्यासाठी आहे.)
+
+1] शनी (कर्म कारक) ची स्थिती आणि संबंध:
+➤ शनी कोणत्या राशीत आहे (आणि कोणत्या डिग्रीवर आहे)?
+➤ शनी कोणत्या ग्रहाच्या नक्षत्रात आहे?
+➤ शनीसोबत युतीत कोणते ग्रह आहेत?
+➤ शनीपासून दुसऱ्या आणि बाराव्या राशीत कोणते ग्रह आहेत?
+➤ शनीपासून त्रिकोणात (1-5-9) कोणते ग्रह आहेत?
+
+विश्लेषण: जातकाच्या कर्माचे मूळ क्षेत्र, पेशाचे स्वरूप (सेवा, तंत्रज्ञान, लोखंड इ.) आणि करियरमध्ये येणारी शिस्त/संघर्ष.
+
+to be continued...
+
+2] गुरू (जीव कारक) आणि शनीचा संबंध:
+➤ गुरू आणि शनीचा परस्पर संबंध काय आहे (युती, 2-12, 1-5-9)?
+
+विश्लेषण: जातकाच्या जीवन (गुरू) आणि कर्म (शनी) मधील संबंध. हे सांगते की करियर समाधानकारक असेल की ओझे.
+
+3] करियरशी संबंधित इतर ग्रहांचा प्रभाव:
+➤ सूर्य, बुध किंवा मंगळ यांचा शनीशी काय संबंध आहे? (सूर्य - अधिकार, बुध - व्यापार, मंगळ - तंत्रज्ञान).
+
+विश्लेषण: करियरच्या विशिष्ट स्वरूपाचे निर्धारण. (जसे, शनी+बुध = व्यापार/हिशेब, शनी+मंगळ = इंजिनिअरिंग/बांधकाम).
+
+to be continued...
+----------
+उपरोक्त सर्व विवरणांमधून माहिती काढा, विश्लेषण करायचे नाही. "विश्लेषण:" वाल्या मुद्द्याचे विश्लेषण करू नका - फक्त जसे आहे तसे लिहा, तसेच ग्रह वक्री असेल तर तोही ब्रॅकेटमध्ये लिहा. उत्तरांसोबत प्रश्नही लिहा आणि 'to be continued...' देखील फक्त जसे आहे तसे लिहा.
+
+भाग 4: कृष्णमूर्ति पद्धती (KP) नुसार करियरचे विश्लेषण
+
+(हा भाग करियरच्या घटना आणि यशाच्या वचनाचे अचूक मूल्यांकन करण्यासाठी आहे.)
+
+1] करियरचे वचन (Promise of Profession)
+
+A] एकंदर करियरचे वचन (Overall Promise of Profession):
+➤ 10व्या भावाचा कस्पल सब-लॉर्ड (CSL) कोण आहे?
+➤ हा CSL कोणत्या भावांना सैगनिफाय करत आहे? (विशेषतः 2, 6, 10, 11 भावांचा संबंध).
+
+विश्लेषण: कुंडलीत स्थिर आणि यशस्वी करियरचे वचन आहे का? (भाव 2, 6, 10, 11 आय आणि सेवा/पद दर्शवतात, तर 5, 8, 12 अडथळे दर्शवतात). (यशस्वी करियरच्या वचनाची 100 पैकी किती टक्के शक्यता आहे?)
+
+B] नोकरीचे वचन (Promise of Job):
+➤ 6व्या भावाचा कस्पल सब-लॉर्ड (CSL) कोण आहे?
+➤ हा 6th CSL कोणत्या भावांना सैगनिफाय करत आहे?
+➤ ते नोकरीला अनुकूल भावांशी (2, 6, 10, 11) जोडलेले आहे की नोकरी सुटण्याच्या/अडथळ्याच्या भावांशी (1, 5, 9, 12)?
+
+विश्लेषण: जातकासाठी नोकरीत (Job/Service) स्थिरता आणि यशाचे स्पष्ट वचन आहे का? (यशस्वी नोकरीच्या वचनाची 100 पैकी किती टक्के शक्यता आहे?)
+
+C] व्यापाराचे वचन (Promise of Business):
+➤ 7व्या भावाचा कस्पल सब-लॉर्ड (CSL) कोण आहे?
+➤ हा 7th CSL कोणत्या भावांना सैगनिफाय करत आहे?
+➤ ते व्यापाराला अनुकूल भावांशी (2, 7, 10, 11) जोडलेले आहे की व्यापारात नुकसान/बर्बादीच्या भावांशी (5, 8, 12)?
+
+विश्लेषण: जातक स्वतंत्र व्यापारात (Business) यशस्वी होऊ शकेल की त्याने रिस्क घेणे टाळावे? (यशस्वी व्यापाराच्या वचनाची 100 पैकी किती टक्के शक्यता आहे?)
+
+to be continued...
+
+2] पेशाचे स्वरूप (Nature of Profession):
+
+A] एकंदर पेशाचे स्वरूप (Nature of Profession):
+➤ 10व्या CSL चा नक्षत्र स्वामी कोण आहे आणि तो कुठे स्थित आहे?
+➤ 10व्या CSL चा उप-स्वामी (SL) कोण आहे आणि तो कुठे स्थित आहे?
+➤ 10व्या CSL चा उप-उप स्वामी (SSL) कोण आहे आणि तो कुठे स्थित आहे?
+➤ करियरशी संबंधित भावांना (2, 6, 10, 11) सैगनिफाय करणारे प्रमुख ग्रह कोणते आहेत आणि त्यांची स्थिती काय आहे?
+➤ भाव 2, 6, 10, 11 चे सर्वात मजबूत सैगनिफिकेटर ग्रह कोणते आहेत?
+
+विश्लेषण: नोकरी, व्यापार किंवा स्वतंत्र पेशाचे अचूक निर्धारण. ग्रहांच्या स्वभावावरून कार्यक्षेत्राचा शोध.
+
+B] नोकरीचे स्वरूप (Nature of Job):
+➤ 6व्या CSL चा नक्षत्र स्वामी कोण आहे आणि तो कुठे स्थित आहे?
+➤ 6व्या CSL चा उप-स्वामी (SL) कोण आहे आणि तो कुठे स्थित आहे?
+➤ 6व्या CSL चा उप-उप स्वामी (SSL) कोण आहे आणि तो कुठे स्थित आहे?
+
+विश्लेषण: जातक नोकरी करत असेल तर त्याने कोणत्या प्रकारची जॉब (जसे: टेक्निकल, अ‍ॅडमिनिस्ट्रेटिव्ह, सर्व्हिस) करावी?
+
+C] व्यापाराचे स्वरूप (Nature of Business):
+➤ 7व्या  CSL चा नक्षत्र स्वामी कोण आहे आणि तो कुठे स्थित आहे?
+➤ 7व्या  CSL चा उप-स्वामी (SL) कोण आहे आणि तो कुठे स्थित आहे?
+➤ 7व्या  CSL चा उप-उप स्वामी (SSL) कोण आहे आणि तो कुठे स्थित आहे?
+
+विश्लेषण: जातक व्यापार करत असेल तर त्याला कोणत्या प्रकारचा बिझनेस (जसे: पार्टनरशिप, ट्रेडिंग, कन्सल्टन्सी, मॅन्युफॅक्चरिंग) सर्वात जास्त सूट करेल?
+
+to be continued...
+
+3] पदोन्नती आणि यशाचा काळ (Timing of Promotion):
+
+A] नोकरीतील पदोन्नती आणि काळ (Timing of Promotion in Job):
+➤ भाव 2, 6, 10, 11 चे प्रबळ सैगनिफिकेटर (Significator) ग्रह कोणते आहेत?
+➤ सध्या, किंवा भविष्यात या सैगनिफिकेटर ग्रहांची दशा/अंतर्दशा/प्रत्यंतर दशा कधी येणार आहे?
+➤ गोचरमध्ये शनी आणि गुरूचा संबंध दशा स्वामींशी किंवा महत्त्वाच्या कस्पांशी कधी होत आहे?
+
+विश्लेषण: पदोन्नती, नोकरीतील बदल किंवा करियरमधील महत्त्वाच्या घटनांच्या संभाव्य वेळेचे निर्धारण.
+
+B] व्यापारातील मोठे यश आणि काळ (Timing of Success in Business):
+➤ भाव 2, 7, 10, 11 चे प्रबळ सैगनिफिकेटर (Significator) ग्रह कोणते आहेत?
+➤ सध्या, किंवा भविष्यात या सैगनिफिकेटर ग्रहांची दशा/अंतर्दशा/प्रत्यंतर दशा कधी येणार आहे?
+➤ गोचरमध्ये शनी आणि गुरूचा संबंध व्यापाराच्या महत्त्वाच्या कस्पांशी (विशेषतः 7 आणि 11) कधी होत आहे?
+विश्लेषण: बिझनेसमधील मोठा प्रॉफिट, एक्स्पॅन्शन किंवा एखाद्या मोठ्या डीलच्या फायनल होण्याचा संभाव्य काळ.
+
+to be continued...
+
+4] सरकारी नोकरीचे वचन (Promise of Government Job):
+
+A] 10व्या भावाच्या CSL (Cuspal Sub-Lord) चे विश्लेषण:
+➤ 10व्या भावाचा CSL कोणता ग्रह आहे?
+➤ हा 10th CSL स्वतः, किंवा आपल्या नक्षत्र स्वामी (NL) मार्फत सूर्य (Sun) किंवा चंद्रमा (Moon) शी जोडलेला आहे का? (सूर्य सरकारचा प्राथमिक कारक आहे, चंद्रमा पब्लिक सेक्टर/प्रशासनाचा).
+➤ सूर्य (Sun) किंवा चंद्रमा (Moon) स्वतः आपल्या नक्षत्र स्वामी (NL) किंवा राशी स्वामी (RL) मार्फत 10th CSL शी जोडलेले आहेत का? (रिव्हर्स कनेक्शन चेक).
+➤ हा 10th CSL 2, 6, 10 किंवा 11 भावांना प्रबळपणे सैगनिफाय करत आहे का?
+
+B] 6व्या भावाच्या (नोकरी/सेवा) CSL चे विश्लेषण:
+➤ 6व्या भावाचा CSL कोणता ग्रह आहे?
+➤ 6th CSL चा संबंध सूर्य किंवा शनीशी (सेवेचा कारक) बनत आहे का?
+➤ 6th CSL 2, 6, 10, 11 भावांचा सैगनिफिकेटर आहे का?
+
+C] विश्लेषण आणि फलादेश निर्देश:
+➤ प्रबळ योग (Strong Promise): जर 10th आणि 6th दोन्ही CSL चा संबंध सूर्याशी असेल आणि ते 2, 6, 10, 11 भाव दर्शवत असतील, तर स्पष्टपणे सांगा की जन्म कुंडलीत उच्च स्तरीय सरकारी नोकरीचे 100% वचन आहे.
+➤ मध्यम/संविदा (Contractual/State Govt): सूर्याऐवजी मंगळाचा (पोलीस/सेना) किंवा गुरूचा (शिक्षण/न्याय) प्रभाव असेल आणि 6, 10, 11 भाव सक्रिय असतील, तर राज्य सरकार किंवा पब्लिक सेक्टर (PSU) ची शक्यता सांगा.
+➤ खाजगी क्षेत्र (Private Sector): जर 10th/6th CSL चा सूर्य किंवा चंद्रमाशी कोणताही संबंध नसेल, आणि ते राहू/केतू किंवा बुधाशी जोडलेले असतील, तर स्पष्ट करा की यश खाजगी क्षेत्रात किंवा मल्टिनॅशनल कंपनीत (MNC) मिळेल.
+
+to be continued...
+----------
+सर्व चारही प्रणालींच्या (भाग 1-4) माहितीचे क्रॉस चेक करून खात्री करा की ती बरोबर आहे की काही त्रुटी आहे? जी त्रुटी असेल त्याचीच यादी द्या फक्त.
+----------
+वरील आतापर्यंत तुम्हाला कुंडली विश्लेषणासाठी कोणकोणती माहिती मिळाली, त्याची short मध्ये यादी द्या.
+----------
+तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटा क्रॉसचेक करा.
+2] कोणत्याही प्रकारची शुगर-कोटिंग (Sugar-coating) करू नका. कुंडलीत कोणताही दोष, संघर्ष किंवा नकारात्मक योग असेल तर तो स्पष्ट आणि कडव्या शब्दांत सांगा. मला क्लायंटला खूश करायचे नाही, तर खरे सांगायचे आहे. लक्षात ठेवा पूर्णपणे नकारात्मक असू नये, सकारात्मक आणि नकारात्मकाचा बॅलन्स ठेवून जे खरे आहे ते सांगा.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादन किंवा संवादात्मक वाक्यांशाने (जसे 'नक्कीच', 'अवश्य', 'खालीलप्रमाणे आहे' इ.) करू नका. तुमचे उत्तर थेट मागितलेल्या माहितीपासूनच सुरू झाले पाहिजे.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का? फक्त इतकेच सांगा की कोणत्या आदेशांचे पालन कराल.
+----------
+https://sites.google.com/view/astropropmt/Career-Report/CR-Paste
+----------
+➤ D60 (षष्टियंश) - पूर्व पुण्य आणि अंतिम परिणाम (Karmic Legacy)
+​
+जर D1 आणि D10 मध्ये राजयोग असतील, परंतु D60 मध्ये तो ग्रह शापित असेल, तर करियरमध्ये उंचीवर जाऊनही घसरण येऊ शकते. हे 'सस्टेनेबल सक्सेस' (टिकाऊ यश) पाहण्यासाठी D60 चे विश्लेषण आहे.
+
+1] D60 लग्न आणि लग्नेश - कार्मिक ब्लूप्रिंट (The Karmic Blueprint)
+
+2] D60 दशम भाव आणि दशमेश - कार्मिक कर्म (The Karmic Action)
+
+3] राजयोग कारक ग्रहांची D60 मधील स्थिती
+हे विश्लेषण थेट सांगेल की D1/D10 चे शक्तिशाली राजयोग D60 मध्ये किती मजबूत आहेत.
+
+➤ विस्तृत समग्र D60 निष्कर्ष
+----------
+भाग 5: निष्कर्ष आणि समग्र अवलोकन
+
+➤ चारही प्रणालींचा सारांश: प्रत्येक प्रणालीतून करियरबद्दलचे मुख्य निष्कर्ष काय आहेत?
+➤ सर्वसम्मत निष्कर्ष: कोणते करियर क्षेत्र सर्व प्रणालींमध्ये समान रीतीने दर्शवले जात आहेत?
+➤ करियरचा आलेख: करियरमधील उन्नतीची मुख्य दशके (उदा. 25-35, 35-45 वर्षे) कोणती असतील? कधी संघर्ष आणि कधी यशाची शक्यता आहे?
+➤ D60 कुंडलीचे समर्थन आणि अंतिम परिणाम?
+➤ अंतिम सल्ला: जातकासाठी सर्वात योग्य करियर मार्ग (नोकरी/व्यापार), टाळायची क्षेत्रे आणि यशासाठी आवश्यक उपाय किंवा रत्ने (आवश्यक असल्यास).
+----------
+------------------------------------------
+कृपया खालील सर्व तक्ते सोप्या आणि वाचनीय टेबल स्वरूपात सादर करा.
+
+1] गुरुचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+2] शनीचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+3] बुधचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+4] शुक्रचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+5] सूर्यचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+6] मंगळचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+7] सर्वाष्टकवर्ग तक्ता
+----------
+वरील माहितीच्या आधारे, तुम्हाला एका तज्ज्ञ ज्योतिषीची भूमिका पार पाडायची आहे आणि सांगायचे आहे की ही कुंडली 'मजूर/निम्न श्रेणी'ची आहे की 'उच्च अधिकारी/व्यवसायी'ची.
+
+1] पहिला टप्पा: लग्न आणि लग्नेशाचे बळ (क्षमता - Capacity)
+(करियर पाहण्याआधी जातकाचे व्यक्तिमत्त्व आणि संघर्ष शक्ती पाहणे सर्वात महत्त्वाचे आहे.)
+
+➤ लग्नेशाची स्थिती (राशी, भाव, युती, भावबल/अवस्था शक्ती) यांचे विश्लेषण करा.
+➤ लग्नेश पीडित आहे का (6, 8, 12 भावांत किंवा क्रूर ग्रहांच्या प्रभावाखाली)?
+➤ जातकामध्ये यश मिळवण्याची इच्छाशक्ती (Willpower) आहे का?
+
+➢ विश्लेषण : जर लग्नेश मजबूत असेल, तर व्यक्ती संघर्षांशी लढून वर येईल. जर लग्नेश निर्बल असेल, तर दशम भाव कितीही चांगला असला तरी व्यक्ती त्याचा पूर्ण लाभ घेऊ शकत नाही.
+
+2] दुसरा टप्पा: दशम भाव आणि दशमेश (कर्माचे स्वरूप)
+(व्यवसायाची दिशा (Direction) जाणून घेण्यासाठी.)
+
+➤ दशम भावात असलेले ग्रह: हे ग्रह करियरच्या सुरुवातीच्या स्वरूपाचे निर्धारण करतात.
+➤ दशमेशाची स्थिती (राशी, भाव, युती, भावबल/अवस्था शक्ती) आणि शक्ती यांचे विश्लेषण करा.
+➤ दशमेश पीडित आहे का (6, 8, 12 भावांत किंवा क्रूर ग्रहांच्या प्रभावाखाली)?
+➤ दशमेशाची स्थिती: दशमेश कुठे बसला आहे? (उदा: जर दशमेश 2nd हाउसमध्ये असेल, तर व्यक्ती कौटुंबिक व्यवसायातून किंवा वाणीतून धन कमवेल).
+➤ दशम भावावर दृष्टी: कोणत्या ग्रहांची दृष्टी दशम भावावर आहे?
+➤ येथे कोणताही 'राजयोग' किंवा 'दुर्योग' बनत आहे का?
+
+➢ विश्लेषण : जर दशम भाव आणि दशमेश मजबूत असतील, तर व्यक्ती संघर्षांशी लढून वर येईल. जर दशमेश निर्बल असेल, तर लग्नेश कितीही चांगला असला तरी व्यक्ती त्याचा पूर्ण लाभ घेऊ शकत नाही.
+
+3] तिसरा टप्पा: ग्रहांची पीडा आणि कारक (Karakas)
+(पीडित ग्रहांची भूमिका)
+
+➤ सूर्य: व्यक्ती 'हुकूम' देईल का? जातकाकडे अधिकार (Authority) असेल का? (सरकारी नोकरी, उच्च पद)
+➤ शनि: शनि जातकाकडून कठोर श्रम करवेल की त्याला एक शिस्तबद्ध नेता बनवेल? (नोकरी, कंस्ट्रक्शन, सर्व्हिस).
+➤ बुध: बुधची स्थिती पाहा (तो 'अस्त' आहे का? तो व्यावसायिक बुद्धी देत आहे का?). 'डोक्या'चा वापर होईल का? (व्यापार, रायटिंग, कोडिंग).
+➤ मंगळ : जातकामध्ये धाडसी निर्णय घेण्याची क्षमता आहे का? (पराक्रम)
+➤ गुरु: 'सल्ला' किंवा 'ज्ञान' यांचे काम असेल का? (शिक्षण, सल्लागारी).
+
+➢ विश्लेषण : जर हे ग्रह 'पीडित' असतील (अस्त, नीच, किंवा राहू/केतूसोबत), तर त्या ग्रहाशी संबंधित कामात अडथळे येतील. उदाहरणार्थ, सूर्य पीडित असेल तर व्यक्तीचे बॉसशी कधीच पटणार नाही.
+
+4] चौथा टप्पा: दशमांश कुंडली (D-10 Chart)
+(दशमांश कुंडली D-10 Chart - सूक्ष्म विश्लेषण)
+
+➤ लग्न कुंडली (D-1) च्या दशमेशाची D-10 चार्टमधील स्थिती काय आहे?
+➤ D-10 मधील दशम आणि दशमेशाची स्थिती काय आहे?
+➤ करियरमध्ये स्थिरता (Stability) दिसते की वारंवार चढ-उतार?
+
+➢ विश्लेषण : लग्न कुंडली (D-1) फक्त 'संभावना' दाखवते, परंतु त्या संभावनेचे खरे फळ (Fruit) D-10 मध्ये लपलेले असते. जर D-1 चा दशमेश D-10 मध्ये मजबूत होऊन बसला असेल, तर व्यक्ती करियरमध्ये खूप उंचीवर जाईल.
+
+5] पाचवा टप्पा: अमात्यकारक (AmK) (जैमिनी ज्योतिष) हा करियरचा सर्वात महत्त्वाचा ग्रह आहे.
+(आत्म्याच्या उद्देशाचे सूक्ष्म विश्लेषण)
+
+➤ अमात्यकारक (AmK) ची स्थिती काय आहे?
+➤ कर्मपद (A10) ची स्थिती काय आहे?
+
+➢ विश्लेषण :  AmK जातकाच्या आत्म्याचे मूळ उद्दिष्ट आणि जीवनाची दिशा दर्शवतो. AmK त्या उद्दिष्टाला प्राप्त करण्यात मदत करणाऱ्या सल्लागार किंवा माध्यमाचे (करियर/मंत्री) प्रतिनिधित्व करतो.
+
+6] सहावा टप्पा: अष्टकवर्ग आणि वेळ (Dasha)
+(भावांचे बळ)
+
+➤ अष्टकवर्ग (Ashtakavarga) मधील 10व्या आणि 11व्या भावांच्या बिंदूंची तुलना करा. दशमेश आणि लग्नेशाचा षड्बल (Shadbala) स्कोअर कसा आहे?
+➤ दशमेश आणि लग्नेशाचा षड्बल (Shadbala) स्कोअर कसा आहे?
+
+➢ विश्लेषण : बळ आणि क्षमतेचे विश्लेषण
+
+7] सातवा टप्पा: धन योग आणि लाभ (Wealth & Gains)
+
+➤ 2ऱ्या भावाच्या (धन संचय) आणि 11व्या भावाच्या (उत्पन्न) स्वामींचे विश्लेषण करा.
+➤ व्यापारासाठी 11व्या भावाचे मजबूत असणे आणि नोकरीसाठी 2ऱ्या भावाची स्थिरता आवश्यक आहे.
+
+➢ विश्लेषण : धन संचय आणि उत्पन्नाचे विश्लेषण
+
+8] आठवा टप्पा: निष्कर्ष आणि उपाय
+
+➤  शेवटी सांगा की ही कुंडली 'मजूर/निम्न श्रेणी'ची आहे की 'उच्च अधिकारी/व्यवसायी'ची.
+➤  जर ग्रह पीडित असतील, तर करियरच्या अडथळ्यांना दूर करण्यासाठी अचूक ज्योतिषीय उपाय सुचवा.
+----------
+वरील कुंडली आणि अष्टकवर्ग माहितीच्या आधारे, तुम्हाला एका तज्ज्ञ ज्योतिषीची भूमिका पार पाडायची आहे. तुमचे कार्य हे विश्लेषण करणे आहे की आधुनिक काळानुसार जातकासाठी कोणता करियर मार्ग (Corporate Job, Freelancing/YouTube, Consultancy, किंवा Traditional Business) सर्वात यशस्वी ठरेल.
+(टीप: विश्लेषणापूर्वी जातकाचे 'लग्न' ओळखा जेणेकरून दशमेशाचे अचूक निर्धारण होऊ शकेल).
+
+➤ विश्लेषणाची प्रक्रिया (Step-by-Step Process):
+
+► 1. सर्वाष्टकवर्ग (SAV) चे "गॅप-बेस्ड" तुलनात्मक विश्लेषण (Gap-Based Logic):
+करियरची अचूक दिशा ठरवण्यासाठी भावांमधील अंतर (Gap) पाहा:
+A] 6वा (सर्व्हिस/नोकरी) vs 7वा (व्यापार/पार्टनरशिप): दोघांपैकी कोण मजबूत आहे आणि त्यांच्यामधील गुणांचे अंतर (Gap) किती आहे ते पाहा.
+B] 10वा (स्थिरता/ब्रँड) vs 3रा (धाडस/डिजिटल/मीडिया): व्यक्तीला रिस्क घेणे सूट होईल की स्थिरता हे पाहा.
+C] 11वा (लाभ): लाभाचा (11वा) कल 6व्याकडे आहे की 7व्याकडे ते पाहा.
+
+► 2. अचूक करियर प्रकार (Micro-Niche) ची ओळख:
+खाली दिलेल्या नियमांनुसार जातकाचा अचूक व्यवसाय ठरवा:
+- स्वतंत्र कार्य / YouTube / फ्रीलान्सिंग: जर 3रा भाव खूप मजबूत असेल (28+) आणि 6वा भाव 7व्यापेक्षा मजबूत असेल. (व्यक्ती एकटी डिजिटल/मीडियामध्ये काम करेल).
+- कंसल्टन्सी / अ‍ॅडव्हायझरी / सर्व्हिस: जर 6वा भाव 7व्यापेक्षा खूप जास्त मजबूत असेल (मोठा गॅप) आणि 10वा/11वा भावही मजबूत असेल. (व्यक्ती आपला सल्ला/सर्व्हिस विकेल).
+- स्थायी नोकरी / कॉर्पोरेट जॉब: जर 10वा भाव (स्थिरता) खूप मजबूत असेल (30+) आणि 6वा भाव 7व्यापेक्षा जास्त असेल.
+- पारंपरिक व्यापार / पार्टनरशिप: जर 7वा भाव (28+) स्पष्टपणे 6व्या भावापेक्षा खूप जास्त मजबूत असेल.
+
+► 3. भिन्नाष्टकवर्ग (BAV) चे सहाय्यक विश्लेषण (Supportive Triggers):
+A] शनि (नोकरी कारक): शनीचा 6व्या आणि 10व्या भावातील स्कोअर (4+ शुभ आहे).
+B] बुध (व्यापार/मीडिया कारक): बुधचा 3ऱ्या आणि 7व्या भावातील स्कोअर (4+ शुभ आहे).
+C] दशमेश (10th Lord): लग्नानुसार दशमेश ओळखा आणि त्याचा 10व्या भावातील स्कोअर पाहा.
+(लक्षात घ्या: BAV फक्त सहाय्यक आहे, अंतिम निर्णय SAV च्या गॅप (Gap) वरच अवलंबून असेल).
+
+► 4. भावाची शुभता (Bhava Shubhta - 28 Bindu Rule):
+अष्टकवर्गाच्या प्रामाणिक नियमानुसार, कोणत्याही भावात 28 बिंदू सरासरी (Average) मानले जातात.
+- 6व्या, 7व्या, 10व्या आणि 11व्या भावांचे गुण या नियमावर तोला.
+- 28 किंवा त्याहून अधिक गुण भावाला शुभ आणि परिणाम देण्यात सोपे बनवतात. 28 पेक्षा कमी गुण संघर्ष (कष्ट) दर्शवतात. कोणत्या क्षेत्रात सोपेपणा आहे आणि कोणत्यात संघर्ष आहे ते सांगा.
+
+➤ आउटपुटचे स्वरूप (Output Format):
+
+1] SAV गॅप-बेस्ड विश्लेषण:
+- 6वा vs 7वा (अंतर आणि विजेता):
+- 10वा vs 3रा (अंतर आणि विजेता):
+- 11व्या भावाचा सपोर्ट:
+
+2] भावाची शुभता (28-बिंदू नियमाच्या आधारे):
+- 6वा (सर्व्हिस): [गुण] - [शुभ/संघर्षपूर्ण]
+- 7वा (व्यापार): [गुण] - [शुभ/संघर्षपूर्ण]
+- 10वा (करियर): [गुण] - [शुभ/संघर्षपूर्ण]
+- 11वा (लाभ): [गुण] - [शुभ/संघर्षपूर्ण]
+
+3] BAV (भिन्नाष्टकवर्ग) सपोर्ट:
+- शनि (6th/10th):
+- बुध (3rd/7th):
+- दशमेश ([ग्रहाचे नाव]):
+
+4] 🎯 अचूक निष्कर्ष (Micro-Niche):
+- [येथे आपला अंतिम निष्कर्ष द्या. स्पष्टपणे सांगा की जातकाने कॉर्पोरेट जॉब, फ्रीलान्सिंग/YouTube, कंसल्टन्सी, की पारंपरिक व्यापार यापैकी काय करावे आणि का.]
+
+5] यशाची शक्यता (टक्केवारीत - दोघांची बेरीज 100% असली पाहिजे):
+- 💼 सर्व्हिस सेक्टर (नोकरी / कंसल्टन्सी / डिजिटल क्रिएटर): [XX]%
+- 📈 पारंपरिक व्यापार (दुकान / ट्रेडिंग / पार्टनरशिप): [YY]%
+----------
+जातकाच्या खालील करियर संबंधित ग्रहांची यादी द्या:
+
+A) दशम भाव (कर्म/करियरचे केंद्र)
+
+1] दशम भावाचा स्वामी (दशमेश)
+2] दशम भावाचा नक्षत्र स्वामी
+3] दशम भावात बसलेले ग्रह
+4] दशम भावावर दृष्टी ठेवणारे ग्रह
+5] दशमेश ज्या राशीत बसला आहे त्या राशीचा स्वामी (Dispositor)
+6] दशमेश ज्या नक्षत्रात बसला आहे त्या नक्षत्राचा स्वामी
+7] दशमेशासोबत युती करणारे ग्रह
+8] दशमेशावर दृष्टी ठेवणारे ग्रह
+9] 10व्या भावाचा कस्पल सब-लॉर्ड (CSL)
+9] 10व्या भावाचा कस्पल सब-लॉर्ड (CSL)
+10] 10व्या CSL चा नक्षत्र स्वामी (NL)
+11] 10व्या CSL चा उप-स्वामी (SL)
+12] 10व्या CSL चा SSL
+13] 10व्या भावाचे KP सैगनिफिकेटर
+
+B) दशमेश (करियरचा मुख्य व्यवस्थापक)
+
+1] दशमेश ज्या राशीत बसला आहे, त्याचा स्वामी (Dispositor)
+2] दशमेश ज्या नक्षत्रात बसला आहे, त्याचा स्वामी
+3] दशमेशासोबत युती करणारे ग्रह
+4] दशमेशावर दृष्टी ठेवणारे ग्रह
+
+C) 6वा भाव (नोकरी/सेवा)
+
+1] षष्ठम भावाचा स्वामी
+2] षष्ठम भावात बसलेले ग्रह
+3] षष्ठम भावाचा नक्षत्र स्वामी
+4] 6व्या भावाचा सैगनिफिकेटर ग्रह
+
+D) दशमांश कुंडली (D10 - करियरचे सूक्ष्म विश्लेषण)
+
+1] D10 चा लग्न स्वामी
+2] D10 च्या लग्नात बसलेले ग्रह
+3] D10 मधील दशम भावाचा स्वामी
+4] D10 मधील दशम भावाचा नक्षत्र स्वामी
+5] D10 च्या दशम भावात बसलेले ग्रह
+6] D10 मधील बलवान (उच्च, स्वगृही, वर्गोत्तम) ग्रह
+
+E) नवमांश कुंडली (D9 - करियरच्या भाग्याचे विश्लेषण)
+
+1] D9 मधील दशम भावाचा स्वामी
+2] D9 मधील दशम भावाचा नक्षत्र स्वामी
+3] D9 च्या दशम भावात बसलेले ग्रह
+
+F) D60 कुंडली (D60 - पूर्व पुण्यातील करियर)
+
+1] D60 मधील दशम भावाचा स्वामी
+2] D60 मधील दशम भावाचा नक्षत्र स्वामी
+3] D60 च्या दशम भावात बसलेले ग्रह
+
+G) सहाय्यक भाव (धन, लाभ)
+
+1] एकादश भावाचा (लाभ/महत्त्वाकांक्षा) स्वामी आणि त्यात बसलेले ग्रह
+2] द्वितीय भावाचा (धन/वाणी) स्वामी आणि त्यात बसलेले ग्रह
+3] 2ऱ्या भावाचे KP सैगनिफिकेटर
+4] 11व्या भावाचे KP सैगनिफिकेटर
+
+H) लग्न (करियरमध्ये स्वतःची भूमिका)
+
+1] लग्नाचा स्वामी (लग्नेश)
+2] लग्नात बसलेले ग्रह
+3] लग्नेश आणि दशमेश यांच्यातील संबंध (मित्र, शत्रू, युती, दृष्टी)
+
+I) नैसर्गिक कारक (आंतरिक प्रेरणा आणि मार्ग)
+
+1] कर्माचा नैसर्गिक कारक शनीचा राशी स्वामी, नक्षत्र स्वामी आणि युत ग्रह
+2] अधिकार आणि पदाचा नैसर्गिक कारक सूर्याचा राशी स्वामी, नक्षत्र स्वामी आणि युत ग्रह
+3] 5व्या भावाशी संबंधित ग्रह (बुद्धी आणि रचनात्मकतेसाठी)
+
+J) जैमिनी कारक (आंतरिक शक्ती)
+
+1] जैमिनी अमात्यकारक (AmK - करियरचा मुख्य सल्लागार)
+2] जैमिनी आत्मकारक (AK - आत्म्याचे उद्दिष्ट)
+3] कारकांश लग्नापासून दशम भावाचा स्वामी आणि दशम भावात बसलेले ग्रह
+4] स्वांश लग्नापासून दशम भावाचा स्वामी आणि दशम भावात बसलेले ग्रह
+5] कर्म आरूढ (A10) चा स्वामी आणि A10 मध्ये बसलेले ग्रह
+6] आरूढ लग्नापासून (AL/A1) दशम भावाचा स्वामी आणि दशम भावात बसलेले ग्रह
+
+K) भृगु नंदी नाडी (BNN - कर्माचा प्रवाह)
+
+1] शनि (कर्म कारक) सोबत युती करणारे ग्रह (विशेषकर गुरु).
+2] शनीपासून दुसऱ्या भावात असलेले ग्रह (कर्मातून मिळणारे धन/अधिकार).
+3] शनीपासून तिसऱ्या भावात असलेले ग्रह (कर्मासाठी केलेला पराक्रम आणि संवाद).
+4] शनीपासून त्रिकोण (5व्या आणि 9व्या भावात) असलेले ग्रह (कर्मात भाग्य आणि बुद्धीची साथ).
+5] शनीची दृष्टी (3, 7, 10) ज्या ग्रहांवर पडत आहे, ते ग्रह.
+
+L) संबंध तपासणी (Connection Check)
+
+a) लग्नेशाचा 10व्या, 2ऱ्या, 6व्या किंवा 11व्या भाव/भावेशाशी मजबूत संबंध बनत आहे का?
+b) नैसर्गिक कारक शनि आणि सूर्याचा 10व्या, 2ऱ्या, 6व्या किंवा 11व्या भाव/भावेशाशी मजबूत संबंध बनत आहे का?
+c) दशमेशाचा 2ऱ्या, 6व्या किंवा 11व्या भाव/भावेशाशी मजबूत संबंध बनत आहे का?
+----------
+1] आता आधी काढलेले सर्व ग्रह सूचीबद्ध करा.
+(या यादीत जे ग्रह वारंवार येत आहेत, ते विशेष महत्त्वाचे आहेत.)
+
+2] आता सूचीबद्ध ग्रहांच्या D1 शक्तीचे मूल्यांकन करा.
+(या ग्रहांचे अस्त, वक्री, नीच-नीचभंग, वर्गोत्तम, शत्रू-मित्र-सम राशी, चलित स्थिती, D9 स्थिती, PN-PB-MB स्थिती, SAV-BAV, षड्बल यांसह)
+
+3] आता सर्व ग्रहांच्या संयुक्त प्रभावाचे वर्णन करा.
+(जे ग्रह D1 मध्येही मजबूत आणि बलवान आहेत, ते विशेष महत्त्वाचे आहेत. आणि करियर म्हणून ते चांगले फळ देऊ शकतात.)
+
+4] आता सर्व ग्रहांच्या संयुक्त प्रभावाची तपासणी करून, त्यांना करियरवर प्रभाव टाकण्याच्या क्रमाने लावा:
+
+Group A - मुख्य प्रभावशाली ग्रह (Core Career Planets):
+हे ते ग्रह आहेत जे करियरचा पाया, दिशा आणि मुख्य विषय परिभाषित करतात. जातकाचे संपूर्ण करियर याच ग्रहांभोवती फिरेल.
+(उदाहरण: दशमेश, अमात्यकारक (AmK), 10व्या भावात बसलेला कोणताही बलवान ग्रह, शनीसोबत युती करणारा ग्रह (BNN), 10व्या CSL चा नक्षत्र स्वामी, D10 चा लग्नेश).
+
+Group B - मध्यम प्रभावशाली ग्रह (Supporting Planets):
+हे ग्रह मुख्य ग्रहांना मदत करतात, करियरमध्ये कौशल्ये, संधी आणि संसाधने जोडतात. हे करियरचे वातावरण आणि परिणामांवर प्रभाव टाकतात.
+(उदाहरण: लग्नेश, आत्मकारक (AK), 2ऱ्या/6व्या/11व्या भावांचे स्वामी, नैसर्गिक कारक सूर्य/गुरु, शनीपासून दुसऱ्या/त्रिकोणात असलेले ग्रह (BNN), दशमेशावर दृष्टी टाकणारे ग्रह).
+
+Group C - सहाय्यक आणि उत्प्रेरक ग्रह (Trigger/Situational Planets):
+हे ग्रह विशेष परिस्थितींमध्ये किंवा त्यांच्या दशा-अंतर्दशेमध्ये करियरवर प्रभाव टाकतात. हे करियरमधील वळणांचे किंवा विशेष घटनांचे कारक बनू शकतात.
+(उदाहरण: दशमेशाचा Dispositor, नक्षत्र स्वामी, D10 मधील इतर महत्त्वाचे ग्रह, 5व्या भावाचा स्वामी, शनीपासून 3ऱ्या/12व्या भावात असलेले ग्रह (BNN)).
+----------
+तुम्हाला दिलेल्या ग्रहांच्या (Group A/B/C) यादीचा आणि एका बाह्य ज्ञान स्रोताचा (Career_Fields.txt नावाची फाइल) वापर करून कुंडलीतून काढलेल्या करियरच्या मुख्य प्रभावशाली ग्रहांचे विश्लेषण करायचे आहे. जातकासाठी सर्वात योग्य करियर क्षेत्रांची एक विस्तृत, प्राधान्यक्रम-आधारित (Prioritized) यादी बनवायची आहे. तुमचे अंतिम उद्दिष्ट फक्त सामान्य क्षेत्रे सांगणे नाही, तर Career_Fields.txt मधून विशिष्ट आणि योग्य नोकरी/व्यवसायांची नावे सुचवणे आहे. तुमचे उत्तर फक्त क्षेत्रांची यादी नसावे, तर ग्रहांचा संयुक्त प्रभाव त्या क्षेत्रांकडे का निर्देश करतो हे स्पष्ट करावे. त्या फाइलमध्ये प्रत्येक ग्रहाशी संबंधित कार्यक्षेत्रांची एक विस्तृत यादी आहे. तुम्हाला तुमच्या सामान्य माहितीचाही वापर करायचा आहे. आणि वरील चर्चा विश्लेषणाचाही वापर करायचा आहे. (विश्लेषणात 'TXT फाइल'चा उल्लेख करू नका, ती फक्त संदर्भासाठी आहे)
+
+विश्लेषणाची प्रक्रिया (Step-by-Step Analysis Process):
+
+कीवर्ड काढणे: सर्वप्रथम, Career_Fields.txt फाइल आणि तुमच्या ज्ञानाचा वापर करून Group A आणि Group B च्या सर्व ग्रहांचा मूळ स्वभाव आणि मुख्य कारकत्व (Keywords) ओळखा. (उदा: गुरु = ज्ञान, सल्ला; शनि = रचना, कायदा; मंगळ = कृती, व्यवस्थापन).
+
+हायब्रिड प्रोफाइल बनवणे: वेगवेगळ्या ग्रहांची क्षेत्रे सूचीबद्ध करण्याऐवजी, त्यांचे कीवर्ड्स एकत्र करून एक संयुक्त करियर प्रोफाइल बनवा. तुम्हाला हे विचार करायचे आहे की या ग्रहांच्या ऊर्जा एकत्र येऊन कोणत्या प्रकारच्या व्यावसायिकाची निर्मिती करतात.
+
+(उदाहरण: गुरु (ज्ञान) + शनि (रचना) + मंगळ (कृती) यांचे संयोजन अशा व्यक्तीला दर्शवते जो मोठ्या संस्थेत (शनि) आपल्या तज्ज्ञतेचा (गुरु) वापर करून व्यवस्थापकीय किंवा नेतृत्व (मंगळ) भूमिका निभावतो.)
+
+विशिष्ट करियर मॅपिंग (सर्वात महत्त्वाचा टप्पा): आता, तुमच्या तयार केलेल्या हायब्रिड प्रोफाइलच्या आधारे, Career_Fields.txt फाइल काळजीपूर्वक स्कॅन करा. या प्रोफाइलशी सर्वात जास्त जुळणाऱ्या विशिष्ट करियर नावांची, पदांची किंवा व्यवसायांची यादी बनवा. ही नावे तुमच्या अंतिम उत्तरात समाविष्ट करणे अनिवार्य आहे.
+
+विश्लेषण परिष्कृत करणे: तयार केलेले हायब्रिड प्रोफाइल वरील चॅटमधील चर्चेच्या आधारे त्यांची शक्ती, क्षमता, बळ समजून अधिक अचूक बनवा.
+
+प्राधान्यक्रम देणे: या सखोल विश्लेषणाच्या आधारे, 3-4 सर्वात शक्तिशाली करियर मार्ग ओळखा आणि त्यांना खाली दिलेल्या स्वरूपानुसार तीन श्रेणींमध्ये (Tiers) विभागा.
+
+आउटपुटचे स्वरूप (Required Output Format):
+तुम्हाला तुमचे अंतिम उत्तर खालील "श्रेणी प्रणाली"मध्ये (Tier System) च द्यायचे आहे:
+
+तुमच्यासाठी शीर्ष करियर मार्ग: प्राधान्यक्रम आणि विश्लेषण :
+
+➤ श्रेणी 1: सर्वोत्तम आणि सर्वोच्च प्राधान्यक्रम असलेली क्षेत्रे (Tier 1: Best and Highest Priority Fields)
+
+(ही ती 1 किंवा 2 क्षेत्रे आहेत जी तुमच्या कुंडलीच्या जवळजवळ सर्व मुख्य ग्रहांच्या ऊर्जेशी जुळतात आणि यशाची सर्वाधिक शक्यता ठेवतात.)
+
+► करियर मार्ग 1: [करियर क्षेत्राचे नाव, उदा: कॉर्पोरेट मॅनेजमेंट / स्ट्रॅटेजी आणि प्रशासन]
+
+➧ या क्षेत्रातील विशिष्ट पदे (Career_Fields.txt नुसार): [येथे फाइलमधून 2-4 विशिष्ट नावे लिहा, उदा: 'सीईओ (CEO)', 'मॅनेजिंग डायरेक्टर (MD)', 'उच्च प्रशासकीय अधिकारी (IAS)', 'विभाग प्रमुख']
+
+➧ यशाची शक्यता: [एक टक्केवारी द्या, उदा: 90%]
+
+➧ ज्योतिषीय कारण (का?): येथे विस्ताराने स्पष्ट करा की Group A आणि B च्या ग्रहांचा संयुक्त प्रभाव या करियर मार्गाचे समर्थन कसे करतो. ग्रहांच्या संयोजनाची कहाणी सांगा.
+
+➧ निष्कर्ष: एका किंवा दोन वाक्यांत सांगा की हे क्षेत्र तुमच्यासाठी सर्वोत्तम का आहे.
+
+➤ श्रेणी 2: मजबूत आणि दुय्यम प्राधान्यक्रम असलेली क्षेत्रे (Tier 2: Strong and Secondary Priority Fields)
+
+(ही ती क्षेत्रे आहेत जी खूप मजबूत आहेत, परंतु कदाचित श्रेणी 1 इतकी व्यापक नाहीत किंवा विशिष्ट ग्रह संयोजनावर अधिक आधारित आहेत.)
+
+► करियर मार्ग 2: [करियर क्षेत्राचे नाव, उदा: कॉर्पोरेट कायदा (Corporate Law)/ कायदा आणि न्याय]
+
+➧ या क्षेत्रातील विशिष्ट पदे (Career_Fields.txt नुसार): [येथे फाइलमधून 2-4 विशिष्ट नावे लिहा, उदा: 'न्यायाधीश', 'कॉर्पोरेट वकील', 'सरकारी वकील']
+
+➧ यशाची शक्यता: [एक टक्केवारी द्या, उदा: 75%]
+
+➧ ज्योतिषीय कारण (का?): स्पष्ट करा की कोणते ग्रह या क्षेत्राचे समर्थन करतात आणि हे श्रेणी 1 पेक्षा थोडे वेगळे का आहे.
+
+➧ निष्कर्ष: एका किंवा दोन वाक्यांत सांगा की हा एक मजबूत दुय्यम पर्याय का आहे.
+
+➤ श्रेणी 3: विचारणीय किंवा पर्यायी क्षेत्रे (Tier 3: Considerable or Alternative Fields)
+
+(ही ती क्षेत्रे आहेत ज्यांच्यात क्षमता तर आहे, परंतु काही सावधगिरींची आवश्यकता असू शकते किंवा ती तुमच्या मुख्य ऊर्जेपासून थोडी दूर आहेत.)
+
+► करियर मार्ग 3: [करियर क्षेत्राचे नाव, उदा: स्वतंत्र कंसल्टन्सी/शिक्षण आणि सल्ला]
+
+➧ या क्षेत्रातील विशिष्ट पदे (Career_Fields.txt नुसार): [येथे फाइलमधून 2-4 विशिष्ट नावे लिहा, उदा: 'प्रोफेसर', 'सल्लागार (Consultant)', 'मोटिव्हेशनल स्पीकर']
+
+➧ यशाची शक्यता: [एक टक्केवारी द्या, उदा: 40% (सावधगिरींसह)]
+
+➧ ज्योतिषीय कारण (का?): या क्षेत्राच्या सकारात्मक आणि नकारात्मक दोन्ही ज्योतिषीय बाजू स्पष्ट करा. कोणत्या अटींवर यात यश मिळू शकते ते सांगा.
+
+➧ निष्कर्ष: एका किंवा दोन वाक्यांत सांगा की हे पर्यायी का मानले जावे.
+
+➢ अंतिम निर्देश: तुमचे उद्दिष्ट जातकाला स्पष्टता देणे आहे. फक्त पर्याय देऊ नका, तर एका तज्ज्ञाप्रमाणे मार्गदर्शन करा की त्यांच्यासाठी सर्वोत्तम काय आहे आणि का, आणि हेही सांगा की त्या क्षेत्रातील कोणती विशिष्ट पदे त्यांच्या कुंडलीनुसार सर्वात योग्य आहेत.
+----------
+वरील माहितीत दिलेल्या मुख्य ग्रहांच्या संयुक्त प्रभाव आणि संलग्न Career_Fields.txt फाइलच्या आधारे, जातकासाठी 10 सर्वात योग्य नोकरी आणि व्यवसायांच्या नावांची यादी बनवा. (विश्लेषणात 'TXT फाइल'चा उल्लेख करू नका, ती फक्त संदर्भासाठी आहे)
+----------
+मारक ओळख: हा ग्रह द्वितीयेश (2nd lord) किंवा सप्तमेश (7th lord) होऊन मारकेशाची भूमिका बजावत आहे का? जर होय, तर कोणती - द्वितीयेश (सामान्य मारक) किंवा सप्तमेश (प्रबळ मारक)?
+
+बाधक ओळख: हा ग्रह लग्नाच्या स्वभावानुसार (चर, स्थिर, द्विस्वभाव) बाधक भावाचा (11व्या, 9व्या, किंवा 7व्या) स्वामी आहे का?
+
+दुहेरी भूमिका: हा ग्रह मारक आणि बाधक दोन्ही भूमिका बजावत आहे का? (विशेषकर द्विस्वभाव लग्नासाठी सप्तमेश म्हणून).
+
+कार्यात्मक शुभता: याउलट, हा ग्रह केंद्र/त्रिकोणाचा स्वामी होऊन एक शुभ 'योगकारक' ग्रह आहे का? किंवा फक्त त्रिकोणाचा स्वामी होऊन अत्यंत शुभ आहे का?
+
+2. नकारात्मकता/सकारात्मकतेच्या तीव्रतेचे मूल्यांकन (Assessing the Intensity):
+
+पापी ग्रहांचा प्रभाव: या ग्रहावर नैसर्गिक पाप ग्रहांची (शनि, मंगळ, राहू, केतू) दृष्टी आहे का किंवा तो त्यांच्यासोबत युतीत आहे का? जर होय, तर हे त्याची नकारात्मकता कशी वाढवत आहे?
+
+शुभ ग्रहांचा प्रभाव: या ग्रहावर नैसर्गिक शुभ ग्रहांची (गुरु, शुक्र, शुभ बुध) दृष्टी आहे का किंवा तो त्यांच्यासोबत आहे का? यामुळे मारक/बाधक प्रभावात काही कमी किंवा सुरक्षा (Mitigation) मिळत आहे का?
+
+भाव स्थिती: हा ग्रह कुंडलीच्या कोणत्या भावात स्थित आहे? तो त्रिक भावांत (6, 8, 12) बसून अधिक अशुभ झाला आहे का, किंवा केंद्र/त्रिकोणात बसून त्याची स्थिती काहीशी चांगली आहे का?
+
+राशी बळ: हा ग्रह आपल्या नीच राशीत होऊन अत्यंत पीडित आहे का किंवा आपल्या उच्च/स्वतःच्या राशीत होऊन त्याची नकारात्मकता कमी होत आहे का? अथवा अधिक शक्तिशाली आणि प्रभावी झाली आहे का?
+
+3. सक्रियकरण आणि संभाव्य फळ (Activation and Potential Results):
+
+दशा सक्रियकरण: या ग्रहाच्या महादशा किंवा अंतर्दशेमध्ये कोणत्या प्रकारचे कष्ट, अडथळे किंवा त्रास (आरोग्य, संबंध, करियर इत्यादींमध्ये) पाहायला मिळू शकतात?
+
+गोचराचा प्रभाव: जेव्हा शनि किंवा राहूसारखे मोठे ग्रह गोचरात या मारक/बाधक ग्रहावरून जातात, तेव्हा ते त्याच्या नकारात्मक फळांना सक्रिय करू शकतात का?
+प्रभावित क्षेत्रे: हा ग्रह त्याच्या नैसर्गिक कारकत्वाच्या (उदा. शुक्र - संबंध/वाहन, शनि - करियर/रोग) आणि त्याच्या भाव स्वामित्वाच्या आधारे जीवनाच्या कोणत्या विशिष्ट क्षेत्रांवर सर्वात जास्त प्रभाव टाकेल?
+
+4. समग्र निष्कर्ष (Overall Conclusion):
+अंतिम मूल्यांकन: वरील सर्व मुद्द्यांचे विश्लेषण केल्यानंतर, या ग्रहाला एक कार्यात्मक अशुभ ग्रह म्हणून 1 ते 10 च्या प्रमाणात किती रेटिंग द्याल? (जिथे 1 खूप सौम्य आणि 10 अत्यंत हानिकारक आहे).
+
+5: सल्ला आणि उपाय (Counseling and Remedies)
+(हा खंड या गोष्टीवर केंद्रित आहे की "आव्हाना"चे (टप्पे 1-4 मध्ये ओळखलेले) व्यवस्थापन कसे करावे.)
+
+5.1. ज्योतिषीय शांती उपाय (Astrological Pacification):
+
+मंत्र/जाप: या ग्रहाच्या (किंवा त्याच्या अधिपती देवतेच्या) बीज मंत्राचा किंवा वैदिक मंत्राचा जाप शांतीसाठी आवश्यक आहे का?
+
+स्तोत्र: दशा-अंतर्दशेदरम्यान एखाद्या विशिष्ट स्तोत्राचे (उदा., शनीसाठी 'शनि महात्म्य' किंवा बुधसाठी 'विष्णू सहस्रनाम') पठण करणे संरक्षणात्मक ठरेल का?
+
+दान: या ग्रहाच्या नकारात्मक प्रभावाला शांत करण्यासाठी कोणत्या वस्तूंचे दान (रंग, धान्य, धातू) आणि कधी (कोणत्या दिवशी) करावे?
+
+5.2. रत्ने आणि धारण (Gems and Wearing) - [सर्वात महत्त्वाची सावधगिरी]:
+
+रत्न निषेध: हा ग्रह (मारक/बाधक असल्यामुळे) त्या ग्रहांपैकी आहे का ज्यांचे रत्न कोणत्याही परिस्थितीत धारण करू नये? (स्पष्टपणे लिहा: कारण बलवान मारकेशाचे रत्न घालणे म्हणजे "शक्तिशाली शत्रूला आणखी शक्ती देणे" आहे.)
+
+पर्यायी धारण: या ग्रहाला शांत करण्याऐवजी, कुंडलीच्या 'रक्षक' ग्रहाचे (जसे लग्नेश किंवा नवमेश) रत्न घालणे चांगला उपाय ठरेल का?
+
+5.3. वर्तनात्मक उपाय (Behavioral Remedies / The Counseling):
+
+जागरूकता (Awareness): जातकाने या ग्रहाच्या नकारात्मक स्वभावाबद्दल कसे सावध राहावे? (उदा: "तुमची वाणी (बुध) च तुमचा मारकेश आहे, म्हणून बोलण्याआधी विचार करण्याचा सराव करा.")
+
+बदल (Modification): जातकाला आपल्या कोणत्या सवयी बदलाव्या लागतील? (उदा: "तुमचा गुरु (बाधकेश) तुम्हाला 'आदर्शवादी' बनवून 'अडथळा' देत आहे. तुमचा उपाय आहे की तुम्ही इतरांकडून 'परफेक्शन'ची अपेक्षा करणे कमी करा आणि लवचिक व्हा.")
+
+5.4. आध्यात्मिक/कार्मिक उपाय (Spiritual/Karmic Remedies):
+
+कर्माचा धडा (Karmic Lesson): हा ग्रह जीवनात कोणता 'कार्मिक धडा' शिकवायला आला आहे? (उदा: 'वैराग्य' किंवा 'अलिप्तता'चा धडा).
+
+ऊर्जेचे रूपांतरण (Energy Channeling): जातक या ग्रहाची नकारात्मक ऊर्जा उच्च उद्दिष्टासाठी वापरू शकतो का? (उदा: 'मारक' शनीची ऊर्जा 'अध्यात्म' किंवा 'रुग्णालय सेवे'त लावणे).
+----------
+आता आपण जातकाच्या करियरचे आणि नोकरी/व्यापाराच्या संभाव्य वेळेचे विश्लेषण करू, त्याआधी लक्षात ठेवण्यासारख्या गोष्टी :
+
+1] लक्षात ठेवा सध्या 2026 चालू आहे आणि जातिका/जातक xyz 00 वर्षांची/चा आहे, xyz परीक्षा दिली आहे,
+तुम्ही तयार आहात का, करियरचे विश्लेषण करण्यासाठी, फक्त एवढेच सांगा.
+----------
+वरील चॅट आणि पीडीएफची आणि सुरुवातीपासून तुम्हाला दिलेल्या सर्व माहितीच्या आधारे खालील प्रश्नांचे सखोल आणि विस्ताराने विश्लेषण करून निष्कर्षासह द्यायचे आहे, लक्षात ठेवा विश्लेषण संदर्भाव्यतिरिक्तही स्वतःच्या बुद्धीचा वापर करून आवश्यकतेनुसार ज्योतिष प्रणालीचा वापर करून झाले पाहिजे.
+आणि तुम्हाला ज्या सूचनांचे काटेकोरपणे पालन करायचे आहे त्या तुम्हाला आठवतात का? कोणत्या आहेत?
+तर पहिला प्रश्न देऊ का?
+----------
+1] व्यक्तीच्या जन्मकुंडलीनुसार करियर निवड आणि संभाव्य क्षेत्रे कोणती आहेत, जॉब विरुद्ध बिझनेसच्या शक्यतांचे विस्तृत विश्लेषण?
+(स्रोत: पराशरी - दशमेश, दशम भाव, बलवान ग्रह; जैमिनी - AmK, कारकांश लग्न; BNN - शनीचे संबंध (विशेषकर बुध/सूर्य/मंगळ यांच्याशी); KP - 10व्या CSL चा नक्षत्र स्वामी, 2-6-10-11 चे सैगनिफिकेटर, D60, SAV-BAV-BAL)
+----------
+2] व्यक्तीच्या अंगी कोणती नैसर्गिक प्रतिभा, कौशल्ये आणि क्षमता (Strengths) आहेत ज्या करियरमध्ये सहाय्यक ठरतील?
+(स्रोत: पराशरी - लग्न/लग्नेशाचे बळ, दशमेशाचे स्वरूप; जैमिनी - आत्मकारक (AK) चे स्वरूप; BNN - गुरु आणि त्याचे सहाय्यक ग्रह; KP - लग्न CSL आणि त्याचे सैगनिफिकेटर)
+----------
+3] व्यक्तीच्या करियरमध्ये कोणत्या कमकुवतपणा किंवा नकारात्मक बाजू (Weaknesses) असू शकतात ज्यांकडे लक्ष देण्याची गरज आहे?
+(स्रोत: पराशरी - दशमेश पाप ग्रहांनी पीडित असणे, त्रिक भावांतील स्थिती; जैमिनी - AmK वर पाप अर्गला किंवा दृष्टी; BNN - शनीचा पाप ग्रहांशी संबंध; KP - 10व्या CSL ने 8, 12 भावांना सैगनिफाय करणे)
+----------
+4] शिक्षण आणि कौशल्य विकासाचा व्यक्तीच्या करियरवर काय परिणाम होईल आणि कोणत्या क्षेत्रांत अभ्यास लाभदायक ठरेल?
+(स्रोत: पराशरी - पंचम भाव/पंचमेश आणि नवम भाव/नवमेश यांचा दशम भावाशी संबंध, D5 (पंचमांश - ज्ञानातून अधिकार); जैमिनी - AmK चा संबंध; BNN - गुरुचा बुध/शुक्राशी संबंध)
+➤ व्यक्ती आपले शिक्षण आणि ज्ञान करियरमध्ये यशस्वीपणे वापरू शकेल का? त्याची खरी तज्ज्ञता कोणत्या क्षेत्रात असू शकेल?
+(स्रोत: D24, सिद्धांशाचे लग्न आणि लग्नेश, सिद्धांशातील बलवान ग्रह (उदा., बुध - वाणिज्य, गुरु - ज्ञान, शुक्र - कला, शनि - तांत्रिक). D1 च्या दशमेशाचा D24 च्या लग्नेशाशी किंवा प्रमुख ग्रहांशी कोणताही संबंध आहे का?)
+----------
+5] व्यक्तीसाठी नोकरी/सेवा (Job/Service) करणे अधिक योग्य राहील की स्वतःचा व्यवसाय (Business) सुरू करणे? नोकरी/व्यवसायाची टक्केवारी?
+(स्रोत: पराशरी - षष्ठम भाव (सेवा) विरुद्ध सप्तम भाव (साझेदारी) आणि दशम भावाचे बळ, D7 (साझेदारीसाठी); जैमिनी - AmK चे स्वरूप; KP - 6व्या भावाचे (नोकरी) विरुद्ध 7व्या भावाचे (व्यापार) सैगनिफिकेटर्सचे बळ (KP Section A), सेल्फ एम्प्लॉयमेंटमध्ये रिस्क घेण्याची क्षमता - D3 चा तिसरा भाव, SAV-BAV-BAL, BNN - शनीचा बुध/शुक्र (व्यापार) विरुद्ध मंगळ/सूर्य (सेवा) यांच्याशी संबंध)
+----------
+6] जर जातक नोकरी करत असेल, तर कुंडलीत सरकारी नोकरीचे (Government Job) प्रबळ योग आहेत का? त्याची शक्यता किती टक्के आहे?
+(स्रोत: पराशरी - सूर्य/मंगळाचे बळ, D1, D9, D10; जैमिनी - AK/AmK चे सूर्य/मंगळ असणे; BNN - सूर्याचा शनि/गुरुशी संबंध; KP - 10व्या CSL ने 6, 10, 11 ला सैगनिफाय करणे)
+----------
+7] जर व्यवसाय असेल, तर कोणत्या प्रकारचा व्यवसाय किंवा उद्योग व्यक्तीसाठी सर्वात अनुकूल आहे?
+(स्रोत: (प्रश्न 1 प्रमाणे) पराशरी - दशमेशाचे कारकत्व; जैमिनी - कारकांश लग्नापासून दशम भाव; BNN - शनीशी संबंधित ग्रह; KP - 10व्या CSL चा नक्षत्र स्वामी आणि सैगनिफिकेटर ग्रह, 7व्या CSL चा नक्षत्र स्वामी आणि उप-उप स्वामी (SSL) (KP Section B3), सेल्फ एम्प्लॉयमेंटमध्ये रिस्क घेण्याची क्षमता - D3 चा तिसरा भाव)
+----------
+8] करियरमध्ये उन्नती, पदोन्नती आणि प्रगती (Growth and Promotion) कधी संभाव्य आहे आणि त्यासाठी कोणते घटक जबाबदार असतील?
+(स्रोत: पराशरी - दशा/गोचरचा दशम/एकादश भावाशी संबंध; जैमिनी - चर दशा; BNN - गुरु/शनीचा गोचर; KP - 2, 6, 10, 11 च्या प्रबल सैगनिफिकेटर ग्रहांच्या सध्याच्या किंवा आगामी दशा (KP Section C))
+----------
+9] करियरमधून आर्थिक लाभ, उत्पन्नाचे स्रोत आणि आर्थिक स्थिरता कशी राहील? धनासंबंधी योग कसे आहेत?
+(स्रोत: पराशरी - धन/लाभ भावांचा (2, 11) दशमेशाशी संबंध, धन योग; जैमिनी - AmK वर शुभ अर्गला; KP - 2, 6, 11 भावांच्या सैगनिफिकेटर्सची ताकद, KP - 11व्या CSL (इच्छापूर्ती) चा 2, 6, 10 शी संबंध)
+➤ व्यक्तीची प्रत्यक्ष धन संचय क्षमता कशी आहे आणि उत्पन्नाचे स्रोत नैतिक असतील का?
+(स्रोत: D2, होरा लग्नात कोणते ग्रह आहेत? (सूर्याच्या होऱ्यात क्रूर ग्रह आणि चंद्राच्या होऱ्यात सौम्य ग्रह धन संचयासाठी चांगले आहेत) D1 च्या धनेशाची (2nd Lord) आणि लाभेशाची (11th Lord) होऱ्यात काय स्थिती आहे?)
+----------
+10] करियरमध्ये कोणत्याही प्रकारच्या आर्थिक आव्हानांचे किंवा नुकसानाचे योग आहेत का? असल्यास, कधी आणि कसे?
+(स्रोत: पराशरी - दशमेशाचा द्वादशेशाशी (खर्च) संबंध, दारिद्र्य योग, D12 (खर्च/हानी), D8 (संकट); जैमिनी - AmK वर पाप अर्गला; KP - 5, 8, 12 च्या प्रबल सैगनिफिकेटर ग्रहांच्या दशा (विशेषतः 7व्या आणि 10व्या CSL च्या संदर्भात))
+----------
+11] नोकरीतील समाधानाचे (Job Satisfaction) योग कसे आहेत? कोणत्या गोष्टींमुळे व्यक्ती आपल्या कामात समाधानी राहील किंवा कोणत्या कारणांमुळे असंतोष निर्माण होऊ शकेल?
+(स्रोत: पराशरी - चतुर्थ भावाचा (सुख) दशम भावाशी संबंध, चतुर्थ भावाचा दशमाशी संबंध, चंद्राची (मानसिक शांती) स्थिती, D4 (सुख/शांती); D9/D10 चे सामंजस्य; जैमिनी - आत्मकारक (AK) आणि अमात्यकारक (AmK) यांचा सामंजस्यपूर्ण संबंध; BNN - गुरुचा शनीशी संबंध)
+----------
+12] कार्यस्थळी सहकारी, वरिष्ठ आणि अधीनस्थ (Colleagues, Bosses, Subordinates) यांच्यासोबतचे संबंध कसे राहतील? संघर्षाचे किंवा सहकार्याचे योग आहेत का?
+(स्रोत: पराशरी - दशम भावातील ग्रह, तृतीय (सहकारी), षष्ठ (अधीनस्थ), नवम (गुरु/बॉस), D3 (सहकारी/पराक्रम); जैमिनी - AmK चे चर राशींमध्ये असणे; KP - दशा स्वामींचे 3, 9, 12 भाव सैगनिफाय करणे)
+➤ नोकरीत येणारे लपलेले अडथळे कोणते आहेत? कार्यस्थळी शत्रुत्व किंवा आरोग्यसंबंधी समस्या करियरवर परिणाम करतील का?
+(स्रोत: D6, षष्ठांशाचे लग्न आणि लग्नेश, षष्ठांशात कोणत्या पाप ग्रहांचा (मंगळ, शनी, राहु) प्रभाव अधिक आहे? D1 चा दशमेश किंवा लग्नेश षष्ठांशात पीडित आहे का?)
+----------
+13] करियरच्या संदर्भात प्रवास (Travel) किंवा स्थान बदल (Relocation) चे योग आहेत का? असल्यास, कोणत्या दिशेला किंवा ठिकाणी जाणे अनुकूल राहील?
+(स्रोत: पराशरी - दशमेशाचा चर राशींशी किंवा तृतीय/नवम/द्वादश भावाशी संबंध, D4 (नवीन ठिकाणी सुख); जैमिनी - AmK चे चर राशींमध्ये असणे; KP - दशा स्वामींचे 3, 9, 12 भाव सैगनिफाय करणे)
+➤ नोकरीत येणारे लपलेले अडथळे कोणते आहेत? कार्यस्थळी शत्रुत्व किंवा आरोग्यसंबंधी समस्या करियरवर परिणाम करतील का?
+(स्रोत: D6, षष्ठांशाचे लग्न आणि लग्नेश, षष्ठांशात कोणते ग्रह उच्च, स्वराशीत किंवा बलवान आहेत? D1 च्या दशमेशाचा किंवा आत्मकारकाचा एकादशांशाच्या लग्नाशी किंवा लाभ भावाशी काही संबंध आहे का?)
+----------
+14] करियरमध्ये कोणती प्रमुख आव्हाने, अडथळे किंवा कठीण काळ (Challenges and Obstacles) येऊ शकतात आणि त्यांचा सामना कसा करावा?
+(स्रोत: पराशरी - शनी/राहु/केतुचा दशम भाव/दशमेशावर प्रभाव, D8 (अचानक संकट), D30 (दुर्भाग्य/चारित्रिक दोष); D10/D6 मधील पाप ग्रह; जैमिनी - AmK वर पाप अर्गला; BNN - शनीचा पाप ग्रहांशी संबंध; KP - 10व्या CSL चा 8, 12 भावांशी संबंध)
+----------
+15] करियरमध्ये महत्त्वाच्या घटना (जसे पहिली नोकरी, नोकरी बदलणे, मोठे प्रमोशन, व्यवसायाची सुरुवात/बदल) कधी घडू शकतात?
+(स्रोत: (प्रश्न 8 प्रमाणे) सर्व पद्धतींच्या वेळ निर्धारण तंत्रांचे संयुक्त विश्लेषण - दशा आणि गोचर)
+----------
+16] सध्याच्या ग्रह दशा (Planetary Periods/Dashas) आणि गोचर (Transits) व्यक्तीच्या करियरवर कसा परिणाम करत आहेत आणि भविष्यात त्यांचा काय परिणाम होईल?
+(स्रोत: सर्व पद्धतींचे वेळ निर्धारण विश्लेषण, विशेषतः सध्याच्या आणि आगामी दशांचा करियरशी संबंधित भाव आणि ग्रहांवर परिणाम, D10 वर सध्याचा परिणाम)
+----------
+17] करियरमध्ये यश, मान-सन्मान आणि प्रतिष्ठा (Success, Honor, Reputation) चे योग कसे आहेत? कोणत्याही विशिष्ट क्षेत्रात प्रसिद्धी मिळेल का?
+(स्रोत: पराशरी - दशम भावातील राजयोग, सूर्याचे बल; जैमिनी - आरूढ लग्न (AL) आणि कर्म पद (A10) यांचा संबंध, कारकांश लग्नातील शुभ ग्रह, AmK चे बल; A10; KP - दशा स्वामींचा 1, 10, 11 भावांशी प्रबल संबंध)
+➤ व्यक्तीला आपल्या कामासाठी खरे श्रेय, पुरस्कार आणि सन्मान मिळेल, की फक्त पद आणि जबाबदारीच मिळेल?
+(स्रोत: D11, एकादशांशाचे लग्न आणि लग्नेश, एकादशांशात कोणते ग्रह उच्च, स्वराशीत किंवा बलवान आहेत? D1 च्या दशमेशाचा किंवा आत्मकारकाचा एकादशांशाच्या लग्नाशी किंवा लाभ भावाशी काही संबंध आहे का?)
+----------
+18] करियरच्या माध्यमातून व्यक्ती आपल्या आयुष्यातील मोठे उद्दिष्टे आणि महत्त्वाकांक्षा (Goals and Ambitions) साध्य करू शकेल का?
+(स्रोत: जैमिनी - आत्मकारक (AK) आणि अमात्यकारक (AmK) यांचा सामंजस्यपूर्ण संबंध; पराशरी - लग्नेश आणि दशमेश यांचे बल आणि शुभ संबंध; D9/D10 चे सामंजस्य, D20 (आध्यात्मिक उद्देश), D60)
+----------
+19] करियरमध्ये सर्वोच्च पद (Peak Position) आणि अधिकार (Authority) प्राप्तीचे योग कसे आहेत? जातक आपल्या क्षेत्रात लीडर किंवा उच्च अधिकारी बनू शकेल का?
+(स्रोत: पराशरी - सूर्य/बृहस्पतीचे बल, राजयोग, D10; जैमिनी - AmK चा AK शी संबंध, घटिका लग्नात (GL) बसलेले ग्रह, GL वर अमात्यकारक (AmK) आणि आत्मकारक (AK) यांचा प्रभाव; BNN - सूर्य-गुरु-शनीचा संबंध; KP - 10व्या/11व्या CSL ने 1, 6, 10, 11 सैगनिफाय करणे)
+----------
+20] करियरसंबंधी कोणत्याही विशेष समस्येसाठी किंवा अडथळ्यासाठी कोणते ज्योतिषीय उपाय, रत्न किंवा पूजा पाठ सुचवता येतील?
+(स्रोत: 'मारक/बाधक ओळख आणि उपाय प्रणाली' (Step 1-5), कमकुवत किंवा पीडित ग्रहांची ओळख (विशेषतः लग्नेश, दशमेश, AmK, शनी, D10 मधील पीडित ग्रह) आणि त्यांच्या नकारात्मक प्रभावाचे प्रमाण कमी करण्यासाठी उपाय)
+----------
+➤ जातकाने स्वतःबद्दल माहिती दिली आहे आणि जातकाचे काही प्रश्न आहेत, प्रथम दिलेली माहिती सूचीबद्ध करा, त्यानंतर सर्व प्रश्न सूचीबद्ध करा :
+----------
+आता दिलेल्या माहितीचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्षासह करा, प्रत्येक घटनेचे विस्ताराने विश्लेषण झाले पाहिजे, उपाय आवश्यक असल्यास उपायासह, सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+----------
+आता दिलेल्या प्रश्नांची उत्तरे सखोल संशोधन करून लिहा, विस्ताराने विश्लेषण आणि निष्कर्षासह करा, प्रत्येक प्रश्नाचे विस्ताराने विश्लेषण आणि निष्कर्षासह करा, प्रत्येक प्रश्नाचे विस्ताराने विश्लेषण झाले पाहिजे, उपायासह, सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+----------
+सुरुवातीपासून विचारलेल्या जातकाच्या जीवनसंबंधी सर्व प्रश्नांच्या विश्लेषणाचा थोडक्यात निष्कर्ष द्या.
+----------
+आता आतापर्यंत केलेल्या सर्व खालील घटना आणि प्रश्न पुन्हा लिहून त्यांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला ठेवली जाईल, ज्यामुळे जातक आधीच थोडक्यात उत्तरे वाचेल आणि ज्याचे विश्लेषण संदर्भासह वाचायचे आहे तो सेक्शन शोधेल...
+
+1] व्यक्तीच्या जन्मकुंडलीनुसार करियर निवड आणि संभाव्य क्षेत्र कोणते आहे, जॉब विरुद्ध व्यवसायाच्या शक्यतांचे विस्तृत विश्लेषण?
+
+2] व्यक्तीमध्ये कोणत्या नैसर्गिक प्रतिभा, कौशल्ये आणि क्षमता (Strengths) आहेत ज्या करियरमध्ये सहाय्यक होतील?
+
+3] व्यक्तीच्या करियरमध्ये कोणत्या कमकुवत बाजू किंवा नकारात्मक पैलू (Weaknesses) असू शकतात ज्यांकडे लक्ष देण्याची आवश्यकता आहे?
+
+4] शिक्षण आणि कौशल्य विकासाचा व्यक्तीच्या करियरवर काय परिणाम होईल आणि कोणत्या क्षेत्रांत अभ्यास लाभकारी होईल?
+➤ व्यक्ती आपल्या शिक्षणाचा आणि ज्ञानाचा करियरमध्ये यशस्वीपणे वापर करू शकेल का? त्याची प्रत्यक्ष तज्ज्ञता कोणत्या क्षेत्रात असू शकते?
+
+5] व्यक्तीसाठी नोकरी/सेवा (Job/Service) करणे अधिक योग्य राहील की स्वतःचा व्यवसाय (Business) सुरू करणे?
+
+6] जातक नोकरी करत असल्यास, कुंडलीत सरकारी नोकरीचे (Government Job) प्रबल योग आहेत का? त्याची शक्यता किती टक्के आहे?
+
+7] व्यवसाय असल्यास, कोणत्या प्रकारचा व्यवसाय किंवा उद्योग व्यक्तीसाठी सर्वात अनुकूल आहे?
+
+8] करियरमध्ये उन्नती, पदोन्नती आणि प्रगती (Growth and Promotion) कधी संभाव्य आहे आणि त्यासाठी कोणते घटक जबाबदार असतील?
+
+9] करियरमधून आर्थिक लाभ, उत्पन्नाचे स्रोत आणि आर्थिक स्थिरता कशी राहील? धनासंबंधी योग कसे आहेत?
+➤ व्यक्तीची प्रत्यक्ष धन संचय क्षमता कशी आहे आणि उत्पन्नाचे स्रोत नैतिक असतील का?
+
+10] करियरमध्ये कोणत्याही प्रकारच्या आर्थिक आव्हानांचे किंवा नुकसानाचे योग आहेत का? असल्यास, कधी आणि कसे?
+
+11] नोकरीतील समाधानाचे (Job Satisfaction) योग कसे आहेत? कोणत्या गोष्टींमुळे व्यक्ती आपल्या कामात समाधानी राहील किंवा कोणत्या कारणांमुळे असंतोष निर्माण होऊ शकेल?
+
+12] कार्यस्थळी सहकारी, वरिष्ठ आणि अधीनस्थ (Colleagues, Bosses, Subordinates) यांच्यासोबतचे संबंध कसे राहतील? संघर्षाचे किंवा सहकार्याचे योग आहेत का?
+➤ नोकरीत येणारे लपलेले अडथळे कोणते आहेत? कार्यस्थळी शत्रुत्व किंवा आरोग्यसंबंधी समस्या करियरवर परिणाम करतील का?
+
+13] करियरच्या संदर्भात प्रवास (Travel) किंवा स्थान बदल (Relocation) चे योग आहेत का? असल्यास, कोणत्या दिशेला किंवा ठिकाणी जाणे अनुकूल राहील?
+
+14] करियरमध्ये कोणती प्रमुख आव्हाने, अडथळे किंवा कठीण काळ (Challenges and Obstacles) येऊ शकतात आणि त्यांचा सामना कसा करावा?
+
+15] करियरमध्ये महत्त्वाच्या घटना (जसे पहिली नोकरी, नोकरी बदलणे, मोठे प्रमोशन, व्यवसायाची सुरुवात/बदल) कधी घडू शकतात?
+
+16] सध्याच्या ग्रह दशा (Planetary Periods/Dashas) आणि गोचर (Transits) व्यक्तीच्या करियरवर कसा परिणाम करत आहेत आणि भविष्यात त्यांचा काय परिणाम होईल?
+
+17] करियरमध्ये यश, मान-सन्मान आणि प्रतिष्ठा (Success, Honor, Reputation) चे योग कसे आहेत? कोणत्याही विशिष्ट क्षेत्रात प्रसिद्धी मिळेल का?
+➤ व्यक्तीला आपल्या कामासाठी खरे श्रेय, पुरस्कार आणि सन्मान मिळेल, की फक्त पद आणि जबाबदारीच मिळेल?
+
+18] करियरच्या माध्यमातून व्यक्ती आपल्या आयुष्यातील मोठे उद्दिष्टे आणि महत्त्वाकांक्षा (Goals and Ambitions) साध्य करू शकेल का?
+
+19] करियरमध्ये सर्वोच्च पद (Peak Position) आणि अधिकार (Authority) प्राप्तीचे योग कसे आहेत? जातक आपल्या क्षेत्रात लीडर किंवा उच्च अधिकारी बनू शकेल का?
+
+20] करियरसंबंधी कोणत्याही विशेष समस्येसाठी किंवा अडथळ्यासाठी कोणते ज्योतिषीय उपाय, रत्न किंवा पूजा पाठ सुचवता येतील?
+
+
+जातकाचे प्रश्न :`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
 
         // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
         const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
@@ -1169,7 +3291,7 @@ Group C - सहायक और उत्प्रेरक ग्रह (Trigg
         function processData() {
             const container = document.getElementById('prompt-container');
             // पहले डैश लाइन्स से तोडें
-            let parts = rawData.split(separatorRegex);
+            let parts = getRawData().split(separatorRegex);
 
             parts.forEach((part, index) => {
                 let cleanText = part.trim();
