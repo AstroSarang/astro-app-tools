@@ -98,6 +98,14 @@
 <body>
 
     <h1>CHBR Milan Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
     <div class="container" id="prompt-container">
         <!-- Prompts will be loaded here -->
     </div>
@@ -106,8 +114,8 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData = `https://sites.google.com/view/astropropmt/CHBR-Milan/CHBR-Milan-Paste
-------------------------------------------
+        const rawData_hi = `https://sites.google.com/view/astropropmt/CHBR-Milan/CHBR-Milan-Paste
+----------
 कृपया उपरोक्त सभी PDF के जन्म विवरणों के आधार पर दो कुंडलियों (वर और वधू) के लिए एक विस्तृत तुलनात्मक ज्योतिषीय डेटा तालिका बनाएं। तालिका का उद्देश्य कुंडली मिलान रिपोर्ट की शुरुआत में दोनों कुंडलियों का एक त्वरित अवलोकन प्रदान करना है।
 कृपया तालिका को निम्नलिखित खंडों और प्रारूप में व्यवस्थित करें:
 
@@ -456,11 +464,11 @@ KP का विवरण:
 
 निर्देश:
 उपरोक्त सभी डेटा को एक सुव्यवस्थित Markdown तालिका में प्रस्तुत करें, जिसमें तीन कॉलम हों: 'विवरण', '[लड़के का नाम]', और '[लड़की का नाम]'। कृपया तालिका को उप-शीर्षकों (जैसे 'मुख्य बिंदु', 'पराशरी ग्रह', 'जैमिनी चर कारक' आदि) के साथ विभाजित करें ताकि पठनीयता बेहतर हो। फॉर्मेट ऐसा होना चाहिए : "[कुम्भ, चतुर्थ भाव, शतभिषा,स्वामी: राहु]"
-------------------------------------------
+----------
 सभी की जानकारी को क्रॉस चेक करके सुनिश्चित करिए की वो सही है या कोई त्रुटी है ? जो त्रुटी हो उसकी ही सूचि दीजिए सिर्फ.
-------------------------------------------
+----------
 उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
-------------------------------------------
+----------
 यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
 
 1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
@@ -470,11 +478,11 @@ KP का विवरण:
 5] और इसके बाद के विश्लेषण में करते समय जातकों के नाम का उल्लेख करेंगे.
 
 क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
-------------------------------------------
+----------
 उपरोक्त चैट और पीडीएफ की और शुरू से आपको दी गयी सभी जानकारी के आधार पर निम्मलिखित सवालों का गहन और विस्तार से विश्लेषण करके निष्कर्ष सहित देना है, ध्यान रहे विश्लेषण आवश्यकता अनुसार ज्योतिष ज्योतिष प्रणाली का उपयोग करते हुए होनी चाहिए। 
 और क्या निर्देश है जिनका आपको सख्ती से पालन करना है वो आपको याद है ? 
 तो पहला सवाल दू ?
-------------------------------------------
+----------
 जब आप दोनों कुंडलियों को शामिल करते हैं, तो विश्लेषण का तरीका थोड़ा बदल जाता है। अब आप केवल एक कुंडली के योगों को नहीं देखते, बल्कि यह देखते हैं कि दोनों कुंडलियाँ एक-दूसरे की पूरक (Complementary) हैं या एक-दूसरे की बाधक (Contradictory)।
 
 यहाँ दोनों कुंडलियों को शामिल करके संतान रिपोर्ट तैयार करने की प्रक्रिया और प्रमुख बिंदु दिए गए हैं:
@@ -496,7 +504,7 @@ B] माता की कुंडली:
 ➤ KP से 5वें CSL का विश्लेषण।
 
 इस चरण से हमें प्रत्येक व्यक्ति की संतान क्षमता और योगों की एक आधारभूत समझ मिलेगी।
-------------------------------------------
+----------
 चरण 2: दोनों कुंडलियों का तुलनात्मक और संयुक्त विश्लेषण (Crux of the Analysis)
 
 यह सबसे महत्वपूर्ण चरण है। यहाँ हम दोनों कुंडलियों को एक साथ रखकर देखेंगे।
@@ -511,7 +519,7 @@ A] योगों की पुष्टि और खंडन (Confirmation a
 
 
 to be continued...
-------------------------------------------
+----------
 B] समय निर्धारण का मिलान (Timing Synchronization):
 
 दोनों कुंडलियों में संतान प्राप्ति के लिए चल रही विंशोत्तरी और अन्य दशाओं का मिलान करें।
@@ -522,7 +530,7 @@ B] समय निर्धारण का मिलान (Timing Synchroniza
 
 
 to be continued...
-------------------------------------------
+----------
 C] गोचर का दोहरा प्रभाव (Dual Transit Effect):
 
 ➤ गोचर के बृहस्पति और शनि का प्रभाव दोनों कुंडलियों के पंचम भाव, पंचमेश और लग्न पर एक साथ देखें।
@@ -531,7 +539,7 @@ C] गोचर का दोहरा प्रभाव (Dual Transit Effect):
 
 
 to be continued...
-------------------------------------------
+----------
 D] D7 कुंडली का तुलनात्मक अध्ययन:
 
 ➤ पिता की D7 कुंडली और माता की D7 कुंडली को साथ में देखें।
@@ -542,7 +550,7 @@ D] D7 कुंडली का तुलनात्मक अध्ययन:
 
 
 to be continued...
-------------------------------------------
+----------
 E] D60 (षष्ट्यांश) कुंडली का सूक्ष्म और कर्म आधारित अध्ययन (Karmic Analysis):
 
 ➤ कर्म और पूर्व जन्म का ऋण (Karmic Debts): D60 भाग्य और पिछले जन्म के कर्मों का अंतिम निर्णायक (Ultimate Decider) चार्ट है। यदि D1 और D7 में संतान योग होने के बावजूद देरी हो रही है, तो दोनों (माता और पिता) की D60 कुंडली में पंचम भाव, पंचमेश और बृहस्पति की गहराई से जाँच करें।
@@ -551,7 +559,7 @@ E] D60 (षष्ट्यांश) कुंडली का सूक्ष�
 ➤ ऋणानुबंध और आत्मा का स्तर (Soul Connection): पिता और माता के D60 चार्ट में पंचमेश का आपसी संबंध देखें। यदि यह संबंध शुभ है, तो यह दर्शाता है कि एक उच्च, पुण्यवान और भाग्यशाली आत्मा (Soul) का जन्म इस दंपत्ति के माध्यम से होने वाला है।
 
 to be continued...
-------------------------------------------
+----------
 F] बीज और क्षेत्र स्फुट का संयुक्त परिणाम:
 
 ➤ यदि पिता का बीज स्फुट बलवान है लेकिन माता का क्षेत्र स्फुट कमजोर है (या इसके विपरीत), तो यह इंगित करता है कि समस्या किस पक्ष में अधिक है। यह चिकित्सा उपचार की दिशा तय करने में मदद कर सकता है।
@@ -560,7 +568,7 @@ F] बीज और क्षेत्र स्फुट का संयुक
 
 
 to be continued...
-------------------------------------------
+----------
 G] BNN विश्लेषण (ग्रह कारक और युति संबंध):
 
 नाड़ी ज्योतिष भावों के बजाय ग्रहों (कारकों) और उनके आपसी संबंधों पर अधिक ध्यान केंद्रित करता है।
@@ -579,7 +587,7 @@ G] BNN विश्लेषण (ग्रह कारक और युति �
 
 
 to be continued...
-------------------------------------------
+----------
 H] जैमिनी सूत्र (पुत्रकारक और आरूढ़ का समन्वय):
 
 जैमिनी पद्धति आत्मा के स्तर पर और पदों (Arudhas) के माध्यम से सूक्ष्म विश्लेषण करती है।
@@ -602,7 +610,7 @@ H] जैमिनी सूत्र (पुत्रकारक और आर
 
 
 to be continued...
-------------------------------------------
+----------
 I] KP ज्योतिष (कस्पल सब लॉर्ड और सिग्निफिकेटर):
 
 KP ज्योतिष घटना के "होने या न होने" (Promise) और "सटीक समय" (Precision) के लिए अंतिम मुहर लगाता है।
@@ -623,7 +631,7 @@ KP में हम "विंशोत्तरी दशा" को ही स
 
 
 to be continued...
-------------------------------------------
+----------
 चरण 3: संयुक्त विश्लेषण निष्कर्ष (माता और पिता) :
 
 इस खंड में आप निम्नलिखित उप-बिंदुओं पर प्रकाश डालेंगे:
@@ -635,6 +643,1075 @@ to be continued...
 ➤ सिंक्रनाइज़्ड टाइमिंग: "आप दोनों के लिए संतान प्राप्ति का सबसे शुभ समय [वर्ष] से [वर्ष] के बीच है, क्योंकि इस दौरान आप दोनों की ग्रह दशाएं और गोचर संतान के लिए अनुकूल रहेंगे।"
 
 समग्र निष्कर्ष: "दोनों कुंडलियों का विश्लेषण करने पर यह निष्कर्ष निकलता है कि...`;
+        const rawData_en = `https://sites.google.com/view/astropropmt/CHBR-Milan/CHBR-Milan-Paste
+----------
+Please create a detailed comparative astrological data table for two charts (groom and bride) based on the birth details in all the PDFs above. The purpose of the table is to give a quick overview of both charts at the beginning of the kundali milan report.
+Please organize the table in the following sections and format:
+
+1. Groom's (boy's) astrological details:
+Name: [boy's name]
+
+D1 Planetary Positions (with rashi and bhava):
+
+Sun: [rashi], [bhava], [nakshatra lord]
+Moon: [rashi], [bhava] [nakshatra lord]
+Mars: [rashi], [bhava] [nakshatra lord]
+Mercury: [rashi], [bhava] [nakshatra lord]
+Jupiter: [rashi], [bhava] [nakshatra lord]
+Venus: [rashi], [bhava] [nakshatra lord]
+Saturn: [rashi], [bhava] [nakshatra lord]
+Rahu: [rashi], [bhava] [nakshatra lord]
+Ketu: [rashi], [bhava] [nakshatra lord]
+
+
+D1 Chart Details:
+
+Lagna rashi
+Lagnesh
+Lagna nakshatra
+Lagna nakshatra lord
+Moon rashi
+Moon nakshatra
+Moon nakshatra lord
+7th bhava rashi 
+7th bhava nakshatra
+7th bhava nakshatra lord
+7th lord
+5th bhava rashi 
+5th bhava nakshatra
+5th bhava nakshatra lord
+5th lord
+
+
+D9 Planetary Positions (with rashi and bhava):
+
+Navamsha Sun: [rashi], [bhava], [nakshatra lord]
+Navamsha Moon: [rashi], [bhava] [nakshatra lord]
+Navamsha Mars: [rashi], [bhava] [nakshatra lord]
+Navamsha Mercury: [rashi], [bhava] [nakshatra lord]
+Navamsha Jupiter: [rashi], [bhava] [nakshatra lord]
+Navamsha Venus: [rashi], [bhava] [nakshatra lord]
+Navamsha Saturn: [rashi], [bhava] [nakshatra lord]
+Navamsha Rahu: [rashi], [bhava] [nakshatra lord]
+Navamsha Ketu: [rashi], [bhava] [nakshatra lord]
+
+
+D9 Chart Details:
+
+Navamsha lagna rashi
+Navamsha lagnesh
+Navamsha lagna nakshatra
+Navamsha lagna nakshatra lord
+Navamsha Moon rashi
+Navamsha Moon nakshatra
+Navamsha Moon nakshatra lord
+Navamsha 7th bhava rashi 
+Navamsha 7th bhava nakshatra
+Navamsha 7th bhava nakshatra lord
+Navamsha 7th lord
+Navamsha 5th bhava rashi 
+Navamsha 5th bhava nakshatra
+Navamsha 5th bhava nakshatra lord
+Navamsha 5th lord
+
+
+D7 Planetary Positions (with rashi and bhava):
+
+Saptamsha Sun: [rashi], [bhava], [nakshatra lord]
+Saptamsha Moon: [rashi], [bhava] [nakshatra lord]
+Saptamsha Mars: [rashi], [bhava] [nakshatra lord]
+Saptamsha Mercury: [rashi], [bhava] [nakshatra lord]
+Saptamsha Jupiter: [rashi], [bhava] [nakshatra lord]
+Saptamsha Venus: [rashi], [bhava] [nakshatra lord]
+Saptamsha Saturn: [rashi], [bhava] [nakshatra lord]
+Saptamsha Rahu: [rashi], [bhava] [nakshatra lord]
+Saptamsha Ketu: [rashi], [bhava] [nakshatra lord]
+
+
+D7 Chart Details:
+
+Saptamsha lagna rashi
+Saptamsha lagnesh
+Saptamsha lagna nakshatra
+Saptamsha lagna nakshatra lord
+Saptamsha Moon rashi
+Saptamsha Moon nakshatra
+Saptamsha Moon nakshatra lord
+Saptamsha 5th bhava rashi 
+Saptamsha 5th bhava nakshatra
+Saptamsha 5th bhava nakshatra lord
+Saptamsha 5th lord
+
+D60 Planetary Positions (with rashi and bhava):
+
+Shashtiamsha Sun: [rashi], [bhava], [nakshatra lord]
+Shashtiamsha Moon: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Mars: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Mercury: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Jupiter: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Venus: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Saturn: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Rahu: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Ketu: [rashi], [bhava] [nakshatra lord]
+
+
+D60 Chart Details:
+
+Shashtiamsha lagna rashi
+Shashtiamsha lagnesh
+Shashtiamsha lagna nakshatra
+Shashtiamsha lagna nakshatra lord
+Shashtiamsha Moon rashi
+Shashtiamsha Moon nakshatra
+Shashtiamsha Moon nakshatra lord
+Shashtiamsha 5th bhava rashi 
+Shashtiamsha 5th bhava nakshatra
+Shashtiamsha 5th bhava nakshatra lord
+Shashtiamsha 5th lord
+
+Jaimini Chara Karakas (with planet names):
+
+Atmakaraka (AK): [planet name]
+Amatyakaraka (AmK): [planet name]
+Bhratrukaraka (BK): [planet name]
+Matrukaraka (MK): [planet name]
+Putrakaraka (PK): [planet name]
+Gnatikaraka (GK): [planet name]
+Darakaraka (DK): [planet name]
+
+
+Jaimini Arudha Padas (with rashi and bhava):
+
+Upapada Lagna (A12/UL): [rashi], [bhava]
+Darapada (A7): [rashi], [bhava]
+Arudha Lagna (A1/AL): [rashi], [bhava]
+Dhana Pada (A2): [rashi], [bhava]
+Bhratru Pada (A3): [rashi], [bhava]
+Matru Pada (A4): [rashi], [bhava]
+Putra Pada (A5): [rashi], [bhava]
+Roga Pada (A6): [rashi], [bhava]
+Mrityu Pada (A8): [rashi], [bhava]
+Bhagya Pada (A9): [rashi], [bhava]
+Rajya Pada (A10): [rashi], [bhava]
+Labha Pada (A11): [rashi], [bhava]
+
+
+Karakamsha/Swamsha Details:
+
+Karakamsha lagna: [rashi], [bhava]
+Karakamsha 5th bhava: [rashi], [bhava]
+Karakamsha 7th bhava: [rashi], [bhava]
+Swamsha lagna: [rashi], [bhava]
+Swamsha 7th bhava: [rashi], [bhava]
+Swamsha 5th bhava: [rashi], [bhava]
+
+
+KP Details:
+
+CSL of the 7th bhava:
+Significator bhavas of the 7th bhava CSL:
+Nakshatra lord (NL) of the 7th CSL:
+Sub-lord (SL) of the 7th CSL:
+SSL of the 7th CSL:
+CSL of the 5th bhava:
+Significator bhavas of the 5th bhava CSL:
+Nakshatra lord (NL) of the 5th CSL:
+Sub-lord (SL) of the 5th CSL:
+SSL of the 5th CSL:
+
+2. Bride's (girl's) astrological details:
+Name: [girl's name]
+
+D1 Planetary Positions (with rashi and bhava):
+
+Sun: [rashi], [bhava], [nakshatra lord]
+Moon: [rashi], [bhava] [nakshatra lord]
+Mars: [rashi], [bhava] [nakshatra lord]
+Mercury: [rashi], [bhava] [nakshatra lord]
+Jupiter: [rashi], [bhava] [nakshatra lord]
+Venus: [rashi], [bhava] [nakshatra lord]
+Saturn: [rashi], [bhava] [nakshatra lord]
+Rahu: [rashi], [bhava] [nakshatra lord]
+Ketu: [rashi], [bhava] [nakshatra lord]
+
+
+D1 Chart Details:
+
+Lagna rashi
+Lagnesh
+Lagna nakshatra
+Lagna nakshatra lord
+Moon rashi
+Moon nakshatra
+Moon nakshatra lord
+7th bhava rashi 
+7th bhava nakshatra
+7th bhava nakshatra lord
+7th lord
+5th bhava rashi 
+5th bhava nakshatra
+5th bhava nakshatra lord
+5th lord
+
+
+D9 Planetary Positions (with rashi and bhava):
+
+Navamsha Sun: [rashi], [bhava], [nakshatra lord]
+Navamsha Moon: [rashi], [bhava] [nakshatra lord]
+Navamsha Mars: [rashi], [bhava] [nakshatra lord]
+Navamsha Mercury: [rashi], [bhava] [nakshatra lord]
+Navamsha Jupiter: [rashi], [bhava] [nakshatra lord]
+Navamsha Venus: [rashi], [bhava] [nakshatra lord]
+Navamsha Saturn: [rashi], [bhava] [nakshatra lord]
+Navamsha Rahu: [rashi], [bhava] [nakshatra lord]
+Navamsha Ketu: [rashi], [bhava] [nakshatra lord]
+
+
+D9 Chart Details:
+
+Navamsha lagna rashi
+Navamsha lagnesh
+Navamsha lagna nakshatra
+Navamsha lagna nakshatra lord
+Navamsha Moon rashi
+Navamsha Moon nakshatra
+Navamsha Moon nakshatra lord
+Navamsha 7th bhava rashi 
+Navamsha 7th bhava nakshatra
+Navamsha 7th bhava nakshatra lord
+Navamsha 7th lord
+Navamsha 5th bhava rashi 
+Navamsha 5th bhava nakshatra
+Navamsha 5th bhava nakshatra lord
+Navamsha 5th lord
+
+
+D7 Planetary Positions (with rashi and bhava):
+
+Saptamsha Sun: [rashi], [bhava], [nakshatra lord]
+Saptamsha Moon: [rashi], [bhava] [nakshatra lord]
+Saptamsha Mars: [rashi], [bhava] [nakshatra lord]
+Saptamsha Mercury: [rashi], [bhava] [nakshatra lord]
+Saptamsha Jupiter: [rashi], [bhava] [nakshatra lord]
+Saptamsha Venus: [rashi], [bhava] [nakshatra lord]
+Saptamsha Saturn: [rashi], [bhava] [nakshatra lord]
+Saptamsha Rahu: [rashi], [bhava] [nakshatra lord]
+Saptamsha Ketu: [rashi], [bhava] [nakshatra lord]
+
+
+D7 Chart Details:
+
+Saptamsha lagna rashi
+Saptamsha lagnesh
+Saptamsha lagna nakshatra
+Saptamsha lagna nakshatra lord
+Saptamsha Moon rashi
+Saptamsha Moon nakshatra
+Saptamsha Moon nakshatra lord
+Saptamsha 5th bhava rashi 
+Saptamsha 5th bhava nakshatra
+Saptamsha 5th bhava nakshatra lord
+Saptamsha 5th lord
+
+D60 Planetary Positions (with rashi and bhava):
+
+Shashtiamsha Sun: [rashi], [bhava], [nakshatra lord]
+Shashtiamsha Moon: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Mars: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Mercury: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Jupiter: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Venus: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Saturn: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Rahu: [rashi], [bhava] [nakshatra lord]
+Shashtiamsha Ketu: [rashi], [bhava] [nakshatra lord]
+
+
+D60 Chart Details:
+
+Shashtiamsha lagna rashi
+Shashtiamsha lagnesh
+Shashtiamsha lagna nakshatra
+Shashtiamsha lagna nakshatra lord
+Shashtiamsha Moon rashi
+Shashtiamsha Moon nakshatra
+Shashtiamsha Moon nakshatra lord
+Shashtiamsha 5th bhava rashi 
+Shashtiamsha 5th bhava nakshatra
+Shashtiamsha 5th bhava nakshatra lord
+Shashtiamsha 5th lord
+
+
+Jaimini Chara Karakas (with planet names):
+
+Atmakaraka (AK): [planet name]
+Amatyakaraka (AmK): [planet name]
+Bhratrukaraka (BK): [planet name]
+Matrukaraka (MK): [planet name]
+Putrakaraka (PK): [planet name]
+Gnatikaraka (GK): [planet name]
+Darakaraka (DK): [planet name]
+
+
+Jaimini Arudha Padas (with rashi and bhava):
+
+Upapada Lagna (A12/UL): [rashi], [bhava]
+Darapada (A7): [rashi], [bhava]
+Arudha Lagna (A1/AL): [rashi], [bhava]
+Dhana Pada (A2): [rashi], [bhava]
+Bhratru Pada (A3): [rashi], [bhava]
+Matru Pada (A4): [rashi], [bhava]
+Putra Pada (A5): [rashi], [bhava]
+Roga Pada (A6): [rashi], [bhava]
+Mrityu Pada (A8): [rashi], [bhava]
+Bhagya Pada (A9): [rashi], [bhava]
+Rajya Pada (A10): [rashi], [bhava]
+Labha Pada (A11): [rashi], [bhava]
+
+
+Karakamsha/Swamsha Details:
+
+Karakamsha lagna: [rashi], [bhava]
+Karakamsha 5th bhava: [rashi], [bhava]
+Karakamsha 7th bhava: [rashi], [bhava]
+Swamsha lagna: [rashi], [bhava]
+Swamsha 7th bhava: [rashi], [bhava]
+Swamsha 5th bhava: [rashi], [bhava]
+
+
+KP Details:
+
+CSL of the 7th bhava:
+Significator bhavas of the 7th bhava CSL:
+Nakshatra lord (NL) of the 7th CSL:
+Sub-lord (SL) of the 7th CSL:
+SSL of the 7th CSL:
+CSL of the 5th bhava:
+Significator bhavas of the 5th bhava CSL:
+Nakshatra lord (NL) of the 5th CSL:
+Sub-lord (SL) of the 5th CSL:
+SSL of the 5th CSL:
+
+Instructions:
+Present all the above data in a well-organized Markdown table with three columns: 'Details', '[boy's name]', and '[girl's name]'. Please divide the table with sub-headings (such as 'Key Points', 'Parashari Planets', 'Jaimini Chara Karakas', etc.) for better readability. The format should be: "[Kumbha, fourth bhava, Shatabhisha, lord: Rahu]"
+----------
+Cross-check everyone's information and confirm whether it is correct or if there is any error? Give only the list of the errors, if any.
+----------
+Give a brief list of all the information you have received so far above for the kundali analysis.
+----------
+Ensure that you will strictly follow the following orders,
+
+1] Cross-check the data before giving the output.
+2] Do not do any kind of sugar-coating. If the chart has any dosha, conflict, or negative yoga, state it in clear and harsh words. I do not have to please the client; I have to tell the truth. Keep in mind it should not be entirely negative; maintain a balance of positive and negative and tell what is true.
+3] Do not begin your answer with any greeting or conversational phrase (such as 'certainly', 'of course', 'the following', etc.). Your answer must begin directly with the requested information.
+4] Also follow the orders given in the System instructions.
+5] And in the analysis hereafter, mention the names of the natives.
+
+Are you ready? Just tell me which orders you will follow.
+----------
+Based on the above chat and the PDFs, and all the information given to you from the very beginning, you must give an in-depth and detailed analysis of the following questions along with a conclusion; keep in mind that the analysis should use the jyotish system as required. 
+And do you remember the instructions that you must strictly follow? 
+So, should I give the first question?
+----------
+When both kundalis are included, the method of analysis changes slightly. Now you do not look only at the yogas of one kundali, but see whether both kundalis are complementary (Complementary) to each other or contradictory (Contradictory) to each other.
+
+Here the process and key points of preparing the child-birth report by including both kundalis are given:
+
+Dual Kundali Analysis for Child Birth: Process and Key Points
+
+Step 1: Individual Analysis of Each Kundali
+
+A] Father's Kundali:
+➤ Analysis of the 5th bhava, 5th lord and Jupiter.
+➤ Calculation of beej sphuta and assessment of its strength.
+➤ Analysis of D7 and D9.
+➤ Analysis of the 5th CSL from KP.
+
+B] Mother's Kundali:
+➤ Analysis of the 5th bhava, 5th lord and Jupiter.
+➤ Calculation of kshetra sphuta and assessment of its strength.
+➤ Analysis of D7 and D9.
+➤ Analysis of the 5th CSL from KP.
+
+This step will give us a foundational understanding of each person's child-bearing potential and yogas.
+----------
+Step 2: Comparative and Combined Analysis of Both Kundalis (Crux of the Analysis)
+
+This is the most important step. Here we will look at both kundalis together.
+
+A] Confirmation and Negation of Yogas (Confirmation and Negation):
+
+➤ Positive Confirmation: If the yoga for children is strong in the father's kundali (e.g., 5th lord strong) and the yoga is also strong in the mother's kundali, then this is a "double confirmation" (Double Confirmation) of having a child. The result will be certain and smooth.
+
+➤ Negative Confirmation: If there is a yoga of child-birth obstruction in the father's kundali (e.g., 5th lord afflicted) and the same obstruction is also in the mother's kundali, then the problem is serious and medical help or deep remedies will be needed.
+
+➤ Balancing Act: If the yoga is strong in one kundali and weak in the other, then this is a situation of balance. The strong kundali can compensate for the deficiency of the weak kundali. This brings some delay in child birth or success after effort.
+
+
+to be continued...
+----------
+B] Timing Synchronization:
+
+Match the ongoing vimshottari and other dashas for child birth in both kundalis.
+
+➤ Ideal Time: That time is the strongest when the dasha or antardasha of the child-giving planets (e.g., the 5th lord, Jupiter, or the significators of 2, 5, 11 according to KP) is running simultaneously in the kundalis of both the mother and the father.
+
+If only one's dasha is favorable, the possibility still forms, but when both dashas are in sync (sync), the result is almost certain.
+
+
+to be continued...
+----------
+C] Dual Transit Effect:
+
+➤ See the effect of transiting Jupiter and Saturn on the 5th bhava, 5th lord and lagna of both kundalis together.
+
+➤ When transiting Jupiter is activating the father's 5th bhava/5th lord and at the same time is also activating the mother's 5th bhava/5th lord, then that time is extremely auspicious for conception.
+
+
+to be continued...
+----------
+D] Comparative Study of the D7 Kundali:
+
+➤ Look at the father's D7 kundali and the mother's D7 kundali together.
+
+➤ See whether the lagna lord of the father's D7 is forming an auspicious relation with the lagna of the mother's D7.
+
+➤ See the position of the 5th bhava in both D7 charts. If this bhava is strong in both, then the child will be fortunate.
+
+
+to be continued...
+----------
+E] Subtle and Karma-Based Study of the D60 (Shashtyamsha) Kundali (Karmic Analysis):
+
+➤ Karma and Past-Birth Debts (Karmic Debts): D60 is the ultimate decider (Ultimate Decider) chart of fortune and past-birth karmas. If there is a delay despite having child yogas in D1 and D7, then examine in depth the 5th bhava, 5th lord and Jupiter in the D60 kundalis of both (mother and father).
+➤ Influence of the Shashtyamsha Devatas: See in which shashtyamsha devatas (like Amrita, Sudha, Saumya) the child-karaka planets are in both kundalis - then there is no obstructing karma of past birth. If they are in malefic shashtyamshas (like Yama, Kala, Bhrishta, Davanala), then it indicates a serious 'karma dosha', for whose removal special shanti or anushthan is mandatory.
+➤ Matching of Karmic Blockages: If the child bhava is afflicted in the father's D60 but in the mother's D60 it is very strong and in an auspicious shashtyamsha, then through the effect of the mother's merits child birth is possible (balancing).
+➤ Rinabandha and the Level of the Soul (Soul Connection): See the mutual relation of the 5th lord in the D60 charts of the father and the mother. If this relation is auspicious, then it shows that a high, meritorious and fortunate soul (Soul) is going to be born through this couple.
+
+to be continued...
+----------
+F] Joint Result of Beej and Kshetra Sphuta:
+
+➤ If the father's beej sphuta is strong but the mother's kshetra sphuta is weak (or vice versa), this indicates on which side the problem is greater. This can help decide the direction of medical treatment.
+
+➤ If both are strong, there is no biological problem, and the cause of delay can only be planetary positions or dasha.
+
+
+to be continued...
+----------
+G] BNN Analysis (Planetary Karakas and Conjunction Relations):
+
+Nadi astrology focuses more on planets (karakas) and their mutual relations rather than bhavas.
+
+➤ Matching of Jeeva Karaka (Jupiter): In BNN, Jupiter (Brihaspati) is the main karaka for children.
+
+See the relationship between the father's kundali's Jupiter and the mother's kundali's Jupiter. If they are in trine (1, 5, 9) to each other, this is a very auspicious sign for obtaining children (Soul Connection for lineage).
+
+If they are in 2/12 or 6/8 (shadashthaka) to each other, there may be obstacles in obtaining children or ideological differences.
+
+➤ Cross-check of Badhak Planets:
+
+If in the father's kundali Rahu/Ketu (sarpa dosha) is in the house next to Jupiter or in trine to it, and in the mother's kundali also the child karaka planet (Jupiter or Venus) is afflicted by Rahu/Ketu, then this confirms 'pitru dosha' or 'naga dosha'. In such a case, joint worship becomes necessary.
+
+➤ Gochar of the Child Planet (Double Transit in BNN): When the transiting Jupiter activates, through aspect or conjunction, the father's kundali's Mars (male karaka) and the mother's kundali's Venus (female karaka) together, that time is for conception.
+
+
+to be continued...
+----------
+H] Jaimini Formulas (Coordination of Putrakaraka and Arudha):
+
+The Jaimini system does subtle analysis at the soul level and through padas (Arudhas).
+
+➤ Relation of Putrakaraka (PK):
+
+Identify 'putrakaraka' (PK - the planet whose degree is second-lowest / chara karaka) in both kundalis.
+
+If the father's PK and the mother's PK are in friendly rashis, or are in kendra/trine to each other, then child happiness is obtained easily. If they are mutually inimical or are in 6-8-12, there may be miscarriage or anxiety regarding children.
+
+➤ Analysis of Mantra Pada (A5):
+
+Calculate the arudha (A5 or mantra pada) of the 5th bhava in both kundalis.
+
+If the father's A5 forms an auspicious relation with the mother's lagna/Moon (or vice versa), then the child will bring happiness to the family.
+
+If both A5s are afflicted or are aspected by 'darakaraka' (DK), there may be delay in children.
+
+➤ Sync of Chara Dasha (Sync): See whether both are running chara dasha/antardasha of such rashis which are connected with PK (putrakaraka) or the 5th bhava.
+
+
+to be continued...
+----------
+I] KP Astrology (Cuspal Sub Lord and Significators):
+
+KP astrology puts the final seal for the "happening or not happening" (Promise) and "exact timing" (Precision) of an event.
+
+➤ Joint Decision of 5th Cuspal Sub Lord (CSL):
+
+Check the sub lord (Sub Lord) of the 5th bhava in both the father's and mother's kundalis.
+
+If the father's 5th CSL is a significator (Significator) of the 2nd, 5th, 11th bhavas, and the mother's 5th CSL also signifies these same bhavas (especially 5 and 11), then obtaining children is certain.
+
+Cross Negation: If the father's 5th CSL shows child attainment (2, 5, 11), but the mother's 5th CSL completely negates it (like 4, 10, 12 - which are 12th, 6th and 8th from the 5th), this shows that the father is capable but the mother may have a medical problem (Physical inability).
+
+➤ Micro Matching of Dasha-Bhukti-Antara:
+
+In KP we see the "vimshottari dasha" itself at the micro level. When both the father and mother enter the conjoined period (Conjoined Period) of 'fruitful planets' (Fruitful Significators - which are lords/nakshatra lords of 2, 5, 11), only then does the event happen.
+
+➤ Cooperation of Ruling Planets (RP): Use the 'ruling planets' (RP) of the time of analysis to see whether Divine Will (Divine Will) is currently in favour of children. If the RP come in contact with the lords of the 5th bhava of both kundalis, then the time has come.
+
+
+to be continued...
+----------
+Step 3: Joint Analysis Conclusion (Mother and Father) :
+
+In this section you will shed light on the following sub-points:
+
+➤ Assessment of Joint Strength: "The father's kundali has child yoga (strong/moderate/weak), while the mother's kundali has this yoga (strong/moderate/weak). Taking both kundalis together, the overall probability of children appears (very strong/moderate/challenging).
+
+➤ Source of Challenges: "The main astrological reason for delay in obtaining children appears to be in the kundali of (father/mother/both).
+
+➤ Synchronized Timing: "The most auspicious time for you both to have children is between [year] and [year], because during this period your both planetary dashas and gochar will be favorable for children."
+
+Overall conclusion: "On analyzing both kundalis it is concluded that...`;
+        const rawData_mr = `https://sites.google.com/view/astropropmt/CHBR-Milan/CHBR-Milan-Paste
+----------
+कृपया वरील सर्व PDF मधील जन्म तपशीलांच्या आधारे दोन कुंडल्यांसाठी (वर आणि वधू) तपशीलवार तुलनात्मक ज्योतिषीय डेटा तक्ता तयार करा. तक्त्याचा उद्देश कुंडली मिलान अहवालाच्या सुरुवातीला दोन्ही कुंडल्यांचे त्वरित अवलोकन देणे हा आहे.
+कृपया तक्ता खालील विभाग आणि स्वरूपात मांडा:
+
+1. वराचा (मुलाचा) ज्योतिषीय तपशील:
+नाव: [लड़के का नाम]
+
+D1 ग्रहांची स्थिती (राशी आणि भावासहित):
+
+सूर्य: [राशि], [भाव], [नक्षत्र-स्वामी]
+चंद्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+मंगळ: [राशि], [भाव] [नक्षत्र-स्वामी]
+बुध: [राशि], [भाव] [नक्षत्र-स्वामी]
+गुरु: [राशि], [भाव] [नक्षत्र-स्वामी]
+शुक्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+शनि: [राशि], [भाव] [नक्षत्र-स्वामी]
+राहु: [राशि], [भाव] [नक्षत्र-स्वामी]
+केतु: [राशि], [भाव] [नक्षत्र-स्वामी]
+
+
+D1 कुंडलीची स्थिती:
+
+लग्न राशी
+लग्नेश
+लग्न नक्षत्र
+लग्न नक्षत्र स्वामी
+चंद्र राशी
+चंद्र नक्षत्र
+चंद्र नक्षत्र स्वामी
+सप्तम भाव राशी 
+सप्तम भाव नक्षत्र
+सप्तम भाव नक्षत्र स्वामी
+सप्तमेश
+पंचम भाव राशी 
+पंचम भाव नक्षत्र
+पंचम भाव नक्षत्र स्वामी
+पंचमेश
+
+
+D9 ग्रहांची स्थिती (राशी आणि भावासहित):
+
+नवमांश सूर्य: [राशि], [भाव], [नक्षत्र-स्वामी]
+नवमांश चंद्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश मंगळ: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश बुध: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश गुरु: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश शुक्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश शनि: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश राहु: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश केतु: [राशि], [भाव] [नक्षत्र-स्वामी]
+
+
+D9 कुंडलीची स्थिती:
+
+नवमांश लग्न राशी
+नवमांश लग्नेश
+नवमांश लग्न नक्षत्र
+नवमांश लग्न नक्षत्र स्वामी
+नवमांश चंद्र राशी
+नवमांश चंद्र नक्षत्र
+नवमांश चंद्र नक्षत्र स्वामी
+नवमांश सप्तम भाव राशी 
+नवमांश सप्तम भाव नक्षत्र
+नवमांश सप्तम भाव नक्षत्र स्वामी
+नवमांश सप्तमेश
+नवमांश पंचम भाव राशी 
+नवमांश पंचम भाव नक्षत्र
+नवमांश पंचम भाव नक्षत्र स्वामी
+नवमांश पंचमेश
+
+
+D7 ग्रहांची स्थिती (राशी आणि भावासहित):
+
+सप्तमांश सूर्य: [राशि], [भाव], [नक्षत्र-स्वामी]
+सप्तमांश चंद्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश मंगळ: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश बुध: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश गुरु: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश शुक्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश शनि: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश राहु: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश केतु: [राशि], [भाव] [नक्षत्र-स्वामी]
+
+
+D7 कुंडलीची स्थिती:
+
+सप्तमांश लग्न राशी
+सप्तमांश लग्नेश
+सप्तमांश लग्न नक्षत्र
+सप्तमांश लग्न नक्षत्र स्वामी
+सप्तमांश चंद्र राशी
+सप्तमांश चंद्र नक्षत्र
+सप्तमांश चंद्र नक्षत्र स्वामी
+सप्तमांश पंचम भाव राशी 
+सप्तमांश पंचम भाव नक्षत्र
+सप्तमांश पंचम भाव नक्षत्र स्वामी
+सप्तमांश पंचमेश
+
+D60 ग्रहांची स्थिती (राशी आणि भावासहित):
+
+षष्ट्यांश सूर्य: [राशि], [भाव], [नक्षत्र-स्वामी]
+षष्ट्यांश चंद्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश मंगळ: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश बुध: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश गुरु: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश शुक्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश शनि: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश राहु: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश केतु: [राशि], [भाव] [नक्षत्र-स्वामी]
+
+
+D60 कुंडलीची स्थिती:
+
+षष्ट्यांश लग्न राशी
+षष्ट्यांश लग्नेश
+षष्ट्यांश लग्न नक्षत्र
+षष्ट्यांश लग्न नक्षत्र स्वामी
+षष्ट्यांश चंद्र राशी
+षष्ट्यांश चंद्र नक्षत्र
+षष्ट्यांश चंद्र नक्षत्र स्वामी
+षष्ट्यांश पंचम भाव राशी 
+षष्ट्यांश पंचम भाव नक्षत्र
+षष्ट्यांश पंचम भाव नक्षत्र स्वामी
+षष्ट्यांश पंचमेश
+
+जैमिनी चर कारक (ग्रहांच्या नावांसह):
+
+आत्मकारक (AK): [ग्रह का नाम]
+अमात्यकारक (AmK): [ग्रह का नाम]
+भ्रातृकारक (BK): [ग्रह का नाम]
+मातृकारक (MK): [ग्रह का नाम]
+पुत्रकारक (PK): [ग्रह का नाम]
+ज्ञातिकारक (GK): [ग्रह का नाम]
+दाराकारक (DK): [ग्रह का नाम]
+
+
+जैमिनी आरूढ पद (राशी आणि भावासहित):
+
+उपपद लग्न (A12/UL): [राशि], [भाव]
+दारापद (A7): [राशि], [भाव]
+आरूढ लग्न (A1/AL): [राशि], [भाव]
+धन पद (A2): [राशि], [भाव]
+भ्रातृ पद (A3): [राशि], [भाव]
+मातृ पद (A4): [राशि], [भाव]
+पुत्र पद (A5): [राशि], [भाव]
+रोग पद (A6): [राशि], [भाव]
+मृत्यु पद (A8): [राशि], [भाव]
+भाग्य पद (A9): [राशि], [भाव]
+राज्य पद (A10): [राशि], [भाव]
+लाभ पद (A11): [राशि], [भाव]
+
+
+कारकांश/स्वांश तपशील:
+
+कारकांश लग्न: [राशि], [भाव]
+कारकांश पंचम भाव: [राशि], [भाव]
+कारकांश सप्तम भाव: [राशि], [भाव]
+स्वांश लग्न: [राशि], [भाव]
+स्वांश सप्तम भाव: [राशि], [भाव]
+स्वांश पंचम भाव: [राशि], [भाव]
+
+
+KP तपशील:
+
+7व्या भावाचा CSL:
+7व्या भाव CSL सिग्निफिकेटर भाव:
+7व्या CSL चा नक्षत्र स्वामी (NL):
+7व्या CSL चा उप-स्वामी (SL):
+7व्या CSL चा SSL:
+5व्या भावाचा CSL:
+5व्या भाव CSL सिग्निफिकेटर भाव:
+5व्या CSL चा नक्षत्र स्वामी (NL):
+5व्या CSL चा उप-स्वामी (SL):
+5व्या CSL चा SSL:
+
+2. वधूचा (मुलीचा) ज्योतिषीय तपशील:
+नाव: [लड़की का नाम]
+
+D1 ग्रहांची स्थिती (राशी आणि भावासहित):
+
+सूर्य: [राशि], [भाव], [नक्षत्र-स्वामी]
+चंद्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+मंगळ: [राशि], [भाव] [नक्षत्र-स्वामी]
+बुध: [राशि], [भाव] [नक्षत्र-स्वामी]
+गुरु: [राशि], [भाव] [नक्षत्र-स्वामी]
+शुक्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+शनि: [राशि], [भाव] [नक्षत्र-स्वामी]
+राहु: [राशि], [भाव] [नक्षत्र-स्वामी]
+केतु: [राशि], [भाव] [नक्षत्र-स्वामी]
+
+
+D1 कुंडलीची स्थिती:
+
+लग्न राशी
+लग्नेश
+लग्न नक्षत्र
+लग्न नक्षत्र स्वामी
+चंद्र राशी
+चंद्र नक्षत्र
+चंद्र नक्षत्र स्वामी
+सप्तम भाव राशी 
+सप्तम भाव नक्षत्र
+सप्तम भाव नक्षत्र स्वामी
+सप्तमेश
+पंचम भाव राशी 
+पंचम भाव नक्षत्र
+पंचम भाव नक्षत्र स्वामी
+पंचमेश
+
+
+D9 ग्रहांची स्थिती (राशी आणि भावासहित):
+
+नवमांश सूर्य: [राशि], [भाव], [नक्षत्र-स्वामी]
+नवमांश चंद्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश मंगळ: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश बुध: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश गुरु: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश शुक्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश शनि: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश राहु: [राशि], [भाव] [नक्षत्र-स्वामी]
+नवमांश केतु: [राशि], [भाव] [नक्षत्र-स्वामी]
+
+
+D9 कुंडलीची स्थिती:
+
+नवमांश लग्न राशी
+नवमांश लग्नेश
+नवमांश लग्न नक्षत्र
+नवमांश लग्न नक्षत्र स्वामी
+नवमांश चंद्र राशी
+नवमांश चंद्र नक्षत्र
+नवमांश चंद्र नक्षत्र स्वामी
+नवमांश सप्तम भाव राशी 
+नवमांश सप्तम भाव नक्षत्र
+नवमांश सप्तम भाव नक्षत्र स्वामी
+नवमांश सप्तमेश
+नवमांश पंचम भाव राशी 
+नवमांश पंचम भाव नक्षत्र
+नवमांश पंचम भाव नक्षत्र स्वामी
+नवमांश पंचमेश
+
+
+D7 ग्रहांची स्थिती (राशी आणि भावासहित):
+
+सप्तमांश सूर्य: [राशि], [भाव], [नक्षत्र-स्वामी]
+सप्तमांश चंद्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश मंगळ: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश बुध: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश गुरु: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश शुक्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश शनि: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश राहु: [राशि], [भाव] [नक्षत्र-स्वामी]
+सप्तमांश केतु: [राशि], [भाव] [नक्षत्र-स्वामी]
+
+
+D7 कुंडलीची स्थिती:
+
+सप्तमांश लग्न राशी
+सप्तमांश लग्नेश
+सप्तमांश लग्न नक्षत्र
+सप्तमांश लग्न नक्षत्र स्वामी
+सप्तमांश चंद्र राशी
+सप्तमांश चंद्र नक्षत्र
+सप्तमांश चंद्र नक्षत्र स्वामी
+सप्तमांश पंचम भाव राशी 
+सप्तमांश पंचम भाव नक्षत्र
+सप्तमांश पंचम भाव नक्षत्र स्वामी
+सप्तमांश पंचमेश
+
+D60 ग्रहांची स्थिती (राशी आणि भावासहित):
+
+षष्ट्यांश सूर्य: [राशि], [भाव], [नक्षत्र-स्वामी]
+षष्ट्यांश चंद्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश मंगळ: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश बुध: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश गुरु: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश शुक्र: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश शनि: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश राहु: [राशि], [भाव] [नक्षत्र-स्वामी]
+षष्ट्यांश केतु: [राशि], [भाव] [नक्षत्र-स्वामी]
+
+
+D60 कुंडलीची स्थिती:
+
+षष्ट्यांश लग्न राशी
+षष्ट्यांश लग्नेश
+षष्ट्यांश लग्न नक्षत्र
+षष्ट्यांश लग्न नक्षत्र स्वामी
+षष्ट्यांश चंद्र राशी
+षष्ट्यांश चंद्र नक्षत्र
+षष्ट्यांश चंद्र नक्षत्र स्वामी
+षष्ट्यांश पंचम भाव राशी 
+षष्ट्यांश पंचम भाव नक्षत्र
+षष्ट्यांश पंचम भाव नक्षत्र स्वामी
+षष्ट्यांश पंचमेश
+
+
+जैमिनी चर कारक (ग्रहांच्या नावांसह):
+
+आत्मकारक (AK): [ग्रह का नाम]
+अमात्यकारक (AmK): [ग्रह का नाम]
+भ्रातृकारक (BK): [ग्रह का नाम]
+मातृकारक (MK): [ग्रह का नाम]
+पुत्रकारक (PK): [ग्रह का नाम]
+ज्ञातिकारक (GK): [ग्रह का नाम]
+दाराकारक (DK): [ग्रह का नाम]
+
+
+जैमिनी आरूढ पद (राशी आणि भावासहित):
+
+उपपद लग्न (A12/UL): [राशि], [भाव]
+दारापद (A7): [राशि], [भाव]
+आरूढ लग्न (A1/AL): [राशि], [भाव]
+धन पद (A2): [राशि], [भाव]
+भ्रातृ पद (A3): [राशि], [भाव]
+मातृ पद (A4): [राशि], [भाव]
+पुत्र पद (A5): [राशि], [भाव]
+रोग पद (A6): [राशि], [भाव]
+मृत्यु पद (A8): [राशि], [भाव]
+भाग्य पद (A9): [राशि], [भाव]
+राज्य पद (A10): [राशि], [भाव]
+लाभ पद (A11): [राशि], [भाव]
+
+
+कारकांश/स्वांश तपशील:
+
+कारकांश लग्न: [राशि], [भाव]
+कारकांश पंचम भाव: [राशि], [भाव]
+कारकांश सप्तम भाव: [राशि], [भाव]
+स्वांश लग्न: [राशि], [भाव]
+स्वांश सप्तम भाव: [राशि], [भाव]
+स्वांश पंचम भाव: [राशि], [भाव]
+
+
+KP तपशील:
+
+7व्या भावाचा CSL:
+7व्या भाव CSL सिग्निफिकेटर भाव:
+7व्या CSL चा नक्षत्र स्वामी (NL):
+7व्या CSL चा उप-स्वामी (SL):
+7व्या CSL चा SSL:
+5व्या भावाचा CSL:
+5व्या भाव CSL सिग्निफिकेटर भाव:
+5व्या CSL चा नक्षत्र स्वामी (NL):
+5व्या CSL चा उप-स्वामी (SL):
+5व्या CSL चा SSL:
+
+सूचना:
+वरील सर्व डेटा तीन स्तंभ असलेल्या सुव्यवस्थित Markdown तक्त्यात सादर करा: 'विवरण', '[लड़के का नाम]' आणि '[लड़की का नाम]'. वाचनीयता सुधारण्यासाठी तक्ता उप-शीर्षकांनी (जसे 'मुख्य बिंदू', 'पराशरी ग्रह', 'जैमिनी चर कारक' इ.) विभागा. स्वरूप असे असावे : "[कुम्भ, चतुर्थ भाव, शतभिषा,स्वामी: राहु]"
+----------
+सर्वांची माहिती क्रॉस चेक करून खात्री करा की ती बरोबर आहे की काही त्रुटी आहेत? ज्या त्रुटी असतील फक्त त्यांचीच यादी द्या.
+----------
+वर दिलेल्या कुंडली विश्लेषणासाठी तुम्हाला आतापर्यंत कोणकोणती माहिती मिळाली आहे, त्याची थोडक्यात यादी द्या.
+----------
+तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटा क्रॉसचेक करा.
+2] कोणत्याही प्रकारचे शुगर-कोटिंग (Sugar-coating) करू नका. कुंडलीत काही दोष, संघर्ष किंवा नकारात्मक योग असेल तर ते स्पष्ट आणि कडवट शब्दांत सांगा. मला क्लायंटला खूश करायचे नाही, तर खरे सांगायचे आहे. लक्षात ठेवा पूर्णपणे नकारात्मक नसावे; सकारात्मक आणि नकारात्मक यांचा समतोल ठेवून जे खरे आहे ते सांगा.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'निश्चितच', 'नक्की', 'खालीलप्रमाणे आहे' इ.) करू नका. तुमचे उत्तर थेट मागितलेल्या माहितीपासूनच सुरू झाले पाहिजे.
+4] System instructions मधील आदेशांचेही पालन करा.
+5] आणि यानंतरच्या विश्लेषणात जातकांच्या नावांचा उल्लेख करा.
+
+तुम्ही तयार आहात का? फक्त इतके सांगा की कोणत्या आदेशांचे पालन कराल.
+----------
+वरील चॅट आणि PDF तसेच सुरुवातीपासून तुम्हाला दिलेल्या सर्व माहितीच्या आधारे खालील प्रश्नांचे सखोल आणि तपशीलवार विश्लेषण निष्कर्षासह द्या; लक्षात ठेवा की विश्लेषण गरजेनुसार ज्योतिष प्रणालीचा वापर करून केले पाहिजे. 
+आणि ज्या निर्देशांचे तुम्हाला काटेकोरपणे पालन करायचे आहे ते तुम्हाला आठवतात का? 
+तर पहिला प्रश्न देऊ का?
+----------
+जेव्हा दोन्ही कुंडलींचा समावेश करता, तेव्हा विश्लेषणाची पद्धत थोडी बदलते. आता तुम्ही फक्त एका कुंडलीतील योग पाहत नाही, तर दोन्ही कुंडली एकमेकींच्या पूरक (Complementary) आहेत की एकमेकींच्या बाधक (Contradictory) आहेत हे पाहता.
+
+येथे दोन्ही कुंडलींचा समावेश करून संतान रिपोर्ट तयार करण्याची प्रक्रिया आणि प्रमुख मुद्दे दिले आहेत:
+
+संतान प्राप्तीसाठी दुहेरी कुंडली विश्लेषण: प्रक्रिया आणि प्रमुख मुद्दे
+
+चरण 1: प्रत्येक कुंडलीचे वैयक्तिक विश्लेषण
+
+A] पित्याची कुंडली:
+➤ पंचम भाव, पंचमेश आणि बृहस्पति यांचे विश्लेषण.
+➤ बीज स्फुटाची गणना आणि त्याच्या शक्तीचे आकलन.
+➤ D7 आणि D9 चे विश्लेषण.
+➤ KP नुसार 5व्या CSL चे विश्लेषण.
+
+B] मातेची कुंडली:
+➤ पंचम भाव, पंचमेश आणि बृहस्पति यांचे विश्लेषण.
+➤ क्षेत्र स्फुटाची गणना आणि त्याच्या शक्तीचे आकलन.
+➤ D7 आणि D9 चे विश्लेषण.
+➤ KP नुसार 5व्या CSL चे विश्लेषण.
+
+या चरणामुळे प्रत्येक व्यक्तीच्या संतान क्षमता आणि योगांची एक मूळभूत समज आपल्याला मिळेल.
+----------
+चरण 2: दोन्ही कुंडलींचे तुलनात्मक आणि संयुक्त विश्लेषण (Crux of the Analysis)
+
+हे सर्वात महत्त्वाचे चरण आहे. येथे आपण दोन्ही कुंडली एकत्र ठेवून पाहू.
+
+A] योगांची पुष्टी आणि खंडन (Confirmation and Negation):
+
+➤ सकारात्मक पुष्टी: जर पित्याच्या कुंडलीत संतानचा योग मजबूत असेल (उदा., पंचमेश बलवान) आणि मातेच्या कुंडलीतही योग मजबूत असेल, तर हे संतान होण्याची "दुहेरी पुष्टी" (Double Confirmation) आहे. परिणाम निश्चित आणि सहज असेल.
+
+➤ नकारात्मक पुष्टी: जर पित्याच्या कुंडलीत संतान बाधेचा योग असेल (उदा., पंचमेश पीडित) आणि मातेच्या कुंडलीतही तीच बाधा असेल, तर समस्या गंभीर आहे आणि वैद्यकीय सहाय्य किंवा गहन उपायांची आवश्यकता असेल.
+
+➤ संतुलन (Balancing Act): जर एका कुंडलीत योग मजबूत असेल आणि दुसऱ्यात कमजोर, तर ही संतुलनाची स्थिती आहे. बलवान कुंडली कमजोर कुंडलीची कमतरता भरून काढू शकते. यामुळे संतान प्राप्तीत काही उशीर किंवा प्रयत्नांनंतर यश मिळते.
+
+
+to be continued...
+----------
+B] वेळेचे निर्धारण मिलान (Timing Synchronization):
+
+दोन्ही कुंडलींत संतान प्राप्तीसाठी चालू असलेल्या विंशोत्तरी आणि इतर दशांचा मिलान करा.
+
+➤ आदर्श वेळ: तो वेळ सर्वात प्रबल असतो जेव्हा माता आणि पिता दोन्हींच्या कुंडलीत संतान देणाऱ्या ग्रहांची (उदा., पंचमेश, गुरु, किंवा KP नुसार 2, 5, 11 चे सैगनिफिकेटर) दशा किंवा अंतर्दशा एकाच वेळी चालू असेल.
+
+जर फक्त एकाची दशा अनुकूल असेल, तरीही शक्यता बनते, पण जेव्हा दोन्हींच्या दशा सिंक (sync) मध्ये असतात, तेव्हा परिणाम जवळजवळ निश्चित असतो.
+
+
+to be continued...
+----------
+C] गोचरचा दुहेरी प्रभाव (Dual Transit Effect):
+
+➤ गोचरच्या बृहस्पति आणि शनिचा प्रभाव दोन्ही कुंडलींच्या पंचम भाव, पंचमेश आणि लग्नावर एकत्रितपणे पहा.
+
+➤ जेव्हा गोचरचा बृहस्पति पित्याच्या पंचम भाव/पंचमेशाला सक्रिय करत असेल आणि त्याच वेळी मातेच्या पंचम भाव/पंचमेशालाही सक्रिय करत असेल, तेव्हा तो वेळ गर्भधारणेसाठी अत्यंत शुभ असतो.
+
+
+to be continued...
+----------
+D] D7 कुंडलीचा तुलनात्मक अभ्यास:
+
+➤ पित्याची D7 कुंडली आणि मातेची D7 कुंडली एकत्र पहा.
+
+➤ पित्याच्या D7 चा लग्नेश मातेच्या D7 च्या लग्नाशी शुभ संबंध निर्माण करत आहे का हे पहा.
+
+➤ दोन्ही D7 चार्टमध्ये पंचम भावाची स्थिती पहा. जर दोन्हीत हा भाव मजबूत असेल, तर संतान भाग्यवान असेल.
+
+
+to be continued...
+----------
+E] D60 (षष्ट्यांश) कुंडलीचा सूक्ष्म आणि कर्म आधारित अभ्यास (Karmic Analysis):
+
+➤ कर्म आणि पूर्व जन्माचे ऋण (Karmic Debts): D60 भाग्य आणि मागील जन्माच्या कर्मांचा अंतिम निर्णायक (Ultimate Decider) चार्ट आहे. जर D1 आणि D7 मध्ये संतान योग असूनही उशीर होत असेल, तर दोघांच्या (माता आणि पिता) D60 कुंडलीत पंचम भाव, पंचमेश आणि बृहस्पति यांची सखोल तपासणी करा.
+➤ षष्ट्यांश देवतांचा प्रभाव: दोन्ही कुंडलींत संतान कारक ग्रह कोणत्या षष्ट्यांश देवतांत (उदा. अमृत, सुधा, सौम्य) आहेत हे पहा - तर पूर्व जन्माचे कोणतेही बाधक कर्म नाही. जर ते पाप षष्ट्यांशांत (उदा. यम, काल, भृष्ट, दावानल) असतील, तर हे गंभीर 'कर्म दोष' दर्शवते, ज्याच्या निवारणासाठी विशेष शांति किंवा अनुष्ठान अनिवार्य आहे.
+➤ कर्मिक ब्लॉक (Karmic Blockages) चा मिलान: जर पित्याच्या D60 मध्ये संतान भाव पीडित असेल, पण मातेच्या D60 मध्ये तो खूप बलवान आणि शुभ षष्ट्यांशात असेल, तर मातेच्या पुण्यांच्या प्रभावाने संतान प्राप्ती शक्य आहे (बैलेंसिंग).
+➤ ऋणानुबंध आणि आत्म्याचा स्तर (Soul Connection): पिता आणि मातेच्या D60 चार्टमध्ये पंचमेशाचा परस्पर संबंध पहा. जर हा संबंध शुभ असेल, तर हे दर्शवते की एक उच्च, पुण्यवान आणि भाग्यशाली आत्मा (Soul) या दांपत्याच्या माध्यमातून जन्म घेणार आहे.
+
+to be continued...
+----------
+F] बीज आणि क्षेत्र स्फुट यांचा संयुक्त परिणाम:
+
+➤ जर पित्याचा बीज स्फुट बलवान असेल पण मातेचा क्षेत्र स्फुट कमजोर असेल (किंवा याच्या उलट), तर हे दर्शवते की समस्या कोणत्या पक्षात अधिक आहे. यामुळे वैद्यकीय उपचाराची दिशा ठरवण्यास मदत होऊ शकते.
+
+➤ जर दोन्ही बलवान असतील, तर कोणतीही जैविक समस्या नाही, आणि उशिराचे कारण फक्त ग्रहांची स्थिती किंवा दशा असू शकते.
+
+
+to be continued...
+----------
+G] BNN विश्लेषण (ग्रह कारक आणि युती संबंध):
+
+नाडी ज्योतिष भावांऐवजी ग्रहांवर (कारकांवर) आणि त्यांच्या परस्पर संबंधांवर अधिक लक्ष केंद्रित करते.
+
+➤ जीव कारक (बृहस्पति) यांची जुळणी: BNN मध्ये बृहस्पति (Jupiter) संततीचा मुख्य कारक आहे.
+
+पित्याच्या कुंडलीतील बृहस्पति आणि मातेच्या कुंडलीतील बृहस्पति यांच्यातील संबंध पहा. जर ते एकमेकांपासून त्रिकोणात (1, 5, 9) असतील, तर हे संततीप्राप्तीसाठी अतिशय शुभ संकेत आहे (Soul Connection for lineage).
+
+जर ते एकमेकांपासून 2/12 किंवा 6/8 (षडाष्टक) मध्ये असतील, तर संततीप्राप्तीत बाधा किंवा वैचारिक मतभेद होऊ शकतात.
+
+➤ बाधक ग्रहांचा क्रॉस-चेक:
+
+पित्याच्या कुंडलीत बृहस्पतिच्या पुढच्या घरात किंवा त्रिकोणात राहू/केतू (सर्प दोष) असल्यास, आणि मातेच्या कुंडलीतही संतती कारक ग्रह (बृहस्पति किंवा शुक्र) राहू/केतूंनी पीडित असल्यास, तर हे 'पितृ दोष' किंवा 'नाग दोष' यांची पुष्टी करते. अशा परिस्थितीत संयुक्त पूजा आवश्यक ठरते.
+
+➤ संतती ग्रहाचा गोचर (Double Transit in BNN): जेव्हा गोचरचा बृहस्पति, पित्याच्या कुंडलीतील मंगळ (पुरुष कारक) आणि मातेच्या कुंडलीतील शुक्र (स्त्री कारक) यांना एकाच वेळी दृष्टि किंवा युतीने सक्रिय करतो, तो काळ गर्भधारणेचा असतो.
+
+
+to be continued...
+----------
+H] जैमिनी सूत्रे (पुत्रकारक आणि आरूढ यांचे समन्वय):
+
+जैमिनी पद्धत आत्म्याच्या पातळीवर आणि पदांद्वारे (Arudhas) सूक्ष्म विश्लेषण करते.
+
+➤ पुत्रकारक (PK) यांचा संबंध:
+
+दोन्ही कुंडल्यांमधील 'पुत्रकारक' (PK - ज्या ग्रहाची डिग्री दुसऱ्या क्रमांकाने सर्वात कमी असेल/चर कारक) ओळखा.
+
+पित्याचा PK आणि मातेचा PK जर मित्र राशींत असतील, किंवा एकमेकांपासून केंद्र/त्रिकोणात असतील, तर संततीसुख सहज मिळते. जर ते परस्पर शत्रू असतील किंवा 6-8-12 मध्ये असतील, तर गर्भपात किंवा संततीसंबंधी चिंता होऊ शकते.
+
+➤ मंत्र पद (A5) याचे विश्लेषण:
+
+दोन्ही कुंडल्यांमध्ये पंचम भावाचा आरूढ (A5 किंवा मंत्र पद) काढा.
+
+जर पित्याचा A5, मातेच्या लग्न/चंद्राशी शुभ संबंध बनवत असेल (किंवा याच्या उलट), तर संतान कुटुंबात आनंद आणेल.
+
+जर दोन्हींचे A5 पीडित असतील किंवा 'दारकारक' (DK) ने दृष्ट असतील, तर संततीला उशीर होऊ शकतो.
+
+➤ चर दशेचा सिंक (Sync): दोघांनाही अशा राशींची चर दशा/अंतर्दशा चालू आहे का ते पहा ज्या PK (पुत्रकारक) किंवा पंचम भावाशी जोडलेल्या आहेत.
+
+
+to be continued...
+----------
+I] KP ज्योतिष (कस्पल सब लॉर्ड आणि सैगनिफिकेटर):
+
+KP ज्योतिष घटनेच्या "होण्या किंवा न होण्या" (Promise) आणि "अचूक वेळ" (Precision) साठी अंतिम मोहोर उमटवते.
+
+➤ 5व्या कस्पल सब लॉर्ड (CSL) चा संयुक्त निर्णय:
+
+पिता आणि माता दोघांच्याही कुंडलीत 5व्या भावाच्या उप-स्वामीची (Sub Lord) तपासणी करा.
+
+जर पित्याचा 5वा CSL 2, 5, 11 भावांचा कार्येश (सैगनिफिकेटर) असेल, आणि मातेचा 5वा CSL देखील याच भावांचे (विशेषतः 5 आणि 11) दर्शन देत असेल, तर संततीप्राप्ती निश्चित आहे.
+
+क्रॉस-निषेध (Cross Negation): जर पित्याचा 5वा CSL संततीप्राप्ती (2, 5, 11) दाखवत असेल, पण मातेचा 5वा CSL पूर्णपणे नाकारत असेल (जसे 4, 10, 12 - जे 5व्यापासून 12वे, 6वे आणि 8वे आहेत), तर हे दर्शवते की पिता सक्षम आहे पण मातेला वैद्यकीय समस्या (Physical inability) असू शकते.
+
+➤ दशा-भुक्ति-अंतरा यांचा सूक्ष्म मिलाफ:
+
+KP मध्ये आपण "विंशोत्तरी दशा" स्वतःच सूक्ष्म पातळीवर पाहतो. जेव्हा पिता आणि माता दोघेही 'फलदायी ग्रहां'च्या (Fruitful Significators - जे 2, 5, 11 चे स्वामी/नक्षत्र स्वामी असतील) संयुक्त कालावधीत (Conjoined Period) प्रवेश करतात, तेव्हाच घटना घडते.
+
+➤ रूलिंग प्लॅनेट्स (RP) यांचे सहकार्य: विश्लेषणाच्या वेळेचे 'रूलिंग प्लॅनेट्स' (RP) वापरा हे पाहण्यासाठी की ईश्वराची इच्छा (Divine Will) सध्या संततीच्या बाजूने आहे का. जर RP दोन्ही कुंडल्यांच्या 5व्या भावाच्या स्वामींच्या संपर्कात येत असतील, तर वेळ आली आहे.
+
+
+to be continued...
+----------
+चरण 3: संयुक्त विश्लेषण निष्कर्ष (माता आणि पिता) :
+
+या विभागात तुम्ही पुढील उप-बिंदूंवर प्रकाश टाकाल:
+
+➤ संयुक्त शक्तीचे मूल्यांकन: "पित्याच्या कुंडलीत संतती योग (मजबूत/मध्यम/कमजोर) आहे, तर मातेच्या कुंडलीत हा योग (मजबूत/मध्यम/कमजोर) आहे. दोन्ही कुंडल्या एकत्र घेऊन, संततीची एकूण शक्यता (खूप प्रबळ/मध्यम/आव्हानात्मक) दिसते.
+
+➤ आव्हानांचा स्रोत: "संततीप्राप्तीत उशीर होण्याचे मुख्य ज्योतिषीय कारण (पिता/माता/दोन्ही) यांच्या कुंडलीत दिसून येते.
+
+➤ सिंक्रोनाइझ्ड टाइमिंग: "तुम्हा दोघांसाठी संततीप्राप्तीचा सर्वात शुभ काळ [वर्ष] ते [वर्ष] दरम्यान आहे, कारण या काळात तुम्हा दोघांच्या ग्रह दशा आणि गोचर संततीसाठी अनुकूल राहतील."
+
+समग्र निष्कर्ष: "दोन्ही कुंडल्यांचे विश्लेषण केल्यावर असा निष्कर्ष निघतो की...`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
 
         // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
         const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
@@ -642,7 +1719,7 @@ to be continued...
         function processData() {
             const container = document.getElementById('prompt-container');
             // पहले डैश लाइन्स से तोडें
-            let parts = rawData.split(separatorRegex);
+            let parts = getRawData().split(separatorRegex);
 
             parts.forEach((part, index) => {
                 let cleanText = part.trim();
