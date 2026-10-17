@@ -98,6 +98,14 @@
 <body>
 
     <h1>Jupiter Transit Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
     <div class="container" id="prompt-container">
         <!-- Prompts will be loaded here -->
     </div>
@@ -106,7 +114,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+        const rawData_hi = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -120,7 +128,7 @@
 10] D9 ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
 
 कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
-------------------------------------------
+----------
 उपरोक्त चैट और  PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
 
 लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
@@ -134,7 +142,7 @@
 
 
 आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
-------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), और जैमिनी कारकत्व के आधार पर होना चाहिए।
 
 प्रत्येक ग्रह के लिए निम्नलिखित जानकारी प्रदान करें:
@@ -157,7 +165,7 @@
 ➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
-------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर D1 के सभी 12 भावों का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल) आधार पर होना चाहिए।
 
 
@@ -173,7 +181,7 @@
 ➤ निष्कर्ष : समग्र रूप से भाव मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी भाव के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
------------------------------------------
+----------
 कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (विंशोत्तरी दशा और गोचर) को अपनी मेमोरी में सुरक्षित कर लें।
 
 निर्देश:
@@ -185,7 +193,7 @@
 गोचर (गुरु - लग्न व चंद्र से):
 
 मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
-------------------------------------------
+----------
 कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (सूर्य, मंगल, बुध, शुक्र, शनी, राहू, केतु गोचर) को अपनी मेमोरी में सुरक्षित कर लें।
 
 निर्देश:
@@ -203,7 +211,7 @@
 गोचर (केतु - लग्न व चंद्र से):
 
 मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
-------------------------------------------
+----------
 उपरोक्त चैट्स में दिए गए और एक्सट्रैक्ट किए गए ज्योतिषीय डेटा (Vimshottari और Gochar Analysis) के आधार पर, आगामी  2026 से  2027 तक की सभी 13 महीनों एक विस्तृत 'मास्टर समय-सारणी' तैयार करें।
 
 ​तालिका का प्रारूप और कॉलम बिल्कुल निम्न प्रकार होने चाहिए:
@@ -213,11 +221,11 @@
 ​डेटा प्रोसेसिंग के लिए महत्वपूर्ण नियम:
 
 ​दशा परिवर्तन: यदि किसी एक महीने के भीतर अंतर्दशा (AD) बदलती है, तो उसे एक ही सेल में 'Slash' (/) के साथ दिखाएं (जैसे: बुध AD / केतु AD), ठीक एसे  ही PD का भी करें।
-------------------------------------------
+----------
 जून 2026 से जून 2027 तक गुरु कब कब किस किस नक्षत्र में रहेगा इसकी सटीक तारीखों की सूचि दीजिये.
-------------------------------------------
+----------
 उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
-------------------------------------------
+----------
 यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
 
 1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
@@ -226,35 +234,35 @@
 4] System instructions में दिए गए आदेशों का भी पालन करे.
 
 क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
------------------------------------------
+----------
 अब हम जातक गुरु गोचर का विश्लेषण निकालेंगे, उसके पहले ध्यान रखने योग्य बातें :
 
 1] ध्यान रहे अभी 2026 चल रहा है और जातिका/जातक xyz 00 साल की/का है. विश्लेषण करते समय आयु का ध्यान रखे, क्या आप तैयार है, सिर्फ इतना बताईये.
------------------------------------------
+----------
 जातक के कुंडली के आधार पर निम्मलिखित पॉइंट्स गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
 
 भाग 1: गुरु गोचर का तकनीकी आधार
 ➤ अष्टकवर्ग परिणाम: 
 ▸ कर्क राशि में गुरु को अपने भिन्नाष्टकवर्ग (BAV) में 0 से 8 के बीच कितने बिंदु मिले हैं? (0-3: चुनौतीपूर्ण, 3-5: मध्यम, 6-8: अत्यंत शुभ)। 
 ▸ कर्क राशि में सर्वाष्टकवर्ग (SAV) के कुल बिंदु कितने हैं? (28 से अधिक शुभ)। इसके आधार पर इस गोचर की कुल क्षमता का सटीक प्रतिशत और निष्कर्ष दें।
------------------------------------------
+----------
 ➤ गोचर का भाव प्रभाव (लग्न और चंद्र से):
 ▸ गुरु जातक के लग्न से किस भाव में गोचर कर रहा है और इसका जीवन पर क्या मुख्य प्रभाव पड़ेगा?
 ▸ गुरु जातक के चंद्र से किस भाव में गोचर कर रहा है (मानसिक और भावनात्मक प्रभाव)?
------------------------------------------
+----------
 भाग 2: गोचर की दृष्टियाँ और जीवन के क्षेत्रों पर प्रभाव
 ➤ गुरु की 5वीं, 7वीं और 9वीं दृष्टि किन भावों पर पड़ रही है? 
 ▸ करियर और व्यवसाय (Career & Wealth): गोचर का दशम, एकादश या द्वितीय भाव पर प्रभाव और संभावित परिणाम।
 ▸ स्वास्थ्य और निजी जीवन (Health & Personal Life): गोचर का लग्न, षष्ठ या अष्टम भाव पर प्रभाव।
 ▸ रिश्ते और विवाह (Relationships): यदि दृष्टि सप्तम या पंचम भाव पर है, तो रिश्तों में क्या बदलाव आएंगे?
------------------------------------------
+----------
 भाग 3: दशा और गोचर का समन्वय (Dasha & Transit Synergy)
 ➤ जातक की वर्तमान विंशोत्तरी दशा (MD-AD) के स्वामी ग्रहों का गोचर के गुरु के साथ क्या संबंध बन रहा है? 
 ▸ क्या वर्तमान दशा गोचर के शुभ परिणामों को सपोर्ट कर रही है या संघर्ष बढ़ा रही है? इसका समग्र फलादेश लिखें।
------------------------------------------
+----------
 भाग 4: गोचर का सूक्ष्म प्रभाव (D9 नवमांश अवलोकन)
 ➤ जन्मकालीन D9 चार्ट में गुरु जिस स्थिति में है, क्या वह कर्क राशि के इस गोचर से अनुकूलता बना रहा है? (विशेषकर भाग्य और वैवाहिक सुख के संदर्भ में)।
------------------------------------------
+----------
 भाग 5: हर महीने का सूक्ष्म दशा-गोचर विश्लेषण (Monthly Analysis)
 
 विश्लेषण की अवधि: [June 2026]
@@ -285,13 +293,396 @@
 ▸ क्या न करें (Don'ts): [इस महीने की चुनौतियों से बचने के लिए 2-3 सावधानियां बताएं]
 
 (अंतिम निर्देश: भाषा सरल, सकारात्मक और आधुनिक होनी चाहिए। ज्योतिषीय जार्गन (कठिन शब्दों) का प्रयोग कम से-कम करें और यदि करें तो उनका सरल अर्थ भी समझाएं।)
------------------------------------------
+----------
 अब ऐसे ही अगले महीने का दीजिये
------------------------------------------
+----------
 भाग 6: निष्कर्ष और वैदिक उपाय
 ➤ समग्र गोचर निष्कर्ष: यह गोचर जातक के लिए 'वरदान' है, 'सामान्य' है या 'धैर्य रखने का समय' है? एक विस्तारपूर्वक और स्पष्ट पैराग्राफ में बताएं।
 ➤ सटीक उपाय (Remedies): वर्तमान दशा और अष्टकवर्ग बिंदुओं की स्थिति को देखते हुए गुरु के 2-3 बहुत ही आसान, सात्विक और सटीक वैदिक उपाय बताएं जिन्हें आज की जनरेशन आसानी से फॉलो कर सके।
 -----------------------------------------`;
+        const rawData_en = `This PDF is the kundali of native xyz; you must save all the information from it so the kundali can be analyzed. While analyzing, do not write page references of the PDF, but give a list of which page the following information is on - meaning it will be easier for you too to find later:
+
+1] Planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord, Jaimini Chara Karaka)
+2] Sarvashtakavarga table
+3] Jupiter's Bhinnashtakavarga (BAV) table.
+4] Shadbala table (Sthana Bala, Dig Bala, Kala Bala, Cheshta Bala, Naisargika Bala, Drik Bala)
+5] Bhava Bala table 
+6] Vimshopak Bala table (Shodasha Varga, Shad Varga, Sapta Varga and Dasha Varga)
+7] Vimshottari Mahadasha-Antardasha chart
+8] Yogini Dasha-Antardasha chart
+9] D1 12 bhava rashi-nakshatra (Bhava Cusp)
+10] D9 planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord) (screenshot)
+
+Please present all tables in a simple and readable table format.
+----------
+From the above chat and  PDF, write the rashi placed in the twelve bhavas of the lagna kundali, the bhava lord, and the planetary presence; also write which planets are exalted, debilitated, retrograde, neecha-bhanga, combust, vargottama. Also write the nakshatra placement (do not write exalted, debilitated, retrograde for Rahu-Ketu)
+
+The writing pattern will be as follows, which is only for example, shown in  ""  :
+
+"First house (Lagna):
+This house has Simha rashi, therefore the lagnesh is Surya.
+In this house, Surya and Rahu planets are placed.
+Surya: in Simha rashi, swagrihi (in its own house). Surya is placed in Magha nakshatra. Surya, being the lord of the first house (Simha), sits in the lagna. Surya's drishti is on the seventh house (Kumbha).
+Rahu: in Simha rashi (considered an enemy rashi for Rahu). Rahu is placed in Magha nakshatra. Rahu's drishti is on the fifth house (Dhanu), seventh house (Kumbha) and ninth house (Mesha).
+On this house, Ketu (from the seventh house) has full drishti."
+
+
+For your convenience a txt file has been given : "D1_Analysis"
+----------
+Please provide a list of astrological facts/figures for all 9 planets (Surya, Chandra, Mangal, Budha, Guru, Shukra, Shani, Rahu, Ketu) based on the birth details in all the above chats and PDFs. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on the kundali's phaladesh, shadbala, vimshopak bala (shodasha varga), and Jaimini karakatva.
+
+Provide the following information for each planet:
+1. [Planet name]
+➤ Bhava ownership: (which bhavas it is the lord of)
+➤ Position: (in which bhava and rashi)
+➤ Position in rashi: (friend, enemy, neutral, exalted, debilitated, moolatrikona, own sign)
+➤ Nakshatra and pada: (in which nakshatra and which pada the planet is, and the effect of the nakshatra lord.)
+➤ Drishti: (on which bhavas/planets it has drishti) 
+➤ Drishti on [planet name]: (which planets have drishti on it)
+➤ Yuti: (with which planets it is in yuti)
+➤ Avastha (degree/latitude): (degree and name of avastha like bala, kumara etc.)
+➤ Bhavanatmak/avastha strength: retrograde/combust/debilitated/neecha-bhanga/vargottama status: (yes/no or name of the status)
+➤ Navamsha position:  (in the navamsha kundali, in which rashi, nakshatra (lord) the planet is and its effect.)
+➤ Strength in navamsha: afflicted/strong
+➤ Bhava bala: (value only)
+➤ Shadbala (in rupa):  (value in rupa and how its strength is - better than average, rank etc.)
+➤ Vimshopak bala (shodasha varga): (value and its rank among planets, if applicable.)
+➤ Brief answer of probable phala in gochar and dasha : (generally how that planet will give phala in its dasha/antardasha and gochar - good, bad, or medium.
+➤ Conclusion : overall, is the planet strong or afflicted? (percentage)
+
+➤ Finally, a conclusion regarding all planets being strong and afflicted (based on percentage)
+----------
+Please provide a list of astrological facts/figures for all 12 bhavas of D1 based on the birth details in all the above chats and PDFs. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on karakatva, bhava bala).
+
+
+Provide the following information for each bhava:
+
+1. First house (Lagna):  name of the rashi
+➤ Karakatva: 
+➤ Bhava bala: rank  (weak or strong bhava in the kundali).
+➤ Bhava lord (lagnesh):
+➤ Position of bhavesh: 
+➤ Placed planets: 
+➤ Drishti on bhava: 
+➤ Conclusion : overall, is the bhava strong or afflicted? (percentage)
+
+➤ Finally, a conclusion regarding all bhavas being strong and afflicted (based on percentage)
+----------
+Please save in your memory the astrological data (Vimshottari dasha and gochar) given in all the attached text files.
+
+Instructions:
+
+1] There is no need to write this data again in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: write only the current status of June 2026 in the format given below:
+Vimshottari (MD-AD-PD):
+Gochar (Jupiter - from lagna and Moon):
+
+After this I will directly ask specific questions related to the analysis; then you have to use all this data.
+----------
+Please save in your memory the astrological data (Surya, Mangal, Budha, Shukra, Shani, Rahu, Ketu gochar) given in all the attached text files.
+
+Instructions:
+
+1] There is no need to write this data again in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: write only the current status of 2026 in the format given below:
+
+Gochar (Surya - from lagna and Moon):
+Gochar (Mangal - from lagna and Moon):
+Gochar (Budha - from lagna and Moon):
+Gochar (Shukra - from lagna and Moon):
+Gochar (Shani - from lagna and Moon):
+Gochar (Rahu - from lagna and Moon):
+Gochar (Ketu - from lagna and Moon):
+
+After this I will directly ask specific questions related to the analysis; then you have to use all this data.
+----------
+Based on the astrological data (Vimshottari and Gochar Analysis) given and extracted in the above chats, prepare a detailed 'Master Timeline' for all 13 months from  2026 to  2027.
+
+​The format and columns of the table must be exactly as follows:
+
+​| Time (month) | Vimshottari dasha (MD-AD-PD) | Jupiter gochar (bhava from lagna/Moon) |
+
+​Important rules for data processing:
+
+​Dasha change: if the antardasha (AD) changes within a single month, show it in a single cell with a 'Slash' (/) (like: Budha AD / Ketu AD); do the same for PD as well.
+----------
+Give the list of exact dates for when and in which nakshatra Jupiter will be from June 2026 to June 2027.
+----------
+Give a short list of all the information received so far from you for kundali analysis.
+----------
+Make sure you will strictly follow the following orders,
+
+1] Crosscheck the data before giving the output.
+2] Do not do any kind of sugar-coating. If there is any dosha, conflict or negative yoga in the kundali, tell it clearly and in bitter words. I don't want to please the client, I want to tell the truth. Note that you should not be completely negative; maintain a balance of positive and negative and tell what is true.
+3] Do not begin your answer with any greeting or conversational phrase (like 'definitely', 'sure', 'following is' etc.). Your answer must start directly with the information asked for.
+4] Also follow the orders given in the system instructions.
+
+Are you ready - just tell me which orders you will follow.
+----------
+Now we will extract the analysis of the native's Jupiter gochar; before that, things to keep in mind :
+
+1] Note that it is currently 2026 and the female native/male native xyz is 00 years old. Keep the age in mind while analyzing; are you ready, just tell that.
+----------
+Based on the native's kundali, do a deep and detailed analysis (Detailed Analysis) of the following points; note that along with all the points, each of their sub-points should also be analyzed in detail; finally also give a conclusion (Detailed Conclusion) of each point.
+
+Part 1: Technical basis of Jupiter's gochar
+➤ Ashtakavarga result: 
+▸ In Karka rashi, how many points has Jupiter received in its Bhinnashtakavarga (BAV) between 0 and 8? (0-3: challenging, 3-5: medium, 6-8: extremely auspicious). 
+▸ How many total points are there in Sarvashtakavarga (SAV) in Karka rashi? (more than 28 is auspicious). Based on this, give the exact percentage and conclusion of this gochar's total potential.
+----------
+➤ Bhava effect of gochar (from lagna and Moon):
+▸ In which bhava is Jupiter transiting from the native's lagna and what will be its main effect on life?
+▸ In which bhava is Jupiter transiting from the native's Moon (mental and emotional effect)?
+----------
+Part 2: Drishtis of gochar and effect on areas of life
+➤ On which bhavas are Jupiter's 5th, 7th and 9th drishti falling? 
+▸ Career and business (Career & Wealth): effect of gochar on the tenth, eleventh or second bhava and probable results.
+▸ Health and personal life (Health & Personal Life): effect of gochar on the lagna, sixth or eighth bhava.
+▸ Relationships and marriage (Relationships): if the drishti is on the seventh or fifth bhava, what changes will come in relationships?
+----------
+Part 3: Coordination of dasha and gochar (Dasha & Transit Synergy)
+➤ What relation is being formed between the lord planets of the native's current Vimshottari dasha (MD-AD) and Jupiter of the gochar? 
+▸ Is the current dasha supporting the auspicious results of the gochar or increasing conflict? Write its overall phaladesh.
+----------
+Part 4: Subtle effect of gochar (D9 Navamsha observation)
+➤ In the natal D9 chart, in whatever position Jupiter is, is it forming compatibility with this gochar in Karka rashi? (especially in the context of fortune and marital happiness).
+----------
+Part 5: Subtle dasha-gochar analysis of every month (Monthly Analysis)
+
+Analysis period: [June 2026]
+
+1] This month's 'manager' (current subtle dasha):
+➤ In this month, which antardasha and pratyantar dasha (AD/PD) of Vimshottari is running?
+➤ What is the natal strength of these dasha lords in the birth kundali (D1) and navamsha (D9) and what relation are they forming with Jupiter of the gochar in this month?
+
+2] This month's 'weather' (monthly gochar position):
+➤ In this specific month, through which nakshatra of Karka rashi is Jupiter of the gochar passing, and what is the effect of that nakshatra lord on the native?
+➤ In this month, the gochar of dynamic planets like Surya, Mangal, Budha and Shukra is activating which important bhavas of the native?
+➤ In this month, the gochar of slow planets like Shani, Rahu and Ketu is activating which important bhavas of the native?
+➤ In this specific month, is Jupiter of the gochar becoming retrograde or combust? (If yes, its effect).
+
+3] Combined monthly future-phala:
+(Based on the combined effect of the current antardasha/pratyantar dasha and monthly gochar, write the exact future-phala for the following areas)
+➤ General observation:
+➤ Economic life:
+➤ Career:
+➤ Family life:
+➤ Marital and love life:
+➤ Health:
+➤ Overall conclusion of this month:
+
+4] Practical advice (what to do/what not to do):
+➤ Things to keep in mind for this specific month:
+▸ What to do (Dos): [give 2-3 practical suggestions to take advantage of this month's positive energy]
+▸ What not to do (Don'ts): [tell 2-3 precautions to avoid this month's challenges]
+
+(Final instruction: the language should be simple, positive and modern. Use astrological jargon (difficult words) minimally, and if you do use them, also explain their simple meaning.)
+----------
+Now give the same for the next month
+----------
+Part 6: Conclusion and Vedic remedies
+➤ Overall gochar conclusion: is this gochar a 'boon' for the native, 'normal', or 'a time to keep patience'? Explain in a detailed and clear paragraph.
+➤ Exact remedies (Remedies): looking at the current dasha and the position of the ashtakavarga points, tell 2-3 very easy, sattvik and exact Vedic remedies for Jupiter that today's generation can easily follow.
+-----------------------------------------`;
+        const rawData_mr = `हे PDF जातक xyz ची कुंडली आहे, यामधील सर्व माहिती तुम्ही जतन करून ठेवली पाहिजे, जेणेकरून कुंडलीचे विश्लेषण करता येईल, विश्लेषण करताना PDF च्या पानांचा संदर्भ लिहू नका पण खालील माहिती कोणत्या पानावर आहे, याची सूची द्या म्हणजे तुम्हालाही पुढे शोधण्यात सोपे जाईल :
+
+1] ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तक्ता
+3] गुरूचा भिन्नाष्टकवर्ग (BAV) तक्ता।
+4] षड्बल तक्ता (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+5] भाव बल तक्ता 
+6] विमशोपक बल तक्ता (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+7] विंशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] D1 च्या 12 भावांचे रास-नक्षत्र (Bhava Cusp)
+10] D9 ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+
+कृपया सर्व तक्ते सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा।
+----------
+वरील चॅट आणि  PDF मधील लग्न कुंडलीच्या बारा भावांमध्ये असलेली रास आणि भाव स्वामी तसेच ग्रह उपस्थिती, कोणता ग्रह उच्च, नीच, वक्री, नीचभंग, अस्त, वर्गोत्तम आहे तेही लिहा. नक्षत्रातील स्थितीही लिहा (राहू-केतूंना उच्च, नीच, वक्री लिहू नका)
+
+लेखन पॅटर्न खालीलप्रमाणे असेल जो फक्त उदाहरणासाठी आहे, जो  ""  यात दाखवला आहे :
+
+"पहिला भाव (लग्न):
+या भावात सिंह रास आहे, त्यामुळे लग्नेश सूर्य आहेत.
+या भावात सूर्य आणि राहू ग्रह स्थित आहेत.
+सूर्य: सिंह राशीत स्वगृही (स्वतःच्याच घरात) आहेत. सूर्य मघा नक्षत्रात स्थित आहेत. सूर्य प्रथम भावाचा (सिंह) स्वामी होऊन लग्नात बसले आहेत. सूर्याची दृष्टी सातव्या भावावर (कुंभ) आहे.
+राहू: सिंह राशीत (राहूसाठी शत्रू रास मानली जाते). राहू मघा नक्षत्रात स्थित आहे. राहूची दृष्टी पाचव्या भावावर (धनु), सातव्या भावावर (कुंभ) आणि नवव्या भावावर (मेष) आहे.
+या भावावर केतूची (सातव्या भावातून) पूर्ण दृष्टी आहे."
+
+
+तुमच्या सोयीसाठी txt फाईल दिली आहे : "D1_Analysis"
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांवर आधारित सर्व ९ ग्रहांचे (सूर्य, चंद्र, मंगळ, बुध, गुरू, शुक्र, शनि, राहू, केतू) ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत स्पष्टीकरणाची गरज नाही. ही सूची कुंडलीच्या फलादेश, षड्बल, विमशोपक बल (षोडश वर्ग), आणि जैमिनी कारकत्व यावर आधारित असावी.
+
+प्रत्येक ग्रहासाठी खालील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रू, सम, उच्च, नीच, मूलत्रिकोण, स्वरास)
+➤ नक्षत्र आणि पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी) 
+➤ [ग्रहाच्या नावावर] दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांसोबत युतीत आहे)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इत्यादी)
+➤ भावनात्मक/अवस्था शक्ती: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (होय/नाही किंवा स्थितीचे नाव)
+➤ नवमांश स्थिती:  (नवमांश कुंडलीत ग्रह कोणत्या राशीत, नक्षत्रात (स्वामी) आहे आणि त्याचा प्रभाव.)
+➤ नवमांशातील शक्ती: पीडित/बलवान
+➤ भाव बल: (फक्त मान)
+➤ षड्बल (रूपात):  (रूपातील मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी.)
+➤ विमशोपक बल (षोडश वर्ग): (मान आणि ग्रहांमध्ये त्याचा रँक, लागू असल्यास.)
+➤ गोचर आणि दशेतील संभाव्य फलाचे संक्षिप्त उत्तर : (सामान्यतः तो ग्रह आपल्या दशेत/अंतर्दशेत आणि गोचरात कसे फल देईल - चांगले, खराब, किंवा मध्यम.
+➤ निष्कर्ष : एकंदर ग्रह मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रहांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीवर आधारित)
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांवर आधारित D1 च्या सर्व 12 भावांची ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत स्पष्टीकरणाची गरज नाही. ही सूची कारकत्व, भाव बल) यावर आधारित असावी.
+
+
+प्रत्येक भावासाठी खालील माहिती द्या:
+
+1. पहिला भाव (लग्न):  राशीचे नाव
+➤ कारकत्व: 
+➤ भाव बल: रँक  (कुंडलीत कमजोर किंवा मजबूत भाव).
+➤ भाव स्वामी (लग्नेश):
+➤ भावेशाची स्थिती: 
+➤ स्थित ग्रह: 
+➤ भावावर दृष्टी: 
+➤ निष्कर्ष : एकंदर भाव मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व भावांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीवर आधारित)
+----------
+कृपया संलग्न (Attached) सर्व टेक्स्ट फाईल्समध्ये दिलेला ज्योतिषीय डेटा (विंशोत्तरी दशा आणि गोचर) आपल्या मेमरीत सुरक्षित करा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला आहे याची पुष्टी करा.
+3] पुष्टी (Verification) साठी: फक्त जून 2026 ची सध्याची स्थिती खाली दिलेल्या फॉर्मेटमध्ये लिहून द्या:
+विंशोत्तरी (MD-AD-PD):
+गोचर (गुरू - लग्न व चंद्रापासून):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+कृपया संलग्न (Attached) सर्व टेक्स्ट फाईल्समध्ये दिलेला ज्योतिषीय डेटा (सूर्य, मंगळ, बुध, शुक्र, शनि, राहू, केतू गोचर) आपल्या मेमरीत सुरक्षित करा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला आहे याची पुष्टी करा.
+3] पुष्टी (Verification) साठी: फक्त 2026 ची सध्याची स्थिती खाली दिलेल्या फॉर्मेटमध्ये लिहून द्या:
+
+गोचर (सूर्य - लग्न व चंद्रापासून):
+गोचर (मंगळ - लग्न व चंद्रापासून):
+गोचर (बुध - लग्न व चंद्रापासून):
+गोचर (शुक्र - लग्न व चंद्रापासून):
+गोचर (शनि - लग्न व चंद्रापासून):
+गोचर (राहू - लग्न व चंद्रापासून):
+गोचर (केतू - लग्न व चंद्रापासून):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+वरील चॅट्समध्ये दिलेल्या आणि एक्सट्रॅक्ट केलेल्या ज्योतिषीय डेटावर (Vimshottari आणि Gochar Analysis) आधारित, आगामी  2026 ते  2027 पर्यंतच्या सर्व 13 महिन्यांची एक विस्तृत 'मास्टर समय-सारणी' तयार करा.
+
+​तक्त्याचे स्वरूप आणि कॉलम अगदी खालीलप्रमाणे असले पाहिजेत:
+
+​| वेळ (महिना) | विंशोत्तरी दशा (MD-AD-PD) | गुरू गोचर (लग्न/चंद्रापासून भाव) |
+
+​डेटा प्रोसेसिंगसाठी महत्त्वाचे नियम:
+
+​दशा बदल: जर एकाच महिन्यात अंतर्दशा (AD) बदलत असेल, तर ती एकाच सेलमध्ये 'Slash' (/) ने दाखवा (जसे: बुध AD / केतू AD), PD साठीही तसेच करा.
+----------
+जून 2026 ते जून 2027 पर्यंत गुरू कधी कधी कोणत्या कोणत्या नक्षत्रात असेल याच्या अचूक तारखांची सूची द्या.
+----------
+आतापर्यंत तुम्हाला कुंडली विश्लेषणासाठी जी जी माहिती मिळाली आहे, तिची थोडक्यात सूची द्या.
+----------
+तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटाची क्रॉसचेक करून घ्या.
+2] कोणत्याही प्रकारचे शुगर-कोटिंग (Sugar-coating) करू नका. कुंडलीत कोणताही दोष, संघर्ष किंवा नकारात्मक योग असेल, तर तो स्पष्ट आणि कडव्या शब्दांत सांगा. मला क्लायंटला खूश करायचे नाही, तर खरे सांगायचे आहे. लक्षात ठेवा की पूर्णपणे नकारात्मक नसावे, सकारात्मक आणि नकारात्मक यांचा समतोल राखून जे खरे आहे ते सांगा.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'नक्कीच', 'जरूर', 'खालील आहे' इत्यादी) करू नका. तुमचे उत्तर थेट मागितलेल्या माहितीपासूनच सुरू झाले पाहिजे.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का - फक्त एवढेच सांगा की कोणत्या आदेशांचे पालन कराल.
+----------
+आता आपण जातकाच्या गुरू गोचराचे विश्लेषण काढू, त्याआधी लक्षात ठेवण्यासारख्या गोष्टी :
+
+1] लक्षात ठेवा की सध्या 2026 चालू आहे आणि जातिका/जातक xyz 00 वर्षांची/चा आहे. विश्लेषण करताना वयाचे भान ठेवा, तुम्ही तयार आहात का, फक्त एवढेच सांगा.
+----------
+जातकाच्या कुंडलीच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्यांचेही विश्लेषण विस्तृत असले पाहिजे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) देखील द्या.
+
+भाग 1: गुरू गोचराचा तांत्रिक आधार
+➤ अष्टकवर्ग परिणाम: 
+▸ कर्क राशीत गुरूला आपल्या भिन्नाष्टकवर्गात (BAV) 0 ते 8 पैकी किती बिंदू मिळाले आहेत? (0-3: आव्हानात्मक, 3-5: मध्यम, 6-8: अत्यंत शुभ). 
+▸ कर्क राशीत सर्वाष्टकवर्गाचे (SAV) एकूण किती बिंदू आहेत? (28 पेक्षा जास्त शुभ). याच्या आधारे या गोचराच्या एकूण क्षमतेची अचूक टक्केवारी आणि निष्कर्ष द्या.
+----------
+➤ गोचराचा भाव प्रभाव (लग्न आणि चंद्रापासून):
+▸ गुरू जातकाच्या लग्नापासून कोणत्या भावात गोचर करत आहे आणि याचा जीवनावर काय मुख्य प्रभाव पडेल?
+▸ गुरू जातकाच्या चंद्रापासून कोणत्या भावात गोचर करत आहे (मानसिक आणि भावनिक प्रभाव)?
+----------
+भाग 2: गोचराच्या दृष्ट्या आणि जीवनाच्या क्षेत्रांवर परिणाम
+➤ गुरूची 5वी, 7वी आणि 9वी दृष्टी कोणत्या भावांवर पडत आहे? 
+▸ करियर आणि व्यवसाय (Career & Wealth): दहाव्या, अकराव्या किंवा दुसऱ्या भावावर गोचराचा प्रभाव आणि संभाव्य परिणाम.
+▸ आरोग्य आणि खाजगी जीवन (Health & Personal Life): लग्न, सहाव्या किंवा आठव्या भावावर गोचराचा प्रभाव.
+▸ नाते आणि विवाह (Relationships): जर दृष्टी सातव्या किंवा पाचव्या भावावर असेल, तर नात्यांमध्ये काय बदल येतील?
+----------
+भाग 3: दशा आणि गोचर यांचा समन्वय (Dasha & Transit Synergy)
+➤ जातकाच्या सध्याच्या विंशोत्तरी दशेतील (MD-AD) स्वामी ग्रहांचा गोचरातील गुरूशी काय संबंध तयार होत आहे? 
+▸ सध्याची दशा गोचराच्या शुभ परिणामांना सपोर्ट करत आहे की संघर्ष वाढवत आहे? याचे एकंदर फलादेश लिहा.
+----------
+भाग 4: गोचराचा सूक्ष्म प्रभाव (D9 नवमांश अवलोकन)
+➤ जन्मकालीन D9 चार्टमध्ये गुरू ज्या स्थितीत आहे, तो कर्क राशीतील या गोचराशी अनुकूलता तयार करत आहे का? (विशेषतः भाग्य आणि वैवाहिक सुखाच्या संदर्भात).
+----------
+भाग 5: प्रत्येक महिन्याचे सूक्ष्म दशा-गोचर विश्लेषण (Monthly Analysis)
+
+विश्लेषणाचा कालावधी: [June 2026]
+
+1] या महिन्याचा 'मॅनेजर' (सध्याची सूक्ष्म दशा):
+➤ या महिन्यात विंशोत्तरीची कोणती अंतर्दशा आणि प्रत्यंतर दशा (AD/PD) सुरू आहे?
+➤ या दशा स्वामींचे जन्म कुंडलीत (D1) आणि नवमांशात (D9) मूळ बल कसे आहे आणि या महिन्यात ते गोचरातील गुरूशी कसा संबंध तयार करत आहेत?
+
+2] या महिन्याचा 'हवामान' (मासिक गोचर स्थिती):
+➤ या विशिष्ट महिन्यात गोचरातील गुरू कर्क राशीच्या कोणत्या नक्षत्रातून जात आहे, आणि त्या नक्षत्र स्वामीचा जातकावर काय प्रभाव आहे?
+➤ या महिन्यात सूर्य, मंगळ, बुध आणि शुक्र यांसारख्या गतिशील ग्रहांचे गोचर जातकाच्या कोणत्या महत्त्वाच्या भावांना सक्रिय करत आहे?
+➤ या महिन्यात शनि, राहू आणि केतू यांसारख्या मंद ग्रहांचे गोचर जातकाच्या कोणत्या महत्त्वाच्या भावांना सक्रिय करत आहे?
+➤ या विशिष्ट महिन्यात गोचरातील गुरू वक्री किंवा अस्त होत आहे का? (असेल तर त्याचा प्रभाव).
+
+3] संयुक्त मासिक भविष्यफळ:
+(सध्याची अंतर्दशा/प्रत्यंतर दशा आणि मासिक गोचर यांच्या संयुक्त प्रभावावर आधारित खालील क्षेत्रांसाठी अचूक भविष्यफळ लिहा)
+➤ सामान्य निरीक्षण:
+➤ आर्थिक जीवन:
+➤ करियर:
+➤ कौटुंबिक जीवन:
+➤ वैवाहिक आणि प्रेम जीवन:
+➤ आरोग्य:
+➤ या महिन्याचा एकंदर निष्कर्ष:
+
+4] व्यावहारिक सल्ला (काय करावे/काय करू नये):
+➤ या विशिष्ट महिन्यासाठी लक्षात ठेवण्यासारख्या गोष्टी:
+▸ काय करावे (Dos): [या महिन्याच्या सकारात्मक ऊर्जेचा लाभ घेण्यासाठी 2-3 व्यावहारिक सूचना द्या]
+▸ काय करू नये (Don'ts): [या महिन्याच्या आव्हानांपासून बचावासाठी 2-3 खबरदाऱ्या सांगा]
+
+(अंतिम निर्देश: भाषा सोपी, सकारात्मक आणि आधुनिक असली पाहिजे. ज्योतिषीय जार्गन (कठीण शब्द) चा वापर कमीत कमी करा आणि वापरल्यास त्यांचा सोपा अर्थही समजावून सांगा.)
+----------
+आता असेच पुढच्या महिन्याचे द्या
+----------
+भाग 6: निष्कर्ष आणि वैदिक उपाय
+➤ एकंदर गोचर निष्कर्ष: हे गोचर जातकासाठी 'वरदान' आहे, 'सामान्य' आहे की 'धैर्य ठेवण्याची वेळ' आहे? एका विस्तृत आणि स्पष्ट परिच्छेदात सांगा.
+➤ अचूक उपाय (Remedies): सध्याची दशा आणि अष्टकवर्ग बिंदूंची स्थिती पाहता गुरूचे 2-3 अगदी सोपे, सात्त्विक आणि अचूक वैदिक उपाय सांगा जे आजची पिढी सहजपणे फॉलो करू शकेल.
+-----------------------------------------`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
 
         // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
         const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
@@ -299,7 +690,7 @@
         function processData() {
             const container = document.getElementById('prompt-container');
             // पहले डैश लाइन्स से तोडें
-            let parts = rawData.split(separatorRegex);
+            let parts = getRawData().split(separatorRegex);
 
             parts.forEach((part, index) => {
                 let cleanText = part.trim();
