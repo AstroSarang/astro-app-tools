@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>गोचर कैलकुलेटर v19 (Live Transit + विश्लेषण)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<title>गोचर कैलकुलेटर v20 (Live Transit + विश्लेषण)</title>
 <style>
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;padding:15px;background:#f0f2f5;color:#1d2129;margin:0}
 .container{max-width:950px;margin:15px auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 15px rgba(0,0,0,.08)}
@@ -56,7 +57,7 @@ tr.imp-row{background:#fff8e1;font-weight:600}
 </head>
 <body>
 <div class="container">
-<h1>🪐 गोचर कैलकुलेटर v19</h1>
+<h1>🪐 गोचर कैलकुलेटर v20</h1>
 <p style="text-align:center;color:#666;font-size:.9em">Swiss Ephemeris (Live) • लाहिड़ी अयनांश • राहु/केतु मध्यम (Mean)</p>
 
 <!-- Mode Selector -->
@@ -67,6 +68,7 @@ tr.imp-row{background:#fff8e1;font-weight:600}
 <button class="mode-btn" data-mode="vivah" onclick="setMode('vivah')">💒 विवाह विश्लेषण</button>
 <button class="mode-btn" data-mode="santan" onclick="setMode('santan')">👶 संतान विश्लेषण</button>
 <button class="mode-btn" data-mode="double" onclick="setMode('double')">🔄 Double Transit Data</button>
+<button class="mode-btn" data-mode="indepth" onclick="setMode('indepth')">🔍 इंडेप्थ गोचर</button>
 </div>
 </div>
 <style>
@@ -142,6 +144,26 @@ tr.imp-row{background:#fff8e1;font-weight:600}
 <div id="analysis-progress" style="font-size:.85em;color:#666;text-align:center;margin-top:8px"></div>
 </div>
 
+<!-- Indepth Gochar UI (v20) -->
+<div class="ephem" id="indepth-ui" style="display:none">
+<h3>🔍 इंडेप्थ गोचर सेटिंग</h3>
+<div class="row">
+<div class="f">ग्रह<select id="id-planet">
+<option value="jupiter" selected>गुरु</option>
+<option value="saturn">शनि</option>
+<option value="rahu">राहु</option>
+<option value="ketu">केतु</option>
+</select></div>
+<div class="f">वर्ष<input id="id-year" type="number" value="2026" style="width:80px"></div>
+</div>
+<div class="row" style="justify-content:center">
+<button class="btn" onclick="calcIndepth()">गोचर निकालें</button>
+<button class="btn btn2" onclick="downloadTxt()">TXT डाउनलोड</button>
+<button class="btn" style="background:#6a1b9a" onclick="screenshotIndepth()">📸 स्क्रीनशॉट</button>
+</div>
+<div id="indepth-progress" style="font-size:.85em;color:#666;text-align:center;margin-top:8px"></div>
+</div>
+
 <div id="gochar-out"></div>
 <div class="note">नोट: भाव = गोचर राशि से लग्न/चंद्र राशि तक की गिनती (1 = उसी राशि में)। राहु/केतु मध्यम (Mean Node) से।</div>
 </div>
@@ -164,7 +186,8 @@ function setMode(mode) {
     currentMode = mode;
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
     document.getElementById('normal-ui').style.display = mode === 'normal' ? 'block' : 'none';
-    document.getElementById('analysis-ui').style.display = mode === 'normal' ? 'none' : 'block';
+    document.getElementById('analysis-ui').style.display = (mode === 'vivah' || mode === 'santan' || mode === 'double') ? 'block' : 'none';
+    document.getElementById('indepth-ui').style.display = mode === 'indepth' ? 'block' : 'none';
     document.getElementById('double-focus').style.display = mode === 'double' ? 'flex' : 'none';
     document.getElementById('gochar-out').innerHTML = '';
 }
@@ -1526,6 +1549,25 @@ function downloadTxt() {
             return m;
         });
     }
+    // v20: Apply indepth SAV/BAV/BAL edits to TXT (in table row order)
+    const idInputs = document.querySelectorAll('#indepth-capture .id-sav');
+    if (idInputs.length) {
+        let idx = 0;
+        txt = txt.replace(/SAV=(\d+|-) BAV=(\d+|-) BAL=(\S+) गुणवत्ता=([^\n]+)/g, function(m, oldS, oldB, oldBal, oldQ) {
+            if (idx < idInputs.length) {
+                const row = idInputs[idx++].closest('tr');
+                const sV = row.querySelector('.id-sav').value;
+                const bV = row.querySelector('.id-bav').value;
+                const blV = row.querySelector('.id-bal').value;
+                const s = sV === '' ? '-' : Math.round(parseFloat(sV));
+                const b = bV === '' ? '-' : Math.round(parseFloat(bV));
+                const bl = blV === '' ? '-' : blV;
+                const q = idQuality(parseFloat(sV), parseFloat(bV)).t;
+                return 'SAV=' + s + ' BAV=' + b + ' BAL=' + bl + ' गुणवत्ता=' + q;
+            }
+            return m;
+        });
+    }
     const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -1543,6 +1585,7 @@ function downloadTxt() {
         else if (wV) fname += '_Vivah';
         else if (wS) fname += '_Santan';
     }
+    else if (mode === 'indepth') fname = 'Gochar_Indepth';
     a.download = fname + '.txt';
     a.click();
 }
@@ -1953,6 +1996,214 @@ async function calcDoubleTransit(startDate, endDate, prog, out) {
     out.innerHTML = html;
     window._gocharText = txt;
 }
+
+// ===== v20: 🔍 इंडेप्थ गोचर (In-depth Gochar) =====
+const NAKSHATRA_HI = ['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशीर्ष','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती'];
+const NAK_LORDS = ['केतु','शुक्र','सूर्य','चंद्र','मंगल','राहु','गुरु','शनि','बुध','केतु','शुक्र','सूर्य','चंद्र','मंगल','राहु','गुरु','शनि','बुध','केतु','शुक्र','सूर्य','चंद्र','मंगल','राहु','गुरु','शनि','बुध'];
+const VIM_SEQ = [['केतु',7],['शुक्र',20],['सूर्य',6],['चंद्र',10],['मंगल',7],['राहु',18],['गुरु',16],['शनि',19],['बुध',17]];
+const VIM_DPY = 365.256364;
+const ID_PLANETS = {jupiter:'गुरु', saturn:'शनि', rahu:'राहु', ketu:'केतु'};
+const ID_ENG = {jupiter:'Jupiter', saturn:'Saturn', rahu:'Rahu', ketu:'Ketu'};
+
+function idNorm360(d){ return ((d % 360) + 360) % 360; }
+function idFmtD(d){ return `${String(d.getDate()).padStart(2,'0')} ${MON_HI[d.getMonth()]} ${d.getFullYear()}`; }
+
+// Sidereal longitude of planet on date (noon IST)
+function idLon(swe, SEP, planetKey, d, ayanCache, nodeBody) {
+    const jd = swe.julianDay(d.getFullYear(), d.getMonth()+1, d.getDate(), 6.5);
+    const ck = d.getFullYear() + '-' + d.getMonth();
+    if (!(ck in ayanCache)) ayanCache[ck] = swe.getAyanamsa(jd);
+    const ayan = ayanCache[ck];
+    if (planetKey === 'ketu') return idNorm360(swe.calculatePosition(jd, nodeBody, 0).longitude - ayan + 180);
+    if (planetKey === 'rahu') return idNorm360(swe.calculatePosition(jd, nodeBody, 0).longitude - ayan);
+    const g = GRAHAS.find(x => x.key === planetKey);
+    return idNorm360(swe.calculatePosition(jd, SEP[g.body], 0).longitude - ayan);
+}
+
+// Daily scan of year -> nakshatra periods [{nakIdx, rashi, from, to}]
+async function idNakPeriods(swe, SEP, planetKey, year, prog) {
+    const ayanCache = {};
+    const nodeBody = (window._LUNAR && window._LUNAR.MeanNode !== undefined) ? window._LUNAR.MeanNode : 10;
+    const NAK_SPAN = 360/27;
+    const start = new Date(year, 0, 1); start.setHours(0,0,0,0);
+    const end = new Date(year, 11, 31); end.setHours(0,0,0,0);
+    const entries = [];
+    let cur = new Date(start);
+    let lon = idLon(swe, SEP, planetKey, cur, ayanCache, nodeBody);
+    let curNak = Math.floor(lon / NAK_SPAN);
+    let curRashi = Math.floor(lon / 30);
+    let entryStart = new Date(cur);
+    cur.setDate(cur.getDate() + 1);
+    let n = 0;
+    while (cur <= end) {
+        lon = idLon(swe, SEP, planetKey, cur, ayanCache, nodeBody);
+        const nk = Math.floor(lon / NAK_SPAN), rs = Math.floor(lon / 30);
+        if (nk !== curNak) {
+            const entryEnd = new Date(cur); entryEnd.setDate(entryEnd.getDate() - 1);
+            entries.push({nakIdx: curNak, rashi: curRashi, from: new Date(entryStart), to: entryEnd});
+            curNak = nk; curRashi = rs; entryStart = new Date(cur);
+        }
+        cur.setDate(cur.getDate() + 1);
+        if (++n % 60 === 0 && prog) { prog.textContent = `नक्षत्र गोचर निकाल रहे हैं... (${Math.round(n/3.65)}%)`; await new Promise(r => setTimeout(r, 0)); }
+    }
+    entries.push({nakIdx: curNak, rashi: curRashi, from: new Date(entryStart), to: new Date(end)});
+    return entries;
+}
+
+// Vimshottari MD-AD on a target date
+function idVimAt(d) {
+    const swe = window._swe;
+    const jdT = swe.julianDay(d.getFullYear(), d.getMonth()+1, d.getDate(), 6.5);
+    const moonLon = natalData.longitudes.Moon;
+    const span = 360/27;
+    const nakIdx = Math.floor(moonLon / span);
+    const startLord = NAK_LORDS[nakIdx];
+    const fracLeft = 1 - ((moonLon % span) / span);
+    const startYrs = fracLeft * VIM_SEQ.find(x => x[0] === startLord)[1];
+    let elapsed = (jdT - natalData.jd) / VIM_DPY;
+    let si = VIM_SEQ.findIndex(x => x[0] === startLord);
+    let md = startLord, mdYrs = startYrs;
+    let guard = 0;
+    while (elapsed >= mdYrs && guard++ < 40) { elapsed -= mdYrs; si = (si+1)%9; md = VIM_SEQ[si][0]; mdYrs = VIM_SEQ[si][1]; }
+    const adFrac = mdYrs > 0 ? elapsed / mdYrs : 0;
+    const ai = VIM_SEQ.findIndex(x => x[0] === md);
+    let acc = 0, ad = md;
+    for (let i = 0; i < 9; i++) {
+        const lord = VIM_SEQ[(ai+i)%9][0], f = VIM_SEQ[(ai+i)%9][1]/120;
+        if (adFrac < acc + f) { ad = lord; break; }
+        acc += f;
+    }
+    return {md, ad};
+}
+
+// Quality from BAV/SAV (v20 indepth thresholds)
+function idQuality(sav, bav) {
+    const sOk = !isNaN(sav) && sav > 28;
+    const bOk = !isNaN(bav) && bav >= 5;
+    if (sOk && bOk) return {t:'प्रबल ✅', c:'high'};
+    if (sOk || bOk) return {t:'मध्यम ⚠️', c:'med'};
+    return {t:'क्षीण ❌', c:'low'};
+}
+function idUpdateRow(input) {
+    const row = input.closest('tr');
+    const s = parseFloat(row.querySelector('.id-sav').value);
+    const b = parseFloat(row.querySelector('.id-bav').value);
+    const q = idQuality(s, b);
+    const cell = row.querySelector('.id-q');
+    if (cell) { cell.textContent = q.t; cell.className = 'id-q ' + q.c; }
+    input.style.background = '#e8f5e9';
+}
+window.idUpdateRow = idUpdateRow;
+function idRecalcAll() {
+    document.querySelectorAll('#indepth-capture .id-bal').forEach(inp => { idUpdateRow(inp); inp.style.background=''; });
+}
+window.idRecalcAll = idRecalcAll;
+
+async function calcIndepth() {
+    const out = document.getElementById('gochar-out');
+    const prog = document.getElementById('indepth-progress');
+    try {
+        if (!natalData) throw new Error('पहले "ग्रह स्थिति निकालें" से जन्म विवरण भरें');
+        if (!window._swe) throw new Error('Ephemeris लोड नहीं हुआ, पेज refresh करें');
+        const swe = window._swe, SEP = window._SEP;
+        const planetKey = document.getElementById('id-planet').value;
+        const year = parseInt(document.getElementById('id-year').value);
+        const pHi = ID_PLANETS[planetKey];
+        prog.textContent = 'गणना शुरू...';
+        await new Promise(r => setTimeout(r, 10));
+
+        // Section 1: nakshatra periods
+        const periods = await idNakPeriods(swe, SEP, planetKey, year, prog);
+        const L = natalData.lagna, M = natalData.moon;
+
+        let html = `<div id="indepth-capture"><div class="ctx">🔍 इंडेप्थ गोचर: ${pHi} (${year})<br>लग्न: ${RASHI_HI[L]} • चंद्र: ${RASHI_HI[M]}</div>`;
+        let txt = `इंडेप्थ गोचर: ${pHi} (${year})\n${'='.repeat(60)}\nलग्न: ${RASHI_HI[L]} | चंद्र राशि: ${RASHI_HI[M]}\n${'='.repeat(60)}\n`;
+
+        // --- Section 1 ---
+        html += `<div class="result-card"><div class="result-header">📅 ${pHi} का नक्षत्र गोचर (${year})</div><div class="result-body" style="overflow-x:auto"><table style="min-width:600px"><tr><th>नक्षत्र</th><th>प्रवेश तारीख</th><th>तक</th><th>राशि</th><th>भाव (जन्म)</th><th>भाव (चंद्र)</th></tr>`;
+        txt += `\n--- नक्षत्र गोचर ---\n`;
+        for (const p of periods) {
+            const bhL = (p.rashi - L + 12) % 12 + 1;
+            const bhM = (p.rashi - M + 12) % 12 + 1;
+            html += `<tr><td><b>${NAKSHATRA_HI[p.nakIdx]}</b></td><td>${idFmtD(p.from)}</td><td>${idFmtD(p.to)}</td><td>${RASHI_HI[p.rashi]}</td><td>${bhL}</td><td>${bhM}</td></tr>`;
+            txt += `${NAKSHATRA_HI[p.nakIdx]}: ${idFmtD(p.from)} से ${idFmtD(p.to)} | ${RASHI_HI[p.rashi]} | जन्म भाव ${bhL} | चंद्र भाव ${bhM}\n`;
+        }
+        html += `</table></div></div>`;
+
+        // --- Section 2: BAV/SAV/BAL per distinct rashi ---
+        const pos = {Sun: natalData.planets.sun, Moon: natalData.planets.moon, Mars: natalData.planets.mars, Mercury: natalData.planets.mercury, Jupiter: natalData.planets.jupiter, Venus: natalData.planets.venus, Saturn: natalData.planets.saturn, Lagna: L};
+        const savArr = calcSAV(pos); // per rashi 0=Mesha
+        const engName = ID_ENG[planetKey];
+        const bavArr = BAV_TABLE[engName] ? calcBAV(engName, pos) : null; // per bhava from lagna; Rahu/Ketu not in table
+        const balBhava = buildAshtaData().balBhava; // per bhava, index 0 = 1st bhava
+        const seenRashi = [...new Set(periods.map(p => p.rashi))];
+        html += `<div class="result-card"><div class="result-header">💪 BAV / SAV / BAL</div><div class="result-body" style="overflow-x:auto"><table style="min-width:700px"><tr><th>भाव</th><th>राशि</th><th>SAV ✏️</th><th>BAV ✏️</th><th>BAL ✏️</th><th>गुणवत्ता</th></tr>`;
+        txt += `\n--- BAV / SAV / BAL ---\n`;
+        let rowIdx = 0;
+        for (const r of seenRashi) {
+            const bh = (r - L + 12) % 12 + 1;
+            const sav = savArr[r];
+            const bav = bavArr ? bavArr[bh-1] : '';
+            const bal = Math.round(balBhava[bh-1]);
+            const q = idQuality(sav, bav === '' ? NaN : bav);
+            const key = `id${rowIdx++}`;
+            html += `<tr><td><b>${bh}</b></td><td>${RASHI_HI[r]}</td>`
+                + `<td><input type="number" class="id-sav" value="${sav}" data-key="${key}" onchange="idUpdateRow(this)" style="width:60px;padding:4px;border:1px solid #ccc;border-radius:4px"></td>`
+                + `<td><input type="number" class="id-bav" value="${bav}" data-key="${key}" onchange="idUpdateRow(this)" style="width:60px;padding:4px;border:1px solid #ccc;border-radius:4px"></td>`
+                + `<td><input type="number" class="id-bal" value="${bal}" data-key="${key}" onchange="idUpdateRow(this)" style="width:75px;padding:4px;border:1px solid #ccc;border-radius:4px"></td>`
+                + `<td class="id-q ${q.c}">${q.t}</td></tr>`;
+            txt += `भाव ${bh} (${RASHI_HI[r]}): SAV=${sav} BAV=${bav === '' ? '-' : bav} BAL=${bal} गुणवत्ता=${q.t}\n`;
+        }
+        html += `</table><div style="text-align:center;margin:10px 0"><button class="btn" onclick="idRecalcAll()" style="background:#6a1b9a">🔄 Recalculate (सभी rows)</button></div>`
+            + `<p class="note">SAV/BAV/BAL auto-calculated; ✏️ खाने manually edit कर सकते हैं। राहु/केतु का BAV auto नहीं होता - ऐप से भरें।<br>गुणवत्ता: BAV ≥ 5 और SAV &gt; 28 = प्रबल ✅ | कोई एक = मध्यम ⚠️ | वरना क्षीण ❌</p></div></div>`;
+
+        // --- Section 3: Dasha synergy per nakshatra period ---
+        prog.textContent = 'दशा synergy निकाल रहे हैं...';
+        await new Promise(r => setTimeout(r, 10));
+        html += `<div class="result-card"><div class="result-header">🔗 दशा-गोचर Synergy</div><div class="result-body" style="overflow-x:auto"><table style="min-width:750px"><tr><th>अवधि</th><th>ग्रह स्थिति</th><th>चल रही दशा</th><th>Synergy</th></tr>`;
+        txt += `\n--- दशा-गोचर Synergy ---\n`;
+        for (const p of periods) {
+            const bhL = (p.rashi - L + 12) % 12 + 1;
+            const bhM = (p.rashi - M + 12) % 12 + 1;
+            const mid = new Date((p.from.getTime() + p.to.getTime()) / 2);
+            const {md, ad} = idVimAt(mid);
+            const sav = savArr[p.rashi];
+            const bav = bavArr ? bavArr[bhL-1] : NaN;
+            const q = idQuality(sav, bav);
+            const reason = `${pHi} ${RASHI_HI[p.rashi]} में (जन्म से ${bhL}वां भाव); BAV ${isNaN(bav) ? '-' : bav}, SAV ${sav}; ${md} MD में ${ad} AD`;
+            html += `<tr><td>${idFmtD(p.from)}<br>से ${idFmtD(p.to)}</td><td>${pHi} ${RASHI_HI[p.rashi]}<br><span class="bhava-info">जन्म से ${bhL}वां, चंद्र से ${bhM}वां</span></td><td>${md} MD<br>${ad} AD</td><td class="${q.c}"><b>${q.t}</b><br><span style="font-size:.85em">${reason}</span></td></tr>`;
+            txt += `${idFmtD(p.from)} से ${idFmtD(p.to)}: ${pHi} ${RASHI_HI[p.rashi]} (जन्म भाव ${bhL}) | दशा ${md}/${ad} | ${q.t} | ${reason}\n`;
+        }
+        html += `</table></div></div>`;
+        html += `</div>`; // indepth-capture
+        prog.textContent = '';
+        out.innerHTML = html;
+        window._gocharText = txt;
+    } catch(e) {
+        prog.textContent = '';
+        out.innerHTML = `<div class="error">त्रुटि: ${e.message}</div>`;
+    }
+}
+window.calcIndepth = calcIndepth;
+
+function screenshotIndepth() {
+    const el = document.getElementById('indepth-capture');
+    const prog = document.getElementById('indepth-progress');
+    if (!el || !el.innerHTML) { if (prog) prog.textContent = 'पहले "गोचर निकालें" दबाएं'; return; }
+    if (typeof html2canvas === 'undefined') { if (prog) prog.textContent = 'स्क्रीनशॉट लाइब्रेरी लोड नहीं हुई'; return; }
+    if (prog) prog.textContent = 'स्क्रीनशॉट बना रहे हैं...';
+    html2canvas(el, {scale: 2}).then(cv => {
+        const a = document.createElement('a');
+        a.href = cv.toDataURL('image/png');
+        const pl = document.getElementById('id-planet');
+        const yr = document.getElementById('id-year');
+        a.download = `Indepth_${pl ? pl.value : 'x'}_${yr ? yr.value : 'x'}.png`;
+        a.click();
+        if (prog) prog.textContent = '✅ स्क्रीनशॉट डाउनलोड हो गया';
+        setTimeout(() => { if (prog && prog.textContent.includes('स्क्रीनशॉट डाउनलोड')) prog.textContent = ''; }, 2500);
+    }).catch(err => { if (prog) prog.textContent = 'स्क्रीनशॉट में त्रुटि'; });
+}
+window.screenshotIndepth = screenshotIndepth;
 
 // Init ephemeris
 (async function initEphem() {
