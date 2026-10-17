@@ -98,6 +98,14 @@
 <body>
 
     <h1>Kundali Milan Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
     <div class="container" id="prompt-container">
         <!-- Prompts will be loaded here -->
     </div>
@@ -106,7 +114,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData = `यह PDF जातक जातक की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी : 
+        const rawData_hi = `यह PDF जातक जातक की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी : 
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -126,7 +134,7 @@
 16] D9  के 12 भाव के राशी-नक्षत्र (Bhava Cusp) (स्क्रीनशॉट)
 
 कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
-------------------------------------------
+----------
 उपरोक्त चैट और  PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
 
 लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
@@ -140,7 +148,7 @@
 
 
 आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
------------------------------------------
+----------
 txt फाइल से निम्मलिखित जानकारी को एक के बाद एक बिना बदलाव के जैसी की वैसी लिखे :
 
 1] Jaimini Complete Report
@@ -151,9 +159,9 @@ txt फाइल से निम्मलिखित जानकारी क
 6] D1_to_D9_Analysis
 7] D1_to_D7_Analysis
 8] D1_to_D60_Analysis
------------------------------------------
+----------
 चलित कुंडली देखकर बताईये की चलित कुंडली में D1 कुंडली से क्या बदला है और इसका क्या प्रभाव पड़ेगा :
------------------------------------------
+----------
 ➤ PN, PB, MB का जीवन पर प्रभाव (Impact on Life)
 
 विषय: वैदिक ज्योतिष - ग्रह एवं भावों के लिए पुष्कर नवांश (PN), पुष्कर भाग (PB) और मृत्यु भाग (MB) की गणना एवं फलादेश।
@@ -172,12 +180,12 @@ txt फाइल से निम्मलिखित जानकारी क
 ​▸ दशा फल: वर्तमान या आगामी महादशा में इन अमृत/विष बिंदुओं का क्या प्रभाव पड़ेगा?
 
 ​▸ ​निष्कर्ष: समग्र रूप से कुंडली में 'अमृत' (PB) और 'विष' (MB) का संतुलन कितना है?
------------------------------------------
+----------
 जन्म नक्षत्र को आधार मानकर नवतारा चक्र बनाइए और विश्लेषण कीजिए कि कुंडली के सभी 9 ग्रह किन-किन ताराओं (संपत, विपत, वध आदि) के नक्षत्रों में बैठे हैं, और उस तारा के अनुसार प्रत्येक ग्रह अपना कैसा (शुभ/अशुभ) फल देगा?
------------------------------------------
+----------
 1] जातक के कुंडली के सभी शुभ योगो की पहले सूचि तयार करें, बाद में सभी शुभ योगों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो शुभ योग है वो भी लेने है.txt से भी लेने है.
 2] जातक के कुंडली के सभी दोषों की पहले सूचि तयार करें, बाद में सभी दोषों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो दोष है वो भी लेने है.txt से भी लेने है.
------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), अष्टकवर्ग और जैमिनी कारकत्व के आधार पर होना चाहिए।
 
 
@@ -207,7 +215,7 @@ txt फाइल से निम्मलिखित जानकारी क
 ➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
-------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर D1 के सभी 12 भावों का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल, अष्टकवर्ग के आधार पर होना चाहिए।
 
 
@@ -225,7 +233,7 @@ txt फाइल से निम्मलिखित जानकारी क
 ➤ निष्कर्ष : समग्र रूप से भाव मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी भाव के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
------------------------------------------
+----------
 ➤ समान्य जानकारी तालिका बनाइये :
 
 ►D1 लग्न भाव राशी और नक्षत्र
@@ -257,10 +265,10 @@ txt फाइल से निम्मलिखित जानकारी क
 
 ➤ निष्कर्ष : 
 ▸ D1 के लग्न के प्रभावशाली ग्रह और  D9 के लग्न के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ? 
-▸ D1 के सप्तम भाव के प्रभावशाली ग्रह और  D9 के सप्तम भाव के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ? 
------------------------------------------
+▸ D1 के सप्तम भाव के प्रभावशाली ग्रह और  D9 के सप्तम भाव के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ?
+----------
 चन्द्र कुंडली और लग्न कुंडली से मंगल दोष चेक कीजिये.
-------------------------------------------
+----------
 1] विवाह का वादा (Promise of Marriage):
 ➤ 7वें भाव का कस्पल सब-लॉर्ड (CSL) कौन है?
 ➤ यह CSL किन भावों को सिग्निफाई कर रहा है (विशेषकर 2, 7, 11 भावों के संबंध)?
@@ -283,7 +291,7 @@ txt फाइल से निम्मलिखित जानकारी क
 ➤ क्या 7th CSL या 11th CSL का संबंध 12वें भाव (शय्या सुख की कमी/गुप्त परेशानियां) से हो रहा है?
 
 विश्लेषण: वैवाहिक जीवन कितना सुखद रहेगा? क्या भविष्य में कानूनी तलाक, अलगाव (Separation), जीवनसाथी के स्वास्थ्य को खतरा, या मानसिक क्लेश के कारण वैवाहिक सुख में भारी कमी की कोई स्पष्ट संभावना है? (स्पष्ट और कड़वा सच बताएं)।
-------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर जातक xyz के कुंडली की निम्नलिखित जानकारी निकाले :
 
 
@@ -387,11 +395,11 @@ KP का विवरण:
 7वें CSL का  SSL:
 
 अंत में सभी निकला हुआ डेटा कॉसचेक कीजिये...
-------------------------------------------
+----------
 'डेटा टेबल' की जानकारी को क्रॉस चेक करके सुनिश्चित करिए की वो सही है या कोई त्रुटी है ? जो त्रुटी हो उसकी ही सूचि दीजिए सिर्फ.
-------------------------------------------
+----------
 https://sites.google.com/view/astropropmt/Kundali-Milan-Report/Milan-Paste
-------------------------------------------
+----------
 कृपया उपरोक्त सभी PDF के जन्म विवरणों के आधार पर दो कुंडलियों (वर और वधू) के लिए एक विस्तृत तुलनात्मक ज्योतिषीय डेटा तालिका बनाएं। तालिका का उद्देश्य कुंडली मिलान रिपोर्ट की शुरुआत में दोनों कुंडलियों का एक त्वरित अवलोकन प्रदान करना है।
 कृपया तालिका को निम्नलिखित खंडों और प्रारूप में व्यवस्थित करें:
 
@@ -604,10 +612,10 @@ KP का विवरण:
 
 निर्देश:
 उपरोक्त सभी डेटा को एक सुव्यवस्थित Markdown तालिका में प्रस्तुत करें, जिसमें तीन कॉलम हों: 'विवरण', '[लड़के का नाम]', और '[लड़की का नाम]'। कृपया तालिका को उप-शीर्षकों (जैसे 'मुख्य बिंदु', 'पराशरी ग्रह', 'जैमिनी चर कारक' आदि) के साथ विभाजित करें ताकि पठनीयता बेहतर हो। फॉर्मेट ऐसा होना चाहिए : "[कुम्भ, चतुर्थ भाव, शतभिषा,स्वामी: राहु]"
-------------------------------------------
+----------
 'कुंडली मिलान: विस्तृत तुलनात्मक डेटा टेबल' की जानकारी को क्रॉस चेक करके सुनिश्चित करिए की वो सही है या कोई त्रुटी है ? जो त्रुटी हो उसकी ही सूचि दीजिए सिर्फ.
 उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
-------------------------------------------
+----------
 यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
 
 1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
@@ -617,9 +625,9 @@ KP का विवरण:
 5] और इसके बाद के विश्लेषण में करते समय जातकों के नाम का उल्लेख करेंगे.
 
 क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
-------------------------------------------
+----------
 'कुंडली मिलान: विस्तृत तुलनात्मक डेटा टेबल' से जो पॉइंट्स सेम या मित्र या सम निकले है, और जो पॉइंट्स विपरीत शत्रु निकले है उनका विश्लेषण प्रभाव और निष्कर्ष सहित कीजिये.
-------------------------------------------
+----------
 कुंडली मिलान से पहले दोनों का स्वभाव (Personality) जानना अत्यंत आवश्यक है. इसीलिए...
 
 ➤ कृपया उपरोक्त सभी PDF/txt/चैट के जन्म विवरणों के आधार पर लड़के के स्वभाव का विश्लेषण कीजिये :
@@ -638,7 +646,7 @@ KP का विवरण:
 (स्रोत: लग्न, लग्नेश, षष्ठम भाव, सूर्य और चंद्रमा का बल)
 
 ➤ समग्र निष्कर्ष:
-------------------------------------------
+----------
 ➤ कृपया उपरोक्त सभी PDF/txt/चैट के जन्म विवरणों के आधार पर लड़की के स्वभाव का विश्लेषण कीजिये :
 
 ► मूल व्यक्तित्व और प्रकृति (Core Personality & Nature):
@@ -655,7 +663,7 @@ KP का विवरण:
 (स्रोत: लग्न, लग्नेश, षष्ठम भाव, सूर्य और चंद्रमा का बल)
 
 ➤ समग्र निष्कर्ष:
-------------------------------------------
+----------
 कृपया उपरोक्त सभी PDF/txt/चैट के जन्म विवरण और संभावित जीवनसाथी विवरण के आधार पर विश्लेषण कीजिए :
 
 ➤ क्या लड़के का स्वभाव लड़की के संभावित पति से मिलता है ? (प्रतिशत)
@@ -663,7 +671,7 @@ KP का विवरण:
 ➤ क्या लड़की का स्वभाव लड़के के संभावित पत्नी से मिलता है ? (प्रतिशत)
 
 ➤ समग्र निष्कर्ष:
-------------------------------------------
+----------
 TXT फाइल दोनों के अष्टकूट मिलान की है, सभी अष्टकूट मिलान के प्रत्येक कूट का विस्तृत विश्लेषण कीजिये और गुणों पर आधारित निष्कर्ष: औसत मिलान, कुछ प्रमुख दोषों के साथ दीजिये। (विश्लेषण में 'TXT फाइल' का उल्लेख ना करें, यह सिर्फ सन्दर्भ के लिए है)
 
 ➤ अष्टकूट और उनके गुण:
@@ -685,7 +693,7 @@ TXT फाइल दोनों के अष्टकूट मिलान �
 
 ➤ अष्टकूट  का समग्र निष्कर्ष:
 ► कुल प्राप्तांक (36 में से) और क्या अष्टकूट पद्धति के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? क्या यह विवाह अनुशंसित है?
-------------------------------------------
+----------
 ➤ दशकूट मिलान (दक्षिण भारतीय पद्धति) का विस्तृत विश्लेषण:
 (TXT फाइल में उपलब्ध दशकूट सारणी और 36 में से प्राप्त गुणों के आधार पर विश्लेषण करें, विश्लेषण में 'TXT फाइल' का उल्लेख ना करें, यह सिर्फ सन्दर्भ के लिए है)
 
@@ -705,10 +713,10 @@ TXT फाइल दोनों के अष्टकूट मिलान �
 
 ➤ दशकूट का समग्र निष्कर्ष:
 ► कुल प्राप्तांक (36 में से) और क्या दक्षिण भारतीय पद्धति के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? क्या यह विवाह अनुशंसित है?
-------------------------------------------
+----------
 ► अष्टकूट और दशकूट विश्लेषण का संयुक्त समग्र निष्कर्ष :
 ► केवल 'अष्टकूट और दशकूट मिलान' के विशिष्ट मापदंड के आधार पर, इस पहलू को 10 में से कितने स्वतंत्र अंक देंगे? (ध्यान दें: यह पूरे विवाह का समग्र स्कोर नहीं है, बल्कि 100 अंकों के अंतिम स्कोरकार्ड के लिए केवल इसी एक पैमाने का स्वतंत्र स्कोर है।)
-------------------------------------------
+----------
 ➤ मंगल दोष विचार :
 ► लड़के की कुंडली में मंगल की स्थिति।
 ► लड़की की कुंडली में मंगल की स्थिति।
@@ -720,12 +728,12 @@ TXT फाइल दोनों के अष्टकूट मिलान �
 ➤ समग्र निष्कर्ष:
 ► प्रस्तुत विश्लेषण के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? 
 ► केवल 'मंगल दोष विचार' के विशिष्ट मापदंड के आधार पर, इस पहलू को 10 में से कितने स्वतंत्र अंक देंगे? (ध्यान दें: यह पूरे विवाह का समग्र स्कोर नहीं है, बल्कि 100 अंकों के अंतिम स्कोरकार्ड के लिए केवल इसी एक पैमाने का स्वतंत्र स्कोर है।)
-------------------------------------------
+----------
 ➤ A] पंचधा मैत्री विशेष विश्लेषण (लग्नेश और सप्तमेश संबंध): (विश्लेषण में 'TXT फाइल' का उल्लेख ना करें, यह सिर्फ सन्दर्भ के लिए है, TXT फाइल में उपलब्ध पंचधा मैत्री कैलकुलेटर के डेटा के अनुसार विश्लेषण करें)
 ► वर (लड़का): कुंडली में लग्नेश (स्वयं) और सप्तमेश (जीवनसाथी) के बीच नैसर्गिक, तात्कालिक और अंतिम पंचधा मैत्री संबंध कैसा है (मित्र/शत्रु/सम)?
 ► वधू (लड़की): कुंडली में लग्नेश और सप्तमेश के बीच पंचधा मैत्री संबंध कैसा है?
 ► पंचधा निष्कर्ष: क्या दोनों की व्यक्तिगत कुंडली में लग्नेश और सप्तमेश के बीच शत्रुता है (जो वैवाहिक असंतोष दर्शाती है) या मित्रता (जो आपसी समझ दर्शाती है)? TXT फाइल द्वारा दिए गए "वैवाहिक दृष्टिकोण से अंतिम विश्लेषण" को भी शामिल करें।
-------------------------------------------
+----------
 ➤ B] वर और वधू दोनों की कुंडलियों का निम्मलिखित मिलान विश्लेषण और तुलनात्मक अध्ययन कीजिये और प्रत्येक बिंदु का निष्कर्ष भी दीजिये :
 
 1] सप्तम भाव का विश्लेषण : विवाह, जीवनसाथी और साझेदारी का भाव। इस भाव के स्वामी, इसमें स्थित ग्रह, और इस पर पड़ने वाले प्रभावों का विश्लेषण।
@@ -736,18 +744,18 @@ TXT फाइल दोनों के अष्टकूट मिलान �
 6] दीर्घायु योग : दोनों की कुंडलियों में आयु के योग।
 
 to be continued...
-------------------------------------------
+----------
 7] संतान योग : दोनों की कुंडली संतान प्राप्ति के योग और संभावनाएं। (D1/D9 और D7)
 8] धन और आर्थिक स्थिरता : दोनों की कुंडलियों में धन संबंधी योग।
 9] शैया सुख और घरेलू शांति : कुंडलियों में 12वां भाव: शारीरिक सुख और "बेड प्लेजर" (Bed Comforts) की स्थिति, और 4था भाव: पारिवारिक शांति और घरेलू सुख का वातावरण।
 10] दोनों के D60 (षष्टियंश) - पूर्व पुण्य और अंतिम परिणाम : अगर D1 और D9 में  विवाह संबधी जो योग हैं, लेकिन D60 में वह ग्रह शापित है, तो विवाह में विलंब या डिनायल आ सकती है। यह 'सस्टेनेबल सक्सेस' (टिकाऊ सफलता) देखने के D60 का विश्लेषण । 
 
 to be continued...
-------------------------------------------
+----------
 ➤ पंचधा मैत्री विशेष और सभी 10 बिन्दुओ (A और B) का समग्र निष्कर्ष:
 ► प्रस्तुत विश्लेषण के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? 
 ► केवल 'पंचधा मैत्री विशेष और भाव/ग्रह मिलान के सभी 10 बिन्दुओ (A और B)' के विशिष्ट मापदंड के आधार पर, इस पहलू को 10 में से कितने स्वतंत्र अंक देंगे? (ध्यान दें: यह पूरे विवाह का समग्र स्कोर नहीं है, बल्कि 100 अंकों के अंतिम स्कोरकार्ड के लिए केवल इसी एक पैमाने का स्वतंत्र स्कोर है।)
-------------------------------------------
+----------
 ➤ दोनों के जीवनशैली और उद्देश्य का मिलान :
 ► क्या दोनों का धर्म, कर्म, करियर और जीवन के उद्देश्य में सामंजस्य है ?
 ► कार्यक्षेत्र (कर्म भाव/दशम भाव) में सामंजस्य या टकराव ?
@@ -755,7 +763,7 @@ to be continued...
 ➤ समग्र निष्कर्ष:
 ► प्रस्तुत विश्लेषण के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? 
 ► केवल 'जीवनशैली और उद्देश्य' की अनुकूलता के विशिष्ट मापदंड के आधार पर, इस पहलू को 10 में से कितने स्वतंत्र अंक देंगे? (ध्यान दें: यह पूरे विवाह का समग्र स्कोर नहीं है, बल्कि 100 अंकों के अंतिम स्कोरकार्ड के लिए केवल इसी एक पैमाने का स्वतंत्र स्कोर है।)
-------------------------------------------
+----------
 ➤ नवमांश कुंडली का मिलान (Navamsha Chart Matching - D9 Chart):
 नवांश कुंडली को विवाह और भाग्य के लिए बहुत महत्वपूर्ण माना जाता है।
 ► दोनों के नवांश लग्न और नवांश में ग्रहों की स्थिति का तुलनात्मक अध्ययन।
@@ -765,7 +773,7 @@ to be continued...
 ➤ समग्र निष्कर्ष:
 ► प्रस्तुत विश्लेषण के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? 
 ► केवल 'नवमांश (D9) कुंडली मिलान' के विशिष्ट मापदंड के आधार पर, इस पहलू को 10 में से कितने स्वतंत्र अंक देंगे? (ध्यान दें: यह पूरे विवाह का समग्र स्कोर नहीं है, बल्कि 100 अंकों के अंतिम स्कोरकार्ड के लिए केवल इसी एक पैमाने का स्वतंत्र स्कोर है।)
-------------------------------------------
+----------
 ➤ जैमिनी ज्योतिष आधारित मिलान :
 
 1] उपपद लग्न (Upapada Lagna-UL): 
@@ -788,7 +796,7 @@ to be continued...
 ► दोनों की कुंडली स्वांश लग्न का मीलान और प्रभाव। 
 
 to be continued...
-------------------------------------------
+----------
 प्रश्न: क्या दोनों की आत्माओं के मूल उद्देश्य और जीवन की दिशा में सामंजस्य है? (AK-AK विश्लेषण)
 प्रश्न: क्या एक साथी दूसरे के लिए "आदर्श" या "आकांक्षित" जीवनसाथी की छवि को पूरा करता है? (AK-DK विश्लेषण)
 प्रश्न: क्या जातक की सार्वजनिक छवि (AL) और उसके संबंधों की छवि (A7) में सामंजस्य है? (एक का AL दूसरे के A7 के लिए अनुकूल)
@@ -801,7 +809,7 @@ to be continued...
 समग्र निष्कर्ष:
 ► प्रस्तुत विश्लेषण के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? 
 ► केवल 'जैमिनी ज्योतिष मिलान' के विशिष्ट मापदंड के आधार पर, इस पहलू को 10 में से कितने स्वतंत्र अंक देंगे? (ध्यान दें: यह पूरे विवाह का समग्र स्कोर नहीं है, बल्कि 100 अंकों के अंतिम स्कोरकार्ड के लिए केवल इसी एक पैमाने का स्वतंत्र स्कोर है।)
-------------------------------------------
+----------
 ➤ KP (कृष्णमूर्ति पद्धति) से कुंडली मिलान
 
 1] सप्तम भाव का उप-स्वामी (7th Cusp Sub-Lord): KP में विवाह के लिए 7वें भाव के उप-स्वामी का विश्लेषण बहुत महत्वपूर्ण है।
@@ -819,7 +827,7 @@ to be continued...
 ➤ समग्र निष्कर्ष:
 ► प्रस्तुत विश्लेषण के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? 
 ► केवल 'KP (कृष्णमूर्ति पद्धति) मिलान' के विशिष्ट मापदंड के आधार पर, इस पहलू को 10 में से कितने स्वतंत्र अंक देंगे? (ध्यान दें: यह पूरे विवाह का समग्र स्कोर नहीं है, बल्कि 100 अंकों के अंतिम स्कोरकार्ड के लिए केवल इसी एक पैमाने का स्वतंत्र स्कोर है।)
-------------------------------------------
+----------
 ➤ BNN (भृगु नंदी नाड़ी) से कुंडली मिलान
 
 1] बृहस्पति और शुक्र की स्थिति (Jupiter & Venus):
@@ -838,7 +846,7 @@ to be continued...
 ➤ समग्र निष्कर्ष:
 ► प्रस्तुत विश्लेषण के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? 
 ► केवल 'BNN (भृगु नंदी नाड़ी) मिलान' के विशिष्ट मापदंड के आधार पर, इस पहलू को 10 में से कितने स्वतंत्र अंक देंगे? (ध्यान दें: यह पूरे विवाह का समग्र स्कोर नहीं है, बल्कि 100 अंकों के अंतिम स्कोरकार्ड के लिए केवल इसी एक पैमाने का स्वतंत्र स्कोर है।)
-------------------------------------------
+----------
 ➤ अंक ज्योतिष मिलान 
 ► दोनों के मूलांक और भाग्यांक का मिलान 
 ► दोनों के मूलांक और भाग्यांक स्वामी के परस्पर नैसर्गिक संबंध का विश्लेषण 
@@ -846,14 +854,14 @@ to be continued...
 ➤ समग्र निष्कर्ष:
 ► प्रस्तुत विश्लेषण के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? 
 ► केवल 'अंक ज्योतिष मिलान' के विशिष्ट मापदंड के आधार पर, इस पहलू को 10 में से कितने स्वतंत्र अंक देंगे? (ध्यान दें: यह पूरे विवाह का समग्र स्कोर नहीं है, बल्कि 100 अंकों के अंतिम स्कोरकार्ड के लिए केवल इसी एक पैमाने का स्वतंत्र स्कोर है।)
-------------------------------------------
+----------
 ➤ विशेष योग (Special Yogas):
 ► दोनों की कुंडलियों में कोई विशेष शुभ या अशुभ योग जो वैवाहिक जीवन को प्रभावित कर सकते हैं।
 
 ➤ समग्र निष्कर्ष:
 ► प्रस्तुत विश्लेषण के अनुसार, क्या यह संबंध वैवाहिक जीवन के लिए संतुलित और अनुकूल प्रतीत होता है? 
 ► केवल 'विशेष योग' के विशिष्ट मापदंड के आधार पर, इस पहलू को 10 में से कितने स्वतंत्र अंक देंगे? (ध्यान दें: यह पूरे विवाह का समग्र स्कोर नहीं है, बल्कि 100 अंकों के अंतिम स्कोरकार्ड के लिए केवल इसी एक पैमाने का स्वतंत्र स्कोर है।)
-------------------------------------------
+----------
 ➤ दशा संधि और समय मिलान (Dasha Sandhi Analysis): (ध्यान दे की अभी 2026 चल रहा है उसके अनुसार गणना करनी है, और दिए हुए TXT में xyz की दशा वर की है, और xyz की दशा वधु की)
 
 A] वर्तमान दशा का प्रभाव:
@@ -890,20 +898,20 @@ C] समय तुलना सारणी (Timeline Table):
 ► स्थिति D (विरोधाभास): यदि एक की कुंडली में "अत्यंत सुख" है और दूसरे की कुंडली में "तलाक/विच्छेद" है, तो यह "बेमेल प्रारब्ध" है (विवाह नहीं होना चाहिए)।
 
 to be continued...
-------------------------------------------
+----------
 ➤ कार्मिक संबंध का अंतिम निर्णय:
 ► क्या यह विवाह "ऋणानुबंध" (पिछले जन्म का लेना-देना) जैसा प्रतीत होता है?
 ► क्या दोनों के दुख और सुख के पैटर्न (Patterns) आपस में मैच हो रहे हैं?
 ► क्या यह जोड़ा "सुख भोगने" के लिए मिल रहा है या "पुराने कर्मों का हिसाब बराबर करने" (Karmic Settlement) के लिए?
-------------------------------------------
+----------
 ➤ सकारात्मक पहलू (Strengths of the Match):
 
 ➤ नकारात्मक पहलू और चिंताएं (Weaknesses and Concerns):
-------------------------------------------
+----------
 ➤ उपाय और सुझाव (Remedies and Suggestions):
 ► गण दोष, भकूट दोष, मंगल दोष (यदि हो) के लिए विशिष्ट ज्योतिषीय उपाय (जैसे पूजा, मंत्र जाप, दान)।
 ► आपसी समझ और तालमेल बढ़ाने के लिए व्यावहारिक सुझाव।
-------------------------------------------
+----------
 लड़के के संदर्भ में :
 मारक पहचान: क्या यह ग्रह द्वितीयेश (2nd lord) या सप्तमेश (7th lord) होकर मारकेश की भूमिका में है? यदि हाँ, तो कौन सी - द्वितीयेश (सामान्य मारक) या सप्तमेश (प्रबल मारक)?
 
@@ -961,7 +969,7 @@ to be continued...
 कर्म का पाठ (Karmic Lesson): यह ग्रह जीवन में क्या 'कार्मिक सबक' सिखाने आया है? (जैसे: 'वैराग्य' या 'अलगाव' का सबक)।
 
 ऊर्जा का रूपांतरण (Energy Channeling): क्या जातक इस ग्रह की नकारात्मक ऊर्जा को एक उच्च उद्देश्य के लिए उपयोग कर सकता है? (जैसे: 'मारक' शनि की ऊर्जा को 'अध्यात्म' या 'अस्पताल सेवा' में लगाना)।
------------------------------------------
+----------
 लड़की के संदर्भ में :
 मारक पहचान: क्या यह ग्रह द्वितीयेश (2nd lord) या सप्तमेश (7th lord) होकर मारकेश की भूमिका में है? यदि हाँ, तो कौन सी - द्वितीयेश (सामान्य मारक) या सप्तमेश (प्रबल मारक)?
 
@@ -1019,9 +1027,9 @@ to be continued...
 कर्म का पाठ (Karmic Lesson): यह ग्रह जीवन में क्या 'कार्मिक सबक' सिखाने आया है? (जैसे: 'वैराग्य' या 'अलगाव' का सबक)।
 
 ऊर्जा का रूपांतरण (Energy Channeling): क्या जातक इस ग्रह की नकारात्मक ऊर्जा को एक उच्च उद्देश्य के लिए उपयोग कर सकता है? (जैसे: 'मारक' शनि की ऊर्जा को 'अध्यात्म' या 'अस्पताल सेवा' में लगाना)।
------------------------------------------
-दोनों के जीवन में मारकेश और बाधकेश संबंधित चुनौतिया और उपाय 
------------------------------------------
+----------
+दोनों के जीवन में मारकेश और बाधकेश संबंधित चुनौतिया और उपाय
+----------
 ➤ रिपोर्ट के रूप में सामान्य प्रश्न और  उनके संक्षिप्त उत्तर (Common Questions & Short Answers):
 
 प्रश्न 1: यह जोड़ी कितनी संगत है? (Overall Compatibility?)
@@ -1036,7 +1044,7 @@ to be continued...
 प्रश्न 10: संघर्ष या मतभेद होने पर दोनों का प्रतिक्रिया करने का तरीका क्या होगा? (Conflict Resolution Style?)
 प्रश्न 11: क्या दोनों एक-दूसरे के व्यक्तिगत विकास और स्वतंत्रता का सम्मान करेंगे? (Respect for Personal Growth & Freedom?)
 प्रश्न 12: इस रिश्ते का सबसे मजबूत और सबसे कमजोर पहलू क्या है? (Biggest Strength & Weakness of the relationship?)
-------------------------------------------
+----------
 उपरोक्त रिपोर्ट और चैट में से सभी खंडो के निष्कर्षो के अनुसार विवाह को 10 में से कुछ नंबर दिए गये है, उन्हें ढूंढ़कर उनकी गणना करके एक "समग्र संगतता स्कोरकार्ड" बनाएं। "कुल स्कोर पर आधारित अंतिम निष्कर्ष" के बिंदुओ का विश्लेषण कीजिये :
 
 ➤ समग्र संगतता स्कोरकार्ड (Overall Compatibility Scorecard) 
@@ -1060,17 +1068,17 @@ to be continued...
 ► चुनौतीपूर्ण पक्ष: 
 ► अंतिम अनुशंसा: (यह विवाह किया जा सकता है या नही ? अगर हाँ तो किन शर्तों और उपायों के साथ ?) 
 ► यदि यह "कार्मिक संबंध" है, तो स्पष्ट चेतावनी और उपाय के साथ सलाह दें।
-------------------------------------------
+----------
 ➤ अंतिम निष्कर्ष और ज्योतिषी की राय (Final Conclusion and Astrologer's Opinion):(ध्यान रहे ज्योतिषी फिमेल है)
 ► सभी पहलुओं का सार।
 ► विवाह की अनुशंसा की जाती है या नहीं, या किन शर्तों और उपायों के साथ की जा सकती है।
------------------------------------------
+----------
 ➤ जातक ने अपने बारे में जानकरी दी है और जातक के कुछ सवाल है, पहले दी हुयी जानकारी को सूचीबद्ध कीजिये, उसके बाद सभी सवाल सूचीबद्ध कीजिये :
------------------------------------------
+----------
 अब दी हुयी जानकारी का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर कीजिये, एक एक घटना का विस्तार से विश्लेषण होना चाहिए, अगर उपाय आवश्यक हो तो उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछती हु.
------------------------------------------
+----------
 अब दिए हुए सवालो का जवाब गहन शोध करके लिखिए विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक सवाल का विस्तार से विश्लेषण होना चाहिए,उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछती हु.
-------------------------------------------
+----------
 अब तक किये गए सभी निम्मलिखित घटनाओं और सवालों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, आपकी सुविधा के लिए सवालों की सूचि और साथ में जवाब किस तरह होगा उसका उदाहारण दिया गया है, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
 
 A] विस्तृत तुलनात्मक ज्योतिषीय डेटा मिलान का संक्षिप्त निष्कर्ष ।
@@ -1127,14 +1135,2083 @@ A] विस्तृत तुलनात्मक ज्योतिषीय
 प्रश्न 12: इस रिश्ते का सबसे मजबूत और सबसे कमजोर पहलू क्या है? (Biggest Strength & Weakness of the relationship?)
 
 ➤ जातक के प्रश्न और उनके संक्षिप्त उत्तर (Natives Questions & Short Answers):
-------------------------------------------
+----------
 इस चैट का विश्लेषण तो पीडीएफ के फॉर्मेट में जातक को भेजा जाएगा, लेकिन एक इंस्टाग्राम DM रिप्लाई तैयार कीजिए मैसेज स्टाइल में, हिंग्लिश में और एक प्यारग्राफ मे होना चाहिए, जिसमें पुरे चैट का सारांश, गुण मिलान का सारांश और ज्योतिषी की राय का सारांश शामिल हो, ध्यान रहे पूरी तरह no नही कहना है, कार्मिक ऋण और डेस्टिनी की बात करनी है.
-------------------------------------------
+----------
 निम्मलिखित जानकारी लिखिए इंग्लिश में, (,) से सेपरेट करके लेकिन स्पेस न देकर :
 
 नाम,जन्म स्थान,Date of Birth,समय,लिंग
 
 जैसे : Sarang,Nagpur,14-02-1995,03:00 AM,MALE`;
+        const rawData_en = `This PDF is the native's kundali. Save all the information from it, so that the kundali can be analysed. While analysing, do not write the reference of the PDF's page, but give the list of which of the following information is on which page - meaning it will be easier for you to find later too: 
+
+1] Graha position table -(planet, degree, rashi, nakshatra-pada, nakshatra-lord, Jaimini chara karaka)
+2] Sarvashtakavarga table
+3] Shadbala table (sthana bala, dig bala, kala bala, cheshta bala, naisargika bala, drishti bala)
+4] Bhava bala table 
+5] Vimshoppak bala table (shodash varga, shad varga, sapta varga and dasha varga)
+6] Jaimini arudha pada (rashi-based)
+7] Vimshottari mahadasha antardasha chart
+8] Yogini dasha antardasha chart
+9] Chara dasha antardasha chart
+10] Krishnamurti Paddhati (KP) bhava position table {bhava-rashi-lord-nakshatra lord-sub lord-sub-sub lord-Cusp-rashi-nakshatra-pada}
+11] Krishnamurti Paddhati (KP) graha position table {bhava-rashi-lord-nakshatra lord-sub lord-sub-sub lord-Cusp-rashi-nakshatra-pada}
+12] Krishnamurti Paddhati (KP) house significator graha position table
+13] Krishnamurti Paddhati (KP) graha significator position table
+14] D1's 12 bhavas' rashi-nakshatra (Bhava Cusp)
+15] D9 graha position table -(planet, degree, rashi, nakshatra-pada, nakshatra-lord) (screenshot)
+16] D9's 12 bhavas' rashi-nakshatra (Bhava Cusp) (screenshot)
+
+Please present all tables in a simple and readable table format.
+----------
+From the above chat and PDF, write the rashis placed in the twelve bhavas of the lagna kundali, the bhava lords and the planets present; also write whichever planet is uchcha, neecha, vakri, neecha-bhanga, asta, vargottama. Also write the nakshatra placements (do not write uchcha, neecha, vakri for Rahu-Ketu).
+
+The writing pattern will remain as follows, which will be only for example, shown in "":
+
+"First bhava (lagna):
+In this bhava there is Simha rashi, therefore the lagnesh is Surya.
+In this bhava the planets Surya and Rahu are placed.
+Surya: swagrihi (in its own house) in Simha rashi. Surya is placed in Magha nakshatra. Surya, being the lord of the first bhava (Simha), is seated in lagna. Surya's drishti is on the seventh bhava (Kumbha).
+Rahu: in Simha rashi (considered an enemy rashi for Rahu). Rahu is placed in Magha nakshatra. Rahu's drishti is on the fifth bhava (Dhanu), seventh bhava (Kumbha) and ninth bhava (Mesha).
+This bhava has the full drishti of Ketu (from the seventh bhava)."
+
+
+For your convenience a txt file has been given: "D1_Analysis"
+----------
+From the txt file, write the following information one after another exactly as-is, without any change:
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D7 Analysis
+5] D60 Analysis
+6] D1_to_D9_Analysis
+7] D1_to_D7_Analysis
+8] D1_to_D60_Analysis
+----------
+Looking at the chalit kundali, tell what has changed in the chalit kundali compared to the D1 kundali and what effect it will have:
+----------
+➤ Impact of PN, PB, MB on Life
+
+Subject: Vedic astrology - calculation and phaladesh of Pushkar Navamsha (PN), Pushkar Bhaga (PB) and Mrityu Bhaga (MB) for planets and bhavas.
+
+Based on the image and TXT calculations, write the impact on the following areas:
+
+​▸ Divine Protection: which bhavas/planets are protected by Pushkar energy and in which areas of life will help come 'without asking'?
+
+​▸ Struggles and Obstacles (MB Impact): in which areas of life can planets in Mrityu Bhaga create obstacles like 'landmines'?
+
+​▸ Start vs Result (Start vs Middle): based on the Pushkar difference between the bhava's 'beginning' and 'middle', tell how the beginning of a work will be and how its end will be?
+
+▸ In the calculation of PN and PB, check whether their 'bhavesh' is in MB ?
+(If the lord of the bhava (Bhavesh) is in Mrityu Bhaga, then even if the bhava is Pushkar, the phala will be obstructed)
+
+​▸ Dasha phala: what will be the impact of these amrit/vish points in the current or upcoming mahadasha?
+
+​▸ ​Conclusion: overall, how balanced are 'amrit' (PB) and 'vish' (MB) in the kundali?
+----------
+Taking the birth nakshatra as the base, make the navatara chakra and analyse in which taras (Sampat, Vipat, Vadha etc.) the nakshatras of all 9 planets of the kundali are placed, and according to that tara, what kind of (shubha/ashubha) phala each planet will give?
+----------
+1] First prepare the list of all shubha yogas of the native's kundali, then analyse in detail the method of formation of all shubha yogas and their probable results based on the capacity of their bhavas and planets. Some list of yogas and doshas is given at the end of the pdf - the shubha yogas among them should also be taken. Also take from the .txt.
+2] First prepare the list of all doshas of the native's kundali, then analyse in detail the method of formation of all doshas and their probable results based on the capacity of their bhavas and planets. Some list of yogas and doshas is given at the end of the pdf - the doshas among them should also be taken. Also take from the .txt.
+----------
+Please provide a list of astrological facts/data of all 9 planets (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu) based on the birth details of all the above chats and PDF. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on the kundali's phaladesh, shadbala, vimshoppak amsha (shodash varga), ashtakavarga and Jaimini karakas.
+
+
+Provide the following information for each planet:
+1. [Planet name]
+➤ Jaimini karaka:
+➤ Bhava ownership: (lord of which bhavas)
+➤ Position: (in which bhava and rashi)
+➤ Position in rashi: (mitra, shatru, sama, uchcha, neecha, moolatrikona, swarashi)
+➤ Nakshatra and pada: (in which nakshatra and which pada the planet is, and the influence of the nakshatra lord.)
+➤ Drishti: (drishti on which bhavas/planets) 
+➤ Drishti on [planet name]: (drishti of which planets)
+➤ Yuti: (in yuti with which planets)
+➤ Avastha (degree/amsha): (degree and the name of the avastha, e.g. bala, kumara etc.)
+➤ Emotional/avastha strength: vakri/asta/neecha/neecha-bhanga/vargottama status: (yes/no or the name of the status)
+➤ Navamsha position: (in the navamsha kundali, in which rashi, nakshatra (lord) the planet is and its influence.)
+➤ Strength in navamsha: afflicted/strong
+➤ Position change in chalit and its effect 
+➤ Bhava bala: (value only)
+➤ Shadbala:  (value in rupa and how its strength is - better than average, rank etc.)
+➤ Bhinnashtaka varga (BAV) points: (value between 0-8): (based on the points: practical strength - weak/average/powerful)
+➤ Vimshoppak amsha (shodash varga): (value and its rank among the planets, if applicable.)
+➤ Position and effect in Pushkar Navamsha (PN)/Pushkar Bhaga (PB)/Mrityu Bhaga (MB):
+​➤ Navatara position and effect: (based on the birth nakshatra, in which tara - like Sampat, Vipat, Sadhak etc. - this planet sits, and due to that specific tara, what kind of shubhata or obstacles will come in its natural and bhava phalas.)
+➤ Brief answer of probable phala in gochar and dasha: (generally how that planet will give phala in its dasha/antardasha and gochar - good, bad, or medium.
+
+➤ Conclusion: overall, is the planet strong or afflicted? (percentage)
+
+➤ Finally, a conclusion regarding all planets being strong and afflicted (based on percentage)
+----------
+Please provide a list of astrological facts/data of all 12 bhavas of D1 based on the birth details of all the above chats and PDF. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on karakas, bhava bala, ashtakavarga.
+
+
+Provide the following information for each bhava:
+
+1. First bhava (lagna):  name of the rashi [arudha pada]
+➤ Karaka: 
+➤ Bhava lord (lagnesh):
+➤ Bhavesh's position: 
+➤ Planets placed: 
+➤ Drishti on bhava: 
+➤ Bhava bala: value in rupa and how its strength is - better than average, rank etc. (weak or strong bhava in the kundali).
+➤ Sarvashtakavarga (SAV) points: (total points) (bhava's capacity: 'uttam' if more than 28, 'challenging' if less than 25)
+➤ Position and effect in Pushkar Navamsha (PN)/Pushkar Bhaga (PB)in:
+➤ Conclusion: overall, is the bhava strong or afflicted? (percentage)
+
+➤ Finally, a conclusion regarding all bhavas being strong and afflicted (based on percentage)
+----------
+➤ Make a general information table:
+
+►D1 lagna bhava rashi and nakshatra
+►D1 saptam bhava rashi and nakshatra
+►D9 lagna bhava rashi and nakshatra
+►D9 saptam bhava rashi and nakshatra
+
+
+►Chandra rashi 
+►Chandra nakshatra
+►Chandra nakshatra lord
+
+►D1 lagna bhava nakshatra lord
+►D1 lagnesh  
+►D1 saptam bhava nakshatra lord
+►D1 saptamesh
+►D9 lagna bhava nakshatra lord
+►D9 lagnesh  
+►D9 saptam bhava nakshatra lord
+►D9 saptamesh
+
+➤ After making the table, analyse the following points. 
+
+▸ Between the planet placed in lagna, the lagnesh and the lagna nakshatra lord of both D1 and  D9, who is stronger? 
+▸ Between the planet placed in lagna, the lagnesh, and the lagna nakshatra lord in D1 and D9, which planet is the most influential and ultimately directs the person's personality?
+
+▸ Between the planet placed in the saptam bhava, the saptamesh and the saptam bhava nakshatra lord of both D1 and  D9, who is stronger? 
+▸ Between the planet placed in the saptam bhava, the saptamesh and the saptam bhava nakshatra lord in D1 and D9, which planet is the most influential and ultimately directs the person's marriage?
+
+➤ Conclusion: 
+▸ Between the influential planet of D1's lagna and  the influential planet of D9's lagna, who is more influential? 
+▸ Between the influential planet of D1's saptam bhava and  the influential planet of D9's saptam bhava, who is more influential?
+----------
+Check Mangal dosha from the Chandra kundali and the lagna kundali.
+----------
+1] Promise of Marriage:
+➤ Who is the cuspal sub-lord (CSL) of the 7th bhava?
+➤ Which bhavas is this CSL signifying (especially with respect to the 2nd, 7th, 11th bhavas)?
+➤ Is this CSL also signifying the bhavas that deny marriage (like 1, 6, 10, 12 - which indicate separation or delay)?
+
+Analysis: Is there a clear promise of marriage in the kundali or is there a possibility of obstacles/denial? (What is the percentage possibility of the promise of marriage out of 100?)
+
+2] Nature of Spouse & Marital Relations: 
+➤ Who is the nakshatra lord of the 7th CSL and where is it placed?
+➤ Who is the sub-lord of the 7th CSL and where is it placed?
+➤ Who is the SSL of the 7th CSL and where is it placed?
+➤ Which are the main planets signifying the marriage-related bhavas (2, 7, 11) and what is their position?
+
+Analysis: the general nature, personality of the spouse and the overall quality of the marital relationship.
+
+3] Quality of Married Life & Separation:
+➤ Is the 7th CSL strongly showing the shubha bhavas (2, 7, 11) for marriage?
+➤ Is the 7th CSL strongly signifying the bhavas of separation/divorce (1, 6, 10)? (Note: the 6th bhava is the 12th from the 7th, which gives legal separation).
+➤ Is the 7th CSL signifying the 8th bhava (mental stress, trouble from in-laws, secret deceit, or maraka suffering for the spouse)?
+➤ Is there a connection of the 7th CSL or 11th CSL with the 12th bhava (lack of shayya sukha/secret troubles)?
+
+Analysis: How pleasant will the married life be? Is there any clear possibility of legal divorce in the future, separation, danger to the spouse's health, or a heavy reduction in marital happiness due to mental distress? (Tell the clear and bitter truth).
+----------
+Please extract the following information of native xyz's kundali based on the birth details of all the above chats and PDF:
+
+
+D1 planetary positions (with rashi and bhava):
+
+Sun: [rashi], [bhava], [nakshatra-lord]
+Moon: [rashi], [bhava] [nakshatra-lord]
+Mars: [rashi], [bhava] [nakshatra-lord]
+Mercury: [rashi], [bhava] [nakshatra-lord]
+Jupiter: [rashi], [bhava] [nakshatra-lord]
+Venus: [rashi], [bhava] [nakshatra-lord]
+Saturn: [rashi], [bhava] [nakshatra-lord]
+Rahu: [rashi], [bhava] [nakshatra-lord]
+Ketu: [rashi], [bhava] [nakshatra-lord]
+
+
+D1 kundali status:
+
+Lagna rashi
+Lagnesh
+Lagna nakshatra
+Lagna nakshatra-lord
+Chandra rashi
+Chandra nakshatra
+Chandra nakshatra-lord
+Saptam bhava rashi 
+Saptam bhava nakshatra
+Saptam bhava nakshatra-lord
+Saptamesh
+
+
+D9 planetary positions (with rashi and bhava):
+
+Navamsha Sun: [rashi], [bhava], [nakshatra-lord]
+Navamsha Moon: [rashi], [bhava] [nakshatra-lord]
+Navamsha Mars: [rashi], [bhava] [nakshatra-lord]
+Navamsha Mercury: [rashi], [bhava] [nakshatra-lord]
+Navamsha Jupiter: [rashi], [bhava] [nakshatra-lord]
+Navamsha Venus: [rashi], [bhava] [nakshatra-lord]
+Navamsha Saturn: [rashi], [bhava] [nakshatra-lord]
+Navamsha Rahu: [rashi], [bhava] [nakshatra-lord]
+Navamsha Ketu: [rashi], [bhava] [nakshatra-lord]
+
+
+D9 kundali status:
+
+Navamsha lagna rashi
+Navamsha lagnesh
+Navamsha lagna nakshatra
+Navamsha lagna nakshatra-lord
+Navamsha Chandra rashi
+Navamsha Chandra nakshatra
+Navamsha Chandra nakshatra-lord
+Navamsha saptam bhava rashi 
+Navamsha saptam bhava nakshatra
+Navamsha saptam bhava nakshatra-lord
+Navamsha saptamesh
+
+
+Jaimini chara karakas (with planet names):
+
+Atmakaraka (AK): [planet name]
+Amatyakaraka (AmK): [planet name]
+Bhratrukaraka (BK): [planet name]
+Matrukaraka (MK): [planet name]
+Putrakaraka (PK): [planet name]
+Jnatikaraka (GK): [planet name]
+Darakaraka (DK): [planet name]
+
+
+Jaimini arudha padas (with rashi and bhava):
+
+Upapada lagna (A12/UL): [rashi], [bhava]
+Darapada (A7): [rashi], [bhava]
+Arudha lagna (A1/AL): [rashi], [bhava]
+Dhana pada (A2): [rashi], [bhava]
+Bhratru pada (A3): [rashi], [bhava]
+Matru pada (A4): [rashi], [bhava]
+Putra pada (A5): [rashi], [bhava]
+Roga pada (A6): [rashi], [bhava]
+Mrityu pada (A8): [rashi], [bhava]
+Bhagya pada (A9): [rashi], [bhava]
+Rajya pada (A10): [rashi], [bhava]
+Labha pada (A11): [rashi], [bhava]
+
+
+Karakamsha/swamsha details:
+
+Karakamsha lagna: [rashi], [bhava]
+Karakamsha saptam bhava: [rashi], [bhava]
+Swamsha lagna: [rashi], [bhava]
+Swamsha saptam bhava: [rashi], [bhava]
+
+
+KP details:
+
+CSL of the 7th bhava:
+7th bhava CSL significator  bhavas:
+Nakshatra lord (NL) of the 7th CSL:
+Sub-lord (SL) of the 7th CSL:
+SSL of the 7th CSL:
+
+Finally cross-check all the extracted data...
+----------
+Cross-check the information of the 'Data Table' and ensure whether it is correct or if there is any error? Give only the list of the errors that exist.
+----------
+https://sites.google.com/view/astropropmt/Kundali-Milan-Report/Milan-Paste
+----------
+Please create a detailed comparative astrological data table for two kundalis (groom and bride) based on the birth details of all the above PDFs. The purpose of the table is to provide a quick overview of both kundalis at the beginning of the kundali milan report.
+Please organise the table in the following sections and format:
+
+1. Astrological details of the groom (boy):
+Name: [boy's name]
+
+D1 planetary positions (with rashi and bhava):
+
+Sun: [rashi], [bhava], [nakshatra-lord]
+Moon: [rashi], [bhava] [nakshatra-lord]
+Mars: [rashi], [bhava] [nakshatra-lord]
+Mercury: [rashi], [bhava] [nakshatra-lord]
+Jupiter: [rashi], [bhava] [nakshatra-lord]
+Venus: [rashi], [bhava] [nakshatra-lord]
+Saturn: [rashi], [bhava] [nakshatra-lord]
+Rahu: [rashi], [bhava] [nakshatra-lord]
+Ketu: [rashi], [bhava] [nakshatra-lord]
+
+
+D1 kundali status:
+
+Lagna rashi
+Lagnesh
+Lagna nakshatra
+Lagna nakshatra-lord
+Chandra rashi
+Chandra nakshatra
+Chandra nakshatra-lord
+Saptam bhava rashi 
+Saptam bhava nakshatra
+Saptam bhava nakshatra-lord
+Saptamesh
+
+
+D9 planetary positions (with rashi and bhava):
+
+Navamsha Sun: [rashi], [bhava], [nakshatra-lord]
+Navamsha Moon: [rashi], [bhava] [nakshatra-lord]
+Navamsha Venus: [rashi], [bhava] [nakshatra-lord]
+Navamsha Mars: [rashi], [bhava] [nakshatra-lord]
+Navamsha Mercury: [rashi], [bhava] [nakshatra-lord]
+Navamsha Jupiter: [rashi], [bhava] [nakshatra-lord]
+Navamsha Venus: [rashi], [bhava] [nakshatra-lord]
+Navamsha Saturn: [rashi], [bhava] [nakshatra-lord]
+Navamsha Rahu: [rashi], [bhava] [nakshatra-lord]
+Navamsha Ketu: [rashi], [bhava] [nakshatra-lord]
+
+
+D9 kundali status:
+
+Navamsha lagna rashi
+Navamsha lagnesh
+Navamsha lagna nakshatra
+Navamsha lagna nakshatra-lord
+Navamsha Chandra rashi
+Navamsha Chandra nakshatra
+Navamsha Chandra nakshatra-lord
+Navamsha saptam bhava rashi 
+Navamsha saptam bhava nakshatra
+Navamsha saptam bhava nakshatra-lord
+Navamsha saptamesh
+
+
+Jaimini chara karakas (with planet names):
+
+Atmakaraka (AK): [planet name]
+Amatyakaraka (AmK): [planet name]
+Bhratrukaraka (BK): [planet name]
+Matrukaraka (MK): [planet name]
+Putrakaraka (PK): [planet name]
+Jnatikaraka (GK): [planet name]
+Darakaraka (DK): [planet name]
+
+
+Jaimini arudha padas (with rashi and bhava):
+
+Upapada lagna (A12/UL): [rashi], [bhava]
+Darapada (A7): [rashi], [bhava]
+Arudha lagna (A1/AL): [rashi], [bhava]
+Dhana pada (A2): [rashi], [bhava]
+Bhratru pada (A3): [rashi], [bhava]
+Matru pada (A4): [rashi], [bhava]
+Putra pada (A5): [rashi], [bhava]
+Roga pada (A6): [rashi], [bhava]
+Mrityu pada (A8): [rashi], [bhava]
+Bhagya pada (A9): [rashi], [bhava]
+Rajya pada (A10): [rashi], [bhava]
+Labha pada (A11): [rashi], [bhava]
+
+
+Karakamsha/swamsha details:
+
+Karakamsha lagna: [rashi], [bhava]
+Karakamsha saptam bhava: [rashi], [bhava]
+Swamsha lagna: [rashi], [bhava]
+Swamsha saptam bhava: [rashi], [bhava]
+
+
+KP details:
+
+CSL of the 7th bhava:
+7th bhava CSL significator  bhavas:
+Nakshatra lord (NL) of the 7th CSL:
+Sub-lord (SL) of the 7th CSL:
+SSL of the 7th CSL:
+
+
+2. Astrological details of the bride (girl):
+Name: [girl's name]
+
+D1 planetary positions (with rashi and bhava):
+
+Sun: [rashi], [bhava], [nakshatra-lord]
+Moon: [rashi], [bhava] [nakshatra-lord]
+Mars: [rashi], [bhava] [nakshatra-lord]
+Mercury: [rashi], [bhava] [nakshatra-lord]
+Jupiter: [rashi], [bhava] [nakshatra-lord]
+Venus: [rashi], [bhava] [nakshatra-lord]
+Saturn: [rashi], [bhava] [nakshatra-lord]
+Rahu: [rashi], [bhava] [nakshatra-lord]
+Ketu: [rashi], [bhava] [nakshatra-lord]
+
+
+D1 kundali status:
+
+Lagna rashi
+Lagnesh
+Lagna nakshatra
+Lagna nakshatra-lord
+Chandra rashi
+Chandra nakshatra
+Chandra nakshatra-lord
+Saptam bhava rashi 
+Saptam bhava nakshatra
+Saptam bhava nakshatra-lord
+Saptamesh
+
+
+D9 planetary positions (with rashi and bhava):
+
+Navamsha Sun: [rashi], [bhava], [nakshatra-lord]
+Navamsha Moon: [rashi], [bhava] [nakshatra-lord]
+Navamsha Mars: [rashi], [bhava] [nakshatra-lord]
+Navamsha Mercury: [rashi], [bhava] [nakshatra-lord]
+Navamsha Jupiter: [rashi], [bhava] [nakshatra-lord]
+Navamsha Venus: [rashi], [bhava] [nakshatra-lord]
+Navamsha Saturn: [rashi], [bhava] [nakshatra-lord]
+Navamsha Rahu: [rashi], [bhava] [nakshatra-lord]
+Navamsha Ketu: [rashi], [bhava] [nakshatra-lord]
+
+
+D9 kundali status:
+
+Navamsha lagna rashi
+Navamsha lagnesh
+Navamsha lagna nakshatra
+Navamsha lagna nakshatra-lord
+Navamsha Chandra rashi
+Navamsha Chandra nakshatra
+Navamsha Chandra nakshatra-lord
+Navamsha saptam bhava rashi 
+Navamsha saptam bhava nakshatra
+Navamsha saptam bhava nakshatra-lord
+Navamsha saptamesh
+
+
+Jaimini chara karakas (with planet names):
+
+Atmakaraka (AK): [planet name]
+Amatyakaraka (AmK): [planet name]
+Bhratrukaraka (BK): [planet name]
+Matrukaraka (MK): [planet name]
+Putrakaraka (PK): [planet name]
+Jnatikaraka (GK): [planet name]
+Darakaraka (DK): [planet name]
+
+
+Jaimini arudha padas (with rashi and bhava):
+
+Upapada lagna (A12/UL): [rashi], [bhava]
+Darapada (A7): [rashi], [bhava]
+Arudha lagna (A1/AL): [rashi], [bhava]
+Dhana pada (A2): [rashi], [bhava]
+Bhratru pada (A3): [rashi], [bhava]
+Matru pada (A4): [rashi], [bhava]
+Putra pada (A5): [rashi], [bhava]
+Roga pada (A6): [rashi], [bhava]
+Mrityu pada (A8): [rashi], [bhava]
+Bhagya pada (A9): [rashi], [bhava]
+Rajya pada (A10): [rashi], [bhava]
+Labha pada (A11): [rashi], [bhava]
+
+
+Karakamsha/swamsha details:
+
+Karakamsha lagna: [rashi], [bhava]
+Karakamsha saptam bhava: [rashi], [bhava]
+Swamsha lagna: [rashi], [bhava]
+Swamsha saptam bhava: [rashi], [bhava]
+
+
+KP details:
+
+CSL of the 7th bhava:
+7th bhava CSL significator  bhavas:
+Nakshatra lord (NL) of the 7th CSL:
+Sub-lord (SL) of the 7th CSL:
+SSL of the 7th CSL:
+
+
+Instructions:
+Present all the above data in a well-organised Markdown table with three columns: 'Details', '[boy's name]', and '[girl's name]'. Please divide the table with sub-headings (like 'Main points', 'Parashari planets', 'Jaimini chara karakas' etc.) so that readability is better. The format should be like: "[Kumbha, fourth bhava, Shatabhisha,lord: Rahu]"
+----------
+Cross-check the information of the 'Kundali Milan: Detailed Comparative Data Table' and ensure whether it is correct or if there is any error? Give only the list of the errors that exist.
+Give in short the list of which information you have received so far for kundali analysis, as given to you above.
+----------
+Ensure that you will strictly follow the following orders,
+
+1] Before giving the output, cross-check the data.
+2] Do not do any kind of sugar-coating. If there is any dosha, conflict or negative yoga in the kundali, tell it in clear and bitter words. I don't have to please the client, but tell the truth. Remember, you should not be completely negative; tell the truth while maintaining a balance of positive and negative.
+3] Do not start your answer with any greeting or conversational phrase (like 'certainly', 'sure', 'the following is' etc.). Your answer must begin directly with the asked information itself.
+4] Follow the orders given in the System instructions as well.
+5] And while doing the analysis after this, you will mention the names of the natives.
+
+Just tell whether you are ready - only which orders you will follow.
+----------
+From 'कुंडली मिलान: विस्तृत तुलनात्मक डेटा टेबल', analyze - with effects and conclusions - the points that came out same or friendly or neutral, and the points that came out opposite/enemy.
+----------
+Before kundali matching, knowing the nature (Personality) of both persons is extremely important. That is why...
+
+➤ Please analyze the boy's nature based on the birth details from all the above PDFs/txt/chat:
+
+► Core Personality & Nature:
+(Source: lagna, lagnesh, Moon rashi, Sun rashi, atmakaraka (AK))
+► Outer Personality & Social Conduct:
+(Source: lagna, arudha lagna (AL), planets in the 10th bhava)
+► Inner & Emotional Nature:
+(Source: Moon's position (with nakshatra), 4th bhava, swamsa lagna (D9 lagna))
+► Mental & Intellectual Level:
+(Source: Mercury's position, 5th bhava, Jupiter's drishti, karakamsha lagna)
+► Character & Moral Values:
+(Source: position of Jupiter and the 9th bhava, strength of planets in D9)
+► Health & Physical Vitality:
+(Source: lagna, lagnesh, 6th bhava, strength of Sun and Moon)
+
+➤ Overall conclusion:
+----------
+➤ Please analyze the girl's nature based on the birth details from all the above PDFs/txt/chat:
+
+► Core Personality & Nature:
+(Source: lagna, lagnesh, Moon rashi, Sun rashi, atmakaraka (AK))
+► Outer Personality & Social Conduct:
+(Source: lagna, arudha lagna (AL), planets in the 10th bhava)
+► Inner & Emotional Nature:
+(Source: Moon's position (with nakshatra), 4th bhava, swamsa lagna (D9 lagna))
+► Mental & Intellectual Level:
+(Source: Mercury's position, 5th bhava, Jupiter's drishti, karakamsha lagna)
+► Character & Moral Values:
+(Source: position of Jupiter and the 9th bhava, strength of planets in D9)
+► Health & Physical Vitality:
+(Source: lagna, lagnesh, 6th bhava, strength of Sun and Moon)
+
+➤ Overall conclusion:
+----------
+Please analyze based on the birth details and potential life partner details from all the above PDFs/txt/chat:
+
+➤ Does the boy's nature match the girl's potential husband? (percentage)
+
+➤ Does the girl's nature match the boy's potential wife? (percentage)
+
+➤ Overall conclusion:
+----------
+The TXT file is of both persons' ashtakoot milan; do a detailed analysis of each koot of the ashtakoot milan and give a conclusion based on the gunas: average matching, with some major doshas. (Do not mention 'TXT file' in the analysis, it is only for reference)
+
+➤ Ashtakoot and their gunas:
+► Varna (1 guna): mental and spiritual compatibility.
+► Vashya (2 guna): ability to control or attract each other.
+► Tara (3 guna): compatibility of fortune and luck.
+► Yoni (4 guna): sexual and physical compatibility.
+► Maitri (5 guna): mental and intellectual friendship, compatibility of nature.
+► Gana (6 guna): compatibility of nature and behaviour (Dev, Manushya, Rakshasa gana).
+► Bhakoot (7 guna): financial stability, family and future compatibility (rashi maitri).
+► Nadi (8 guna): compatibility of health, growth of lineage, and progeny.
+➤ Dwidwadash, Navam-Pancham, Shadashtak (Mrityu/Preeti) consideration:
+➤ Lagna maitri, birth nakshatra maitri consideration:
+➤ Is cancellation of the Bhakoot dosha (Cancellation) taking place?
+Bhakoot dosha is cancelled when the rashi lords of both are friends or the same.
+(This yoga is bad when the lagnesh and rashi lord are enemies) 
+➤ Is the marak effect of the Bhakoot dosha being reduced through other means? (such as: Nadi shuddhi, nakshatra parivartan of rashi lords, friendship among rashi or nakshatra lords, friendship between one person's nakshatra/rashi lord and the other's rashi/nakshatra lord, lagna samasaptak)
+➤ Is cancellation of any other dosha taking place?
+
+➤ Overall conclusion of ashtakoot:
+► Total score (out of 36) and according to the ashtakoot method, does this relationship appear balanced and favorable for married life? Is this marriage recommended?
+----------
+➤ Detailed analysis of Dashakoot milan (South Indian method):
+(Analyze based on the dashakoot table and the gunas obtained out of 36 available in the TXT file; do not mention 'TXT file' in the analysis, it is only for reference)
+
+► Dinam: compatibility of daily fortune and health.
+► Gana: matching of nature and behaviour.
+► Yoni: physical and sexual compatibility.
+► Rasi: growth of lineage and mental harmony.
+► Rasyadhipati: progeny and friendship.
+► Rajju (Rajju - most important): husband's age and physical safety (mangalya dosha consideration).
+(Warning: if the Rajju score is 0 or 'rajju dosha' is written, write it as a warning).
+► Vedha: is there any vedha (obstruction) in the nakshatras?
+► Vashya: attraction and fascination towards each other.
+► Mahendra: wealth, fortune, and growth of progeny.
+► Stree-Deergha: happiness and prosperity in the bride's life.
+
+➤ Is cancellation of any other dosha taking place? (such as: there is a special rule in dashakoot: if the lagnesh are friends or the rashi lord is the same, then gana dosha is not considered valid.)
+
+➤ Overall conclusion of dashakoot:
+► Total score (out of 36) and according to the South Indian method, does this relationship appear balanced and favorable for married life? Is this marriage recommended?
+----------
+► Combined overall conclusion of ashtakoot and dashakoot analysis:
+► Based only on the specific criterion of 'ashtakoot and dashakoot milan', how many independent marks out of 10 would you give this aspect? (Note: this is not the overall score of the entire marriage, but only the independent score of this one scale for the final 100-mark scorecard.)
+----------
+➤ Mangal dosha consideration:
+► Position of Mars in the boy's kundali.
+► Position of Mars in the girl's kundali.
+► Are both mangalik? Or one? Or neither?
+► If there is mangalik dosha, is its cancellation taking place (such as position of Saturn, Rahu, Ketu in the same bhavas, or Mars being in its own rashi/exalted rashi, or drishti relation).
+► Possible effect of mangal dosha on married life.
+► Is mangal dosha forming in D9? And will this dosha have an effect after the native's marriage?
+
+➤ Overall conclusion:
+► According to the presented analysis, does this relationship appear balanced and favorable for married life? 
+► Based only on the specific criterion of 'mangal dosha consideration', how many independent marks out of 10 would you give this aspect? (Note: this is not the overall score of the entire marriage, but only the independent score of this one scale for the final 100-mark scorecard.)
+----------
+➤ A] Special analysis of Panchadha Maitri (lagnesh and saptamesh relation): (Do not mention 'TXT file' in the analysis, it is only for reference; analyze according to the data of the Panchadha Maitri calculator available in the TXT file)
+► Groom (boy): In the kundali, how is the natural, temporal, and final Panchadha Maitri relation between the lagnesh (self) and the saptamesh (life partner) (friend/enemy/neutral)?
+► Bride (girl): In the kundali, how is the Panchadha Maitri relation between the lagnesh and the saptamesh?
+► Panchadha conclusion: Is there enmity between the lagnesh and the saptamesh in both persons' individual kundalis (which indicates marital dissatisfaction) or friendship (which indicates mutual understanding)? Also include the "final analysis from the marital perspective" given by the TXT file.
+----------
+➤ B] Do the following matching analysis and comparative study of the kundalis of both the boy and the girl, and also give the conclusion of each point:
+
+1] Analysis of the 7th bhava : the bhava of marriage, life partner, and partnership. Analysis of the lord of this bhava, the planets placed in it, and the influences falling on it.
+2] Position of the saptamesh : position, strength, and yuti-drishti relations of the lord of the 7th bhava.
+3] Comparative study of planets :friendship of lagna lords : what are the lagnas of both and whether their lords are friends, enemies, or neutral with each other. Friendship of the lords of Moon rashis.
+4] Analysis of Venus: position of Venus, the karaka of love, enjoyment, and marital happiness, in both kundalis.
+5] Analysis of Jupiter: position of Jupiter, the karaka of fortune, progeny, and knowledge, in both kundalis, and its effect on married life.
+6] Longevity yogas: yogas of age in both kundalis.
+
+to be continued...
+----------
+7] Progeny yogas : yogas and possibilities of progeny in both kundalis. (D1/D9 and D7)
+8] Wealth and financial stability : wealth-related yogas in both kundalis.
+9] Bed pleasure and domestic peace : the 12th bhava in kundalis: position of physical pleasures and "bed pleasure" (Bed Comforts), and the 4th bhava: atmosphere of family peace and domestic happiness.
+10] D60 (Shashtiamsha) of both - past merit and final result : if the marriage-related yogas that are in D1 and D9, but in D60 that planet is cursed, then there can be delay or denial in marriage. This is the analysis of D60 to see 'sustainable success' (lasting success). 
+
+to be continued...
+----------
+➤ Overall conclusion of the Panchadha Maitri special and all 10 points (A and B):
+► According to the presented analysis, does this relationship appear balanced and favorable for married life? 
+► Based only on the specific criterion of 'Panchadha Maitri special and all 10 points (A and B) of bhava/planet matching', how many independent marks out of 10 would you give this aspect? (Note: this is not the overall score of the entire marriage, but only the independent score of this one scale for the final 100-mark scorecard.)
+----------
+➤ Matching of both persons' lifestyle and goals:
+► Is there harmony in both persons' dharma, karma, career, and life goals?
+► Harmony or conflict in the workplace (karma bhava/10th bhava)?
+
+➤ Overall conclusion:
+► According to the presented analysis, does this relationship appear balanced and favorable for married life? 
+► Based only on the specific criterion of 'lifestyle and goals' compatibility, how many independent marks out of 10 would you give this aspect? (Note: this is not the overall score of the entire marriage, but only the independent score of this one scale for the final 100-mark scorecard.)
+----------
+➤ Navamsha kundali matching (Navamsha Chart Matching - D9 Chart):
+The navamsha kundali is considered very important for marriage and fortune.
+► Comparative study of both persons' navamsha lagna and the position of planets in navamsha.
+► Are the saptamesh of the birth kundalis in a good position in navamsha?
+► Comparative study of both persons' married life.
+
+➤ Overall conclusion:
+► According to the presented analysis, does this relationship appear balanced and favorable for married life? 
+► Based only on the specific criterion of 'navamsha (D9) kundali matching', how many independent marks out of 10 would you give this aspect? (Note: this is not the overall score of the entire marriage, but only the independent score of this one scale for the final 100-mark scorecard.)
+----------
+➤ Jaimini astrology-based matching:
+
+1] Upapada lagna (Upapada Lagna-UL): 
+► The position of the upapada lagna of both the groom and the bride, its lord, and the influences falling on it are matched.
+► It is seen in which bhava one person's upapada lagna falls in the other's kundali and whether it is favorable.
+► Analysis of the 7th bhava from the upapada lagna is also important.
+
+2] Analysis of upapada lagna-darapada (UL-A7 Analysis): 
+► Matching and effects of UL-A7 in both kundalis.  (The boy's UL and the girl's UL, the boy's A7 and the girl's A7, the mutual relation of UL and A7 (within one person's kundali))
+
+3] Analysis of atmakaraka-darakaraka (AK-DK Analysis): 
+► Matching and effects of AK-DK in both kundalis.  (The boy's AK/DK and the girl's AK/DK - the natural friendship of both planets) 
+► Most important: the boy's AK and the girl's DK - and vice versa - the girl's AK and the boy's DK, (position in rashis, AK-DK in navamsha (D9))
+
+4] Analysis of arudha lagna-darapada (AL-A7 Analysis): 
+► Matching and effects of AL-A7 in both kundalis.  (The boy's AL and the girl's A7 relation, the boy's A7 and the girl's AL relation, the mutual relation of AL and A7 (within one person's kundali))
+
+5] Karakamsha/Swamsa analysis (Karkamsa/Swamsa Analysis):
+► Matching and effects of karakamsha lagna in both kundalis. 
+► Matching and effects of swamsa lagna in both kundalis. 
+
+to be continued...
+----------
+Question: Is there harmony in the core purposes of both souls and the direction of life? (AK-AK analysis)
+Question: Does one partner fulfill the image of the "ideal" or "desired" life partner for the other? (AK-DK analysis)
+Question: Is there harmony between the native's public image (AL) and the image of the native's relationships (A7)? (One person's AL favorable for the other's A7)
+Question: Is there harmony in the core purposes of both souls (karakamsha) and the inner nature (swamsa)? Is one person's karakamsha lagna auspicious for the other?
+Question: How is the actual family life and experience likely to be after marriage? (UL-UL analysis)
+Question: Will there be harmony between the social image of the marriage and reality? (The mutual relation of UL-A7)
+Question: According to Jaimini astrology, what are the indications of this marriage's stability and longevity? (The second bhava from UL and DK's relation with UL)
+
+
+Overall conclusion:
+► According to the presented analysis, does this relationship appear balanced and favorable for married life? 
+► Based only on the specific criterion of 'Jaimini astrology matching', how many independent marks out of 10 would you give this aspect? (Note: this is not the overall score of the entire marriage, but only the independent score of this one scale for the final 100-mark scorecard.)
+----------
+➤ Kundali matching through KP (Krishnamurti method)
+
+1] Sub-lord of the 7th bhava (7th Cusp Sub-Lord): In KP, the analysis of the sub-lord of the 7th bhava is very important for marriage.
+► It should be seen whether the sub-lord of the 7th bhava is forming a connection with bhavas 2, 7, 11 or not (which are considered positive for marriage).
+► Whether it is forming a connection with bhavas 1, 6, 10 (which can be indications of obstacles or delay in marriage).
+► The position of the sub-lord of the 7th bhava in both kundalis and the compatibility of the results indicated by them is analyzed.
+
+2] Planetary yuti/drishti (Planetary ► Aspects/Conjunctions): In KP, the position of planets and the analysis of their yuti/drishti is done to understand which bhavas of one person's kundali are being influenced by the planets of the other's kundali. For example, if one's benefic planet is influencing the other's 7th bhava.
+
+Question: Are both persons' 7th CSL (cuspal sub-lord) favorable for each other and do they give a clear promise of marriage?
+Question: Are the main significator planets of marriage (of 2, 7, 11) in one person's kundali positively influencing the important bhavas (such as lagna, saptam) of the other's kundali?
+Question: Is any one person's 7th CSL a strong significator of the other's obstructive bhavas (6, 8, 12), which could indicate hidden problems in the relationship?
+Question: According to KP, how much alignment is there between both kundalis in the timeline of marriage?
+
+➤ Overall conclusion:
+► According to the presented analysis, does this relationship appear balanced and favorable for married life? 
+► Based only on the specific criterion of 'KP (Krishnamurti method) matching', how many independent marks out of 10 would you give this aspect? (Note: this is not the overall score of the entire marriage, but only the independent score of this one scale for the final 100-mark scorecard.)
+----------
+➤ Kundali matching through BNN (Bhrigu Nandi Nadi)
+
+1] Position of Jupiter and Venus (Jupiter & Venus):
+► The position of Jupiter (karaka of husband) in the woman's kundali and Venus (karaka of wife) in the man's kundali should be analyzed.
+► It should be seen what the position of these planets is in each other's kundali, whether they are friendly, or whether any adverse effect is falling.
+
+2] Planetary yuti and mutual associations (Planetary Conjunctions & Associations):
+► Particularly the yuti and mutual relation of marriage-related planets (such as Venus, Jupiter, Mars) should be analyzed.
+► Whether any adverse planet (such as Saturn, Rahu, Ketu) is negatively influencing the karaka planets of marriage.
+
+Question: How is the matching of the natural position and strength of Venus (wife karaka) in the man's kundali and Jupiter (husband karaka) in the woman's kundali?
+Question: Is one person's Jupiter (Jeeva) forming an auspicious relation (yuti, trikona, 2/12) with the other's Venus (relationship)?
+Question: In both kundalis, is Saturn (karma) supporting the karaka planets of marriage (Jupiter/Venus) for each other or creating obstacles?
+Question: According to Nadi, is there any serious problem in both persons' health and growth of lineage (deeper analysis of the nadi koota)?
+
+➤ Overall conclusion:
+► According to the presented analysis, does this relationship appear balanced and favorable for married life? 
+► Based only on the specific criterion of 'BNN (Bhrigu Nandi Nadi) matching', how many independent marks out of 10 would you give this aspect? (Note: this is not the overall score of the entire marriage, but only the independent score of this one scale for the final 100-mark scorecard.)
+----------
+➤ Numerology Matching 
+► Match of both persons' mulank and bhagyank 
+► Analysis of the mutual natural relationship of the lords of both persons' mulank and bhagyank 
+
+➤ Overall Conclusion:
+► According to the analysis presented, does this relationship appear balanced and favorable for married life? 
+► Based only on the specific criterion of 'Numerology Matching', how many independent marks out of 10 would you give this aspect? (Note: this is not the overall score of the whole marriage, but only the independent score of this one scale for the final scorecard out of 100 marks.)
+----------
+➤ Special Yogas (Special Yogas):
+► Any special auspicious or inauspicious yogas in both charts that can affect married life.
+
+➤ Overall Conclusion:
+► According to the analysis presented, does this relationship appear balanced and favorable for married life? 
+► Based only on the specific criterion of 'Special Yogas', how many independent marks out of 10 would you give this aspect? (Note: this is not the overall score of the whole marriage, but only the independent score of this one scale for the final scorecard out of 100 marks.)
+----------
+➤ Dasha Sandhi and Time Matching (Dasha Sandhi Analysis): (Note that 2026 is currently going on, calculations must be done accordingly, and in the given TXT, xyz's dasha is the boy's, and xyz's dasha is the girl's)
+
+A] Effect of the Current Dasha:
+► Who are the current mahadasha/antardasha lords of the boy (Groom), and are they auspicious or inauspicious in the chart?
+► Who are the current mahadasha/antardasha lords of the girl (Bride), and are they auspicious or inauspicious?
+► Are both persons' dashas mutually compatible (friendly) or adverse (hostile)?
+
+B] Dasha Sandhi (Critical Timing Check):
+► Is a "dasha chhidra" (end of a mahadasha) or the dasha of any "marak/badhak" planet running simultaneously in both charts? (This time is harmful for marriage).
+► Is there any such time in the next 5-10 years when both persons' time is bad together?
+
+C] Timeline Table:
+► Please make a small comparative table for the next 5-10 years:
+| Year | Boy's Dasha | Girl's Dasha | Marital Effect (Good/Bad/Mixed) |
+
+➤ Dasha Matching Conclusion :
+➤ In-depth Check of Destiny and Karmic Connection (Destiny & Karmic Cross-Check)
+
+➤ 1] Marital Fortune Analysis of the Girl:
+► How is the happiness of marriage (Promise of Marriage) in the girl's chart? (Is happiness written, struggle written, or separation?)
+► How is the 'husband's nature' described in the girl's chart? (E.g.: will the husband be angry, gentle, deceitful, or supportive?)
+
+➤ 2] Marital Fortune Analysis of the Boy:
+► How is the happiness of marriage in the boy's chart? (Will he get happiness from his wife, or is conflict/distance written?)
+► How is the 'wife's nature' described in the boy's chart? (E.g.: will the wife be sickly, quarrelsome, domestic or career-oriented?)
+
+➤ 3] "Lock and Key" Matching (Mirror Check - The Most Important Step):
+(Now compare Step 1 and Step 2 above)
+
+► Situation A (Same Destiny): As the "wife's nature" is written in the boy's chart, is the girl actually the same? (And vice versa).
+► Situation B (Karmic Complementarity): If "marital conflict" or "tension" is written in the boy's chart, and "struggle" or "sacrifice" is also written in the girl's chart, then this confirms that it is a "strong karmic bond".
+► Situation C (Mirror or Contradiction): Are all these matters easy in both charts, or only in one person's chart 
+: progeny, prosperity after marriage, married life.   
+► Situation D (Contradiction): If one chart has "extreme happiness" and the other chart has "divorce/separation", then this is a "mismatched destiny" (the marriage should not happen).
+
+to be continued...
+----------
+➤ Final Decision on the Karmic Connection:
+► Does this marriage appear to be like "rinanubandha" (the give-and-take of a past birth)?
+► Are the patterns of both persons' sorrows and joys matching each other?
+► Is this couple coming together to "enjoy happiness" or to "settle the account of old karmas" (Karmic Settlement)?
+----------
+➤ Positive Aspects (Strengths of the Match):
+
+➤ Negative Aspects and Concerns (Weaknesses and Concerns):
+----------
+➤ Remedies and Suggestions (Remedies and Suggestions):
+► Specific astrological remedies (e.g. puja, mantra japa, daan) for gana dosha, bhakoot dosha, mangal dosha (if any).
+► Practical suggestions for increasing mutual understanding and harmony.
+----------
+In the context of the boy:
+Marak Identification: Is this planet playing the role of marakesh as the 2nd lord or 7th lord? If yes, which one - the 2nd lord (general marak) or the 7th lord (strong marak)?
+
+Badhak Identification: Is this planet the lord of the badhak bhava (11th, 9th, or 7th) according to the nature of the lagna (chara, sthira, dwiswabhava)?
+
+Dual Role: Is this planet playing the roles of both marak and badhak? (Especially as the 7th lord for a dwiswabhava lagna).
+
+Functional Auspiciousness: On the contrary, is this planet an auspicious 'yogakaraka' planet as the lord of a kendra/trikona? Or is it extremely auspicious as the lord of only a trikona?
+
+2. Assessment of the Intensity of Negativity/Positivity (Assessing the Intensity):
+
+Effect of Malefic Planets: Is this planet aspected by the natural malefic planets (Saturn, Mars, Rahu, Ketu) or is it in yuti with them? If yes, how is this increasing its negativity?
+
+Effect of Benefic Planets: Is this planet aspected by the natural benefic planets (Jupiter, Venus, auspicious Mercury) or is it with them? Is there any reduction or protection (Mitigation) in the marak/badhak effect because of this?
+
+Bhava Position: In which bhava of the chart is this planet placed? Has it become even more inauspicious by sitting in the trika bhavas (6, 8, 12), or is its position somewhat better by sitting in a kendra/trikona?
+
+Rashi Strength: Is this planet extremely afflicted by being in its neecha rashi, or is its negativity reduced by being in its uchcha/own rashi? Or has it become more powerful and effective?
+
+3. Activation and Potential Results (Activation and Potential Results):
+
+Dasha Activation: What kinds of troubles, obstacles or problems (in health, relationships, career, etc.) may be seen in this planet's mahadasha or antardasha?
+
+Gochar Effect: When major planets like Saturn or Rahu transit over this marak/badhak planet in gochar, can they activate its negative results?
+Areas Affected: Based on this planet's natural karakatva (e.g. Venus - relationships/vehicles, Saturn - career/diseases) and its bhava lordship, which specific areas of life will it affect the most?
+
+4. Overall Conclusion (Overall Conclusion):
+Final Assessment: After analyzing all the above points, what rating would you give this planet on a scale of 1 to 10 as a functionally inauspicious planet? (Where 1 is very mild and 10 is extremely harmful).
+
+5: Counseling and Remedies (Counseling and Remedies)
+(This section focuses on how to manage the "challenge" (identified in Steps 1-4).)
+
+5.1. Astrological Pacification (Astrological Pacification):
+
+Mantra/Japa: Is chanting the beeja mantra or Vedic mantra of this planet (or its presiding deity) necessary for pacification?
+
+Stotra: Will reciting a specific stotra (e.g., 'Shani Mahatmya' for Saturn or 'Vishnu Sahasranama' for Mercury) during the dasha-antardasha be protective?
+
+Daan: Which items should be donated (color, grain, metal) and when (on which day) to pacify this planet's negative effect?
+
+5.2. Gems and Wearing (Gems and Wearing) - [Most Important Caution]:
+
+Gem Prohibition: Is this planet (being marak/badhak) one of those planets whose gem should not be worn under any circumstances? (Write clearly: because wearing the gem of a strong marakesh is "giving more power to a powerful enemy".)
+
+Alternative Wearing: Instead of pacifying this planet, would it be a better remedy to wear the gem of the chart's 'protector' planet (e.g. lagnesh or navamesh)?
+
+5.3. Behavioral Remedies (Behavioral Remedies / The Counseling):
+
+Awareness (Awareness): How should the native stay alert about this planet's negative nature? (E.g.: "Your speech (Mercury) itself is your marakesh, so practice thinking before speaking.")
+
+Modification (Modification): Which habits must the native change? (E.g.: "Your Jupiter (badhakesh) is obstructing you by making you 'idealistic'. Your remedy is to reduce expecting 'perfection' from others and become flexible.")
+
+5.4. Spiritual/Karmic Remedies (Spiritual/Karmic Remedies):
+
+Karmic Lesson (Karmic Lesson): What 'karmic lesson' has this planet come to teach in life? (E.g.: the lesson of 'vairagya' or 'detachment').
+
+Energy Channeling (Energy Channeling): Can the native use this planet's negative energy for a higher purpose? (E.g.: channeling the energy of 'marak' Saturn into 'spirituality' or 'hospital service').
+----------
+In the context of the girl:
+Marak Identification: Is this planet playing the role of marakesh as the 2nd lord or 7th lord? If yes, which one - the 2nd lord (general marak) or the 7th lord (strong marak)?
+
+Badhak Identification: Is this planet the lord of the badhak bhava (11th, 9th, or 7th) according to the nature of the lagna (chara, sthira, dwiswabhava)?
+
+Dual Role: Is this planet playing the roles of both marak and badhak? (Especially as the 7th lord for a dwiswabhava lagna).
+
+Functional Auspiciousness: On the contrary, is this planet an auspicious 'yogakaraka' planet as the lord of a kendra/trikona? Or is it extremely auspicious as the lord of only a trikona?
+
+2. Assessment of the Intensity of Negativity/Positivity (Assessing the Intensity):
+
+Effect of Malefic Planets: Is this planet aspected by the natural malefic planets (Saturn, Mars, Rahu, Ketu) or is it in yuti with them? If yes, how is this increasing its negativity?
+
+Effect of Benefic Planets: Is this planet aspected by the natural benefic planets (Jupiter, Venus, auspicious Mercury) or is it with them? Is there any reduction or protection (Mitigation) in the marak/badhak effect because of this?
+
+Bhava Position: In which bhava of the chart is this planet placed? Has it become even more inauspicious by sitting in the trika bhavas (6, 8, 12), or is its position somewhat better by sitting in a kendra/trikona?
+
+Rashi Strength: Is this planet extremely afflicted by being in its neecha rashi, or is its negativity reduced by being in its uchcha/own rashi? Or has it become more powerful and effective?
+
+3. Activation and Potential Results (Activation and Potential Results):
+
+Dasha Activation: What kinds of troubles, obstacles or problems (in health, relationships, career, etc.) may be seen in this planet's mahadasha or antardasha?
+
+Gochar Effect: When major planets like Saturn or Rahu transit over this marak/badhak planet in gochar, can they activate its negative results?
+Areas Affected: Based on this planet's natural karakatva (e.g. Venus - relationships/vehicles, Saturn - career/diseases) and its bhava lordship, which specific areas of life will it affect the most?
+
+4. Overall Conclusion (Overall Conclusion):
+Final Assessment: After analyzing all the above points, what rating would you give this planet on a scale of 1 to 10 as a functionally inauspicious planet? (Where 1 is very mild and 10 is extremely harmful).
+
+5: Counseling and Remedies (Counseling and Remedies)
+(This section focuses on how to manage the "challenge" (identified in Steps 1-4).)
+
+5.1. Astrological Pacification (Astrological Pacification):
+
+Mantra/Japa: Is chanting the beeja mantra or Vedic mantra of this planet (or its presiding deity) necessary for pacification?
+
+Stotra: Will reciting a specific stotra (e.g., 'Shani Mahatmya' for Saturn or 'Vishnu Sahasranama' for Mercury) during the dasha-antardasha be protective?
+
+Daan: Which items should be donated (color, grain, metal) and when (on which day) to pacify this planet's negative effect?
+
+5.2. Gems and Wearing (Gems and Wearing) - [Most Important Caution]:
+
+Gem Prohibition: Is this planet (being marak/badhak) one of those planets whose gem should not be worn under any circumstances? (Write clearly: because wearing the gem of a strong marakesh is "giving more power to a powerful enemy".)
+
+Alternative Wearing: Instead of pacifying this planet, would it be a better remedy to wear the gem of the chart's 'protector' planet (e.g. lagnesh or navamesh)?
+
+5.3. Behavioral Remedies (Behavioral Remedies / The Counseling):
+
+Awareness (Awareness): How should the native stay alert about this planet's negative nature? (E.g.: "Your speech (Mercury) itself is your marakesh, so practice thinking before speaking.")
+
+Modification (Modification): Which habits must the native change? (E.g.: "Your Jupiter (badhakesh) is obstructing you by making you 'idealistic'. Your remedy is to reduce expecting 'perfection' from others and become flexible.")
+
+5.4. Spiritual/Karmic Remedies (Spiritual/Karmic Remedies):
+
+Karmic Lesson (Karmic Lesson): What 'karmic lesson' has this planet come to teach in life? (E.g.: the lesson of 'vairagya' or 'detachment').
+
+Energy Channeling (Energy Channeling): Can the native use this planet's negative energy for a higher purpose? (E.g.: channeling the energy of 'marak' Saturn into 'spirituality' or 'hospital service').
+----------
+Challenges and remedies related to marakesh and badhakesh in both persons' lives
+----------
+➤ Common Questions and Their Short Answers in Report Format (Common Questions & Short Answers):
+
+Question 1: How compatible is this pair? (Overall Compatibility?)
+Question 2: Will there be love and affection in this marriage? (Love and Affection?)
+Question 3: How will the financial situation be after marriage? (Financial Prospects after Marriage?)
+Question 4: How will the health be? (Health of Partners?)
+Question 5: How are the progeny prospects? (Progeny Prospects?)
+Question 6: Will there be harmony with the family? (Family Adjustments?)
+Question 7: Is there any serious dosha for which remedies are necessary? (Any Major Doshas requiring remedies?)
+Question 8: Will this marriage be long-lived and happy? (Longevity and Happiness of Marriage?)
+Question 9: How will the communication and intellectual tuning be between the two? (Communication & Intellectual Tuning?)
+Question 10: What will be the way both react when there is conflict or disagreement? (Conflict Resolution Style?)
+Question 11: Will both respect each other's personal growth and freedom? (Respect for Personal Growth & Freedom?)
+Question 12: What is the strongest and weakest aspect of this relationship? (Biggest Strength & Weakness of the relationship?)
+----------
+Find the numbers given to marriage out of 10 according to the conclusions of all sections from the above report and chat, calculate them and make an "Overall Compatibility Scorecard". Analyze the points of "Final Conclusion Based on Total Score":
+
+➤ Overall Compatibility Scorecard (Overall Compatibility Scorecard) 
+
+1] Ashtakoota Dashakoota Matching : 00/ 10
+2] Mangal Dosha Consideration : 00/ 10	
+3] Panchadha-Parashari Bhava/Planet Matching : 00/ 10
+4] Lifestyle and Purpose : 00/ 10
+5] Navamsha (D9) Chart Matching : 00/ 10
+6] Jaimini Astrology Matching : 00/ 10
+7] KP (Krishnamurti Paddhati) Matching : 00/ 10
+8] BNN (Bhrigu Nandi Nadi) Matching : 00/ 10
+9] Numerology Matching : 00/ 10
+10] Special Yogas : 00/ 10
+► Total : 00/ 100
+
+➤ Final Combined Decision and Advice Based on Total Score (Final Verdict):
+► Total Score Obtained: 00/100
+► Conclusion: This chart matching shows 00% compatibility, which can be considered "good/bad" (Good/Bad).
+► Positive Side: 
+► Challenging Side: 
+► Final Recommendation: (Can this marriage be done or not? If yes, with what conditions and remedies?) 
+► If this is a "karmic connection", advise with clear warnings and remedies.
+----------
+➤ Final Conclusion and Astrologer's Opinion (Final Conclusion and Astrologer's Opinion):(Note the astrologer is female)
+► Summary of all aspects.
+► Whether the marriage is recommended or not, or with what conditions and remedies it can be done.
+----------
+➤ The native has given information about themselves and has some questions; first list the given information, then list all the questions:
+----------
+Now, thoroughly research the given information and give the astrological analysis in detail with conclusions; each and every event must be analyzed in detail, including remedies if remedies are necessary; first answer the first question, I will ask the rest later.
+----------
+Now, write the answers to the given questions after thorough research, with detailed analysis and conclusions; each and every question must be analyzed in detail, including remedies; first answer the first question, I will ask the rest later.
+----------
+Now rewrite all the following events and questions done so far and give their brief answers; for your convenience, the list of questions and an example of how the answers will be are given, because this list will be placed at the very beginning of this analysis; from this, the native will first read the short answers and will find the section in which the analysis with references is to be read...
+
+A] Brief conclusion of the detailed comparative astrological data matching.
+Answer: This matching is [favorable/very favorable/unfavorable/very unfavorable].
+1] Nature (Personality) of both: How much percentage does the boy's nature match the girl's potential husband, and the girl's nature match the boy's potential wife?
+Answer: [Yes/No/Partially]. The boy's nature matches the girl's ideal life partner by approximately [XX]%, while the girl's nature matches the boy's ideal life partner by approximately [XX]%.
+2] How is the compatibility according to traditional ashtakoota-dashakoota and their gunas?
+Answer: [XX] gunas out of 36 are matching, which is an [excellent/good/average/low] match. Important kootas like [nadi/bhakoot] are favorable, but [gana/yoni] dosha needs attention.
+3] Is there mangalik dosha in the charts and is it creating any obstacle in married life?
+Answer: [No dosha / both are mangalik / one is mangalik]. The dosha is [getting cancelled / not getting cancelled], so its effect will remain [negligible/moderate/significant].
+4] Do both persons' main planets (panchadha maitri, lagnesh, chandresh, Venus, Jupiter) support each other?
+Answer: There is [excellent friendship/equality/hostility] in panchadha and among the lagnesh and chandresh. The position of Venus and Jupiter is [favorable/unfavorable], which will give [good/mixed] results.
+5] Is there harmony in both persons' careers, life goals and daily lifestyle?
+Answer: [Yes/No/Partially]. Both persons' karma bhavas (10th House) are supportive [for each other / not], which indicates good [harmony/disharmony] in professional life.
+6] According to the navamsha chart, how favorable is this marriage on the level of fortune and inner happiness?
+Answer: The navamsha matching is [strong/average/weak]. It indicates [ease/some challenges] in inner marital happiness.
+7] According to Jaimini astrology, how is this relationship on the level of soul, karma and social bond?
+Answer: The Jaimini matching is [positive/moderate]. The AK-DK relationship is [good/average] and the upapada lagna (UL) is indicating [stability/instability].
+8] According to KP (Krishnamurti Paddhati), do both charts fulfill the promise of marriage for each other?
+Answer: [Yes/No]. Both persons' 7th CSLs give a clear promise of marriage [or do not] and are [very helpful/averagely helpful] for each other.
+9] According to nadi astrology, is there a natural and karmic connection between the two?
+Answer: [Yes/No]. The man's Venus and the woman's Jupiter are in a very [favorable/unfavorable] position for each other, which indicates an [easy and fortunate/difficult and unfortunate] relationship.
+10] According to numerology matching, are both persons' energy and life path numbers compatible with each other?
+Answer: According to numerology, the matching is [excellent/average/weak], because there is [friendship/hostility] in the mulank and bhagyank.
+11] Is there any special auspicious or inauspicious yoga that can significantly affect the marriage?
+[Yes, in the boy's/girl's chart there is X yoga which... / No, there is no particularly influential yoga.]
+12] Are both persons' planetary dashas favorable at the time of marriage?
+Answer: Yes, the dashas running at the time of marriage are [favorable/moderately favorable] for both for the beginning of married life.
+13] Final decision on the karmic connection? [Is this couple coming together to "enjoy happiness" or to "settle the account of old karmas" (Karmic Settlement)?]
+14] Positive aspects: What are the biggest strengths of this relationship?
+Answer: Excellent planetary friendship, absence of nadi dosha, and mutual cooperation in career.
+15] Negative aspects and concerns: Where can the main challenges come in this relationship?
+Answer: [Difference in nature (gana dosha)/challenge in physical compatibility (yoni dosha)/ and mangal dosha/other doshas.]
+16] For which doshas are remedies necessary?
+Answer: Specific puja and mantra japa are advised for [gana dosha/yoni dosha/mangal dosha].
+17] What is the total compatibility score combining all systems?
+Answer: The overall compatibility of this marriage is [XX] out of 100, which makes it a [good/average/challenging] match.
+18] What is the astrologer's final advice and opinion based on all analyses?
+Answer: This marriage is [recommended with some remedies and mutual understanding / not recommended]. Detailed reasons and conditions are given here.
+
+➤ Common Questions and Their Short Answers in Report Format (Common Questions & Short Answers):
+
+Question 1: How compatible is this pair? (Overall Compatibility?)
+Question 2: Will there be love and affection in this marriage? (Love and Affection?)
+Question 3: How will the financial situation be after marriage? (Financial Prospects after Marriage?)
+Question 4: How will the health be? (Health of Partners?)
+Question 5: How are the progeny prospects? (Progeny Prospects?)
+Question 6: Will there be harmony with the family? (Family Adjustments?)
+Question 7: Is there any serious dosha for which remedies are necessary? (Any Major Doshas requiring remedies?)
+Question 8: Will this marriage be long-lived and happy? (Longevity and Happiness of Marriage?)
+Question 9: How will the communication and intellectual tuning be between the two? (Communication & Intellectual Tuning?)
+Question 10: What will be the way both react when there is conflict or disagreement? (Conflict Resolution Style?)
+Question 11: Will both respect each other's personal growth and freedom? (Respect for Personal Growth & Freedom?)
+Question 12: What is the strongest and weakest aspect of this relationship? (Biggest Strength & Weakness of the relationship?)
+
+➤ Native's Questions and Their Short Answers (Natives Questions & Short Answers):
+----------
+This chat's analysis will be sent to the native in PDF format, but prepare an Instagram DM reply in message style, in Hinglish and in one paragraph, which should include a summary of the entire chat, a summary of the guna matching and a summary of the astrologer's opinion; remember, never say a complete no; talk about karmic debt and destiny.
+----------
+Write the following information in English, separated by (,) but without giving spaces:
+
+name,birthplace,Date of Birth,time,gender
+
+e.g.: Sarang,Nagpur,14-02-1995,03:00 AM,MALE`;
+        const rawData_mr = `ही PDF जातकाच्या कुंडलीची आहे, त्यातील सर्व माहिती तुम्ही सेव करून ठेवा, जेणेकरून कुंडलीचे विश्लेषण करता येईल. विश्लेषण करताना PDF च्या पेजचा संदर्भ लिहू नका, पण खालील माहिती कोणत्या पेजवर आहे, याची सूची द्या म्हणजे तुम्हालाही पुढे शोधणे सोपे होईल : 
+
+1] ग्रह स्थिती तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तालिका
+3] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टी बल)
+4] भाव बल तालिका 
+5] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+6] जैमिनी आरूढ पद (राशी आधारित)
+7] विशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] चर दशा अंतर्दशा चार्ट
+10] कृष्णमूर्ति पद्धति (KP) भाव स्थिती तालिका {भाव-राशी-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशी-नक्षत्र-पद}
+11] कृष्णमूर्ति पद्धति (KP) ग्रह स्थिती तालिका {भाव-राशी-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशी-नक्षत्र-पद}
+12] कृष्णमूर्ति पद्धति (KP) घराचे कारक ग्रह स्थिती तालिका
+13] कृष्णमूर्ति पद्धति (KP) ग्रह कारकत्व स्थिती तालिका
+14] D1 च्या 12 भावांचे राशी-नक्षत्र (Bhava Cusp)
+15] D9 ग्रह स्थिती तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+16] D9 च्या 12 भावांचे राशी-नक्षत्र (Bhava Cusp) (स्क्रीनशॉट)
+
+कृपया सर्व तालिका सरल आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा.
+----------
+वरील चॅट आणि PDF मधून लग्न कुंडलीच्या बारा भावांत स्थित राशी आणि भाव स्वामी तसेच ग्रह उपस्थिती लिहा; जो ग्रह उच्च, नीच, वक्री, नीचभंग, अस्त, वर्गोत्तम आहे तोही लिहा. नक्षत्रात स्थित हेही लिहा (राहू-केतूला उच्च, नीच, वक्री लिहू नका).
+
+लिखाणाचा पॅटर्न खालीलप्रमाणे राहील जो फक्त उदाहरणासाठी असेल, ज्याला "" मध्ये दर्शवले आहे :
+
+"पहिला भाव (लग्न):
+या भावात सिंह राशी आहे, म्हणून लग्नेश सूर्य आहे.
+या भावात सूर्य आणि राहू ग्रह स्थित आहेत.
+सूर्य: सिंह राशीत स्वगृही (स्वतःच्याच घरात) आहे. सूर्य मघा नक्षत्रात स्थित आहे. सूर्य प्रथम भावाचा (सिंह) स्वामी होऊन लग्नात बसला आहे. सूर्याची दृष्टी सातव्या भावावर (कुंभ) आहे.
+राहू: सिंह राशीत (राहूसाठी शत्रू राशी मानली जाते). राहू मघा नक्षत्रात स्थित आहे. राहूची दृष्टी पाचव्या भावावर (धनु), सातव्या भावावर (कुंभ) आणि नवव्या भावावर (मेष) आहे.
+या भावावर केतूची (सातव्या भावातून) पूर्ण दृष्टी आहे."
+
+
+तुमच्या सोयीसाठी txt फाइल दिली आहे : "D1_Analysis"
+----------
+txt फाइलमधून खालील माहिती एकामागोमाग बदल न करता जशीच्या तशी लिहा :
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D7 Analysis
+5] D60 Analysis
+6] D1_to_D9_Analysis
+7] D1_to_D7_Analysis
+8] D1_to_D60_Analysis
+----------
+चलित कुंडली पाहून सांगा की चलित कुंडलीत D1 कुंडलीपेक्षा काय बदलले आहे आणि त्याचा काय प्रभाव पडेल :
+----------
+➤ PN, PB, MB चा जीवनावर प्रभाव (Impact on Life)
+
+विषय: वैदिक ज्योतिष - ग्रह व भावांसाठी पुष्कर नवांश (PN), पुष्कर भाग (PB) आणि मृत्यू भाग (MB) यांची गणना व फलादेश.
+
+प्रतिमा आणि TXT गणनांच्या आधारे खालील क्षेत्रांवर प्रभाव लिहा:
+
+​▸ दैवी संरक्षण (Divine Protection): कोणते भाव/ग्रह पुष्कर ऊर्जेने सुरक्षित आहेत आणि जीवनाच्या कोणत्या क्षेत्रांत 'न मागता' मदत मिळेल?
+
+​▸ संघर्ष व अडथळे (MB Impact): मृत्यू भागातील ग्रह जीवनाच्या कोणत्या क्षेत्रांत 'लँडमाइन'सारखे अडथळे निर्माण करू शकतात?
+
+​▸ सुरुवात विरुद्ध परिणाम (Start vs Middle): भावाच्या 'प्रारंभा'तील आणि 'मध्या'तील पुष्कर फरकाच्या आधारे सांगा की कार्याची सुरुवात कशी होईल आणि त्याचा शेवट कसा होईल?
+
+▸ PN आणि PB च्या गणनेत पहा की त्यांचा 'भावेश' MB मध्ये आहे का ?
+(जर भावाचा स्वामी (Bhavesh) मृत्यू भागात असेल, तर भाव पुष्कर असूनही फल बाधित होईल)
+
+​▸ दशा फल: सध्याच्या किंवा आगामी महादशेत या अमृत/विष बिंदूंचा काय प्रभाव पडेल?
+
+​▸ ​निष्कर्ष: एकूणच कुंडलीत 'अमृत' (PB) आणि 'विष' (MB) यांचा समतोल किती आहे?
+----------
+जन्म नक्षत्राला आधार मानून नवतारा चक्र तयार करा आणि विश्लेषण करा की कुंडलीतील सर्व 9 ग्रह कोणत्या तारांच्या (संपत, विपत, वध इत्यादी) नक्षत्रांत बसले आहेत, आणि त्या तारेनुसार प्रत्येक ग्रह कसे (शुभ/अशुभ) फल देईल?
+----------
+1] प्रथम जातकाच्या कुंडलीतील सर्व शुभ योगांची सूची तयार करा, नंतर सर्व शुभ योगांच्या बनण्याच्या विधीचे आणि त्यांच्या भाव व ग्रहांच्या क्षमतेवर आधारित संभाव्य परिणामांचे विस्तारपूर्वक विश्लेषण करा. काही योग व दोषांची सूची pdf च्या शेवटी दिली आहे, त्यांपैकी जे शुभ योग आहेत तेही घ्यायचे आहेत. .txt मधूनही घ्या.
+2] प्रथम जातकाच्या कुंडलीतील सर्व दोषांची सूची तयार करा, नंतर सर्व दोषांच्या बनण्याच्या विधीचे आणि त्यांच्या भाव व ग्रहांच्या क्षमतेवर आधारित संभाव्य परिणामांचे विस्तारपूर्वक विश्लेषण करा. काही योग व दोषांची सूची pdf च्या शेवटी दिली आहे, त्यांपैकी जे दोष आहेत तेही घ्यायचे आहेत. .txt मधूनही घ्या.
+----------
+कृपया वरील सर्व चॅट आणि PDF च्या जन्म तपशिलांच्या आधारे सर्व 9 ग्रहांचे (सूर्य, चंद्र, मंगळ, बुध, बृहस्पति, शुक्र, शनि, राहू, केतू) ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत व्याख्येची गरज नाही. ही सूची कुंडलीचे फलित, षड्बल, विमशोपक अंश (षोडश वर्ग), अष्टकवर्ग आणि जैमिनी कारकत्व यांवर आधारित असावी.
+
+
+प्रत्येक ग्रहासाठी खालील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ जैमिनी कारकत्व:
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रू, सम, उच्च, नीच, मूलत्रिकोण, स्वराशी)
+➤ नक्षत्र व पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी) 
+➤ [ग्रहाचे नाव] वर दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांसोबत युतीत आहे)
+➤ अवस्था (डिग्री/अंश): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इत्यादी)
+➤ भावनात्मक/अवस्था शक्ती: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (होय/नाही किंवा स्थितीचे नाव)
+➤ नवमांश स्थिती: (नवमांश कुंडलीत ग्रह कोणत्या राशीत, नक्षत्रात (स्वामी) आहे आणि त्याचा प्रभाव.)
+➤ नवमांशातील शक्ती: पीडित/बलवान
+➤ चलितमधील स्थिती बदल आणि प्रभाव 
+➤ भावबल: (फक्त मान)
+➤ षड्बल :  (रूपात मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी.)
+➤ भिन्नाष्टक वर्ग (BAV) बिंदू: (0-8 मधील मान) : (बिंदूंच्या आधारे: व्यावहारिक शक्ती - कमकुवत/सरासरी/शक्तिशाली)
+➤ विमशोपक अंश (षोडश वर्ग): (मान आणि ग्रहांत त्याचा रँक, लागू असल्यास.)
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB)/मृत्यू भाग (MB) मधील स्थिती आणि प्रभाव :
+​➤ नवतारा स्थिती व प्रभाव: (जन्म नक्षत्राच्या आधारे हा ग्रह कोणत्या ताऱ्यात - जसे संपत, विपत, साधक इत्यादी - बसला आहे, आणि त्या विशिष्ट ताऱ्यामुळे त्याच्या नैसर्गिक व भाव फलांत कशी शुभता किंवा अडथळे येतील.)
+➤ गोचर आणि दशेतील संभाव्य फलाचे संक्षिप्त उत्तर : (साधारणपणे तो ग्रह आपल्या दशेत/अंतर्दशेत आणि गोचरात कसे फल देईल - चांगले, खराब, किंवा मध्यम.
+
+➤ निष्कर्ष : एकूणच ग्रह मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रहांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीवर आधारित)
+----------
+कृपया वरील सर्व चॅट आणि PDF च्या जन्म तपशिलांच्या आधारे D1 च्या सर्व 12 भावांची ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत व्याख्येची गरज नाही. ही सूची कारकत्व, भाव बल, अष्टकवर्ग यांवर आधारित असावी.
+
+
+प्रत्येक भावासाठी खालील माहिती द्या:
+
+1. पहिला भाव (लग्न):  राशीचे नाव [आरूढ पद]
+➤ कारकत्व: 
+➤ भाव स्वामी (लग्नेश):
+➤ भावेशाची स्थिती: 
+➤ स्थित ग्रह: 
+➤ भावावर दृष्टी: 
+➤ भाव बल: रूपात मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी. (कुंडलीत कमकुवत किंवा मजबूत भाव).
+➤ सर्वाष्टकवर्ग (SAV) बिंदू: (एकूण बिंदू) (भावाची क्षमता: 28 पेक्षा जास्त असल्यास 'उत्तम', 25 पेक्षा कमी असल्यास 'आव्हानात्मक')
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB)मध्ये स्थिती आणि प्रभाव :
+➤ निष्कर्ष : एकूणच भाव मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व भावांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीवर आधारित)
+----------
+➤ सामान्य माहिती तालिका तयार करा :
+
+►D1 लग्न भाव राशी आणि नक्षत्र
+►D1 सप्तम भाव राशी आणि नक्षत्र
+►D9 लग्न भाव राशी आणि नक्षत्र
+►D9 सप्तम भाव राशी आणि नक्षत्र
+
+
+►चंद्र राशी 
+►चंद्र नक्षत्र
+►चंद्र नक्षत्र स्वामी
+
+►D1 लग्न भाव नक्षत्र स्वामी
+►D1 लग्नेश  
+►D1 सप्तम भाव नक्षत्र स्वामी
+►D1 सप्तमेश
+►D9 लग्न भाव नक्षत्र स्वामी
+►D9 लग्नेश  
+►D9 सप्तम भाव नक्षत्र स्वामी
+►D9 सप्तमेश
+
+➤ तालिका तयार केल्यानंतर खालील मुद्द्यांचे विश्लेषण करा. 
+
+▸ D1 आणि  D9 दोन्हींच्या लग्नात बसलेला ग्रह, लग्नेश आणि लग्न नक्षत्र स्वामी यांत कोण मजबूत आहे ? 
+▸ D1 आणि D9 मध्ये लग्नात बसलेला ग्रह, लग्नेश, आणि लग्न नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वांत प्रभावशाली आहे आणि व्यक्तीच्या व्यक्तिमत्त्वाला अंतिम रूपाने निर्देशित करतो ?
+
+▸ D1 आणि  D9 दोन्हींच्या सप्तम भावात बसलेला ग्रह, सप्तमेश आणि सप्तम भाव नक्षत्र स्वामी यांत कोण मजबूत आहे ? 
+▸ D1 आणि D9 मध्ये सप्तम भावात बसलेला ग्रह, सप्तमेश आणि सप्तम भाव नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वांत प्रभावशाली आहे आणि व्यक्तीच्या विवाहाला अंतिम रूपाने निर्देशित करतो ?
+
+➤ निष्कर्ष : 
+▸ D1 च्या लग्नाच्या प्रभावशाली ग्रह आणि  D9 च्या लग्नाच्या प्रभावशाली ग्रह यांत कोण अधिक प्रभावशाली आहे ? 
+▸ D1 च्या सप्तम भावाच्या प्रभावशाली ग्रह आणि  D9 च्या सप्तम भावाच्या प्रभावशाली ग्रह यांत कोण अधिक प्रभावशाली आहे ?
+----------
+चंद्र कुंडली आणि लग्न कुंडलीवरून मंगळ दोष तपासा.
+----------
+1] विवाहाचे वचन (Promise of Marriage):
+➤ 7व्या भावाचा कस्पल सब-लॉर्ड (CSL) कोण आहे?
+➤ हा CSL कोणत्या भावांना सिग्निफाय करत आहे (विशेषतः 2, 7, 11 भावांच्या संबंधात)?
+➤ हा CSL विवाह नाकारणाऱ्या भावांना (जसे 1, 6, 10, 12 - जे विभक्ती किंवा विलंब दर्शवतात) सुद्धा सिग्निफाय करत आहे का?
+
+विश्लेषण: कुंडलीत विवाहाचे स्पष्ट वचन आहे की अडथळे/नकाराची शक्यता आहे? (विवाहाच्या वचनाची 100 पैकी किती टक्के शक्यता आहे ?)
+
+2] जोडीदाराचा स्वभाव आणि वैवाहिक संबंध (Nature of Spouse & Marital Relations): 
+➤ 7व्या CSL चा नक्षत्र स्वामी कोण आहे आणि तो कुठे स्थित आहे?
+➤ 7व्या CSL चा उप-स्वामी कोण आहे आणि तो कुठे स्थित आहे?
+➤ 7व्या CSL चा SSL कोण आहे आणि तो कुठे स्थित आहे?
+➤ विवाहाशी संबंधित भावांना (2, 7, 11) सिग्निफाय करणारे प्रमुख ग्रह कोणते आहेत आणि त्यांची स्थिती काय आहे?
+
+विश्लेषण: जोडीदाराचा सामान्य स्वभाव, व्यक्तिमत्त्व आणि वैवाहिक संबंधाची एकूण गुणवत्ता.
+
+3] वैवाहिक जीवनाची गुणवत्ता आणि विभक्ती (Quality of Married Life & Separation):
+➤ 7वा CSL विवाहासाठी शुभ भावांना (2, 7, 11) ठामपणे दाखवत आहे का?
+➤ 7वा CSL विभक्ती/घटस्फोटाच्या भावांना (1, 6, 10) प्रबळपणे सिग्निफाय करत आहे का? (लक्षात घ्या: 6वा भाव 7व्याचा 12वा आहे, जो कायदेशीर विभक्ती देतो).
+➤ 7वा CSL 8व्या भावाला (मानसिक तणाव, सासरहून क्लेश, गुप्त फसवणूक, किंवा जोडीदारासाठी मारक कष्ट) सिग्निफाय करत आहे का?
+➤ 7व्या CSL किंवा 11व्या CSL चा संबंध 12व्या भावाशी (शय्या सुखाची कमतरता/गुप्त त्रास) होत आहे का?
+
+विश्लेषण: वैवाहिक जीवन किती सुखद राहील? भविष्यात कायदेशीर घटस्फोट, विभक्ती (Separation), जोडीदाराच्या आरोग्याला धोका, किंवा मानसिक क्लेशामुळे वैवाहिक सुखात मोठी घट होण्याची कोणतीही स्पष्ट शक्यता आहे का? (स्पष्ट आणि कडवे सत्य सांगा).
+----------
+कृपया वरील सर्व चॅट आणि PDF च्या जन्म तपशिलांच्या आधारे जातक xyz च्या कुंडलीची खालील माहिती काढा :
+
+
+D1 ग्रहांच्या स्थिती (राशी आणि भावासह):
+
+सूर्य: [राशी], [भाव], [नक्षत्र-स्वामी]
+चंद्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+मंगळ: [राशी], [भाव] [नक्षत्र-स्वामी]
+बुध: [राशी], [भाव] [नक्षत्र-स्वामी]
+बृहस्पति: [राशी], [भाव] [नक्षत्र-स्वामी]
+शुक्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+शनि: [राशी], [भाव] [नक्षत्र-स्वामी]
+राहू: [राशी], [भाव] [नक्षत्र-स्वामी]
+केतू: [राशी], [भाव] [नक्षत्र-स्वामी]
+
+
+D1 कुंडलीची स्थिती:
+
+लग्न राशी
+लग्नेश
+लग्न नक्षत्र
+लग्न नक्षत्र-स्वामी
+चंद्र राशी
+चंद्र नक्षत्र
+चंद्र नक्षत्र-स्वामी
+सप्तम भाव राशी 
+सप्तम भाव नक्षत्र
+सप्तम भाव नक्षत्र-स्वामी
+सप्तमेश
+
+
+D9 ग्रहांच्या स्थिती (राशी आणि भावासह):
+
+नवमांश सूर्य: [राशी], [भाव], [नक्षत्र-स्वामी]
+नवमांश चंद्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश मंगळ: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश बुध: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश बृहस्पति: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश शुक्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश शनि: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश राहू: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश केतू: [राशी], [भाव] [नक्षत्र-स्वामी]
+
+
+D9 कुंडलीची स्थिती:
+
+नवमांश लग्न राशी
+नवमांश लग्नेश
+नवमांश लग्न नक्षत्र
+नवमांश लग्न नक्षत्र-स्वामी
+नवमांश चंद्र राशी
+नवमांश चंद्र नक्षत्र
+नवमांश चंद्र नक्षत्र-स्वामी
+नवमांश सप्तम भाव राशी 
+नवमांश सप्तम भाव नक्षत्र
+नवमांश सप्तम भाव नक्षत्र-स्वामी
+नवमांश सप्तमेश
+
+
+जैमिनी चर कारक (ग्रहांच्या नावांसह):
+
+आत्मकारक (AK): [ग्रहाचे नाव]
+अमात्यकारक (AmK): [ग्रहाचे नाव]
+भ्रातृकारक (BK): [ग्रहाचे नाव]
+मातृकारक (MK): [ग्रहाचे नाव]
+पुत्रकारक (PK): [ग्रहाचे नाव]
+ज्ञातिकारक (GK): [ग्रहाचे नाव]
+दाराकारक (DK): [ग्रहाचे नाव]
+
+
+जैमिनी आरूढ पद (राशी आणि भावासह):
+
+उपपद लग्न (A12/UL): [राशी], [भाव]
+दारापद (A7): [राशी], [भाव]
+आरूढ लग्न (A1/AL): [राशी], [भाव]
+धन पद (A2): [राशी], [भाव]
+भ्रातृ पद (A3): [राशी], [भाव]
+मातृ पद (A4): [राशी], [भाव]
+पुत्र पद (A5): [राशी], [भाव]
+रोग पद (A6): [राशी], [भाव]
+मृत्यू पद (A8): [राशी], [भाव]
+भाग्य पद (A9): [राशी], [भाव]
+राज्य पद (A10): [राशी], [भाव]
+लाभ पद (A11): [राशी], [भाव]
+
+
+कारकांश/स्वांशाचे तपशील:
+
+कारकांश लग्न: [राशी], [भाव]
+कारकांश सप्तम भाव: [राशी], [भाव]
+स्वांश लग्न: [राशी], [भाव]
+स्वांश सप्तम भाव: [राशी], [भाव]
+
+
+KP चे तपशील:
+
+7व्या भावाचा CSL:
+7व्या भाव CSL सैगनिफिकेटर  भाव:
+7व्या CSL चा नक्षत्र स्वामी (NL):
+7व्या CSL चा उप-स्वामी (SL):
+7व्या CSL चा SSL:
+
+शेवटी सर्व काढलेला डेटा क्रॉसचेक करा...
+----------
+'डेटा टेबल'ची माहिती क्रॉस चेक करून खात्री करा की ती बरोबर आहे की काही चूक आहे ? जी चूक असेल त्याचीच सूची द्या फक्त.
+----------
+https://sites.google.com/view/astropropmt/Kundali-Milan-Report/Milan-Paste
+----------
+कृपया वरील सर्व PDF च्या जन्म तपशिलांच्या आधारे दोन कुंडल्यांसाठी (वर आणि वधू) एक विस्तृत तुलनात्मक ज्योतिषीय डेटा तालिका तयार करा. तालिकेचा उद्देश कुंडली मिलान रिपोर्टच्या सुरुवातीला दोन्ही कुंडल्यांचा एक जलद आढावा देणे आहे.
+कृपया तालिका खालील विभागांत आणि स्वरूपात व्यवस्थित करा:
+
+1. वराचा (मुलगा) ज्योतिषीय तपशील:
+नाव: [मुलाचे नाव]
+
+D1 ग्रहांच्या स्थिती (राशी आणि भावासह):
+
+सूर्य: [राशी], [भाव], [नक्षत्र-स्वामी]
+चंद्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+मंगळ: [राशी], [भाव] [नक्षत्र-स्वामी]
+बुध: [राशी], [भाव] [नक्षत्र-स्वामी]
+बृहस्पति: [राशी], [भाव] [नक्षत्र-स्वामी]
+शुक्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+शनि: [राशी], [भाव] [नक्षत्र-स्वामी]
+राहू: [राशी], [भाव] [नक्षत्र-स्वामी]
+केतू: [राशी], [भाव] [नक्षत्र-स्वामी]
+
+
+D1 कुंडलीची स्थिती:
+
+लग्न राशी
+लग्नेश
+लग्न नक्षत्र
+लग्न नक्षत्र-स्वामी
+चंद्र राशी
+चंद्र नक्षत्र
+चंद्र नक्षत्र-स्वामी
+सप्तम भाव राशी 
+सप्तम भाव नक्षत्र
+सप्तम भाव नक्षत्र-स्वामी
+सप्तमेश
+
+
+D9 ग्रहांच्या स्थिती (राशी आणि भावासह):
+
+नवमांश सूर्य: [राशी], [भाव], [नक्षत्र-स्वामी]
+नवमांश चंद्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश शुक्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश मंगळ: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश बुध: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश बृहस्पति: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश शुक्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश शनि: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश राहू: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश केतू: [राशी], [भाव] [नक्षत्र-स्वामी]
+
+
+D9 कुंडलीची स्थिती:
+
+नवमांश लग्न राशी
+नवमांश लग्नेश
+नवमांश लग्न नक्षत्र
+नवमांश लग्न नक्षत्र-स्वामी
+नवमांश चंद्र राशी
+नवमांश चंद्र नक्षत्र
+नवमांश चंद्र नक्षत्र-स्वामी
+नवमांश सप्तम भाव राशी 
+नवमांश सप्तम भाव नक्षत्र
+नवमांश सप्तम भाव नक्षत्र-स्वामी
+नवमांश सप्तमेश
+
+
+जैमिनी चर कारक (ग्रहांच्या नावांसह):
+
+आत्मकारक (AK): [ग्रहाचे नाव]
+अमात्यकारक (AmK): [ग्रहाचे नाव]
+भ्रातृकारक (BK): [ग्रहाचे नाव]
+मातृकारक (MK): [ग्रहाचे नाव]
+पुत्रकारक (PK): [ग्रहाचे नाव]
+ज्ञातिकारक (GK): [ग्रहाचे नाव]
+दाराकारक (DK): [ग्रहाचे नाव]
+
+
+जैमिनी आरूढ पद (राशी आणि भावासह):
+
+उपपद लग्न (A12/UL): [राशी], [भाव]
+दारापद (A7): [राशी], [भाव]
+आरूढ लग्न (A1/AL): [राशी], [भाव]
+धन पद (A2): [राशी], [भाव]
+भ्रातृ पद (A3): [राशी], [भाव]
+मातृ पद (A4): [राशी], [भाव]
+पुत्र पद (A5): [राशी], [भाव]
+रोग पद (A6): [राशी], [भाव]
+मृत्यू पद (A8): [राशी], [भाव]
+भाग्य पद (A9): [राशी], [भाव]
+राज्य पद (A10): [राशी], [भाव]
+लाभ पद (A11): [राशी], [भाव]
+
+
+कारकांश/स्वांशाचे तपशील:
+
+कारकांश लग्न: [राशी], [भाव]
+कारकांश सप्तम भाव: [राशी], [भाव]
+स्वांश लग्न: [राशी], [भाव]
+स्वांश सप्तम भाव: [राशी], [भाव]
+
+
+KP चे तपशील:
+
+7व्या भावाचा CSL:
+7व्या भाव CSL सैगनिफिकेटर  भाव:
+7व्या CSL चा नक्षत्र स्वामी (NL):
+7व्या CSL चा उप-स्वामी (SL):
+7व्या CSL चा SSL:
+
+
+2. वधूचा (मुलगी) ज्योतिषीय तपशील:
+नाव: [मुलीचे नाव]
+
+D1 ग्रहांच्या स्थिती (राशी आणि भावासह):
+
+सूर्य: [राशी], [भाव], [नक्षत्र-स्वामी]
+चंद्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+मंगळ: [राशी], [भाव] [नक्षत्र-स्वामी]
+बुध: [राशी], [भाव] [नक्षत्र-स्वामी]
+बृहस्पति: [राशी], [भाव] [नक्षत्र-स्वामी]
+शुक्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+शनि: [राशी], [भाव] [नक्षत्र-स्वामी]
+राहू: [राशी], [भाव] [नक्षत्र-स्वामी]
+केतू: [राशी], [भाव] [नक्षत्र-स्वामी]
+
+
+D1 कुंडलीची स्थिती:
+
+लग्न राशी
+लग्नेश
+लग्न नक्षत्र
+लग्न नक्षत्र-स्वामी
+चंद्र राशी
+चंद्र नक्षत्र
+चंद्र नक्षत्र-स्वामी
+सप्तम भाव राशी 
+सप्तम भाव नक्षत्र
+सप्तम भाव नक्षत्र-स्वामी
+सप्तमेश
+
+
+D9 ग्रहांच्या स्थिती (राशी आणि भावासह):
+
+नवमांश सूर्य: [राशी], [भाव], [नक्षत्र-स्वामी]
+नवमांश चंद्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश मंगळ: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश बुध: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश बृहस्पति: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश शुक्र: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश शनि: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश राहू: [राशी], [भाव] [नक्षत्र-स्वामी]
+नवमांश केतू: [राशी], [भाव] [नक्षत्र-स्वामी]
+
+
+D9 कुंडलीची स्थिती:
+
+नवमांश लग्न राशी
+नवमांश लग्नेश
+नवमांश लग्न नक्षत्र
+नवमांश लग्न नक्षत्र-स्वामी
+नवमांश चंद्र राशी
+नवमांश चंद्र नक्षत्र
+नवमांश चंद्र नक्षत्र-स्वामी
+नवमांश सप्तम भाव राशी 
+नवमांश सप्तम भाव नक्षत्र
+नवमांश सप्तम भाव नक्षत्र-स्वामी
+नवमांश सप्तमेश
+
+
+जैमिनी चर कारक (ग्रहांच्या नावांसह):
+
+आत्मकारक (AK): [ग्रहाचे नाव]
+अमात्यकारक (AmK): [ग्रहाचे नाव]
+भ्रातृकारक (BK): [ग्रहाचे नाव]
+मातृकारक (MK): [ग्रहाचे नाव]
+पुत्रकारक (PK): [ग्रहाचे नाव]
+ज्ञातिकारक (GK): [ग्रहाचे नाव]
+दाराकारक (DK): [ग्रहाचे नाव]
+
+
+जैमिनी आरूढ पद (राशी आणि भावासह):
+
+उपपद लग्न (A12/UL): [राशी], [भाव]
+दारापद (A7): [राशी], [भाव]
+आरूढ लग्न (A1/AL): [राशी], [भाव]
+धन पद (A2): [राशी], [भाव]
+भ्रातृ पद (A3): [राशी], [भाव]
+मातृ पद (A4): [राशी], [भाव]
+पुत्र पद (A5): [राशी], [भाव]
+रोग पद (A6): [राशी], [भाव]
+मृत्यू पद (A8): [राशी], [भाव]
+भाग्य पद (A9): [राशी], [भाव]
+राज्य पद (A10): [राशी], [भाव]
+लाभ पद (A11): [राशी], [भाव]
+
+
+कारकांश/स्वांशाचे तपशील:
+
+कारकांश लग्न: [राशी], [भाव]
+कारकांश सप्तम भाव: [राशी], [भाव]
+स्वांश लग्न: [राशी], [भाव]
+स्वांश सप्तम भाव: [राशी], [भाव]
+
+
+KP चे तपशील:
+
+7व्या भावाचा CSL:
+7व्या भाव CSL सैगनिफिकेटर  भाव:
+7व्या CSL चा नक्षत्र स्वामी (NL):
+7व्या CSL चा उप-स्वामी (SL):
+7व्या CSL चा SSL:
+
+
+निर्देश:
+वरील सर्व डेटा एका सुव्यवस्थित Markdown तालिकेत सादर करा, ज्यात तीन कॉलम असतील: 'तपशील', '[मुलाचे नाव]', आणि '[मुलीचे नाव]'. कृपया तालिकेला उप-शीर्षकांसह (जसे 'मुख्य मुद्दे', 'पराशरी ग्रह', 'जैमिनी चर कारक' इत्यादी) विभागा जेणेकरून वाचनीयता चांगली होईल. फॉर्मेट असे असावे : "[कुंभ, चतुर्थ भाव, शतभिषा,स्वामी: राहू]"
+----------
+'कुंडली मिलान: विस्तृत तुलनात्मक डेटा टेबल'ची माहिती क्रॉस चेक करून खात्री करा की ती बरोबर आहे की काही चूक आहे ? जी चूक असेल त्याचीच सूची द्या फक्त.
+वरील आतापर्यंत तुम्हाला कुंडली विश्लेषणासाठी दिली गेलेली कोणती कोणती माहिती प्राप्त झाली, तिची थोडक्यात सूची द्या.
+----------
+हे सुनिश्चित करा की तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल,
+
+1] आउटपुट देण्यापूर्वी डेटाला क्रॉसचेक कराल.
+2] कोणत्याही प्रकारची शुगर-कोटिंग (Sugar-coating) करू नका. जर कुंडलीत कोणताही दोष, संघर्ष किंवा नकारात्मक योग असेल, तर तो स्पष्ट आणि कडव्या शब्दांत सांगा. मला क्लायंटला खुश करायचे नाही, तर खरे सांगायचे आहे. लक्षात ठेवा पूर्णपणे नकारात्मक होता कामा नये, सकारात्मक आणि नकारात्मक यांचा समतोल राखून जे खरे आहे ते सांगा .
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'नक्कीच', 'जरूर', 'खालील आहे' इत्यादी) करू नका. तुमचे उत्तर थेट मागितलेल्या माहितीनेच सुरू झाले पाहिजे.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+5] आणि यानंतरच्या विश्लेषणात करताना जातकांच्या नावांचा उल्लेख कराल.
+
+तुम्ही तयार आहात का एवढेच सांगा की कोणत्या आदेशांचे पालन कराल.
+----------
+'कुंडली मिलान: विस्तृत तुलनात्मक डेटा टेबल' मधून जे पॉइंट्स सेम किंवा मित्र किंवा सम निघाले आहेत, आणि जे पॉइंट्स विरुद्ध शत्रू निघाले आहेत त्यांचे विश्लेषण प्रभाव आणि निष्कर्षासह करा.
+----------
+कुंडली मिलनाआधी दोघांचा स्वभाव (Personality) जाणणे अत्यंत आवश्यक आहे. म्हणूनच...
+
+➤ कृपया वरील सर्व PDFs/txt/chat च्या जन्म तपशीलांच्या आधारे मुलाच्या स्वभावाचे विश्लेषण करा:
+
+► मूळ व्यक्तिमत्त्व आणि प्रकृती (Core Personality & Nature):
+(स्रोत: लग्न, लग्नेश, चंद्र रास, सूर्य रास, आत्मकारक (AK))
+► बाह्य व्यक्तिमत्त्व आणि सामाजिक वर्तन (Outer Personality & Social Conduct):
+(स्रोत: लग्न, आरूढ लग्न (AL), दशम भावातील ग्रह)
+► आंतरिक आणि भावनिक स्वभाव (Inner & Emotional Nature):
+(स्रोत: चंद्राची स्थिती (नक्षत्रासह), चतुर्थ भाव, स्वांश लग्न (D9 लग्न))
+► मानसिक आणि बौद्धिक स्तर (Mental & Intellectual Level):
+(स्रोत: बुधाची स्थिती, पंचम भाव, गुरूची दृष्टी, कारकांश लग्न)
+► चारित्र्य आणि नैतिक मूल्ये (Character & Moral Values):
+(स्रोत: गुरू आणि नवम भावाची स्थिती, D9 मधील ग्रहांचे बळ)
+► आरोग्य आणि शारीरिक बळ (Health & Physical Vitality):
+(स्रोत: लग्न, लग्नेश, षष्ठ भाव, सूर्य आणि चंद्राचे बळ)
+
+➤ सर्वंकष निष्कर्ष:
+----------
+➤ कृपया वरील सर्व PDFs/txt/chat च्या जन्म तपशीलांच्या आधारे मुलीच्या स्वभावाचे विश्लेषण करा:
+
+► मूळ व्यक्तिमत्त्व आणि प्रकृती (Core Personality & Nature):
+(स्रोत: लग्न, लग्नेश, चंद्र रास, सूर्य रास, आत्मकारक (AK))
+► बाह्य व्यक्तिमत्त्व आणि सामाजिक वर्तन (Outer Personality & Social Conduct):
+(स्रोत: लग्न, आरूढ लग्न (AL), दशम भावातील ग्रह)
+► आंतरिक आणि भावनिक स्वभाव (Inner & Emotional Nature):
+(स्रोत: चंद्राची स्थिती (नक्षत्रासह), चतुर्थ भाव, स्वांश लग्न (D9 लग्न))
+► मानसिक आणि बौद्धिक स्तर (Mental & Intellectual Level):
+(स्रोत: बुधाची स्थिती, पंचम भाव, गुरूची दृष्टी, कारकांश लग्न)
+► चारित्र्य आणि नैतिक मूल्ये (Character & Moral Values):
+(स्रोत: गुरू आणि नवम भावाची स्थिती, D9 मधील ग्रहांचे बळ)
+► आरोग्य आणि शारीरिक बळ (Health & Physical Vitality):
+(स्रोत: लग्न, लग्नेश, षष्ठ भाव, सूर्य आणि चंद्राचे बळ)
+
+➤ सर्वंकष निष्कर्ष:
+----------
+कृपया वरील सर्व PDFs/txt/chat च्या जन्म तपशीलांच्या आणि संभाव्य जीवनसाथी तपशीलांच्या आधारे विश्लेषण करा:
+
+➤ मुलाचा स्वभाव मुलीच्या संभाव्य पतीशी जुळतो का? (टक्केवारी)
+
+➤ मुलीचा स्वभाव मुलाच्या संभाव्य पत्नीशी जुळतो का? (टक्केवारी)
+
+➤ सर्वंकष निष्कर्ष:
+----------
+TXT फाइल दोघांच्या अष्टकूट मिलनाची आहे; अष्टकूट मिलनाच्या प्रत्येक कूटाचे विस्तृत विश्लेषण करा आणि गुणांवर आधारित निष्कर्ष द्या: सरासरी मिलन, काही प्रमुख दोषांसह. (विश्लेषणात 'TXT फाइल'चा उल्लेख करू नका, ती फक्त संदर्भासाठी आहे)
+
+➤ अष्टकूट आणि त्यांचे गुण:
+► वर्ण (1 गुण): मानसिक आणि आध्यात्मिक सुसंगतता.
+► वश्य (2 गुण): एकमेकांना नियंत्रित करण्याची किंवा आकर्षित करण्याची क्षमता.
+► तारा (3 गुण): भाग्य आणि नशिबाची सुसंगतता.
+► योनि (4 गुण): लैंगिक आणि शारीरिक सुसंगतता.
+► मैत्री (5 गुण): मानसिक आणि बौद्धिक मैत्री, स्वभावाची सुसंगतता.
+► गण (6 गुण): स्वभाव आणि वर्तनाची सुसंगतता (देव, मनुष्य, राक्षस गण).
+► भकूट (7 गुण): आर्थिक स्थिरता, कुटुंब आणि भविष्याची सुसंगतता (रास मैत्री).
+► नाडी (8 गुण): आरोग्य, वंशवृद्धी आणि संतान संबंधी सुसंगतता.
+➤ द्विर्द्वादश, नवम-पंचम, षडाष्टक (मृत्यू/प्रीती) विचार :
+➤ लग्न मैत्री, जन्म नक्षत्र मैत्री विचार :
+➤ भकूट दोषाचा परिहार (Cancellation) होत आहे का?
+भकूट दोषाचा परिहार तेव्हा होतो जेव्हा दोघांचे राशी स्वामी मित्र असतील किंवा एकच असतील.
+(हा योग तेव्हा वाईट असतो जेव्हा लग्नेश आणि राशी स्वामी शत्रू असतात) 
+➤ इतर मार्गांनी भकूट दोषाचा मारक प्रभाव कमी होत आहे का? (जसे : नाडी शुद्धी, राशी स्वामींचे नक्षत्र परिवर्तन, राशी किंवा नक्षत्र स्वामींमध्ये मैत्री, एकाच्या नक्षत्र/राशी स्वामी आणि दुसऱ्याच्या राशी/नक्षत्र स्वामीमध्ये मैत्री, लग्न समसप्तक)
+➤ इतर कोणत्या दोषाचा परिहार (Cancellation) होत आहे का?
+
+➤ अष्टकूटाचा सर्वंकष निष्कर्ष:
+► एकूण प्राप्तांक (36 पैकी) आणि अष्टकूट पद्धतीनुसार, हे नाते वैवाहिक जीवनासाठी संतुलित आणि अनुकूल वाटते का? हा विवाह शिफारसीय आहे का?
+----------
+➤ दशकूट मिलन (दक्षिण भारतीय पद्धत) चे विस्तृत विश्लेषण:
+(TXT फाइलमधील उपलब्ध दशकूट सारणी आणि 36 पैकी प्राप्त गुणांच्या आधारे विश्लेषण करा, विश्लेषणात 'TXT फाइल'चा उल्लेख करू नका, ती फक्त संदर्भासाठी आहे)
+
+► दिन (Dinam): दैनंदिन सौभाग्य आणि आरोग्य सुसंगतता.
+► गण (Gana): स्वभाव आणि वर्तनाचे मिलन.
+► योनि (Yoni): शारीरिक आणि लैंगिक सुसंगतता.
+► राशि (Rasi): वंशवृद्धी आणि मानसिक तालमेळ.
+► राश्याधिपति (Rasyadhipati): संतान आणि मैत्री.
+► रज्जु (Rajju - अति महत्त्वाचे): पतीचे वय आणि शारीरिक सुरक्षा (मांगल्य दोष विचार).
+(चेतावणी: जर रज्जुचा स्कोअर 0 असेल किंवा 'रज्जु दोष' लिहिले असेल, तर ते चेतावणी म्हणून लिहा).
+► वेध (Vedha): नक्षत्रांमध्ये कोणता वेध (बाधा) आहे का?
+► वश्य (Vashya): एकमेकांप्रती आकर्षण आणि वशीकरण.
+► महेन्द्र (Mahendra): संपत्ती, भाग्य आणि संतानवृद्धी.
+► स्त्री-दीर्घ (Stree-Deergha): वधूच्या जीवनात सुख आणि समृद्धी.
+
+➤ इतर कोणत्या दोषाचा परिहार (Cancellation) होत आहे का? (जसे : दशकूटात एक विशेष नियम आहे: जर लग्नेश मित्र असतील किंवा राशी स्वामी एकच असतील, तर गण दोष मान्य होत नाही.)
+
+➤ दशकूटाचा सर्वंकष निष्कर्ष:
+► एकूण प्राप्तांक (36 पैकी) आणि दक्षिण भारतीय पद्धतीनुसार, हे नाते वैवाहिक जीवनासाठी संतुलित आणि अनुकूल वाटते का? हा विवाह शिफारसीय आहे का?
+----------
+► अष्टकूट आणि दशकूट विश्लेषणाचा संयुक्त सर्वंकष निष्कर्ष :
+► केवळ 'अष्टकूट आणि दशकूट मिलन' या विशिष्ट मापदंडाच्या आधारे, या पैलूला 10 पैकी किती स्वतंत्र गुण द्याल? (लक्षात घ्या: हा संपूर्ण विवाहाचा सर्वंकष स्कोअर नाही, तर अंतिम 100 गुणांच्या स्कोअरकार्डसाठी केवळ याच एका प्रमाणाचा स्वतंत्र स्कोअर आहे.)
+----------
+➤ मंगळ दोष विचार :
+► मुलाच्या कुंडलीत मंगळाची स्थिती.
+► मुलीच्या कुंडलीत मंगळाची स्थिती.
+► दोघेही मांगलिक आहेत का? किंवा एक? किंवा कोणीही नाही?
+► जर मांगलिक दोष असेल, तर त्याचा परिहार (cancellation) होत आहे का (जसे शनि, राहू, केतूची त्याच भावांमध्ये स्थिती, किंवा मंगळाची स्वरास/उच्च राशीत स्थिती, किंवा दृष्टी संबंध).
+► मंगळ दोषाचा वैवाहिक जीवनावर संभाव्य प्रभाव.
+► D9 मध्ये मंगळ दोष बनत आहे का? आणि जातकाच्या विवाहानंतर या दोषाचा प्रभाव होईल का?
+
+➤ सर्वंकष निष्कर्ष:
+► सादर विश्लेषणानुसार, हे नाते वैवाहिक जीवनासाठी संतुलित आणि अनुकूल वाटते का? 
+► केवळ 'मंगळ दोष विचार' या विशिष्ट मापदंडाच्या आधारे, या पैलूला 10 पैकी किती स्वतंत्र गुण द्याल? (लक्षात घ्या: हा संपूर्ण विवाहाचा सर्वंकष स्कोअर नाही, तर अंतिम 100 गुणांच्या स्कोअरकार्डसाठी केवळ याच एका प्रमाणाचा स्वतंत्र स्कोअर आहे.)
+----------
+➤ A] पंचधा मैत्री विशेष विश्लेषण (लग्नेश आणि सप्तमेश संबंध): (विश्लेषणात 'TXT फाइल'चा उल्लेख करू नका, ती फक्त संदर्भासाठी आहे, TXT फाइलमधील उपलब्ध पंचधा मैत्री कॅल्क्युलेटरच्या डेटानुसार विश्लेषण करा)
+► वर (मुलगा): कुंडलीत लग्नेश (स्वतः) आणि सप्तमेश (जीवनसाथी) यांच्यातील नैसर्गिक, तात्कालिक आणि अंतिम पंचधा मैत्री संबंध कसा आहे (मित्र/शत्रू/सम)?
+► वधू (मुलगी): कुंडलीत लग्नेश आणि सप्तमेश यांच्यातील पंचधा मैत्री संबंध कसा आहे?
+► पंचधा निष्कर्ष: दोघांच्या वैयक्तिक कुंडलीत लग्नेश आणि सप्तमेश यांच्यात शत्रुत्व आहे (जे वैवाहिक असंतोष दर्शवते) किंवा मैत्री (जे परस्पर समज दर्शवते)? TXT फाइलने दिलेला "वैवाहिक दृष्टिकोनातून अंतिम विश्लेषण" देखील समाविष्ट करा.
+----------
+➤ B] वर आणि वधू दोघांच्या कुंडल्यांचे खालील मिलन विश्लेषण आणि तुलनात्मक अभ्यास करा आणि प्रत्येक मुद्द्याचा निष्कर्ष देखील द्या :
+
+1] सप्तम भावाचे विश्लेषण : विवाह, जीवनसाथी आणि भागीदारीचा भाव. या भावाचा स्वामी, त्यात स्थित ग्रह आणि त्यावर पडणाऱ्या प्रभावांचे विश्लेषण.
+2] सप्तमेशाची स्थिती : 7व्या भावाच्या स्वामीची स्थिती, बळ आणि युति-दृष्टी संबंध.
+3] ग्रहांचा तुलनात्मक अभ्यास :लग्न स्वामींची मैत्री : दोघांची लग्ने कोणती आहेत आणि त्यांचे स्वामी एकमेकांशी मित्र, शत्रू किंवा सम आहेत. चंद्र राशींच्या स्वामींची मैत्री.
+4] शुक्राचे विश्लेषण: दोघांच्या कुंडलीत प्रेम, भोग आणि वैवाहिक सुखाचा कारक शुक्राची स्थिती.
+5] गुरूचे विश्लेषण: दोघांच्या कुंडलीत सौभाग्य, संतान आणि ज्ञानाचा कारक गुरूची स्थिती आणि त्याचा वैवाहिक जीवनावर परिणाम.
+6] दीर्घायुष्याचे योग : दोघांच्या कुंडल्यांमध्ये आयुष्याचे योग.
+
+to be continued...
+----------
+7] संतान योग : दोघांच्या कुंडलीत संतान प्राप्तीचे योग आणि शक्यता. (D1/D9 आणि D7)
+8] धन आणि आर्थिक स्थिरता : दोघांच्या कुंडल्यांमध्ये धन संबंधी योग.
+9] शैया सुख आणि घरगुती शांतता : कुंडल्यांमधील 12वा भाव: शारीरिक सुख आणि "बेड प्लेजर" (Bed Comforts) यांची स्थिती, आणि 4था भाव: कौटुंबिक शांतता आणि घरगुती सुखाचे वातावरण.
+10] दोघांचा D60 (षष्ट्यंश) - पूर्व पुण्य आणि अंतिम परिणाम : जर D1 आणि D9 मध्ये जे विवाह संबंधी योग आहेत, पण D60 मध्ये तो ग्रह शापित असेल, तर विवाहात विलंब किंवा डिनायल येऊ शकते. हा 'सस्टेनेबल सक्सेस' (टिकाऊ यश) पाहण्यासाठी D60 चे विश्लेषण आहे. 
+
+to be continued...
+----------
+➤ पंचधा मैत्री विशेष आणि सर्व 10 मुद्द्यांचा (A आणि B) सर्वंकष निष्कर्ष:
+► सादर विश्लेषणानुसार, हे नाते वैवाहिक जीवनासाठी संतुलित आणि अनुकूल वाटते का? 
+► केवळ 'पंचधा मैत्री विशेष आणि भाव/ग्रह मिलनाच्या सर्व 10 मुद्द्यांच्या (A आणि B)' या विशिष्ट मापदंडाच्या आधारे, या पैलूला 10 पैकी किती स्वतंत्र गुण द्याल? (लक्षात घ्या: हा संपूर्ण विवाहाचा सर्वंकष स्कोअर नाही, तर अंतिम 100 गुणांच्या स्कोअरकार्डसाठी केवळ याच एका प्रमाणाचा स्वतंत्र स्कोअर आहे.)
+----------
+➤ दोघांच्या जीवनशैली आणि उद्दिष्टांचे मिलन :
+► दोघांचा धर्म, कर्म, करिअर आणि जीवनाच्या उद्दिष्टांमध्ये सामंजस्य आहे का?
+► कार्यक्षेत्रात (कर्म भाव/दशम भाव) सामंजस्य किंवा टकराव?
+
+➤ सर्वंकष निष्कर्ष:
+► सादर विश्लेषणानुसार, हे नाते वैवाहिक जीवनासाठी संतुलित आणि अनुकूल वाटते का? 
+► केवळ 'जीवनशैली आणि उद्दिष्टे' यांच्या सुसंगततेच्या विशिष्ट मापदंडाच्या आधारे, या पैलूला 10 पैकी किती स्वतंत्र गुण द्याल? (लक्षात घ्या: हा संपूर्ण विवाहाचा सर्वंकष स्कोअर नाही, तर अंतिम 100 गुणांच्या स्कोअरकार्डसाठी केवळ याच एका प्रमाणाचा स्वतंत्र स्कोअर आहे.)
+----------
+➤ नवमांश कुंडलीचे मिलन (Navamsha Chart Matching - D9 Chart):
+नवांश कुंडली विवाह आणि भाग्यासाठी खूप महत्त्वाची मानली जाते.
+► दोघांच्या नवांश लग्न आणि नवांशातील ग्रहांच्या स्थितीचा तुलनात्मक अभ्यास.
+► जन्म कुंडलीचे सप्तमेश नवांशात चांगल्या स्थितीत आहेत का?
+► दोघांच्या वैवाहिक जीवनाचा तुलनात्मक अभ्यास.
+
+➤ सर्वंकष निष्कर्ष:
+► सादर विश्लेषणानुसार, हे नाते वैवाहिक जीवनासाठी संतुलित आणि अनुकूल वाटते का? 
+► केवळ 'नवमांश (D9) कुंडली मिलन' या विशिष्ट मापदंडाच्या आधारे, या पैलूला 10 पैकी किती स्वतंत्र गुण द्याल? (लक्षात घ्या: हा संपूर्ण विवाहाचा सर्वंकष स्कोअर नाही, तर अंतिम 100 गुणांच्या स्कोअरकार्डसाठी केवळ याच एका प्रमाणाचा स्वतंत्र स्कोअर आहे.)
+----------
+➤ जैमिनी ज्योतिष आधारित मिलन :
+
+1] उपपद लग्न (Upapada Lagna-UL): 
+► वर आणि वधू दोघांच्या उपपद लग्नाची स्थिती, त्याचा स्वामी आणि त्यावर पडणाऱ्या प्रभावांचे मिलन केले जाते.
+► एकाचे उपपद लग्न दुसऱ्याच्या कुंडलीत कोणत्या भावात पडत आहे आणि ते अनुकूल आहे का हे पाहिले जाते.
+► उपपद लग्नापासून 7व्या भावाचे विश्लेषण देखील महत्त्वाचे आहे.
+
+2] उपपद लग्न-दारापदाचे विश्लेषण (UL-A7 Analysis): 
+► दोघांच्या कुंडल्यांमधील UL-A7 चे मिलन आणि प्रभाव.  (मुलाचा UL आणि मुलीचा UL, मुलाचा A7 आणि मुलीचा A7, UL आणि A7 चा परस्पर संबंध (एका व्यक्तीच्या कुंडलीत))
+
+3] आत्माकारक-दाराकारकाचे विश्लेषण (AK-DK Analysis): 
+► दोघांच्या कुंडल्यांमधील AK-DK चे मिलन आणि प्रभाव.  (मुलाचा AK/DK आणि मुलीचा AK/DK - दोन्ही ग्रहांची नैसर्गिक मैत्री) 
+► सर्वात महत्त्वाचे: मुलाचा AK आणि मुलीचा DK - आणि याउलट - मुलीचा AK आणि मुलाचा DK, (राशींतील स्थिती, नवांश (D9) मधील AK-DK)
+
+4] आरूढ लग्न-दारापदाचे विश्लेषण (AL-A7 Analysis): 
+► दोघांच्या कुंडल्यांमधील AL-A7 चे मिलन आणि प्रभाव.  (मुलाचा AL आणि मुलीचा A7 संबंध, मुलाचा A7 आणि मुलीचा AL संबंध, AL आणि A7 चा परस्पर संबंध (एका व्यक्तीच्या कुंडलीत))
+
+5] कारकांश/स्वांश विश्लेषण (Karkamsa/Swamsa Analysis):
+► दोघांच्या कुंडल्यांमधील कारकांश लग्नाचे मिलन आणि प्रभाव. 
+► दोघांच्या कुंडल्यांमधील स्वांश लग्नाचे मिलन आणि प्रभाव. 
+
+to be continued...
+----------
+प्रश्न: दोघांच्या आत्मांच्या मूळ उद्देश आणि जीवनाच्या दिशेमध्ये सामंजस्य आहे का? (AK-AK विश्लेषण)
+प्रश्न: एक जोडीदार दुसऱ्यासाठी "आदर्श" किंवा "आकांक्षित" जीवनसाथीची प्रतिमा पूर्ण करतो का? (AK-DK विश्लेषण)
+प्रश्न: जातकाची सार्वजनिक प्रतिमा (AL) आणि त्याच्या संबंधांची प्रतिमा (A7) यामध्ये सामंजस्य आहे का? (एकाचा AL दुसऱ्याच्या A7 साठी अनुकूल)
+प्रश्न: दोघांच्या आत्मांच्या मूळ उद्देश (कारकांश) आणि आंतरिक प्रकृती (स्वांश) मध्ये सामंजस्य आहे का? एकाचे कारकांश लग्न दुसऱ्यासाठी शुभ आहे का?
+प्रश्न: विवाहानंतर वास्तविक कौटुंबिक जीवन आणि अनुभव कसा राहण्याची शक्यता आहे? (UL-UL विश्लेषण)
+प्रश्न: विवाहाची सामाजिक प्रतिमा आणि वास्तविकतेमध्ये सामंजस्य होईल का? (UL-A7 चा परस्पर संबंध)
+प्रश्न: जैमिनी ज्योतिषानुसार या विवाहाच्या स्थिरता आणि दीर्घायुष्याची काय संकेत आहेत? (UL पासून द्वितीय भाव आणि DK चा UL शी संबंध)
+
+
+सर्वंकष निष्कर्ष:
+► सादर विश्लेषणानुसार, हे नाते वैवाहिक जीवनासाठी संतुलित आणि अनुकूल वाटते का? 
+► केवळ 'जैमिनी ज्योतिष मिलन' या विशिष्ट मापदंडाच्या आधारे, या पैलूला 10 पैकी किती स्वतंत्र गुण द्याल? (लक्षात घ्या: हा संपूर्ण विवाहाचा सर्वंकष स्कोअर नाही, तर अंतिम 100 गुणांच्या स्कोअरकार्डसाठी केवळ याच एका प्रमाणाचा स्वतंत्र स्कोअर आहे.)
+----------
+➤ KP (कृष्णमूर्ति पद्धत) द्वारे कुंडली मिलन
+
+1] सप्तम भावाचा उप-स्वामी (7th Cusp Sub-Lord): KP मध्ये विवाहासाठी 7व्या भावाच्या उप-स्वामीचे विश्लेषण खूप महत्त्वाचे आहे.
+► 7व्या भावाचा उप-स्वामी 2, 7, 11 भावांशी संबंध बनवत आहे की नाही (जे विवाहासाठी सकारात्मक मानले जातात) हे पाहिले जावे.
+► तो 1, 6, 10 भावांशी संबंध बनवत आहे का (जे विवाहात अडथळा किंवा विलंबाचे संकेत असू शकतात).
+► दोघांच्या कुंडल्यांमध्ये 7व्या भावाच्या उप-स्वामीची स्थिती आणि त्यांनी दर्शवलेल्या फलितांची सुसंगतता यांचे विश्लेषण केले जाते.
+
+2] ग्रहांची युति/दृष्टी (Planetary ► Aspects/Conjunctions): KP मध्ये ग्रहांची स्थिती आणि त्यांच्या युति/दृष्टीचे विश्लेषण हे समजण्यासाठी केले जाते की एकाच्या कुंडलीतील ग्रह दुसऱ्याच्या कुंडलीतील कोणत्या भावांना प्रभावित करत आहेत. उदाहरणार्थ, जर एकाचा शुभ ग्रह दुसऱ्याच्या 7व्या भावाला प्रभावित करत असेल.
+
+प्रश्न: दोघांचे 7वे CSL (कस्पल सब-लॉर्ड) एकमेकांसाठी अनुकूल आहेत का आणि विवाहाचे स्पष्ट वचन देतात का?
+प्रश्न: एकाच्या कुंडलीतील विवाहाचे मुख्य सैगनिफिकेटर ग्रह (2, 7, 11 चे) दुसऱ्याच्या कुंडलीतील महत्त्वाच्या भावांना (जसे लग्न, सप्तम) सकारात्मकपणे प्रभावित करत आहेत का?
+प्रश्न: कोणत्याही एकाचा 7वा CSL दुसऱ्याच्या बाधक भावांचा (6, 8, 12) प्रबल सैगनिफिकेटर आहे का, जे संबंधांमधील लपलेल्या समस्यांचे संकेत देऊ शकते?
+प्रश्न: KP नुसार विवाहाच्या कालरेषेत दोघांच्या कुंडल्यांमध्ये किती तालमेळ आहे?
+
+➤ सर्वंकष निष्कर्ष:
+► सादर विश्लेषणानुसार, हे नाते वैवाहिक जीवनासाठी संतुलित आणि अनुकूल वाटते का? 
+► केवळ 'KP (कृष्णमूर्ति पद्धत) मिलन' या विशिष्ट मापदंडाच्या आधारे, या पैलूला 10 पैकी किती स्वतंत्र गुण द्याल? (लक्षात घ्या: हा संपूर्ण विवाहाचा सर्वंकष स्कोअर नाही, तर अंतिम 100 गुणांच्या स्कोअरकार्डसाठी केवळ याच एका प्रमाणाचा स्वतंत्र स्कोअर आहे.)
+----------
+➤ BNN (भृगु नंदी नाडी) द्वारे कुंडली मिलन
+
+1] बृहस्पती आणि शुक्राची स्थिती (Jupiter & Venus):
+► स्त्रीच्या कुंडलीतील बृहस्पती (पतीचा कारक) आणि पुरुषाच्या कुंडलीतील शुक्र (पत्नीचा कारक) यांच्या स्थितीचे विश्लेषण केले जावे.
+► या ग्रहांची एकमेकांच्या कुंडलीत स्थिती कशी आहे, ते मित्रवत आहेत का, किंवा कोणताही प्रतिकूल प्रभाव पडत आहे का हे पाहिले जावे.
+
+2] ग्रहांची युति आणि परस्पर संबंध (Planetary Conjunctions & Associations):
+► विशेषतः विवाहाशी संबंधित ग्रहांच्या (जसे शुक्र, बृहस्पती, मंगळ) युति आणि परस्पर संबंधांचे विश्लेषण केले जावे.
+► कोणताही प्रतिकूल ग्रह (जसे शनि, राहू, केतू) विवाहाच्या कारक ग्रहांना नकारात्मकपणे प्रभावित करत आहे का.
+
+प्रश्न: पुरुषाच्या कुंडलीतील शुक्र (पत्नी कारक) आणि स्त्रीच्या कुंडलीतील गुरू (पती कारक) यांच्या नैसर्गिक स्थिती आणि शक्तीचे मिलन कसे आहे?
+प्रश्न: एकाचा गुरू (जीव) दुसऱ्याच्या शुक्राबरोबर (संबंध) शुभ संबंध (युति, त्रिकोण, 2/12) बनवत आहे का?
+प्रश्न: दोघांच्या कुंडल्यांमध्ये शनि (कर्म) विवाहाच्या कारक ग्रहांसाठी (गुरू/शुक्र) एकमेकांचे समर्थन करत आहे का किंवा अडथळे निर्माण करत आहे?
+प्रश्न: नाडीनुसार, दोघांच्या आरोग्य आणि वंशवृद्धीत (नाडी कूटाचे खोल विश्लेषण) कोणतीही गंभीर समस्या आहे का?
+
+➤ सर्वंकष निष्कर्ष:
+► सादर विश्लेषणानुसार, हे नाते वैवाहिक जीवनासाठी संतुलित आणि अनुकूल वाटते का? 
+► केवळ 'BNN (भृगु नंदी नाडी) मिलन' या विशिष्ट मापदंडाच्या आधारे, या पैलूला 10 पैकी किती स्वतंत्र गुण द्याल? (लक्षात घ्या: हा संपूर्ण विवाहाचा सर्वंकष स्कोअर नाही, तर अंतिम 100 गुणांच्या स्कोअरकार्डसाठी केवळ याच एका प्रमाणाचा स्वतंत्र स्कोअर आहे.)
+----------
+➤ अंक ज्योतिष मिलान 
+► दोघांच्या मुलांक आणि भाग्यांकाचा मिलान 
+► दोघांच्या मुलांक आणि भाग्यांकांच्या स्वामींच्या परस्पर नैसर्गिक संबंधाचे विश्लेषण 
+
+➤ समग्र निष्कर्ष:
+► सादर केलेल्या विश्लेषणानुसार, हा संबंध वैवाहिक जीवनासाठी संतुलित आणि अनुकूल दिसतो का? 
+► फक्त 'अंक ज्योतिष मिलान' या विशिष्ट मापदंडाच्या आधारावर, या पैलूला 10 पैकी किती स्वतंत्र गुण द्याल? (लक्षात ठेवा: हा संपूर्ण विवाहाचा एकूण स्कोर नाही, तर 100 गुणांच्या अंतिम स्कोरकार्डसाठी फक्त या एकाच स्केलचा स्वतंत्र स्कोर आहे.)
+----------
+➤ विशेष योग (Special Yogas):
+► दोघांच्या कुंडल्यांमधील कोणतेही विशेष शुभ किंवा अशुभ योग जे वैवाहिक जीवनावर परिणाम करू शकतात.
+
+➤ समग्र निष्कर्ष:
+► सादर केलेल्या विश्लेषणानुसार, हा संबंध वैवाहिक जीवनासाठी संतुलित आणि अनुकूल दिसतो का? 
+► फक्त 'विशेष योग' या विशिष्ट मापदंडाच्या आधारावर, या पैलूला 10 पैकी किती स्वतंत्र गुण द्याल? (लक्षात ठेवा: हा संपूर्ण विवाहाचा एकूण स्कोर नाही, तर 100 गुणांच्या अंतिम स्कोरकार्डसाठी फक्त या एकाच स्केलचा स्वतंत्र स्कोर आहे.)
+----------
+➤ दशा संधि आणि वेळ मिलान (Dasha Sandhi Analysis): (लक्षात घ्या की सध्या 2026 चालू आहे, त्यानुसार गणना करायची आहे, आणि दिलेल्या TXT मध्ये xyz ची दशा मुलाची आहे, आणि xyz ची दशा मुलीची आहे)
+
+A] सध्याच्या दशेचा परिणाम:
+► मुलाचा (Groom) सध्याचा महादशा/अंतर्दशा स्वामी कोण आहेत आणि ते कुंडलीत शुभ आहेत की अशुभ?
+► मुलीची (Bride) सध्याची महादशा/अंतर्दशा स्वामी कोण आहेत आणि ते शुभ आहेत की अशुभ?
+► दोघांच्या दशा एकमेकांसाठी अनुकूल (मित्र) आहेत की प्रतिकूल (शत्रू)?
+
+B] दशा संधि (Critical Timing Check):
+► दोघांच्या कुंडल्यांमध्ये एकाच वेळी "दशा छिद्र" (महादशेचा अंत) किंवा कोणत्याही "मारक/बाधक" ग्रहाची दशा चालू आहे का? (हा वेळ विवाहासाठी हानिकारक असतो).
+► पुढील 5-10 वर्षांत असा काही वेळ आहे का जेव्हा दोघांचा वेळ एकत्र वाईट असेल?
+
+C] वेळ तुलना सारणी (Timeline Table):
+► कृपया पुढील 5-10 वर्षांसाठी एक छोटी तुलनात्मक सारणी (Table) बनवा:
+| वेळ (वर्ष) | मुलाची दशा | मुलीची दशा | वैवाहिक प्रभाव (Good/Bad/Mixed) |
+
+➤ दशा मिलान निष्कर्ष :
+➤ प्रारब्ध आणि कार्मिक संबंधाची सखोल तपासणी (Destiny & Karmic Cross-Check)
+
+➤ 1] मुलीचे (Girl) वैवाहिक भाग्य विश्लेषण:
+► मुलीच्या कुंडलीत विवाहाचे सुख (Promise of Marriage) कसे आहे? (सुख लिहिले आहे, संघर्ष लिहिला आहे, की विच्छेद?)
+► मुलीच्या कुंडलीत 'पतीचा स्वभाव' कसा सांगितला आहे? (जसे: पती रागीट, सौम्य, फसवणूक करणारा, की सहकार्य करणारा असेल?)
+
+➤ 2] मुलाचे (Boy) वैवाहिक भाग्य विश्लेषण:
+► मुलाच्या कुंडलीत विवाहाचे सुख कसे आहे? (त्याला पत्नीकडून सुख मिळेल की कलह/दूरी लिहिली आहे?)
+► मुलाच्या कुंडलीत 'पत्नीचा स्वभाव' कसा सांगितला आहे? (जसे: पत्नी आजारी, भांडखोर, घरेलू की करिअर वाली असेल?)
+
+➤ 3] "कुलूप आणि चावी" मिलान (Mirror Check - The Most Important Step):
+(आता वरील स्टेप 1 आणि स्टेप 2 ची तुलना करा)
+
+► स्थिती A (समान प्रारब्ध): मुलाच्या कुंडलीत जसा "पत्नीचा स्वभाव" लिहिला आहे, मुलगी प्रत्यक्षात तशीच आहे का? (आणि याच्या उलट).
+► स्थिती B (कार्मिक पूरकता): जर मुलाच्या कुंडलीत "वैवाहिक कलह" किंवा "ताण" लिहिला असेल, आणि मुलीच्या कुंडलीतही "संघर्ष" किंवा "त्याग" लिहिला असेल, तर हे पुष्टी करते की हा एक "दृढ कार्मिक बंध" आहे.
+► स्थिती C (मिरर किंवा विरोधाभास): दोघांच्या कुंडलीत या सर्व बाबी सुलभ आहेत की फक्त एकाच व्यक्तीच्या कुंडलीत 
+: संतान प्राप्ती, विवाहानंतरचे ऐश्वर्य, वैवाहिक जीवन.   
+► स्थिती D (विरोधाभास): जर एका कुंडलीत "अत्यंत सुख" असेल आणि दुसऱ्या कुंडलीत "तलाक/विच्छेद" असेल, तर हे "बेमेल प्रारब्ध" आहे (विवाह होऊ नये).
+
+to be continued...
+----------
+➤ कार्मिक संबंधाचा अंतिम निर्णय:
+► हा विवाह "ऋणानुबंध" (मागील जन्माचा लेना-देना) सारखा वाटतो का?
+► दोघांच्या दुःख आणि सुखाच्या पॅटर्न (Patterns) परस्पर जुळत आहेत का?
+► हे जोडपे "सुख भोगण्यासाठी" एकत्र येत आहे की "जुन्या कर्मांचा हिशेब बरोबर करण्यासाठी" (Karmic Settlement)?
+----------
+➤ सकारात्मक पैलू (Strengths of the Match):
+
+➤ नकारात्मक पैलू आणि चिंता (Weaknesses and Concerns):
+----------
+➤ उपाय आणि सूचना (Remedies and Suggestions):
+► गण दोष, भकूट दोष, मंगल दोष (असल्यास) साठी विशिष्ट ज्योतिषीय उपाय (जसे पूजा, मंत्र जाप, दान).
+► परस्पर समज आणि तालमेळ वाढवण्यासाठी व्यावहारिक सूचना.
+----------
+मुलाच्या संदर्भात :
+मारक ओळख: हा ग्रह द्वितीयेश (2nd lord) किंवा सप्तमेश (7th lord) होऊन मारकेशाच्या भूमिकेत आहे का? असल्यास, कोणती - द्वितीयेश (सामान्य मारक) किंवा सप्तमेश (प्रबल मारक)?
+
+बाधक ओळख: हा ग्रह लग्नाच्या स्वभावानुसार (चर, स्थिर, द्विस्वभाव) बाधक भावाचा (11व्या, 9व्या, किंवा 7व्या) स्वामी आहे का?
+
+दुहेरी भूमिका: हा ग्रह मारक आणि बाधक दोन्ही भूमिका निभावत आहे का? (विशेषतः द्विस्वभाव लग्नासाठी सप्तमेश म्हणून).
+
+कार्यात्मक शुभता: याच्या उलट, हा ग्रह केंद्र/त्रिकोणाचा स्वामी होऊन शुभ 'योगकारक' ग्रह आहे का? की फक्त त्रिकोणाचा स्वामी होऊन अत्यंत शुभ आहे?
+
+2. नकारात्मकता/सकारात्मकतेच्या तीव्रतेचे मूल्यांकन (Assessing the Intensity):
+
+पापी ग्रहांचा प्रभाव: या ग्रहावर नैसर्गिक पाप ग्रहांची (शनि, मंगळ, राहू, केतू) दृष्टी आहे की तो त्यांच्यासोबत युतीत आहे? असल्यास, यामुळे त्याची नकारात्मकता कशी वाढत आहे?
+
+शुभ ग्रहांचा प्रभाव: या ग्रहावर नैसर्गिक शुभ ग्रहांची (गुरु, शुक्र, शुभ बुध) दृष्टी आहे की तो त्यांच्यासोबत आहे? यामुळे मारक/बाधक प्रभावात काही घट किंवा सुरक्षा (Mitigation) मिळत आहे का?
+
+भाव स्थिती: हा ग्रह कुंडलीच्या कोणत्या भावात स्थित आहे? तो त्रिक भावांमध्ये (6, 8, 12) बसून अधिक अशुभ झाला आहे का, की केंद्र/त्रिकोणात बसून त्याची स्थिती काहीशी चांगली आहे?
+
+राशी बल: हा ग्रह स्वतःच्या नीच राशीत असल्याने अत्यंत पीडित आहे की उच्च/स्वतःच्या राशीत असल्याने त्याच्या नकारात्मकतेत घट होत आहे? अथवा अधिक शक्तिशाली आणि प्रभावी झाला आहे?
+
+3. सक्रियीकरण आणि संभावित फल (Activation and Potential Results):
+
+दशा सक्रियीकरण: या ग्रहाच्या महादशा किंवा अंतर्दशेमध्ये कोणत्या प्रकारचे कष्ट, अडथळे किंवा त्रास (आरोग्य, संबंध, करिअर इत्यादीमध्ये) दिसू शकतात?
+
+गोचराचा प्रभाव: जेव्हा शनि किंवा राहूसारखे मोठे ग्रह गोचरमध्ये या मारक/बाधक ग्रहावरून जातात, तेव्हा ते त्याची नकारात्मक फले सक्रिय करू शकतात का?
+प्रभावित क्षेत्र: हा ग्रह त्याच्या नैसर्गिक कारकत्वानुसार (जसे शुक्र - संबंध/वाहन, शनि - करिअर/रोग) आणि भाव स्वामित्वाच्या आधारे जीवनाच्या कोणत्या विशिष्ट क्षेत्रांना सर्वाधिक प्रभावित करेल?
+
+4. समग्र निष्कर्ष (Overall Conclusion):
+अंतिम मूल्यांकन: वरील सर्व मुद्द्यांचे विश्लेषण केल्यानंतर, या ग्रहाला कार्यात्मक अशुभ ग्रह म्हणून 1 ते 10 च्या स्केलवर किती रेटिंग द्याल? (जिथे 1 खूप हलका आणि 10 अत्यंत हानिकारक आहे).
+
+5: सल्ला आणि उपाय (Counseling and Remedies)
+(हा भाग "आव्हाना" (स्टेप 1-4 मध्ये ओळखलेल्या) चे व्यवस्थापन कसे करायचे यावर केंद्रित आहे.)
+
+5.1. ज्योतिषीय शांती उपाय (Astrological Pacification):
+
+मंत्र/जाप: या ग्रहाच्या (किंवा त्याच्या अधिपती देवतेच्या) बीज मंत्राचा किंवा वैदिक मंत्राचा जाप शांतीसाठी आवश्यक आहे का?
+
+स्तोत्र: दशा-अंतर्दशेदरम्यान विशिष्ट स्तोत्राचे (जसे, शनीसाठी 'शनि महात्म्य' किंवा बुधासाठी 'विष्णु सहस्रनाम') पठण संरक्षणात्मक ठरेल का?
+
+दान: या ग्रहाच्या नकारात्मक प्रभावाला शांत करण्यासाठी कोणत्या वस्तूंचे दान (रंग, धान्य, धातू) आणि केव्हा (कोणत्या दिवशी) करावे?
+
+5.2. रत्न आणि धारण (Gems and Wearing) - [सर्वात महत्त्वाची सावधानी]:
+
+रत्न निषेध: हा ग्रह (मारक/बाधक असल्यामुळे) त्या ग्रहांपैकी आहे का ज्यांचे रत्न कोणत्याही परिस्थितीत धारण करू नये? (स्पष्टपणे लिहा: कारण बलवान मारकेशाचे रत्न घालणे म्हणजे "शक्तिशाली शत्रूला आणखी शक्ती देणे" आहे.)
+
+वैकल्पिक धारण: या ग्रहाला शांत करण्याऐवजी, कुंडलीच्या 'रक्षक' ग्रहाचे (जसे लग्नेश किंवा नवमेश) रत्न घालणे अधिक चांगला उपाय ठरेल का?
+
+5.3. वर्तनात्मक उपाय (Behavioral Remedies / The Counseling):
+
+जागरूकता (Awareness): जातकाने या ग्रहाच्या नकारात्मक स्वभावाबद्दल कसे सावध राहायचे? (जसे: "तुमची वाणी (बुध) च तुमचा मारकेश आहे, म्हणून बोलण्यापूर्वी विचार करण्याचा सराव करा.")
+
+बदल (Modification): जातकाने स्वतःच्या कोणत्या सवयी बदलायला हव्यात? (जसे: "तुमचा गुरु (बाधकेश) तुम्हाला 'आदर्शवादी' बनवून 'बाधा' देत आहे. तुमचा उपाय आहे की तुम्ही इतरांकडून 'परफेक्शन' ची अपेक्षा कमी करा आणि लवचिक बना.")
+
+5.4. आध्यात्मिक/कार्मिक उपाय (Spiritual/Karmic Remedies):
+
+कर्माचा धडा (Karmic Lesson): हा ग्रह जीवनात कोणता 'कार्मिक धडा' शिकवायला आला आहे? (जसे: 'वैराग्य' किंवा 'अलगाव' चा धडा).
+
+ऊर्जेचे रूपांतरण (Energy Channeling): जातक या ग्रहाच्या नकारात्मक ऊर्जेचा उच्च उद्देशासाठी वापर करू शकतो का? (जसे: 'मारक' शनीची ऊर्जा 'अध्यात्म' किंवा 'रुग्णालय सेवा' मध्ये लावणे).
+----------
+मुलीच्या संदर्भात :
+मारक ओळख: हा ग्रह द्वितीयेश (2nd lord) किंवा सप्तमेश (7th lord) होऊन मारकेशाच्या भूमिकेत आहे का? असल्यास, कोणती - द्वितीयेश (सामान्य मारक) किंवा सप्तमेश (प्रबल मारक)?
+
+बाधक ओळख: हा ग्रह लग्नाच्या स्वभावानुसार (चर, स्थिर, द्विस्वभाव) बाधक भावाचा (11व्या, 9व्या, किंवा 7व्या) स्वामी आहे का?
+
+दुहेरी भूमिका: हा ग्रह मारक आणि बाधक दोन्ही भूमिका निभावत आहे का? (विशेषतः द्विस्वभाव लग्नासाठी सप्तमेश म्हणून).
+
+कार्यात्मक शुभता: याच्या उलट, हा ग्रह केंद्र/त्रिकोणाचा स्वामी होऊन शुभ 'योगकारक' ग्रह आहे का? की फक्त त्रिकोणाचा स्वामी होऊन अत्यंत शुभ आहे?
+
+2. नकारात्मकता/सकारात्मकतेच्या तीव्रतेचे मूल्यांकन (Assessing the Intensity):
+
+पापी ग्रहांचा प्रभाव: या ग्रहावर नैसर्गिक पाप ग्रहांची (शनि, मंगळ, राहू, केतू) दृष्टी आहे की तो त्यांच्यासोबत युतीत आहे? असल्यास, यामुळे त्याची नकारात्मकता कशी वाढत आहे?
+
+शुभ ग्रहांचा प्रभाव: या ग्रहावर नैसर्गिक शुभ ग्रहांची (गुरु, शुक्र, शुभ बुध) दृष्टी आहे की तो त्यांच्यासोबत आहे? यामुळे मारक/बाधक प्रभावात काही घट किंवा सुरक्षा (Mitigation) मिळत आहे का?
+
+भाव स्थिती: हा ग्रह कुंडलीच्या कोणत्या भावात स्थित आहे? तो त्रिक भावांमध्ये (6, 8, 12) बसून अधिक अशुभ झाला आहे का, की केंद्र/त्रिकोणात बसून त्याची स्थिती काहीशी चांगली आहे?
+
+राशी बल: हा ग्रह स्वतःच्या नीच राशीत असल्याने अत्यंत पीडित आहे की उच्च/स्वतःच्या राशीत असल्याने त्याच्या नकारात्मकतेत घट होत आहे? अथवा अधिक शक्तिशाली आणि प्रभावी झाला आहे?
+
+3. सक्रियीकरण आणि संभावित फल (Activation and Potential Results):
+
+दशा सक्रियीकरण: या ग्रहाच्या महादशा किंवा अंतर्दशेमध्ये कोणत्या प्रकारचे कष्ट, अडथळे किंवा त्रास (आरोग्य, संबंध, करिअर इत्यादीमध्ये) दिसू शकतात?
+
+गोचराचा प्रभाव: जेव्हा शनि किंवा राहूसारखे मोठे ग्रह गोचरमध्ये या मारक/बाधक ग्रहावरून जातात, तेव्हा ते त्याची नकारात्मक फले सक्रिय करू शकतात का?
+प्रभावित क्षेत्र: हा ग्रह त्याच्या नैसर्गिक कारकत्वानुसार (जसे शुक्र - संबंध/वाहन, शनि - करिअर/रोग) आणि भाव स्वामित्वाच्या आधारे जीवनाच्या कोणत्या विशिष्ट क्षेत्रांना सर्वाधिक प्रभावित करेल?
+
+4. समग्र निष्कर्ष (Overall Conclusion):
+अंतिम मूल्यांकन: वरील सर्व मुद्द्यांचे विश्लेषण केल्यानंतर, या ग्रहाला कार्यात्मक अशुभ ग्रह म्हणून 1 ते 10 च्या स्केलवर किती रेटिंग द्याल? (जिथे 1 खूप हलका आणि 10 अत्यंत हानिकारक आहे).
+
+5: सल्ला आणि उपाय (Counseling and Remedies)
+(हा भाग "आव्हाना" (स्टेप 1-4 मध्ये ओळखलेल्या) चे व्यवस्थापन कसे करायचे यावर केंद्रित आहे.)
+
+5.1. ज्योतिषीय शांती उपाय (Astrological Pacification):
+
+मंत्र/जाप: या ग्रहाच्या (किंवा त्याच्या अधिपती देवतेच्या) बीज मंत्राचा किंवा वैदिक मंत्राचा जाप शांतीसाठी आवश्यक आहे का?
+
+स्तोत्र: दशा-अंतर्दशेदरम्यान विशिष्ट स्तोत्राचे (जसे, शनीसाठी 'शनि महात्म्य' किंवा बुधासाठी 'विष्णु सहस्रनाम') पठण संरक्षणात्मक ठरेल का?
+
+दान: या ग्रहाच्या नकारात्मक प्रभावाला शांत करण्यासाठी कोणत्या वस्तूंचे दान (रंग, धान्य, धातू) आणि केव्हा (कोणत्या दिवशी) करावे?
+
+5.2. रत्न आणि धारण (Gems and Wearing) - [सर्वात महत्त्वाची सावधानी]:
+
+रत्न निषेध: हा ग्रह (मारक/बाधक असल्यामुळे) त्या ग्रहांपैकी आहे का ज्यांचे रत्न कोणत्याही परिस्थितीत धारण करू नये? (स्पष्टपणे लिहा: कारण बलवान मारकेशाचे रत्न घालणे म्हणजे "शक्तिशाली शत्रूला आणखी शक्ती देणे" आहे.)
+
+वैकल्पिक धारण: या ग्रहाला शांत करण्याऐवजी, कुंडलीच्या 'रक्षक' ग्रहाचे (जसे लग्नेश किंवा नवमेश) रत्न घालणे अधिक चांगला उपाय ठरेल का?
+
+5.3. वर्तनात्मक उपाय (Behavioral Remedies / The Counseling):
+
+जागरूकता (Awareness): जातकाने या ग्रहाच्या नकारात्मक स्वभावाबद्दल कसे सावध राहायचे? (जसे: "तुमची वाणी (बुध) च तुमचा मारकेश आहे, म्हणून बोलण्यापूर्वी विचार करण्याचा सराव करा.")
+
+बदल (Modification): जातकाने स्वतःच्या कोणत्या सवयी बदलायला हव्यात? (जसे: "तुमचा गुरु (बाधकेश) तुम्हाला 'आदर्शवादी' बनवून 'बाधा' देत आहे. तुमचा उपाय आहे की तुम्ही इतरांकडून 'परफेक्शन' ची अपेक्षा कमी करा आणि लवचिक बना.")
+
+5.4. आध्यात्मिक/कार्मिक उपाय (Spiritual/Karmic Remedies):
+
+कर्माचा धडा (Karmic Lesson): हा ग्रह जीवनात कोणता 'कार्मिक धडा' शिकवायला आला आहे? (जसे: 'वैराग्य' किंवा 'अलगाव' चा धडा).
+
+ऊर्जेचे रूपांतरण (Energy Channeling): जातक या ग्रहाच्या नकारात्मक ऊर्जेचा उच्च उद्देशासाठी वापर करू शकतो का? (जसे: 'मारक' शनीची ऊर्जा 'अध्यात्म' किंवा 'रुग्णालय सेवा' मध्ये लावणे).
+----------
+दोघांच्या आयुष्यातील मारकेश आणि बाधकेशाशी संबंधित आव्हाने आणि उपाय
+----------
+➤ अहवालाच्या रूपात सामान्य प्रश्न आणि त्यांची संक्षिप्त उत्तरे (Common Questions & Short Answers):
+
+प्रश्न 1: ही जोडी किती संगत आहे? (Overall Compatibility?)
+प्रश्न 2: या विवाहात प्रेम आणि स्नेह राहील का? (Love and Affection?)
+प्रश्न 3: विवाहानंतर आर्थिक स्थिती कशी राहील? (Financial Prospects after Marriage?)
+प्रश्न 4: आरोग्य कसे राहील? (Health of Partners?)
+प्रश्न 5: संतान योग कसा आहे? (Progeny Prospects?)
+प्रश्न 6: कुटुंबासोबत सामंजस्य राहील का? (Family Adjustments?)
+प्रश्न 7: असा काही गंभीर दोष आहे का ज्यासाठी उपाय आवश्यक आहेत? (Any Major Doshas requiring remedies?)
+प्रश्न 8: हा विवाह दीर्घायु आणि सुखमय होईल का? (Longevity and Happiness of Marriage?)
+प्रश्न 9: दोघांमध्ये संवाद आणि बौद्धिक तालमेळ कसा राहील? (Communication & Intellectual Tuning?)
+प्रश्न 10: संघर्ष किंवा मतभेद झाल्यास दोघांची प्रतिक्रिया देण्याची पद्धत काय असेल? (Conflict Resolution Style?)
+प्रश्न 11: दोघे एकमेकांच्या वैयक्तिक विकासाचा आणि स्वातंत्र्याचा आदर करतील का? (Respect for Personal Growth & Freedom?)
+प्रश्न 12: या नात्याचा सर्वात मजबूत आणि सर्वात कमजोर पैलू काय आहे? (Biggest Strength & Weakness of the relationship?)
+----------
+वरील अहवाल आणि चॅटमधून सर्व खंडांच्या निष्कर्षांनुसार विवाहाला 10 पैकी दिलेले नंबर शोधा, त्यांची गणना करून एक "समग्र संगतता स्कोरकार्ड" बनवा. "कुल स्कोरवर आधारित अंतिम निष्कर्ष" या मुद्द्यांचे विश्लेषण करा:
+
+➤ समग्र संगतता स्कोरकार्ड (Overall Compatibility Scorecard) 
+
+1] अष्टकूट दशकूट मिलान : 00/ 10
+2] मंगल दोष विचार : 00/ 10	
+3] पंचधा-पराशरी भाव/ग्रह मिलान : 00/ 10
+4] जीवनशैली आणि उद्देश्य : 00/ 10
+5] नवमांश (D9) कुंडली मिलान : 00/ 10
+6] जैमिनी ज्योतिष मिलान : 00/ 10
+7] KP (कृष्णमूर्ति पद्धति) मिलान : 00/ 10
+8] BNN (भृगु नंदी नाडी) मिलान : 00/ 10
+9] अंक ज्योतिष मिलान : 00/ 10
+10] विशेष योग : 00/ 10
+► कुल योग : 00/ 100
+
+➤ कुल स्कोरवर आधारित अंतिम संयुक्त निर्णय आणि सल्ला (Final Verdict):
+► कुल प्राप्त स्कोर: 00/100
+► निष्कर्ष: हे कुंडली मिलान 00% संगतता दर्शवते, ज्याला "चांगले/वाईट" (Good/Bad) मानता येईल.
+► सकारात्मक पक्ष: 
+► आव्हानात्मक पक्ष: 
+► अंतिम शिफारस: (हा विवाह करता येईल की नाही? असल्यास, कोणत्या अटी आणि उपायांसोबत?) 
+► जर हे "कार्मिक संबंध" असेल, तर स्पष्ट इशारा आणि उपायांसोबत सल्ला द्या.
+----------
+➤ अंतिम निष्कर्ष आणि ज्योतिषीची मत (Final Conclusion and Astrologer's Opinion):(लक्षात ठेवा ज्योतिषी महिला आहे)
+► सर्व पैलूंचा सारांश.
+► विवाहाची शिफारस केली जाते की नाही, किंवा कोणत्या अटी आणि उपायांसोबत करता येईल.
+----------
+➤ जातकाने स्वतःबद्दल माहिती दिली आहे आणि जातकाचे काही प्रश्न आहेत, प्रथम दिलेली माहिती यादीबद्ध करा, त्यानंतर सर्व प्रश्न यादीबद्ध करा:
+----------
+आता दिलेल्या माहितीचा सखोल अभ्यास करून ज्योतिषीय विश्लेषण तपशीलवार आणि निष्कर्षासह करा, प्रत्येक घटनेचे तपशीलवार विश्लेषण असावे, उपाय आवश्यक असल्यास उपायांसह, सर्वात आधी पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारते.
+----------
+आता दिलेल्या प्रश्नांची उत्तरे सखोल अभ्यास करून लिहा तपशीलवार विश्लेषण आणि निष्कर्षासह, प्रत्येक प्रश्नाचे तपशीलवार विश्लेषण असावे, उपायांसह, सर्वात आधी पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारते.
+----------
+आता आतापर्यंत केलेल्या सर्व खालील घटना आणि प्रश्न पुन्हा लिहा आणि त्यांची संक्षिप्त उत्तरे द्या, तुमच्या सोयीसाठी प्रश्नांची यादी आणि सोबतच उत्तरे कशी असतील याचे उदाहरण दिले आहे, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल, यामुळे जातक आधीच थोडक्यात उत्तरे वाचेल आणि त्याला ज्या गोष्टीचे विश्लेषण संदर्भासह वाचायचे आहे, तो भाग शोधेल...
+
+A] विस्तृत तुलनात्मक ज्योतिषीय डेटा मिलानाचा संक्षिप्त निष्कर्ष.
+उत्तर: हा मिलान [अनुकूल/खूप अनुकूल/प्रतिकूल/खूप प्रतिकूल] आहे.
+1] दोघांचा स्वभाव (Personality) : मुलाचा स्वभाव मुलीच्या संभावित पतीशी आणि मुलीचा स्वभाव मुलाच्या संभावित पत्नीशी किती-किती टक्के जुळतो?
+उत्तर: [होय/नाही/आंशिक]. मुलाचा स्वभाव मुलीच्या आदर्श जीवनसाथीशी अंदाजे [XX]% जुळतो, तर मुलीचा स्वभाव मुलाच्या आदर्श जीवनसाथीशी अंदाजे [XX]% जुळतो.
+2] पारंपरिक अष्टकूट-दशकूट आणि त्यांच्या गुणांनुसार अनुकूलता कशी आहे?
+उत्तर: 36 पैकी [XX] गुण जुळत आहेत, जो एक [उत्कृष्ट/चांगला/सरासरी/कमी] मिलान आहे. [नाडी/भकूट] सारखे महत्त्वाचे कूट अनुकूल आहेत, पण [गण/योनि] दोषाकडे लक्ष देणे आवश्यक आहे.
+3] कुंडलीत मांगलिक दोष आहे का आणि तो वैवाहिक जीवनात काही अडथळा निर्माण करत आहे का?
+उत्तर: [कोणताही दोष नाही / दोघेही मांगलिक आहेत / एक मांगलिक आहे]. दोषाचे परिहार [होत आहे / होत नाही], त्यामुळे त्याचा प्रभाव [नगण्य/मध्यम/महत्त्वपूर्ण] राहील.
+4] दोघांचे मुख्य ग्रह (पंचधा मैत्री, लग्नेश, चंद्रेश, शुक्र, गुरु) एकमेकांना समर्थन करतात का?
+उत्तर: पंचधा तसेच लग्नेश आणि चंद्रेशांमध्ये [उत्कृष्ट मैत्री/समता/शत्रुता] आहे. शुक्र आणि गुरूची स्थिती [अनुकूल/प्रतिकूल] आहे, जी [चांगले/मिश्र] परिणाम देईल.
+5] दोघांच्या करिअर, आयुष्याची उद्दिष्टे आणि दैनंदिन जीवनशैलीत सामंजस्य आहे का?
+उत्तर: [होय/नाही/आंशिक]. दोघांचे कर्म भाव (10th House) एकमेकांसाठी सहायक [आहेत/नाही], जे व्यावसायिक आयुष्यात चांगल्या [सामंजस्य/असामंजस्य] चे संकेत आहे.
+6] नवमांश कुंडलीनुसार भाग्य आणि आंतरिक सुखाच्या पातळीवर हा विवाह किती अनुकूल आहे?
+उत्तर: नवमांश मिलान [मजबूत/सरासरी/कमजोर] आहे. हे आंतरिक वैवाहिक सुखात [सहजता/काही आव्हाने] चे संकेत देते.
+7] जैमिनी ज्योतिषानुसार आत्मा, कर्म आणि सामाजिक बंधाच्या पातळीवर हे नाते कसे आहे?
+उत्तर: जैमिनी मिलान [सकारात्मक/मध्यम] आहे. AK-DK संबंध [चांगला/सरासरी] आहे आणि उपपद लग्न (UL) [स्थिरता/अस्थिरता] चे संकेत देत आहे.
+8] KP (कृष्णमूर्ति पद्धति) नुसार दोघांच्या कुंडल्या एकमेकांसाठी विवाहाचे वचन पूर्ण करतात का?
+उत्तर: [होय/नाही]. दोघांचे 7वे CSL विवाहाचे स्पष्ट वचन [देतात/देत नाहीत] आणि एकमेकांसाठी [खूप सहायक/सरासरी सहायक] आहेत.
+9] नाडी ज्योतिषानुसार दोघांमध्ये नैसर्गिक आणि कार्मिक संबंध आहे का?
+उत्तर: [होय/नाही]. पुरुषाचा शुक्र आणि स्त्रीचा गुरु एकमेकांसाठी खूप [अनुकूल/प्रतिकूल] स्थितीत आहेत, जे एक [सहज आणि भाग्यशाली/कठीण आणि दुर्भाग्यशाली] संबंधाचे संकेत आहे.
+10] अंक ज्योतिष मिलानानुसार दोघांची ऊर्जा आणि जीवन पथ संख्या एकमेकांशी अनुकूल आहे का?
+उत्तर: अंक ज्योतिषानुसार मिलान [उत्कृष्ट/सरासरी/कमजोर] आहे, कारण मुलांक आणि भाग्यांकात [मैत्री/शत्रुता] आहे.
+11] विवाहावर महत्त्वपूर्ण परिणाम करू शकेल असा कोणताही विशेष शुभ किंवा अशुभ योग आहे का?
+[होय, मुलाच्या/मुलीच्या कुंडलीत X योग आहे जो... / नाही, कोणताही विशेष प्रभावशाली योग नाही.]
+12] विवाहाच्या वेळी दोघांच्या ग्रह दशा अनुकूल आहेत का?
+उत्तर: होय, विवाहाच्या वेळी चालणाऱ्या दशा दोघांसाठी वैवाहिक आयुष्याच्या सुरुवातीसाठी [अनुकूल/मध्यम अनुकूल] आहेत.
+13] कार्मिक संबंधाचा अंतिम निर्णय? [हे जोडपे "सुख भोगण्यासाठी" एकत्र येत आहे की "जुन्या कर्मांचा हिशेब बरोबर करण्यासाठी" (Karmic Settlement)?]
+14] सकारात्मक पैलू : या नात्याच्या सर्वात मोठ्या ताकदी काय आहेत?
+उत्तर: उत्कृष्ट ग्रह मैत्री, नाडी दोषाचा अभाव, आणि करिअरमध्ये परस्पर सहकार्य.
+15] नकारात्मक पैलू आणि चिंता : या नात्यात मुख्य आव्हाने कुठे येऊ शकतात?
+उत्तर: [स्वभावातील भिन्नता (गण दोष)/शारीरिक अनुकूलतेत आव्हान (योनि दोष)/ आणि मंगल दोष/इतर दोष.]
+16] कोणत्या दोषांसाठी उपाय आवश्यक आहेत?
+उत्तर: [गण दोष/योनि दोष/मंगल दोष] साठी विशिष्ट पूजा आणि मंत्र जापाचा सल्ला दिला जातो.
+17] सर्व प्रणाली एकत्र करून एकूण संगतता स्कोर काय आहे?
+उत्तर: या विवाहाची एकूण संगतता 100 पैकी [XX] आहे, जी याला एक [चांगला/सरासरी/आव्हानात्मक] मिलान बनवते.
+18] सर्व विश्लेषणांच्या आधारे ज्योतिषीची अंतिम सल्ला आणि मत काय आहे?
+उत्तर: हा विवाह [काही उपाय आणि परस्पर समजुतीसोबत शिफारस केला आहे / शिफारस केला नाही]. तपशीलवार कारणे आणि अटी येथे दिल्या आहेत.
+
+➤ अहवालाच्या रूपात सामान्य प्रश्न आणि त्यांची संक्षिप्त उत्तरे (Common Questions & Short Answers):
+
+प्रश्न 1: ही जोडी किती संगत आहे? (Overall Compatibility?)
+प्रश्न 2: या विवाहात प्रेम आणि स्नेह राहील का? (Love and Affection?)
+प्रश्न 3: विवाहानंतर आर्थिक स्थिती कशी राहील? (Financial Prospects after Marriage?)
+प्रश्न 4: आरोग्य कसे राहील? (Health of Partners?)
+प्रश्न 5: संतान योग कसा आहे? (Progeny Prospects?)
+प्रश्न 6: कुटुंबासोबत सामंजस्य राहील का? (Family Adjustments?)
+प्रश्न 7: असा काही गंभीर दोष आहे का ज्यासाठी उपाय आवश्यक आहेत? (Any Major Doshas requiring remedies?)
+प्रश्न 8: हा विवाह दीर्घायु आणि सुखमय होईल का? (Longevity and Happiness of Marriage?)
+प्रश्न 9: दोघांमध्ये संवाद आणि बौद्धिक तालमेळ कसा राहील? (Communication & Intellectual Tuning?)
+प्रश्न 10: संघर्ष किंवा मतभेद झाल्यास दोघांची प्रतिक्रिया देण्याची पद्धत काय असेल? (Conflict Resolution Style?)
+प्रश्न 11: दोघे एकमेकांच्या वैयक्तिक विकासाचा आणि स्वातंत्र्याचा आदर करतील का? (Respect for Personal Growth & Freedom?)
+प्रश्न 12: या नात्याचा सर्वात मजबूत आणि सर्वात कमजोर पैलू काय आहे? (Biggest Strength & Weakness of the relationship?)
+
+➤ जातकाचे प्रश्न आणि त्यांची संक्षिप्त उत्तरे (Natives Questions & Short Answers):
+----------
+या चॅटचे विश्लेषण जातकाला PDF फॉरमॅटमध्ये पाठवले जाईल, पण एक इंस्टाग्राम DM उत्तर तयार करा, मेसेज स्टाइलमध्ये, हिंग्लिशमध्ये आणि एकाच परिच्छेदात असले पाहिजे, ज्यामध्ये संपूर्ण चॅटचा सारांश, गुण मिलानाचा सारांश आणि ज्योतिषीच्या मताचा सारांश समाविष्ट असावा, लक्षात ठेवा पूर्णपणे नाही म्हणायचे नाही, कार्मिक ऋण आणि डेस्टिनी याबद्दल बोलायचे आहे.
+----------
+खालील माहिती इंग्रजीत लिहा, (,) ने वेगळी करून पण स्पेस न देता:
+
+नाव,जन्म स्थान,Date of Birth,वेळ,लिंग
+
+जसे : Sarang,Nagpur,14-02-1995,03:00 AM,MALE`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
 
         // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
         const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
@@ -1142,7 +3219,7 @@ A] विस्तृत तुलनात्मक ज्योतिषीय
         function processData() {
             const container = document.getElementById('prompt-container');
             // पहले डैश लाइन्स से तोडें
-            let parts = rawData.split(separatorRegex);
+            let parts = getRawData().split(separatorRegex);
 
             parts.forEach((part, index) => {
                 let cleanText = part.trim();
