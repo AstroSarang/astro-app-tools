@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🪐 ग्रह बल विश्लेषण v1</title>
-<script src="https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/index.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -140,35 +139,51 @@ function parseAstroCode(code){
 }
 
 // ============ CALCULATIONS ============
+const EPHEM_CDN='https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+let _swe=null,_sweLoading=null,_SEP=null;
+async function ensureSwe(){
+ if(_swe)return _swe;
+ if(_sweLoading)return _sweLoading;
+ _sweLoading=(async()=>{
+  const m=await import(/* @vite-ignore */EPHEM_CDN);
+  const swe=new m.SwissEphemeris();await swe.init();
+  swe.setSiderealMode(m.SiderealMode.Lahiri);
+  _swe=swe;_SEP=m.Planet;return swe;
+ })();
+ return _sweLoading;
+}
+const norm360=x=>((x%360)+360)%360;
+function jdFromYMDH(y,mo,d,utH){
+ let Y=y,M=mo;
+ if(M<=2){Y--;M+=12;}
+ const A=Math.floor(Y/100),B=2-A+Math.floor(A/4);
+ return Math.floor(365.25*(Y+4716))+Math.floor(30.6001*(M+1))+d+B-1524.5+utH/24;
+}
+const SEPBODY={0:'Sun',1:'Moon',2:'Mercury',3:'Venus',4:'Mars',5:'Jupiter',6:'Saturn'};
 async function calcPositions(info){
- await SwissEphemeris.initSwissEph();
+ const swe=await ensureSwe();
  const utcH=info.hh+info.mm/60+info.ss/3600-info.tzs;
- let d=new Date(Date.UTC(info.Y,info.M-1,info.D));
- d.setUTCHours(0,0,0,0);
- let jd=SwissEphemeris.julday(info.Y,info.M,info.D,utcH,1);
- const ayan=SwissEphemeris.getAyanamsa(jd);
+ const jd=jdFromYMDH(info.Y,info.M,info.D,utcH);
+ const ayan=swe.getAyanamsa(jd);
  const res=[];
  for(const pl of PLANETS){
-  let lng,spd=0,retro=false;
+  let lng,retro=false;
   if(pl.body<=6){
-   const r=await SwissEphemeris.calcUt(jd,pl.body,4);
-   lng=(r.longitude-ayan+360)%360;spd=r.speedLongitude;retro=spd<0;
+   const r=swe.calculatePosition(jd,_SEP[SEPBODY[pl.body]],0);
+   lng=norm360(r.longitude-ayan);
+   // retro via speed: check position diff
+   const r2=swe.calculatePosition(jd+0.5,_SEP[SEPBODY[pl.body]],0);
+   let sp=r2.longitude-r.longitude;if(sp>180)sp-=360;if(sp<-180)sp+=360;
+   retro=sp<0;
   }else{
-   const r=await SwissEphemeris.calcUt(jd,10,4);
-   let rl=(r.longitude-ayan+360)%360;
-   lng=pl.body===10?rl:(rl+180)%360;
+   const r=swe.calculatePosition(jd,_SEP.MeanNode,0);
+   let rl=norm360(r.longitude-ayan);
+   lng=pl.body===10?rl:norm360(rl+180);
    retro=true;
   }
-  res.push({...pl,lng,spd,retro});
+  res.push({...pl,lng,retro});
  }
- // Lagna
- const lst=((jd-2451545.0)*360.98564736629+280.46061837+info.lon)%360;
- let asc=(lst+90-info.lat*0.0)%360;
- // Simplified: use whole sign from MC approx - use Swiss for houses
- try{
-  const hs=await SwissEphemeris.houses(jd,4,info.lat,info.lon);
-  asc=(hs.ascendant-ayan+360)%360;
- }catch(e){}
+ const asc=norm360(swe.calculateHouses(jd,info.lat,info.lon,'P').ascendant-ayan);
  return{planets:res,lagna:asc,jd};
 }
 
