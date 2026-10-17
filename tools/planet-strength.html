@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🪐 ग्रह बल विश्लेषण v7</title>
+<title>🪐 ग्रह बल विश्लेषण v8</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -59,7 +59,7 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;p
 <div class="container" id="mainContainer">
 <div class="header">
 <h1>🪐 ग्रह बल विश्लेषण</h1>
-<p>Planet Strength Analyzer v7 - Fully Auto</p>
+<p>Planet Strength Analyzer v8 - Fully Auto</p>
 </div>
 
 <div class="card">
@@ -1182,10 +1182,13 @@ function renderResults(){
  const manual=getManual();
  const box=document.getElementById('results');
  box.innerHTML='';
- // Calculate Shadbala ranks (higher virupas = better rank)
+ // Calculate Shadbala ranks by Strength (rupas/minimum), like the app
+ const SH_MIN={'सूर्य':5.0,'चंद्र':6.0,'मंगल':5.0,'बुध':7.0,'गुरु':6.5,'शुक्र':5.5,'शनि':5.0};
  const shVals=planetData.map(pd=>{
   const sh=manual['shadbala_'+pd.n];
-  return{n:pd.n,v:sh?+sh:0};
+  const rupas=sh?+sh:0;
+  const min=SH_MIN[pd.n]||5;
+  return{n:pd.n,v:rupas/min};
  }).filter(x=>['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'].includes(x.n));
  shVals.sort((a,b)=>b.v-a.v);
  const shRank={};
