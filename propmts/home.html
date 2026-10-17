@@ -96,6 +96,14 @@
 <body>
 
     <h1>Universal Prompts Manager</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
     <div class="container" id="prompt-container">
         <!-- Prompts will be loaded here -->
     </div>
@@ -104,7 +112,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData = `जातक के जन्म विवरण और अवकहाडा चक्र सहित सबको एक विवरण के रूप में दीजिये
+        const rawData_hi = `जातक के जन्म विवरण और अवकहाडा चक्र सहित सबको एक विवरण के रूप में दीजिये
 
 ➤ जातक का जन्म विवरण
 
@@ -140,7 +148,7 @@
 ▸ नाडी :
 ▸ वैर (शत्रु) योनी :
 ▸ तत्व :
-------------------------------------------
+----------
 आपको निम्मलिखित दी गई 28 चीजों की जानकारी निकालनी है।
 
 शर्तें (Strict Rules):
@@ -169,9 +177,7 @@ Pada, Element (Tattva), Vihaga
 वर्ण, वश्य, योनी, वैर / शत्रू योनी, गण, नाडी, नाडी पद, तत्व, विहग
 
 कृपया इस डेटा को [HINDI / ENGLISH / MARATHI] भाषा के लेबल्स का उपयोग करके निकालें।
-
-------------------------------------------
-
+----------
 आपको निम्मलिखित दी गई 28 चीजों की जानकारी दोनों व्यक्तियों के लिए निकालनी है।
 
 शर्तें (Strict Rules):
@@ -200,9 +206,9 @@ Pada, Element (Tattva), Vihaga
 वर्ण, वश्य, योनी, वैर / शत्रू योनी, गण, नाडी, नाडी पद, तत्व, विहग
 
 कृपया इस डेटा को [HINDI / ENGLISH / MARATHI] भाषा के लेबल्स का उपयोग करके निकालें।
-------------------------------------------
+----------
 अब इस विश्लेषण का एक इंस्टाग्राम DM रिप्लाई तैयार कीजिए मैसेज स्टाइल में, हिंग्लिश में और एक प्यारग्राफ मे होना चाहिए, ताकि उसे शार्ट में जवाब दे सकूँ
-------------------------------------------
+----------
 इस पूरे text को उसी तरह natural और easy-to-understand **chat/message style** में rewrite करो, जैसा कोई astrologer अपने client को WhatsApp पर personally समझा रहा हो।
 
 ध्यान रखना:
@@ -218,7 +224,7 @@ Pada, Element (Tattva), Vihaga
 * अपनी तरफ से कोई नई astrology interpretation या fact add मत करना।
 * सिर्फ दिए गए text को इसी style में rewrite करना है।
 :
-------------------------------------------
+----------
 नीचे एक विस्तृत मैरेज/करियर/astrological रिपोर्ट दी गई है जिसमें कुल 23 प्रश्नों के उत्तर और
 ज्योतिषीय विश्लेषण (पराशरी, जैमिनी, भृगु नंदी नाड़ी और केपी पद्धति
 के आधार पर) शामिल हैं। आपको इस पूरी रिपोर्ट का विश्लेषण करके एक
@@ -262,6 +268,287 @@ TTS सॉफ्टवेयर इसे बिना अटके और ए�
 
 अब इस रिपोर्ट के आधार पर स्क्रिप्ट तैयार करें।
 ------------------------------------------`;
+        const rawData_en = `Provide the native's birth details along with the Avakahada Chakra as one combined description
+
+➤ Birth details of the native
+
+► Full name : 
+► Date of birth : 
+► Time of birth :
+► Place of birth :
+► Weekday (Julian day) :
+► Ayanamsa :
+
+➤ Avakahada Chakra
+
+► Nakshatra and Rashi
+▸ Birth nakshatra (pada) :
+▸ Birth rashi (lord) (moon sign) :
+▸ Birth letter (as per nakshatra) :
+▸ Paya :
+▸ Lagna rashi (lord)
+▸ Sun sign (lord)
+
+► Panchang components (with lords)
+▸ Yoga (lord) :
+▸ Tithi (lord) :
+▸ Karana (lord) :
+▸ Weekday (lord) :
+▸ Nakshatra (lord) :
+
+► Astrological attributes 
+▸ Varna :
+▸ Vashya :
+▸ Gana :
+▸ Yoni :
+▸ Nadi :
+▸ Vair (enemy) yoni :
+▸ Element (Tattva) :
+----------
+You need to extract the information of the following 28 items.
+
+Conditions (Strict Rules):
+
+1. The output must be comma (,) separated only (Format: Label, Value).
+2. Give the output inside a Code Block only, so that I can copy it easily.
+3. If any information is not found in the PDF, leave it blank after the comma (e.g.:
+    Hora, ).
+4. For labels, use only the labels of my chosen language from the dictionary given below
+    (do not translate on your own):
+
+[HINDI LABELS] पूरा नाम, जन्म तिथि, जन्म समय, जन्म स्थान, अयनांश का नाम, अयनांश
+मान, वार (वैदिक दिन), तिथि, योग, करण, होरा, जुलियन दिन, लग्न राशि, जन्म राशि
+(चंद्र राशि), सूर्य राशि, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया, वर्ण,
+वश्य, योनि, वैर / शत्रु योनि, गण, नाड़ी, नाड़ी पद, तत्व, विहग
+
+[ENGLISH LABELS] Full Name, Date of Birth, Time of Birth, Place of Birth,
+Ayanamsa Name, Ayanamsa Value, Day (Vedic), Tithi, Yoga, Karana, Hora, Julian
+Day, Ascendant (Lagna), Moon Sign (Rashi), Sun Sign, Birth Nakshatra, Nakshatra
+Pada, Birth Letter, Paya, Varna, Vashya, Yoni, Enemy Yoni, Gana, Nadi, Nadi
+Pada, Element (Tattva), Vihaga
+
+[MARATHI LABELS] पूर्ण नाव, जन्म तारीख, जन्म वेळ, जन्म ठिकाण, अयनांश नाव, अयनांश
+मूल्य, वार (वैदिक), तिथी, योग, करण, होरा, ज्युलियन दिवस, लग्न रास, जन्म रास
+(चंद्र रास), सूर्य रास, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया,
+वर्ण, वश्य, योनी, वैर / शत्रू योनी, गण, नाडी, नाडी पद, तत्व, विहग
+
+Please extract this data using the labels of the [HINDI / ENGLISH / MARATHI] language.
+----------
+You need to extract the information of the following 28 items for both persons.
+
+Conditions (Strict Rules):
+
+1. The output must be comma (,) separated only (Format: Label, Boy_Value,
+    Girl_Value).
+2. The first line must contain the heading: Full Name, [boy's name], [girl's name].
+3. Give the output inside a Code Block only, so that I can copy it easily.
+4. For labels, use only the labels of my chosen language from the dictionary given below
+    (do not translate on your own):
+
+[HINDI LABELS] पूरा नाम, जन्म तिथि, जन्म समय, जन्म स्थान, अयनांश का नाम, अयनांश
+मान, वार (वैदिक दिन), तिथि, योग, करण, होरा, जुलियन दिन, लग्न राशि, जन्म राशि
+(चंद्र राशि), सूर्य राशि, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया, वर्ण,
+वश्य, योनि, वैर / शत्रु योनि, गण, नाड़ी, नाड़ी पद, तत्व, विहग
+
+[ENGLISH LABELS] Full Name, Date of Birth, Time of Birth, Place of Birth,
+Ayanamsa Name, Ayanamsa Value, Day (Vedic), Tithi, Yoga, Karana, Hora, Julian
+Day, Ascendant (Lagna), Moon Sign (Rashi), Sun Sign, Birth Nakshatra, Nakshatra
+Pada, Birth Letter, Paya, Varna, Vashya, Yoni, Enemy Yoni, Gana, Nadi, Nadi
+Pada, Element (Tattva), Vihaga
+
+[MARATHI LABELS] पूर्ण नाव, जन्म तारीख, जन्म वेळ, जन्म ठिकाण, अयनांश नाव, अयनांश
+मूल्य, वार (वैदिक), तिथी, योग, करण, होरा, ज्युलियन दिवस, लग्न रास, जन्म रास
+(चंद्र रास), सूर्य रास, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया,
+वर्ण, वश्य, योनी, वैर / शत्रू योनी, गण, नाडी, नाडी पद, तत्व, विहग
+
+Please extract this data using the labels of the [HINDI / ENGLISH / MARATHI] language.
+----------
+Now prepare a one-paragraph Instagram DM reply for this analysis in message style, in Hinglish, so that I can send a brief reply.
+----------
+Rewrite this entire text in the same natural and easy-to-understand **chat/message style**, as if an astrologer is personally explaining to their client on WhatsApp.
+
+Keep in mind:
+
+* Preserve the original meaning, information and all important points exactly.
+* Keep the language natural, conversational and simple.
+* It should not be overly formal or bookish language.
+* You may keep paragraphs and bullet points as needed, so that it is easy to read on WhatsApp.
+* Keep English terms like Gold, Jupiter, Physical Gold, D2 (Hora), D9 Navamsha etc. as they are wherever necessary.
+* Do not make the text unnecessarily short and do not remove any important information.
+* The tone should be knowledgeable, confident and friendly - but it should feel like a human is explaining to the other person in front of them.
+* Keep the beginning and end also like a natural chat.
+* Do not add any new astrology interpretation or fact from your side.
+* Only the given text is to be rewritten in this style.
+:
+----------
+Below is a detailed marriage/career/astrological report containing answers to a total of 23 questions and astrological analysis (based on Parashari, Jaimini, Bhrigu Nandi Nadi and KP methods). You have to analyze this entire report and prepare a 'text-to-speech' (TTS) audio script.
+
+Instructions for the script (follow strictly):
+
+1] Prepare the script in the language the report is in, such as Marathi or Hindi or English. And the opening given in rule number 2 must also be changed according to the language of the report.
+
+2] Beginning: The script must begin with exactly these words: 'Namaskar, welcome to Sanjivani Jyotish Sansthan. Charul ji, this is the audio summary of your personal marriage report.'
+
+3] Length and detail: This script is for a 20-minute audio. Therefore the length of the script must be at least 3000 to 3500 words. Do not finish the 23 questions of the report in just one line each; explain the conclusion of each question deeply and in detail.
+
+4] Structure and flow: Explain all 23 questions one by one or by joining them logically (e.g.: marriage timing, spouse's nature, career, in-laws' side and remedies) in a story-like and conversational tone. The client should feel as if someone is sitting in front of them and explaining their report.
+
+5] Avoid technical terminology: Instead of directly reading out the technical details of the kundli (e.g.: degrees of planets, names of D-9/D-60 charts, Mrityu Bhaga etc.), explain the hidden meaning behind them and the final prediction in simple language.
+
+5] Empathy and clarity: Wherever there is mention of shortcomings in the spouse's nature / challenges in married life (bitter truth) / challenges in career, write it in a very empathetic and mentorship-like tone.
+
+6] Remedies: At the end of the script, clearly explain all the karmic and behavioral remedies given in the report.
+
+7] TTS-friendly format: Do not use any kind of bullet points, asterisks (*), hashtags (#), or emojis in the script. Write it in clear paragraphs so that the TTS software can read it without getting stuck and in a natural human voice. Write English words in the Devanagari script itself (e.g. 'प्रैक्टिकल', 'सपोर्टिव').
+
+Now prepare the script based on this report.
+------------------------------------------`;
+        const rawData_mr = `जातकाचे जन्म तपशील आणि अवकहाडा चक्रासह सर्वकाही एका एकत्रित वर्णनाच्या रूपात द्या
+
+➤ जातकाचा जन्म तपशील
+
+► पूर्ण नाव : 
+► जन्म तारीख : 
+► जन्म वेळ :
+► जन्म ठिकाण :
+► वार (ज्युलियन दिवस) :
+► अयनांश :
+
+➤ अवकहाडा चक्र
+
+► नक्षत्र आणि रास
+▸ जन्म नक्षत्र (चरण) :
+▸ जन्म रास (स्वामी) (चंद्र रास) :
+▸ जन्म अक्षर (नक्षत्रानुसार) :
+▸ पाया :
+▸ लग्न रास (स्वामी)
+▸ सूर्य रास (स्वामी)
+
+► पंचांग घटक (स्वामींसह)
+▸ योग (स्वामी) :
+▸ तिथी (स्वामी) :
+▸ करण (स्वामी) :
+▸ वार (स्वामी) :
+▸ नक्षत्र (स्वामी) :
+
+► ज्योतिषीय गुणधर्म 
+▸ वर्ण :
+▸ वश्य :
+▸ गण :
+▸ योनी :
+▸ नाडी :
+▸ वैर (शत्रू) योनी :
+▸ तत्व :
+----------
+तुम्हाला खालील 28 गोष्टींची माहिती काढायची आहे.
+
+अटी (Strict Rules):
+
+1. आउटपुट फक्त स्वल्पविरामाने (,) विभक्त असले पाहिजे (Format: Label, Value).
+2. आउटपुट फक्त Code Block मध्येच द्या, जेणेकरून मी ते सहज कॉपी करू शकेन.
+3. PDF मध्ये एखादी माहिती न मिळाल्यास, स्वल्पविरामानंतर रिकामे सोडा (उदा.:
+    होरा, ).
+4. लेबल्ससाठी खाली दिलेल्या डिक्शनरीमधून माझ्या निवडलेल्या भाषेचीच लेबल वापरा
+    (स्वतःहून भाषांतर करू नका):
+
+[HINDI LABELS] पूरा नाम, जन्म तिथि, जन्म समय, जन्म स्थान, अयनांश का नाम, अयनांश
+मान, वार (वैदिक दिन), तिथि, योग, करण, होरा, जुलियन दिन, लग्न राशि, जन्म राशि
+(चंद्र राशि), सूर्य राशि, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया, वर्ण,
+वश्य, योनि, वैर / शत्रु योनि, गण, नाड़ी, नाड़ी पद, तत्व, विहग
+
+[ENGLISH LABELS] Full Name, Date of Birth, Time of Birth, Place of Birth,
+Ayanamsa Name, Ayanamsa Value, Day (Vedic), Tithi, Yoga, Karana, Hora, Julian
+Day, Ascendant (Lagna), Moon Sign (Rashi), Sun Sign, Birth Nakshatra, Nakshatra
+Pada, Birth Letter, Paya, Varna, Vashya, Yoni, Enemy Yoni, Gana, Nadi, Nadi
+Pada, Element (Tattva), Vihaga
+
+[MARATHI LABELS] पूर्ण नाव, जन्म तारीख, जन्म वेळ, जन्म ठिकाण, अयनांश नाव, अयनांश
+मूल्य, वार (वैदिक), तिथी, योग, करण, होरा, ज्युलियन दिवस, लग्न रास, जन्म रास
+(चंद्र रास), सूर्य रास, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया,
+वर्ण, वश्य, योनी, वैर / शत्रू योनी, गण, नाडी, नाडी पद, तत्व, विहग
+
+कृपया हा डेटा [HINDI / ENGLISH / MARATHI] भाषेच्या लेबल्सचा वापर करून काढा.
+----------
+तुम्हाला खालील 28 गोष्टींची माहिती दोन्ही व्यक्तींसाठी काढायची आहे.
+
+अटी (Strict Rules):
+
+1. आउटपुट फक्त स्वल्पविरामाने (,) विभक्त असले पाहिजे (Format: Label, Boy_Value,
+    Girl_Value).
+2. पहिल्या ओळीत शीर्षक असले पाहिजे: पूर्ण नाव, [मुलाचे नाव], [मुलीचे नाव].
+3. आउटपुट फक्त Code Block मध्येच द्या, जेणेकरून मी ते सहज कॉपी करू शकेन.
+4. लेबल्ससाठी खाली दिलेल्या डिक्शनरीमधून माझ्या निवडलेल्या भाषेचीच लेबल वापरा
+    (स्वतःहून भाषांतर करू नका):
+
+[HINDI LABELS] पूरा नाम, जन्म तिथि, जन्म समय, जन्म स्थान, अयनांश का नाम, अयनांश
+मान, वार (वैदिक दिन), तिथि, योग, करण, होरा, जुलियन दिन, लग्न राशि, जन्म राशि
+(चंद्र राशि), सूर्य राशि, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया, वर्ण,
+वश्य, योनि, वैर / शत्रु योनि, गण, नाड़ी, नाड़ी पद, तत्व, विहग
+
+[ENGLISH LABELS] Full Name, Date of Birth, Time of Birth, Place of Birth,
+Ayanamsa Name, Ayanamsa Value, Day (Vedic), Tithi, Yoga, Karana, Hora, Julian
+Day, Ascendant (Lagna), Moon Sign (Rashi), Sun Sign, Birth Nakshatra, Nakshatra
+Pada, Birth Letter, Paya, Varna, Vashya, Yoni, Enemy Yoni, Gana, Nadi, Nadi
+Pada, Element (Tattva), Vihaga
+
+[MARATHI LABELS] पूर्ण नाव, जन्म तारीख, जन्म वेळ, जन्म ठिकाण, अयनांश नाव, अयनांश
+मूल्य, वार (वैदिक), तिथी, योग, करण, होरा, ज्युलियन दिवस, लग्न रास, जन्म रास
+(चंद्र रास), सूर्य रास, जन्म नक्षत्र, नक्षत्र चरण, जन्म अक्षर, पाया,
+वर्ण, वश्य, योनी, वैर / शत्रू योनी, गण, नाडी, नाडी पद, तत्व, विहग
+
+कृपया हा डेटा [HINDI / ENGLISH / MARATHI] भाषेच्या लेबल्सचा वापर करून काढा.
+----------
+आता या विश्लेषणासाठी मेसेज स्टाइलमध्ये, हिंग्लिशमध्ये, एका परिच्छेदात एक इंस्टाग्राम DM उत्तर तयार करा, जेणेकरून मी थोडक्यात उत्तर देऊ शकेन.
+----------
+हा संपूर्ण मजकूर त्याच नैसर्गिक आणि समजायला सोप्या **chat/message style** मध्ये पुन्हा लिहा, जणू काही ज्योतिषी आपल्या क्लायंटला WhatsApp वर स्वतः समजावून सांगत आहे.
+
+लक्षात ठेवा:
+
+* मूळ अर्थ, माहिती आणि सर्व महत्त्वाचे मुद्दे अगदी जसेच्या तसे जपा.
+* भाषा नैसर्गिक, संवादात्मक आणि सोपी ठेवा.
+* खूप जास्त औपचारिक किंवा पुस्तकी भाषा नसावी.
+* गरजेनुसार परिच्छेद आणि बुलेट पॉइंट्स ठेवू शकता, जेणेकरून WhatsApp वर वाचायला सोपे वाटेल.
+* Gold, Jupiter, Physical Gold, D2 (Hora), D9 Navamsha इत्यादी इंग्रजी संज्ञा जिथे आवश्यक असतील तिथे तशाच राहू द्या.
+* मजकूर अनावश्यकपणे लहान करू नका आणि कोणतीही महत्त्वाची माहिती काढू नका.
+* टोन ज्ञानी, आत्मविश्वासपूर्ण आणि मैत्रीपूर्ण असावा - पण असे वाटावे की कोणी माणूस समोरच्याला समजावून सांगत आहे.
+* सुरुवात आणि शेवटही नैसर्गिक चॅटसारखा ठेवा.
+* स्वतःकडून कोणतेही नवीन ज्योतिषीय विवेचन किंवा तथ्य घालू नका.
+* फक्त दिलेला मजकूर याच शैलीत पुन्हा लिहायचा आहे.
+:
+----------
+खाली एक तपशीलवार विवाह/करियर/ज्योतिषीय अहवाल दिला आहे ज्यामध्ये एकूण 23 प्रश्नांची उत्तरे आणि ज्योतिषीय विश्लेषण (पराशरी, जैमिनी, भृगु नंदी नाडी आणि केपी पद्धतींवर आधारित) समाविष्ट आहे. तुम्हाला या संपूर्ण अहवालाचे विश्लेषण करून एक 'टेक्स्ट-टू-स्पीच' (TTS) ऑडिओ स्क्रिप्ट तयार करायची आहे.
+
+स्क्रिप्टसाठी सूचना (कठोरपणे पाळा):
+
+1] अहवाल ज्या भाषेत आहे त्या भाषेत स्क्रिप्ट तयार करा, जसे मराठी किंवा हिंदी अथवा इंग्रजी. आणि नियम क्रमांक 2 मध्ये दिलेली सुरुवातही अहवालाच्या भाषेनुसार बदलावी.
+
+2] सुरुवात: स्क्रिप्टची सुरुवात अगदी या शब्दांनी झाली पाहिजे: 'नमस्कार, संजीवनी ज्योतिष संस्थानमध्ये आपले स्वागत आहे. चारुल जी, हा आपल्या वैयक्तिक विवाह अहवालाचा ऑडिओ सारांश आहे.'
+
+3] लांबी आणि तपशील: ही स्क्रिप्ट 20 मिनिटांच्या ऑडिओसाठी आहे. त्यामुळे स्क्रिप्टची लांबी किमान 3000 ते 3500 शब्दांची असली पाहिजे. अहवालातील 23 प्रश्न फक्त एक-एक ओळीत संपवू नका; प्रत्येक प्रश्नाचा निष्कर्ष सखोलपणे आणि विस्ताराने समजावा.
+
+4] रचना आणि प्रवाह: सर्व 23 प्रश्न एक-एक करून किंवा तार्किकदृष्ट्या जोडून (उदा.: विवाहाची वेळ, जीवनसाथीचा स्वभाव, करियर, सासरची मंडळी आणि उपाय) एका कथेसारख्या आणि संवादात्मक शैलीत समजावा. क्लायंटला असे वाटले पाहिजे की कोणी त्यांच्यासमोर बसून त्यांचा अहवाल समजावून सांगत आहे.
+
+5] तांत्रिक शब्दावली टाळा: कुंडलीच्या तांत्रिक तपशीलांऐवजी (उदा.- ग्रहांच्या डिग्र्या, D-9/D-60 चार्टची नावे, मृत्यू भाग इत्यादी) थेट वाचण्याऐवजी, त्यामागे लपलेला अर्थ आणि अंतिम फलादेश सोप्या भाषेत समजावा.
+
+5] सहानुभूती आणि स्पष्टता: जिथे जीवनसाथीच्या स्वभावातील उणीव / वैवाहिक जीवनातील आव्हान (कडवे सत्य) / करियरमधील आव्हानाचा उल्लेख असेल, तिथे ते अतिशय सहानुभूतीपूर्ण आणि मार्गदर्शक शैलीत लिहा.
+
+6] उपाय (Remedies): स्क्रिप्टच्या शेवटी अहवालात दिलेले सर्व कार्मिक आणि वर्तणुकीशी संबंधित उपाय स्पष्टपणे समजावा.
+
+7] TTS ला अनुकूल स्वरूप: स्क्रिप्टमध्ये कोणत्याही प्रकारचे बुलेट पॉइंट्स, तारका (*), हॅशटॅग (#), किंवा इमोजी वापरू नका. ते स्पष्ट परिच्छेदांत लिहा जेणेकरून TTS सॉफ्टवेअर ते न अडखळता आणि नैसर्गिक मानवी आवाजात वाचू शकेल. इंग्रजी शब्द देवनागरी लिपीतच लिहा (उदा. 'प्रैक्टिकल', 'सपोर्टिव').
+
+आता या अहवालाच्या आधारे स्क्रिप्ट तयार करा.
+------------------------------------------`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
 
         // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
         const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
@@ -272,7 +559,7 @@ TTS सॉफ्टवेयर इसे बिना अटके और ए�
         function processData() {
             const container = document.getElementById('prompt-container');
             // पहले डैश लाइन्स से तोडें
-            let parts = rawData.split(separatorRegex);
+            let parts = getRawData().split(separatorRegex);
 
             parts.forEach((part, index) => {
                 let cleanText = part.trim();
