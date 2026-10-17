@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🪐 ग्रह बल विश्लेषण v9</title>
+<title>🪐 ग्रह बल विश्लेषण v10</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -59,7 +59,7 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;p
 <div class="container" id="mainContainer">
 <div class="header">
 <h1>🪐 ग्रह बल विश्लेषण</h1>
-<p>Planet Strength Analyzer v9 - Fully Auto</p>
+<p>Planet Strength Analyzer v10 - Fully Auto</p>
 </div>
 
 <div class="card">
@@ -112,8 +112,19 @@ const ENEMY={
  'गुरु':['बुध','शुक्र'],'शुक्र':['चंद्र','मंगल','सूर्य'],
  'शनि':['सूर्य','चंद्र','मंगल']
 };
-const SHUBHA=['गुरु','शुक्र'];
+const SHUBHA_BASE=['गुरु','शुक्र'];
 const PAPA=['शनि','मंगल','सूर्य','राहु','केतु'];
+function getShubha(pd){
+ const s=[...SHUBHA_BASE];
+ // Shukla Chandra
+ if(pd.n==='चंद्र'&&!pd.isKrishna)s.push('चंद्र');
+ // Budh when not in papa yuti
+ if(pd.n==='बुध'){
+  const hasPapaYuti=pd.yuti.some(y=>PAPA.includes(y));
+  if(!hasPapaYuti)s.push('बुध');
+ }
+ return s;
+}
 const KARAKS=['AK','AmK','BK','MK','PK','GK','DK'];
 
 let planetData=[];let lagnaRashi=0;let moonNak=0;
@@ -919,12 +930,14 @@ function scorePlanet(pd,manual,shRank){
  s.navamsha={pts:Math.round(d9dig.r*8/20),max:8,label:RASHIS[d9r]+' ('+d9dig.label+')'};
  // 8. Drishti/Yuti (8)
  let dy=5;
+ const shubhaList=getShubha(pd);
  for(const y of pd.yuti){
-  if(SHUBHA.includes(y))dy=Math.min(8,dy+2);
+  if(shubhaList.includes(y))dy=Math.min(8,dy+2);
   else if(PAPA.includes(y))dy=Math.max(0,dy-2);
  }
  for(const dr of pd.drishtiFrom){
-  if(SHUBHA.includes(dr))dy=Math.min(8,dy+1);
+  // Need to check if aspecting planet is shubha - simplified: use base
+  if(SHUBHA_BASE.includes(dr))dy=Math.min(8,dy+1);
   else if(PAPA.includes(dr))dy=Math.max(0,dy-1);
  }
  s.drishti={pts:dy,max:8,label:pd.yuti.join('+')||'अकेला'};
