@@ -98,6 +98,14 @@
 <body>
 
     <h1>Kundli Fuller Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
     <div class="container" id="prompt-container">
         <!-- Prompts will be loaded here -->
     </div>
@@ -106,7 +114,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData = `यह PDF जातक जातक की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी : 
+        const rawData_hi = `यह PDF जातक जातक की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी : 
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -126,7 +134,7 @@
 16] D9  के 12 भाव के राशी-नक्षत्र (Bhava Cusp)
 
 कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
-------------------------------------------
+----------
 उपरोक्त चैट और PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
 
 लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
@@ -140,7 +148,7 @@
 
 
 आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
------------------------------------------
+----------
 txt फाइल से निम्मलिखित जानकारी को एक के बाद एक बिना बदलाव के जैसी की वैसी लिखे :
 
 1] Jaimini Complete Report
@@ -149,7 +157,7 @@ txt फाइल से निम्मलिखित जानकारी क
 4] D60 Analysis
 5] D1_to_D9_Analysis
 6] D1_to_D60_Analysis
------------------------------------------
+----------
 कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (षोडशवर्ग कुंडलिया) को अपनी मेमोरी में सुरक्षित कर लें।
 
 निर्देश:
@@ -159,9 +167,9 @@ txt फाइल से निम्मलिखित जानकारी क
 3] पुष्टि (Verification) के लिए: केवल यह बताएं कि कौन-कौन सी षोडशवर्ग कुंडलिया सेव की गयी है।
 
 मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
------------------------------------------
+----------
 चलित कुंडली देखकर बताईये की चलित कुंडली में D1 कुंडली से क्या बदला है और इसका क्या प्रभाव पड़ेगा :
------------------------------------------
+----------
 ➤ PN, PB, MB का जीवन पर प्रभाव (Impact on Life)
 
 विषय: वैदिक ज्योतिष - ग्रह एवं भावों के लिए पुष्कर नवांश (PN), पुष्कर भाग (PB) और मृत्यु भाग (MB) की गणना एवं फलादेश।
@@ -180,9 +188,9 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ​▸ दशा फल: वर्तमान या आगामी महादशा में इन अमृत/विष बिंदुओं का क्या प्रभाव पड़ेगा?
 
 ​​▸ निष्कर्ष: समग्र रूप से कुंडली में 'अमृत' (PB) और 'विष' (MB) का संतुलन कितना है?
------------------------------------------
+----------
 जन्म नक्षत्र को आधार मानकर नवतारा चक्र बनाइए और विश्लेषण कीजिए कि कुंडली के सभी 9 ग्रह किन-किन ताराओं (संपत, विपत, वध आदि) के नक्षत्रों में बैठे हैं, और उस तारा के अनुसार प्रत्येक ग्रह अपना कैसा (शुभ/अशुभ) फल देगा? [PDF पेज No 28]
------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), अष्टकवर्ग और जैमिनी कारकत्व के आधार पर होना चाहिए।
 
 
@@ -212,7 +220,7 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
-------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर D1 के सभी 12 भावों का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल, अष्टकवर्ग के आधार पर होना चाहिए।
 
 
@@ -230,7 +238,7 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ➤ निष्कर्ष : समग्र रूप से भाव मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी भाव के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
-------------------------------------------
+----------
 ➤ समान्य जानकारी तालिका बनाइये :
 
 ►D1 लग्न भाव राशी और नक्षत्र
@@ -262,10 +270,10 @@ TXT गणनाओं के आधार पर निम्नलिखित
 
 ➤ निष्कर्ष : 
 ▸ D1 के लग्न के प्रभावशाली ग्रह और  D9 के लग्न के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ? 
-▸ D1 के सप्तम भाव के प्रभावशाली ग्रह और  D9 के सप्तम भाव के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ? 
-------------------------------------------
+▸ D1 के सप्तम भाव के प्रभावशाली ग्रह और  D9 के सप्तम भाव के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ?
+----------
 उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
-------------------------------------------
+----------
 यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
 
 1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
@@ -274,9 +282,9 @@ TXT गणनाओं के आधार पर निम्नलिखित
 4] System instructions में दिए गए आदेशों का भी पालन करे.
 
 क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
-------------------------------------------
+----------
 उपरोक्त चैट और पीडीएफ की और शुरू से आपको दी गयी सभी जानकारी के आधार पर निम्मलिखित सवालों का गहन और विस्तार से विश्लेषण करके निष्कर्ष सहित देना है, ध्यान रहे विश्लेषण आवश्यकता अनुसार ज्योतिष प्रणाली और Divisional Charts का उपयोग करते हुए होनी चाहिए। तो पहला सवाल दू ?
-------------------------------------------
+----------
 जातक के कुंडली के निम्मलिखित फलित का गहन और निष्कर्ष देकर बहुत विस्तार से विश्लेषण कीजिये :
 
 ➤ पंचांग विस्तृत फल विश्लेषण : 
@@ -285,7 +293,7 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ► नक्षत्र
 ► योग
 ► करण
-------------------------------------------
+----------
 ➤ लग्न (Ascendant) और लग्नेश का विश्लेषण :
 ► लग्न राशि का फल:
 ► लग्न नक्षत्र का फल (स्वामी के अनुसार):
@@ -297,9 +305,9 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ► जन्म नक्षत्र (पद/चरण) फल : 
 ► नक्षत्र पद के अनुसार जन्म अक्षर कौनसा है ? और उसका प्रभाव.
 ► जन्म पाया : 1) जन्म नक्षत्र के अनुसार, 2) चंद्रमा की भाव स्थिति के अनुसार, 3) जन्म पाया निष्कर्ष
-------------------------------------------
+----------
 ➤ पंचांग, लग्न, चंद्र राशि के तीनों विश्लेषणों का समग्र निष्कर्ष :
-------------------------------------------
+----------
 जातक की कुंडली के निम्नलिखित प्रत्येक ग्रहों के फल का गहन और विस्तृत विश्लेषण कीजिये, अंत में प्रत्येक ग्रह के फल का निष्कर्ष बहुत डिटेल में कम से कम 2-3 प्याराग्राफ में होना चाहिए :
 
 1] सूर्य
@@ -308,7 +316,7 @@ TXT गणनाओं के आधार पर निम्नलिखित
 
 अब बुध,गुरु, शुक्र का दीजिए
 अब शनि, राहू केतु का दीजिए
-------------------------------------------
+----------
 जातक की कुंडली के निम्नलिखित प्रत्येक भावों के फल का गहन और विस्तृत विश्लेषण कीजिये, अंत में प्रत्येक भाव फल का निष्कर्ष बहुत डिटेल में कम से कम 2-3 प्याराग्राफ में होना चाहिए :
 
 1] प्रथम भाव 
@@ -318,12 +326,12 @@ TXT गणनाओं के आधार पर निम्नलिखित
 अब चतुर्थ, पंचम, षष्टम का दीजिए
 अब सप्तम, अष्टम, नवम का दीजिए
 अब दशम, एकादश, द्वादश का दीजिए
-------------------------------------------
+----------
 जातक के कुंडली के सभी शुभ योगो की पहले सूचि तयार करें, बाद में सभी शुभ योगों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो शुभ योग है वो भी लेने है.txt से भी लेने है.
-------------------------------------------
+----------
 जातक के कुंडली के सभी दोषों की पहले सूचि तयार करें, बाद में सभी दोषों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो दोष है वो भी लेने है.txt से भी लेने है.
 उसके बाद दोषों के उपाय गैरधार्मिक और धार्मिक हैं, और जो उपाय किसी ज्योतिषी के पास जाकर करना अनिवार्य है, उनका भी उल्लेख होना चाहिए। सभी का विस्तृत विश्लेषण होना चाहिए।
-------------------------------------------
+----------
 ➤ मंगल दोष विचार :
 ► मंगल दोष संक्षिप्त परिचय : 
 ► कुंडली में मंगल की स्थिति। (चन्द्र कुंडली और लग्न कुंडली)
@@ -333,7 +341,7 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ► मंगल दोष का वैवाहिक जीवन पर संभावित प्रभाव।
 ► क्या D9 में मंगल दोष बन रहा है ? और क्या जातक के विवाह के बाद इस दोष का प्रभाव होगा ?
 ➤ समग्र निष्कर्ष:
-------------------------------------------
+----------
 ➤ अंक ज्योतिष विश्लेषण :
 ► मूलांक : (स्वामी)
 ► भाग्यांक : (स्वामी)
@@ -341,7 +349,7 @@ TXT गणनाओं के आधार पर निम्नलिखित
 ► व्यक्तिगत जीवन पर संभावित प्रभाव।
 
 ➤ समग्र निष्कर्ष:
-------------------------------------------
+----------
 ➤ व्यक्तिगत ज्योतिषीय अनुकूलता
 ➤ आपके लिए भाग्यशाली (Lucky for You):
 
@@ -376,10 +384,10 @@ TXT गणनाओं के आधार पर निम्नलिखित
 कभी भी अपनी कुंडली के अशुभ ग्रहों से संबंधित रत्न (जैसे नीलम, गोमेद, लहसुनिया) बिना किसी गहन विश्लेषण और विशेषज्ञ की सलाह के धारण न करें, क्योंकि वे नकारात्मक परिणामों को कई गुना बढ़ा सकते हैं।
 
 ➤ समग्र निष्कर्ष:
-------------------------------------------
+----------
 सभी 20 षोडशवर्ग कुंडलियों का विस्तृत विश्लेषण करके बताइए की जातक के जीवन पर क्या प्रभाव पड़ेगा.
 D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D16, D20, D24, D27, D30, D40, D45, D60
------------------------------------------
+----------
 D1 षोडशवर्ग कुंडलि का विस्तृत विश्लेषण करके बताइए कि जातक के जीवन पर क्या प्रभाव पड़ेगा।
 D2 षोडशवर्ग कुंडलि का विस्तृत विश्लेषण करके बताइए कि जातक के जीवन पर क्या प्रभाव पड़ेगा।
 D3 षोडशवर्ग कुंडलि का विस्तृत विश्लेषण करके बताइए कि जातक के जीवन पर क्या प्रभाव पड़ेगा।
@@ -400,9 +408,9 @@ D30 षोडशवर्ग कुंडलि का विस्तृत व
 D40 षोडशवर्ग कुंडलि का विस्तृत विश्लेषण करके बताइए कि जातक के जीवन पर क्या प्रभाव पड़ेगा।
 D45 षोडशवर्ग कुंडलि का विस्तृत विश्लेषण करके बताइए कि जातक के जीवन पर क्या प्रभाव पड़ेगा।
 D60 षोडशवर्ग कुंडलि का विस्तृत विश्लेषण करके बताइए कि जातक के जीवन पर क्या प्रभाव पड़ेगा।
------------------------------------------
+----------
 यह सुनिश्चित करे की जब भी मै सवाल का विश्लेषण मांगू तो आप उस उस क्ष्रेत्र से जुड़े डिविजनल चार्ट को D1 से मिलाकर ही विश्लेषण करेंगे, जैसे संतान के लिए D1 और D7, विवाह के लिए  D1 और D9,  करियर के लिए D1 और D10. वैसे ही बाकि...
------------------------------------------
+----------
 ➤ जातक का स्वभाव 
 ► मूल व्यक्तित्व और प्रकृति (Core Personality & Nature):
 (स्रोत: लग्न, लग्नेश, चंद्र राशि, सूर्य राशि, आत्मकारक (AK))
@@ -416,78 +424,78 @@ D60 षोडशवर्ग कुंडलि का विस्तृत व
 (स्रोत: गुरु और नवम भाव की स्थिति, D9 में ग्रहों का बल)
 ► स्वास्थ्य और शारीरिक बल (Health & Physical Vitality):
 (स्रोत: लग्न, लग्नेश, षष्ठम भाव, सूर्य और चंद्रमा का बल)
------------------------------------------
+----------
 ➤ जातक के गुण और विशेषताए
------------------------------------------
+----------
 ➤ जातक की कमजोरियां या नकारात्मक पहलू
------------------------------------------
+----------
 ➤ जातक के रूचि और शौक
------------------------------------------
+----------
 ➤ जातक के जीवन संघर्ष और चुनौतियाँ/बाधाएं :
 ► कर्जे
 ► शत्रु
 ► मुकदमेबाजी
------------------------------------------
+----------
 ➤ जातक का भाग्य :
------------------------------------------
+----------
 ➤ स्वास्थ्य और चुनौतियाँ: 
 ► पुरानी बीमारी
 ► बड़ी बीमारी
 ► दुर्घटना या चोट का खतरा (संबंधित ग्रह/दोष, दशा)
------------------------------------------
+----------
 ➤ जातक का वैवाहिक जीवन का विस्तारपूर्वक विश्लेषण? (पराशरी D1 और  D9; जैमिनी; BNN; KP)
 ► वैवाहिक जीवन की मानसिक गहराई और भावनात्मक जुड़ाव
 ► वैवाहिक सुख और संबंध प्रकृति
 ► विवाह चलेगा या नहीं ?
------------------------------------------
+----------
 ➤ जातक के जीवनसाथी स्वभाव  (पराशरी : D1 सप्तम भाव-सप्तमेश और  D9 सप्तम भाव- सप्तमेश; जैमिनी : DK, UL, A7; BNN; KP)
------------------------------------------
+----------
 ➤ प्रेम संबंध
 ► क्या प्रेम विवाह, 
 ► अंतर्जातीय विवाह, 
 ► भागकर विवाह अथवा 
 ► पारंपरिक विवाह के योग हैं?
------------------------------------------
+----------
 ➤ जातक का पारिवारिक जीवन: 
 ► भाई-बहनों और माता-पिता के साथ संबंध
 ► विरासत या पैतृक संपत्ति मिलने की संभावना
------------------------------------------
+----------
 ➤ जातक का संतान का सुख: 
 ► क्या संतान का योग है?
 ► कितनी संतान का योग है, और उंनका क्रम क्या होगा, जैसे पहले पुत्र या पुत्री और उसके बाद ?
------------------------------------------
+----------
 ➤ जातक का भौतिक सुख और विलासिता: 
 ► वाहन
 ► अपना सपनो का घर
------------------------------------------
+----------
 ➤ जातक का यात्रा और निवास: 
 ► निवास स्थान में बदलाव
 ► विदेश यात्रा
 ► विदेश में बसने की संभावना (दशा/अंतर्दशा)
------------------------------------------
-➤ जातक का आध्यात्मिक झुकाव। 
------------------------------------------
+----------
+➤ जातक का आध्यात्मिक झुकाव।
+----------
 ➤ जातक का करियर और व्यवसाय: 
 ► उपयुक्त करियर क्षेत्र या व्यवसाय 
 ► नौकरी या व्यवसाय
-► करियर में सफलता की संभावनाएं 
------------------------------------------
+► करियर में सफलता की संभावनाएं
+----------
 ➤ जातक का धन और वित्तीय स्थिति: 
 ► आर्थिक स्थिति 
 ► आय के मुख्य स्रोत
 ► वित्तीय स्थिरता
-► निवेश कितना लाभकारी 
------------------------------------------
+► निवेश कितना लाभकारी
+----------
 ➤ जातक की शिक्षा
 ► शिक्षा कैसी रहेगी
 ► शिक्षा में कोई बाधा ?
 ► उच्च शिक्षा संभावना
 ► बुद्धि और सीखने की क्षमता
------------------------------------------
+----------
 ➤ जातक की कुंडली के सकारात्मक और नकारात्मक बिंदु:
 ► सबसे मजबूत भाव/ग्रह/योग।
 ► सबसे कमजोर भाव/ग्रह/दोष।
------------------------------------------
+----------
 मारक पहचान: क्या यह ग्रह द्वितीयेश (2nd lord) या सप्तमेश (7th lord) होकर मारकेश की भूमिका में है? यदि हाँ, तो कौन सी - द्वितीयेश (सामान्य मारक) या सप्तमेश (प्रबल मारक)?
 
 बाधक पहचान: क्या यह ग्रह लग्न के स्वभाव (चर, स्थिर, द्विस्वभाव) के अनुसार बाधक भाव (11वें, 9वें, या 7वें) का स्वामी है?
@@ -544,13 +552,13 @@ D60 षोडशवर्ग कुंडलि का विस्तृत व
 कर्म का पाठ (Karmic Lesson): यह ग्रह जीवन में क्या 'कार्मिक सबक' सिखाने आया है? (जैसे: 'वैराग्य' या 'अलगाव' का सबक)।
 
 ऊर्जा का रूपांतरण (Energy Channeling): क्या जातक इस ग्रह की नकारात्मक ऊर्जा को एक उच्च उद्देश्य के लिए उपयोग कर सकता है? (जैसे: 'मारक' शनि की ऊर्जा को 'अध्यात्म' या 'अस्पताल सेवा' में लगाना)।
------------------------------------------
+----------
 ➤ जातक की कुंडली के लिए निष्कर्ष और अंतिम सलाह:
 ► पूरे विश्लेषण का संक्षिप्त सारांश।
------------------------------------------
+----------
 ➤ जातक के लिए सबसे महत्वपूर्ण सलाह या मार्गदर्शन।
 ► सकारात्मक रहें और उपायों का पालन करें।
------------------------------------------
+----------
 कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, चर दशा और गोचर) को अपनी मेमोरी में सुरक्षित कर लें।
 
 निर्देश:
@@ -564,7 +572,7 @@ D60 षोडशवर्ग कुंडलि का विस्तृत व
 गोचर (गुरु/शनि - लग्न व चंद्र से):
 
 मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
-------------------------------------------
+----------
 उपरोक्त चैट्स में दिए गए और एक्सट्रैक्ट किए गए ज्योतिषीय डेटा (Vimshottari, Yogini, Chara Dasha और Gochar Analysis) के आधार पर, आगामी 20 वर्षों की एक विस्तृत 'मास्टर समय-सारणी' तैयार करें।
 
 ​तालिका का प्रारूप और कॉलम बिल्कुल निम्न प्रकार होने चाहिए:
@@ -574,27 +582,27 @@ D60 षोडशवर्ग कुंडलि का विस्तृत व
 ​डेटा प्रोसेसिंग के लिए महत्वपूर्ण नियम:
 
 ​दशा परिवर्तन: यदि किसी एक वर्ष के भीतर अंतर्दशा (AD) बदलती है, तो उसे एक ही सेल में 'Slash' (/) के साथ दिखाएं (जैसे: बुध AD / केतु AD)।
-------------------------------------------
+----------
 ➤ जातक XYZ अभी 00 साल का है, यह ध्यान में रखते हुए जातक के 2026 से आनेवाले 10 वर्षो की भविष्यवाणी कीजिए, प्रत्येक साल की अलग अलग होनी चाहिए,  इसमें विशोंतरी महादशा, योगीनी दशा, चर दशा और गोचर को ध्यान में रखते हुए, समग्र रूप से विश्लेषण होना चाहिए, प्रत्येक साल की भविष्यवाणी लगभग 5-6 प्याराग्राफ में होनी चाहिए, भले ही आउट्पुट कुछ भागों में डिवाइड करना पड़े ।
------------------------------------------
-➤ जातक के आनेवाले 50 वर्षो की विशोंतरी दशा अन्तर्दशा का संक्षिप्त रूप से विश्लेषण कीजिये, कुंडली में ग्रहों स्थिति के आधार पर विश्लेषण होना चाहिए. 
------------------------------------------
+----------
+➤ जातक के आनेवाले 50 वर्षो की विशोंतरी दशा अन्तर्दशा का संक्षिप्त रूप से विश्लेषण कीजिये, कुंडली में ग्रहों स्थिति के आधार पर विश्लेषण होना चाहिए.
+----------
 ➤ जातक ने अपने बारे में जानकरी दी है और जातक के कुछ सवाल है, पहले दी हुयी जानकारी को सूचीबद्ध कीजिये, उसके बाद सभी सवाल सूचीबद्ध कीजिये :
------------------------------------------
+----------
 अब दी हुयी जानकारी का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर कीजिये, एक एक घटना का विस्तार से विश्लेषण होना चाहिए, अगर उपाय आवश्यक हो तो उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
------------------------------------------
+----------
 अब दिए हुए सवालो का जवाब गहन शोध करके लिखिए विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक सवाल का विस्तार से विश्लेषण होना चाहिए,उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
-------------------------------------------
+----------
 अब तक किये गए सभी निम्मलिखित सवालों का संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
------------------------------------------
+----------
 जैसा की उपरोक्त सभी आउटपुट एक पीडीएफ के माध्यम से जातक को भेजे जायेंगे तो साथ में हम इस पॅकेज में astro sage की लाल किताब कुंडली, रत्न रिपोर्ट, जड़ी रिपोर्ट और देवता सजेशन रिपोर्ट फ्री देते है, तो जरा इस पीडीएफ को चेक कीजिये, की रत्न वगैरे और सब चीजे आपके उपरोक्त विश्लेषण से विपरीत तो नही ?
------------------------------------------
+----------
 निम्मलिखित जानकारी लिखिए इंग्लिश में, (,) से सेपरेट करके लेकिन स्पेस न देकर :
 
 नाम,जन्म स्थान,Date of Birth,समय,लिंग
 
 जैसे : Sarang,Nagpur,14-02-1995,03:00 AM,MALE
------------------------------------------
+----------
 जातक को सबसे पहले पढ़ने के लिए निम्मलिखित सभी पहलुओं का विश्लेषण बिना ज्योतिषीय शब्दों का उल्लेख किये संशिप्त रूप से कीजिए, प्रत्येक पहलू का विश्लेषण 8-9 वाक्यों में संशिप्त रूप से कीजिए । 
 
 ► चरित्र
@@ -611,6 +619,1027 @@ D60 षोडशवर्ग कुंडलि का विस्तृत व
 ► वित्त और धन
 ► 9 ग्रह फलित 
 ► 12 भाव फलित`;
+        const rawData_en = `This PDF is the native's kundali; you must save all the information from it, so that the kundali can be analyzed. While analyzing, do not write the page reference of the PDF, but give a list of which page the following information is on, meaning it will be easier for you to find it later as well:
+
+1] Planet position table - (Planet, Degree, Rashi, Nakshatra-Pada, Nakshatra-Lord, Jaimini Chara Karakatva)
+2] Sarvashtakavarga table
+3] Shadbala table (Sthana Bala, Digbala, Kala Bala, Chesta Bala, Naisargika Bala, Drishti Bala)
+4] Bhava Bala table
+5] Vimshopaka Bala table (Shodasha Varga, Shadvarga, Saptavarga and Dashavarga)
+6] Jaimini Arudha Pada (rashi-based)
+7] Vimshottari Mahadasha Antardasha chart
+8] Yogini Dasha Antardasha chart
+9] Chara Dasha Antardasha chart
+10] Krishnamurti Paddhati (KP) bhava position table {Bhava-Rashi-Lord-Nakshatra Lord-Sub Lord-Sub-Sub Lord-Cusp-Rashi-Nakshatra-Pada}
+11] Krishnamurti Paddhati (KP) planet position table {Bhava-Rashi-Lord-Nakshatra Lord-Sub Lord-Sub-Sub Lord-Cusp-Rashi-Nakshatra-Pada}
+12] Krishnamurti Paddhati (KP) house significator planet position table
+13] Krishnamurti Paddhati (KP) planet significator position table
+14] D1's 12 bhava rashi-nakshatra (Bhava Cusp)
+15] D9 planet position table - (Planet, Degree, Rashi, Nakshatra-Pada, Nakshatra-Lord)
+16] D9's 12 bhava rashi-nakshatra (Bhava Cusp)
+
+Please present all the tables in a simple and readable table format.
+----------
+From the above chat and PDF, write the rashis placed in the twelve bhavas of the lagna kundali, the bhava lords, and the planet presence; also write which planets are uchcha, neecha, vakri, nichabhanga, asta, vargottama. Also write the nakshatra they are placed in (do not write uchcha, neecha, vakri for Rahu-Ketu).
+
+The writing pattern will be as follows, which is only for example, shown in "":
+
+"First bhava (lagna):
+In this bhava is Simha rashi, hence the lagnesh is Surya.
+In this bhava, the planets Surya and Rahu are placed.
+Surya: is swagrihi in Simha rashi (in its own house). Surya is placed in Magha nakshatra. Surya, being the lord of the first bhava (Simha), is seated in the lagna. Surya's drishti is on the seventh bhava (Kumbha).
+Rahu: in Simha rashi (considered an enemy rashi for Rahu). Rahu is placed in Magha nakshatra. Rahu's drishti is on the fifth bhava (Dhanu), the seventh bhava (Kumbha) and the ninth bhava (Mesha).
+On this bhava there is Ketu's (from the seventh bhava) full drishti."
+
+
+For your convenience a txt file has been given: "D1_Analysis"
+----------
+Write the following information from the txt file, one after another, without any change, exactly as it is:
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D60 Analysis
+5] D1_to_D9_Analysis
+6] D1_to_D60_Analysis
+----------
+Please save the astrological data (Shodashavarga kundalis) given in all the attached text files to your memory.
+
+Instructions:
+
+1] There is no need to rewrite this data in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: only tell which Shodashavarga kundalis have been saved.
+
+After this I will directly ask specific questions related to analysis, for which you must use all of this data.
+----------
+Looking at the Chalit kundali, tell me what has changed in the Chalit kundali compared to the D1 kundali, and what effect it will have:
+----------
+➤ Impact of PN, PB, MB on Life
+
+Subject: Vedic Astrology - Calculation and interpretation of Pushkar Navamsha (PN), Pushkar Bhaga (PB) and Mrityu Bhaga (MB) for planets and bhavas.
+
+Based on the TXT calculations, write the impact on the following areas:
+
+▸ Divine Protection: Which bhavas/planets are protected by Pushkar energy and in which areas of life will help come 'without asking'?
+
+▸ Conflicts and Obstacles (MB Impact): In which areas of life can planets in Mrityu Bhaga create obstacles like 'landmines'?
+
+▸ Start vs Result (Start vs Middle): Based on the Pushkar difference of a bhava's 'start' and 'middle', tell how the beginning of a task will be and how its end will be?
+
+▸ In the PN and PB calculations, check whether their 'Bhavesh' is in MB?
+(If the bhava's lord (Bhavesh) is in Mrityu Bhaga, then even if the bhava is Pushkar, the result will be obstructed)
+
+▸ Dasha Phala: What impact will these amrit/vish points have in the current or upcoming Mahadasha?
+
+▸ Conclusion: Overall, how balanced are 'amrit' (PB) and 'vish' (MB) in the kundali?
+----------
+Taking the birth nakshatra as the base, create the Navatara chakra and analyze in which taras' (Sampat, Vipat, Vadha, etc.) nakshatras all 9 planets of the kundali are placed, and according to that tara, what kind (shubh/ashubh) of results each planet will give? [PDF Page No 28]
+----------
+Please provide a list of astrological facts/figures for all 9 planets (Surya, Chandra, Mangal, Budh, Guru, Shukra, Shani, Rahu, Ketu) based on the birth details in all the above chats and PDF. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on the kundali's phalita, shadbala, Vimshopaka (Shodasha Varga), ashtakavarga and Jaimini karakatva.
+
+
+Provide the following information for each planet:
+1. [Planet name]
+➤ Jaimini karakatva:
+➤ Bhava lordship: (which bhavas it is the lord of)
+➤ Position: (in which bhava and rashi)
+➤ Position in rashi: (mitra, shatru, sama, uchcha, neecha, moolatrikona, swarashi)
+➤ Nakshatra and pada: (in which nakshatra and pada the planet is, and the effect of the nakshatra lord.)
+➤ Drishti: (drishti on which bhavas/planets)
+➤ Drishti on [planet name]: (drishti of which planets)
+➤ Yuti: (in yuti with which planets)
+➤ Avastha (degree): (degree and the name of the avastha, e.g. bala, kumara, etc.)
+➤ Vakri/Asta/Neecha/Nichabhanga/Vargottama status: (Yes/No or the name of the status)
+➤ Navamsha position: (in the navamsha kundali, in which rashi and nakshatra (lord) the planet is, and its effect.)
+➤ Strength in navamsha: afflicted/strong
+➤ Position change in chalit and its effect
+➤ Bhavabala: (value only)
+➤ Shadbala: (value in rupas and how its strength is - better than average, rank, etc.)
+➤ Bhinnashtakavarga (BAV) bindu: (value between 0-8): (based on the bindus: practical strength - weak/average/strong)
+➤ Vimshopaka (Shodasha Varga): (value and its rank among the planets, if applicable.)
+➤ Position and effect in Pushkar Navamsha (PN)/Pushkar Bhaga (PB)/Mrityu Bhaga (MB):
+➤ Navatara position and effect: (based on the birth nakshatra, in which tara - like Sampat, Vipat, Sadhak, etc. - this planet is placed, and what auspiciousness or obstacles will come in its naisargika and bhava results due to that specific tara.)
+➤ Brief answer on probable results in gochar and dasha: (generally, how will that planet give results in its dasha/antardasha and gochar - good, bad, or average.
+
+➤ Conclusion: Overall, is the planet strong or afflicted? (percentage)
+
+➤ Finally, a conclusion on all planets being strong and afflicted (based on percentage)
+----------
+Please provide a list of astrological facts/figures for all 12 bhavas of D1 based on the birth details in all the above chats and PDF. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on karakatva, bhava bala, and ashtakavarga.
+
+
+Provide the following information for each bhava:
+
+1. First bhava (lagna): rashi name [Arudha Pada]
+➤ Karakatva:
+➤ Bhava lord (lagnesh):
+➤ Bhavesh's position:
+➤ Planets placed:
+➤ Drishti on bhava:
+➤ Bhava bala: value in rupas and how its strength is - better than average, rank, etc. (weak or strong bhava in the kundali).
+➤ Sarvashtakavarga (SAV) bindu: (total bindu) (bhava's capacity: 'excellent' if above 28, 'challenging' if below 25)
+➤ Position and effect in Pushkar Navamsha (PN)/Pushkar Bhaga (PB):
+➤ Conclusion: Overall, is the bhava strong or afflicted? (percentage)
+
+➤ Finally, a conclusion on all bhavas being strong and afflicted (based on percentage)
+----------
+➤ Make a General Information table:
+
+►D1 lagna bhava rashi and nakshatra
+►D1 seventh bhava rashi and nakshatra
+►D9 lagna bhava rashi and nakshatra
+►D9 seventh bhava rashi and nakshatra
+
+
+►Chandra rashi
+►Chandra nakshatra
+►Chandra nakshatra lord
+
+►D1 lagna bhava nakshatra lord
+►D1 lagnesh
+►D1 seventh bhava nakshatra lord
+►D1 saptamesh
+►D9 lagna bhava nakshatra lord
+►D9 lagnesh
+►D9 seventh bhava nakshatra lord
+►D9 saptamesh
+
+➤ After making the table, analyze the following points.
+
+▸ Among the planet placed in the lagna, the lagnesh, and the lagna nakshatra lord of both D1 and D9, who is stronger?
+▸ Among the planet placed in the lagna, the lagnesh, and the lagna nakshatra lord in D1 and D9, which planet is the most influential and ultimately guides the person's personality?
+
+▸ Among the planet placed in the seventh bhava, the saptamesh, and the seventh bhava nakshatra lord of both D1 and D9, who is stronger?
+▸ Among the planet placed in the seventh bhava, the saptamesh, and the seventh bhava nakshatra lord in D1 and D9, which planet is the most influential and ultimately guides the person's marriage?
+
+➤ Conclusion:
+▸ Between the influential planet of D1's lagna and the influential planet of D9's lagna, who is more influential?
+▸ Between the influential planet of D1's seventh bhava and the influential planet of D9's seventh bhava, who is more influential?
+----------
+Give a short list of all the information given to you so far above for the kundali analysis.
+----------
+Ensure that you will strictly follow the following orders,
+
+1] Cross-check the data before giving the output.
+2] Do not do any kind of sugar-coating (Sugar-coating). If there is any dosha, conflict or negative yoga in the kundali, state it in clear and bitter words. I do not have to please the client, but tell the truth. Note that it should not be completely negative; keeping a balance of positive and negative, tell what is true.
+3] Do not begin your answer with any greeting or conversational phrase (like 'definitely', 'sure', 'the following is', etc.). Your answer should begin directly with the requested information.
+4] Also follow the orders given in the System instructions.
+
+Are you ready - just tell which orders you will follow.
+----------
+Based on all the information given to you from the start from the above chat and PDF, the following questions must be analyzed deeply and in detail with conclusions; note that the analysis should be done using the required jyotish systems and Divisional Charts as needed. So, shall I give the first question?
+----------
+Analyze the following phalita of the native's kundali very deeply and in great detail, giving conclusions:
+
+➤ Detailed Panchang phala analysis:
+► Vaar
+► Tithi
+► Nakshatra
+► Yoga
+► Karana
+----------
+➤ Analysis of Lagna (Ascendant) and Lagnesh:
+► Phala of lagna rashi:
+► Phala of lagna nakshatra (according to the lord):
+► Lagnesh (according to the lagna rashi lord):
+------------------------------------------ 
+➤ Analysis of Chandra Rashi (Moon Sign) and the Moon:
+► Phala of Chandra rashi:
+► Moon's position:
+► Janma nakshatra (pada/charan) phala:
+► Which is the janma akshara according to the nakshatra pada? And its effect.
+► Janma paya: 1) according to the janma nakshatra, 2) according to the Moon's bhava position, 3) janma paya conclusion
+----------
+➤ Overall conclusion of all three analyses - Panchang, Lagna, and Chandra Rashi:
+----------
+Do a deep and detailed analysis of the phala of each of the following planets of the native's kundali; at the end, the conclusion of each planet's phala must be in great detail, at least 2-3 paragraphs:
+
+1] Surya
+2] Chandra
+3] Mangal
+
+Now give for Budh, Guru, Shukra
+Now give for Shani, Rahu, Ketu
+----------
+Do a deep and detailed analysis of the phala of each of the following bhavas of the native's kundali; at the end, the conclusion of each bhava's phala must be in great detail, at least 2-3 paragraphs:
+
+1] First bhava
+2] Second bhava
+3] Third bhava
+
+Now give for the fourth, fifth, sixth
+Now give for the seventh, eighth, ninth
+Now give for the tenth, eleventh, twelfth
+----------
+First prepare a list of all the shubh yogas of the native's kundali, then analyze in detail the formation method of all the shubh yogas and their probable results based on the strength of their bhavas and planets; some yoga and dosha lists are given at the end of the pdf, from them whatever are shubh yogas must also be taken. Also take from the txt.
+----------
+First prepare a list of all the doshas of the native's kundali, then analyze in detail the formation method of all the doshas and their probable results based on the strength of their bhavas and planets; some yoga and dosha lists are given at the end of the pdf, from them whatever are doshas must also be taken. Also take from the txt.
+After that, the remedies for the doshas - non-religious and religious - and the remedies that are mandatory to do by visiting an astrologer must also be mentioned. There should be a detailed analysis of all.
+----------
+➤ Mangal Dosha Analysis :
+► Brief Introduction to Mangal Dosha : 
+► Position of Mars in the Kundali. (Chandra Kundali and Lagna Kundali)
+► Are they Manglik? (Complete,Half,Low,Partial)
+► If there is a Manglik Dosha, is it getting its Parihar (cancellation) (such as the placement of Saturn, Rahu, Ketu in those same bhavas, or Mars placed in its own rashi/exalted rashi, or a drishti relation).
+► Possible effect of Mangal Dosha on personal life.
+► Possible effect of Mangal Dosha on married life.
+► Is Mangal Dosha forming in D9 ? And will this dosha have an effect after the native's marriage ?
+➤ Overall Conclusion:
+----------
+➤ Numerology Analysis :
+► Moolank : (Lord)
+► Bhagyank : (Lord)
+► Analysis of the mutual natural relationship between the Moolank Lord and the Bhagyank Lord :
+► Possible effect on personal life.
+
+➤ Overall Conclusion:
+----------
+➤ Personal Astrological Compatibility
+➤ Lucky for You (Lucky for You):
+
+► Lucky Number (Lucky Number):
+► Lucky Days (Lucky Days):
+► Lucky Years (Lucky Years):
+► Lucky Metal (Lucky Metal):
+► Lucky Gemstone (Lucky Gemstone):
+► Aradhya Deva/Devi (Benefic Deities):
+
+➤ Auspicious for You (Auspicious for You):
+
+► Auspicious Number (Auspicious Numbers):
+► Benefic Planet (Benefic Planets):
+► Friendly Rashis (Friendly Zodiac Signs):
+► Auspicious Lagna (Auspicious Ascendants):
+► Auspicious Color (Auspicious Colors):
+► Auspicious Day (Auspicious Days):
+► Auspicious Direction (Auspicious Directions):
+
+➤ Inauspicious for You (Inauspicious for You):
+
+► Inauspicious Number (Inauspicious Number):
+► Malefic Planet (Malefic Planets):
+► Enemy Rashis (Enemy Zodiac Signs):
+► Inauspicious Lagna (Inauspicious Ascendants):
+► Colors to Avoid (Colors to Avoid):
+► Less Favorable Day (Less Favorable Days):
+► Inauspicious Direction (Inauspicious Directions):
+
+► Caution:
+Never wear gemstones related to the malefic planets of your kundali (such as Neelam, Gomed, Lahsuniya) without a thorough analysis and expert advice, as they can multiply the negative results many times over.
+
+➤ Overall Conclusion:
+----------
+Analyse all 20 Shodashvarga kundalis in detail and tell what effect they will have on the native's life.
+D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D16, D20, D24, D27, D30, D40, D45, D60
+----------
+Analyse the D1 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D2 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D3 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D4 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D5 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D6 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D7 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D8 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D9 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D10 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D11 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D12 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D16 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D20 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D24 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D27 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D30 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D40 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D45 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+Analyse the D60 Shodashvarga kundali in detail and tell what effect it will have on the native's life.
+----------
+Please ensure that whenever I ask for the analysis of a question, you analyse the divisional chart related to that area only together with D1, such as D1 and D7 for children, D1 and D9 for marriage, D1 and D10 for career. Similarly for the rest...
+----------
+➤ The Native's Nature 
+► Basic Personality and Nature (Core Personality & Nature):
+(Source: Lagna, Lagnesh, Moon Rashi, Sun Rashi, Atmakaraka (AK))
+► Outer Personality and Social Conduct (Outer Personality & Social Conduct):
+(Source: Lagna, Arudha Lagna (AL), Planets in the Tenth Bhava)
+► Inner and Emotional Nature (Inner & Emotional Nature):
+(Source: Position of the Moon (with Nakshatra), Fourth Bhava, Swamsha Lagna (D9 Lagna))
+► Mental and Intellectual Level (Mental & Intellectual Level):
+(Source: Position of Mercury, Fifth Bhava, Drishti of Jupiter, Karakamsha Lagna)
+► Character and Moral Values (Character & Moral Values):
+(Source: Position of Jupiter and the Ninth Bhava, Strength of Planets in D9)
+► Health and Physical Vitality (Health & Physical Vitality):
+(Source: Lagna, Lagnesh, Sixth Bhava, Strength of the Sun and Moon)
+----------
+➤ The Native's Qualities and Specialities
+----------
+➤ The Native's Weaknesses or Negative Aspects
+----------
+➤ The Native's Interests and Hobbies
+----------
+➤ The Native's Life Struggles and Challenges/Obstacles :
+► Debts
+► Enemies
+► Litigation
+----------
+➤ The Native's Luck :
+----------
+➤ Health and Challenges: 
+► Chronic Illness
+► Serious Illness
+► Risk of Accident or Injury (Related Planet/Dosha, Dasha)
+----------
+➤ Detailed Analysis of the Native's Married Life? (Parashari D1 and D9; Jaimini; BNN; KP)
+► Mental Depth and Emotional Bonding of Married Life
+► Marital Happiness and Nature of the Relationship
+► Will the Marriage Last or Not ?
+----------
+➤ Nature of the Native's Spouse  (Parashari : D1 Seventh Bhava-Saptamesh and D9 Seventh Bhava- Saptamesh; Jaimini : DK, UL, A7; BNN; KP)
+----------
+➤ Love Relationships
+► Is there a yoga for love marriage, 
+► inter-caste marriage, 
+► elopement marriage or 
+► traditional marriage?
+----------
+➤ The Native's Family Life: 
+► Relationship with Siblings and Parents
+► Possibility of Receiving Inheritance or Ancestral Property
+----------
+➤ The Native's Happiness from Children: 
+► Is there a yoga for children?
+► How many children are indicated by yoga, and what will be their order, such as first a son or a daughter and then ?
+----------
+➤ The Native's Material Comforts and Luxuries: 
+► Vehicle
+► Own Dream Home
+----------
+➤ The Native's Travel and Residence: 
+► Change of Residence
+► Foreign Travel
+► Possibility of Settling Abroad (Dasha/Antardasha)
+----------
+➤ The native's spiritual inclination.
+----------
+➤ The native's career and business: 
+► Suitable career field or business 
+► Job or business
+► Prospects of success in career
+----------
+➤ The native's wealth and financial situation: 
+► Economic condition 
+► Main sources of income
+► Financial stability
+► How profitable the investments are
+----------
+➤ The native's education
+► How will the education be
+► Any obstacles in education ?
+► Prospects of higher education
+► Intelligence and learning ability
+----------
+➤ Positive and negative points of the native's kundali:
+► Strongest bhava/planet/yoga.
+► Weakest bhava/planet/dosha.
+----------
+Maraka identification: Is this planet playing the role of Marakesh as the 2nd lord or the 7th lord? If yes, then which one - the 2nd lord (ordinary Maraka) or the 7th lord (strong Maraka)?
+
+Badhaka identification: Is this planet the lord of the Badhaka bhava (11th, 9th, or 7th) according to the nature of the lagna (movable, fixed, dual)?
+
+Dual role: Is this planet playing the role of both Maraka and Badhaka? (Especially as the 7th lord for a dual lagna).
+
+Functional beneficence: On the contrary, is this planet an auspicious 'Yogakaraka' planet by being the lord of a kendra/trikona? Or is it extremely auspicious by being the lord of only a trikona?
+
+2. Assessing the intensity of negativity/positivity (Assessing the Intensity):
+
+Influence of malefic planets: Is this planet aspected by natural malefic planets (Saturn, Mars, Rahu, Ketu) or is it in conjunction with them? If yes, how is this increasing its negativity?
+
+Influence of benefic planets: Is this planet aspected by natural benefic planets (Jupiter, Venus, benefic Mercury) or is it with them? Is there any reduction or protection (Mitigation) in the Maraka/Badhaka effect as a result?
+
+Bhava position: In which bhava of the kundali is this planet situated? Has it become even more inauspicious by sitting in the trika bhavas (6, 8, 12), or is its position somewhat better by sitting in a kendra/trikona?
+
+Rashi strength: Is this planet extremely afflicted by being in its debilitated rashi, or is its negativity decreasing by being in its exalted/own rashi? Or has it become more powerful and effective?
+
+3. Activation and potential results (Activation and Potential Results):
+
+Dasha activation: What kind of suffering, obstacles or troubles (in health, relationships, career, etc.) may be seen during this planet's mahadasha or antardasha?
+
+Gochar influence: When major planets like Saturn or Rahu transit over this Maraka/Badhaka planet in gochar, can they activate its negative results?
+Affected areas: Which specific areas of life will this planet most affect, based on its natural significations (like Venus - relationships/vehicles, Saturn - career/disease) and its bhava lordship?
+
+4. Overall conclusion (Overall Conclusion):
+Final evaluation: After analyzing all the above points, how much rating would you give this planet as a functional malefic planet on a scale of 1 to 10? (Where 1 is very mild and 10 is extremely harmful).
+
+5: Counseling and remedies (Counseling and Remedies)
+(This section focuses on how to manage the "challenge" (identified in Step 1-4).)
+
+5.1. Astrological pacification measures (Astrological Pacification):
+
+Mantra/japa: Is chanting the beeja mantra or Vedic mantra of this planet (or its presiding deity) necessary for pacification?
+
+Stotra: Will reciting a specific stotra (like 'Shani Mahatmya' for Saturn or 'Vishnu Sahasranama' for Mercury) during dasha-antardasha be protective?
+
+Donation: Which items (color, grain, metal) should be donated to pacify the negative influence of this planet, and when (on which day)?
+
+5.2. Gems and wearing (Gems and Wearing) - [most important caution]:
+
+Gem prohibition: Is this planet (because of being Maraka/Badhaka) among those planets whose gem should not be worn under any circumstance? (Write clearly: because wearing the gem of a strong Marakesh is "giving more power to a powerful enemy".)
+
+Alternative wearing: Instead of pacifying this planet, would it be a better remedy to wear the gem of the kundali's 'protector' planet (like the lagnesh or navmesh)?
+
+5.3. Behavioral remedies (Behavioral Remedies / The Counseling):
+
+Awareness (Awareness): How should the native remain alert about the negative nature of this planet? (Like: "Your speech (Mercury) itself is your Marakesh, so practice thinking before speaking.")
+
+Modification (Modification): Which habits will the native have to change? (Like: "Your Jupiter (Badhakesh) is giving you 'obstacles' by making you 'idealistic'. Your remedy is to reduce expecting 'perfection' from others and become flexible.")
+
+5.4. Spiritual/karmic remedies (Spiritual/Karmic Remedies):
+
+Karmic lesson (Karmic Lesson): What 'karmic lesson' has this planet come to teach in life? (Like: the lesson of 'detachment' or 'separation').
+
+Energy channeling (Energy Channeling): Can the native use the negative energy of this planet for a higher purpose? (Like: channeling the energy of 'Maraka' Saturn into 'spirituality' or 'hospital service').
+----------
+➤ Conclusion and final advice for the native's kundali:
+► A brief summary of the entire analysis.
+----------
+➤ The most important advice or guidance for the native.
+► Stay positive and follow the remedies.
+----------
+Please save the astrological data (Vimshottari, Yogini, Chara dasha and Gochar) given in all the attached text files securely in your memory.
+
+Instructions:
+
+1] This data does not need to be rewritten in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification (Verification): Give only the current status of 2026 in the format given below:
+Vimshottari (MD-AD-PD):
+Yogini (MD-AD-PD):
+Chara dasha (MD-AD-PD):
+Gochar (Jupiter/Saturn - from lagna and Moon):
+
+After this, I will ask specific questions directly related to the analysis, then you must use all this data.
+----------
+Based on the astrological data (Vimshottari, Yogini, Chara Dasha and Gochar Analysis) given and extracted in the above chats, prepare a detailed 'Master Timeline' of the coming 20 years.
+
+​The table format and columns must be exactly as follows:
+
+​| Time (Year) | Vimshottari dasha (MD-AD) | Yogini dasha (MD-AD) | Chara dasha (MD-AD) | Jupiter gochar (bhava from lagna/Moon) | Saturn gochar (bhava from lagna/Moon) |
+
+​Important rules for data processing:
+
+​Dasha change: If the antardasha (AD) changes within a single year, show it in a single cell with a 'Slash' (/) (like: Mercury AD / Ketu AD).
+----------
+➤ The native XYZ is currently 00 years old; keeping this in mind, predict the coming 10 years of the native from 2026. Each year must be separate. In this, keeping in mind the Vimshottari mahadasha, Yogini dasha, Chara dasha and Gochar, the analysis should be holistic. The prediction for each year should be approximately 5-6 paragraphs, even if the output has to be divided into some parts.
+----------
+➤ Analyze the Vimshottari dasha-antardasha of the native's coming 50 years briefly. The analysis should be based on the position of planets in the kundali.
+----------
+➤ The native has given information about himself, and the native has some questions. First, list the information given, then list all the questions :
+----------
+Now conduct in-depth research on the given information and do the astrological analysis in detail, with conclusions. Analyze each event in detail; include remedies if remedies are necessary. First, answer the first question; I will ask the rest later.
+----------
+Now write the answers to the given questions after in-depth research, doing the analysis and conclusions in detail. Analyze each question in detail, with remedies. First, answer the first question; I will ask the rest later.
+----------
+Give brief answers to all the following questions asked so far, because this list will be placed at the very beginning of this analysis. This way the native will first read the answers in short, and he will find the section for the matter whose analysis he wants to read with references...
+----------
+As all the above outputs will be sent to the native through a PDF, we also give free in this package the astro sage Lal Kitab kundali, Ratna report, Jadi report and Devata suggestion report. So please check this PDF, whether the gems etc. and all things are not contrary to your above analysis?
+----------
+Write the following information in English, separated by (,) but without giving space :
+
+Name,birth place,Date of Birth,time,gender
+
+For example : Sarang,Nagpur,14-02-1995,03:00 AM,MALE
+----------
+Analyze all the following aspects briefly, without mentioning astrological terms, for the native to read first. Analyze each aspect briefly in 8-9 sentences. 
+
+► Character
+► Interests
+► Qualities, flaws and shortcomings 
+► Fortune and contentment
+► Lifestyle
+► Love etc.
+► Marriage 
+► Education
+► Employment
+► Business
+► Health
+► Finance and wealth
+► 9 planets' results 
+► 12 bhavas' results`;
+        const rawData_mr = `हा PDF जातकाची कुंडली आहे, त्यातील सर्व माहिती तुम्ही सेव करून ठेवावी, जेणेकरून कुंडलीचे विश्लेषण करता येईल, विश्लेषण करताना PDF च्या पेजचा संदर्भ लिहू नका पण पुढील माहिती कोणत्या पेजवर आहे, याची यादी द्या म्हणजे तुम्हालाही पुढे शोधणे सोपे होईल :
+
+1] ग्रह स्थिती तक्ता -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तक्ता
+3] षड्बल तक्ता (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टी बल)
+4] भाव बल तक्ता
+5] विमशोपक बल तक्ता (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+6] जैमिनी आरूढ पद (राशी आधारित)
+7] विमशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] चर दशा अंतर्दशा चार्ट
+10] कृष्णमूर्ति पद्धती (KP) भाव स्थिती तक्ता {भाव-राशी-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशी-नक्षत्र-पद}
+11] कृष्णमूर्ति पद्धती (KP) ग्रह स्थिती तक्ता {भाव-राशी-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशी-नक्षत्र-पद}
+12] कृष्णमूर्ति पद्धती (KP) घराचे कारक ग्रह स्थिती तक्ता
+13] कृष्णमूर्ति पद्धती (KP) ग्रह कारकत्व स्थिती तक्ता
+14] D1 च्या 12 भावांचे राशी-नक्षत्र (Bhava Cusp)
+15] D9 ग्रह स्थिती तक्ता -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी)
+16] D9 च्या 12 भावांचे राशी-नक्षत्र (Bhava Cusp)
+
+कृपया सर्व तक्ते सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा.
+----------
+वरील चॅट आणि PDF मधील लग्न कुंडलीच्या बारा भावांत स्थित राशी आणि भाव स्वामी तसेच ग्रह उपस्थिती, जे ग्रह उच्च, नीच, वक्री, नीचभंग, अस्त, वर्गोत्तम आहेत तेही लिहा. नक्षत्रात स्थित असल्याचेही लिहा (राहू-केतूसाठी उच्च, नीच, वक्री लिहू नये)
+
+लिहिण्याचा पॅटर्न पुढील राहील जो केवळ उदाहरणासाठी असेल, ज्याला "" यामध्ये दर्शवले आहे :
+
+"पहिला भाव (लग्न):
+या भावात सिंह राशी आहे, म्हणून लग्नेश सूर्य आहे.
+या भावात सूर्य आणि राहू ग्रह स्थित आहेत.
+सूर्य: सिंह राशीत स्वगृही (स्वतःच्याच घरात) आहे. सूर्य मघा नक्षत्रात स्थित आहे. सूर्य प्रथम भावाचा (सिंह) स्वामी होऊन लग्नात बसला आहे. सूर्याची दृष्टी सातव्या भावावर (कुंभ) आहे.
+राहू: सिंह राशीत (राहूसाठी शत्रू राशी मानली जाते). राहू मघा नक्षत्रात स्थित आहे. राहूची दृष्टी पाचव्या भावावर (धनु), सातव्या भावावर (कुंभ) आणि नवव्या भावावर (मेष) आहे.
+या भावावर केतूची (सातव्या भावातून) पूर्ण दृष्टी आहे."
+
+
+तुमच्या सोयीसाठी txt फाइल दिली आहे : "D1_Analysis"
+----------
+txt फाइलमधील पुढील माहिती एकापाठोपाठ एक कोणताही बदल न करता जशीच्या तशी लिहा :
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D60 Analysis
+5] D1_to_D9_Analysis
+6] D1_to_D60_Analysis
+----------
+कृपया संलग्न (Attached) असलेल्या सर्व टेक्स्ट फाइलांमधील ज्योतिषीय डेटा (षोडशवर्ग कुंडल्या) तुमच्या मेमरीमध्ये जतन करा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला असल्याची पुष्टी करा.
+3] पुष्टीसाठी (Verification): फक्त हे सांगा की कोणकोणत्या षोडशवर्ग कुंडल्या सेव केल्या गेल्या आहेत.
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+चलित कुंडली पाहून सांगा की चलित कुंडलीत D1 कुंडलीच्या तुलनेत काय बदलले आहे आणि त्याचा काय परिणाम होईल :
+----------
+➤ PN, PB, MB चा जीवनावर प्रभाव (Impact on Life)
+
+विषय: वैदिक ज्योतिष - ग्रह आणि भावांसाठी पुष्कर नवांश (PN), पुष्कर भाग (PB) आणि मृत्यु भाग (MB) यांची गणना व फलादेश.
+
+TXT गणनांच्या आधारे पुढील क्षेत्रांवर प्रभाव लिहा:
+
+▸ दैवीय सुरक्षा (Divine Protection): कोणते भाव/ग्रह पुष्कर ऊर्जेने सुरक्षित आहेत आणि जीवनाच्या कोणत्या क्षेत्रांत 'न मागता' मदत मिळेल?
+
+▸ संघर्ष आणि अडथळे (MB Impact): मृत्यु भागातील ग्रह जीवनाच्या कोणत्या क्षेत्रांत 'लँडमाइन'सारखे अडथळे निर्माण करू शकतील?
+
+▸ सुरुवात विरुद्ध परिणाम (Start vs Middle): भावाच्या 'प्रारंभ' आणि 'मध्य' यांच्या पुष्कर फरकाच्या आधारे सांगा की कार्याची सुरुवात कशी होईल आणि त्याचा शेवट कसा होईल?
+
+▸ PN आणि PB च्या गणनेत त्यांचा 'भावेश' MB मध्ये आहे का ते पाहा ?
+(जर भावाचा स्वामी (Bhavesh) मृत्यु भागात असेल, तर भाव पुष्कर असूनही फलात अडथळा येईल)
+
+▸ दशा फल: सध्याच्या किंवा आगामी महादशेत या अमृत/विष बिंदूंचा काय परिणाम होईल?
+
+▸ निष्कर्ष: एकूणच कुंडलीत 'अमृत' (PB) आणि 'विष' (MB) यांचे संतुलन किती आहे?
+----------
+जन्म नक्षत्र आधार मानून नवतारा चक्र बनवा आणि विश्लेषण करा की कुंडलीचे सर्व 9 ग्रह कोणकोणत्या तारांच्या (संपत, विपत, वध इत्यादी) नक्षत्रांत बसले आहेत, आणि त्या तारेनुसार प्रत्येक ग्रह कसे (शुभ/अशुभ) फल देईल? [PDF पेज No 28]
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांच्या आधारे सर्व ९ ग्रहांचे (सूर्य, चंद्र, मंगळ, बुध, गुरु, शुक्र, शनी, राहू, केतू) ज्योतिषीय तथ्ये/आकडेवारीची यादी द्या. माहिती संक्षिप्त आणि मुद्देनिहाय असावी, सविस्तर स्पष्टीकरणाची गरज नाही. ही यादी कुंडलीच्या फलित, षड्बल, विमशोपक (षोडश वर्ग), अष्टकवर्ग आणि जैमिनी कारकत्व यांच्या आधारावर असावी.
+
+
+प्रत्येक ग्रहासाठी पुढील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ जैमिनी कारकत्व:
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रू, सम, उच्च, नीच, मूलत्रिकोण, स्वराशी)
+➤ नक्षत्र आणि पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी)
+➤ [ग्रहाचे नाव] वर दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांसोबत युतीत आहे)
+➤ अवस्था (डिग्री): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इत्यादी)
+➤ वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (होय/नाही किंवा स्थितीचे नाव)
+➤ नवमांश स्थिती: (नवमांश कुंडलीत ग्रह कोणत्या राशीत, नक्षत्रात (स्वामी) आहे आणि त्याचा प्रभाव.)
+➤ नवमांशातील बल: पीडित/बलवान
+➤ चलितमधील स्थिती बदल आणि प्रभाव
+➤ भावबल: (फक्त मूल्य)
+➤ षड्बल: (रूपात मूल्य आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी.)
+➤ भिन्नाष्टक वर्ग (BAV) बिंदू: (0-8 दरम्यान मूल्य) : (बिंदूंच्या आधारे: व्यावहारिक बल - कमकुवत/सरासरी/शक्तिशाली)
+➤ विमशोपक (षोडश वर्ग): (मूल्य आणि ग्रहांमध्ये त्याचा रँक, लागू असल्यास.)
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB)/मृत्यु भाग (MB) मध्ये स्थिती आणि प्रभाव :
+➤ नवतारा स्थिती आणि प्रभाव: (जन्म नक्षत्राच्या आधारे हा ग्रह कोणत्या ताऱ्यात - जसे संपत, विपत, साधक इत्यादी - बसला आहे, आणि त्या विशिष्ट ताऱ्यामुळे त्याच्या नैसर्गिक व भाव फलांत कोणती शुभता किंवा अडथळे येतील.)
+➤ गोचर आणि दशेत संभाव्य फलाचे संक्षिप्त उत्तर : (साधारणपणे तो ग्रह आपल्या दशा/अंतर्दशा आणि गोचरात कसे फल देईल - चांगले, वाईट, किंवा मध्यम.
+
+➤ निष्कर्ष : एकूणच ग्रह मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रहांच्या बलवान आणि पीडित असण्याबद्दल निष्कर्ष (टक्केवारीच्या आधारावर)
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांच्या आधारे D1 च्या सर्व 12 भावांचे ज्योतिषीय तथ्ये/आकडेवारीची यादी द्या. माहिती संक्षिप्त आणि मुद्देनिहाय असावी, सविस्तर स्पष्टीकरणाची गरज नाही. ही यादी कारकत्व, भाव बल, अष्टकवर्ग यांच्या आधारावर असावी.
+
+
+प्रत्येक भावासाठी पुढील माहिती द्या:
+
+1. पहिला भाव (लग्न): राशीचे नाव [आरूढ पद]
+➤ कारकत्व:
+➤ भाव स्वामी (लग्नेश):
+➤ भावेशाची स्थिती:
+➤ स्थित ग्रह:
+➤ भावावर दृष्टी:
+➤ भाव बल: रूपात मूल्य आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी. (कुंडलीत कमकुवत किंवा मजबूत भाव).
+➤ सर्वाष्टकवर्ग (SAV) बिंदू: (एकूण बिंदू) (भावाची क्षमता: 28 पेक्षा जास्त असल्यास 'उत्तम', 25 पेक्षा कमी असल्यास 'आव्हानात्मक')
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB) मध्ये स्थिती आणि प्रभाव :
+➤ निष्कर्ष : एकूणच भाव मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व भावांच्या बळकट आणि पीडित असण्याबद्दल निष्कर्ष (टक्केवारीच्या आधारावर)
+----------
+➤ सामान्य माहिती तक्ता बनवा :
+
+►D1 लग्न भाव राशी आणि नक्षत्र
+►D1 सप्तम भाव राशी आणि नक्षत्र
+►D9 लग्न भाव राशी आणि नक्षत्र
+►D9 सप्तम भाव राशी आणि नक्षत्र
+
+
+►चंद्र राशी
+►चंद्र नक्षत्र
+►चंद्र नक्षत्र स्वामी
+
+►D1 लग्न भाव नक्षत्र स्वामी
+►D1 लग्नेश
+►D1 सप्तम भाव नक्षत्र स्वामी
+►D1 सप्तमेश
+►D9 लग्न भाव नक्षत्र स्वामी
+►D9 लग्नेश
+►D9 सप्तम भाव नक्षत्र स्वामी
+►D9 सप्तमेश
+
+➤ तक्ता बनवल्यानंतर पुढील मुद्द्यांचे विश्लेषण करा.
+
+▸ D1 आणि D9 दोन्हींच्या लग्नात बसलेला ग्रह, लग्नेश आणि लग्न नक्षत्र स्वामी यांपैकी कोण मजबूत आहे ?
+▸ D1 आणि D9 मध्ये लग्नात बसलेला ग्रह, लग्नेश आणि लग्न नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वाधिक प्रभावी आहे आणि व्यक्तीच्या व्यक्तिमत्त्वाला शेवटी मार्गदर्शन करतो ?
+
+▸ D1 आणि D9 दोन्हींच्या सप्तम भावात बसलेला ग्रह, सप्तमेश आणि सप्तम भाव नक्षत्र स्वामी यांपैकी कोण मजबूत आहे ?
+▸ D1 आणि D9 मध्ये सप्तम भावात बसलेला ग्रह, सप्तमेश आणि सप्तम भाव नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वाधिक प्रभावी आहे आणि व्यक्तीच्या विवाहाला शेवटी मार्गदर्शन करतो ?
+
+➤ निष्कर्ष :
+▸ D1 च्या लग्नाचा प्रभावी ग्रह आणि D9 च्या लग्नाचा प्रभावी ग्रह यांपैकी कोण अधिक प्रभावी आहे ?
+▸ D1 च्या सप्तम भावाचा प्रभावी ग्रह आणि D9 च्या सप्तम भावाचा प्रभावी ग्रह यांपैकी कोण अधिक प्रभावी आहे ?
+----------
+कुंडली विश्लेषणासाठी आतापर्यंत तुम्हाला वरील कोणकोणती माहिती मिळाली, त्याची short मध्ये यादी द्या.
+----------
+तुम्ही पुढील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटा क्रॉसचेक करून घ्या.
+2] कोणत्याही प्रकारचे शुगर-कोटिंग (Sugar-coating) करू नका. कुंडलीत कोणताही दोष, संघर्ष किंवा नकारात्मक योग असेल, तर तो स्पष्ट आणि कडू शब्दांत सांगा. मला क्लायंटला खुश करायचे नाही, तर सत्य सांगायचे आहे. लक्षात ठेवा पूर्णपणे नकारात्मक नसावे, सकारात्मक आणि नकारात्मक यांचा बॅलन्स ठेवून जे सत्य आहे ते सांगा.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'निश्चितच', 'जरूर', 'पुढील आहे' इत्यादी) करू नका. तुमचे उत्तर थेट मागितलेल्या माहितीनेच सुरू झाले पाहिजे.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का - फक्त इतके सांगा की कोणत्या आदेशांचे पालन कराल.
+----------
+वरील चॅट आणि PDF ची आणि सुरुवातीपासून तुम्हाला दिलेल्या सर्व माहितीच्या आधारे पुढील प्रश्नांचे सखोल आणि सविस्तर विश्लेषण निष्कर्षासह द्यायचे आहे, लक्षात ठेवा विश्लेषण आवश्यकतेनुसार ज्योतिष प्रणाली आणि Divisional Charts वापरून व्हायला हवे. तर पहिला प्रश्न देऊ ?
+----------
+जातकाच्या कुंडलीच्या पुढील फलिताचे सखोल आणि निष्कर्षासह खूप विस्ताराने विश्लेषण करा :
+
+➤ पंचांग सविस्तर फल विश्लेषण :
+► वार
+► तिथी
+► नक्षत्र
+► योग
+► करण
+----------
+➤ लग्न (Ascendant) आणि लग्नेशाचे विश्लेषण :
+► लग्न राशीचे फल:
+► लग्न नक्षत्राचे फल (स्वामीनुसार):
+► लग्नेश (लग्न राशी स्वामीनुसार):
+------------------------------------------ 
+➤ चंद्र राशी (Moon Sign) आणि चंद्राचे विश्लेषण:
+► चंद्र राशीचे फल:
+► चंद्राची स्थिती:
+► जन्म नक्षत्र (पद/चरण) फल :
+► नक्षत्र पदाप्रमाणे जन्म अक्षर कोणते आहे ? आणि त्याचा प्रभाव.
+► जन्म पाया : 1) जन्म नक्षत्रानुसार, 2) चंद्राच्या भाव स्थितीनुसार, 3) जन्म पाया निष्कर्ष
+----------
+➤ पंचांग, लग्न, चंद्र राशी या तिन्ही विश्लेषणांचा समग्र निष्कर्ष :
+----------
+जातकाच्या कुंडलीतील पुढील प्रत्येक ग्रहांच्या फलाचे सखोल आणि सविस्तर विश्लेषण करा, शेवटी प्रत्येक ग्रहाच्या फलाचा निष्कर्ष खूप डिटेलमध्ये किमान 2-3 पॅराग्राफमध्ये असला पाहिजे :
+
+1] सूर्य
+2] चंद्र
+3] मंगळ
+
+आता बुध, गुरु, शुक्र यांचे द्या
+आता शनी, राहू, केतू यांचे द्या
+----------
+जातकाच्या कुंडलीतील पुढील प्रत्येक भावांच्या फलाचे सखोल आणि सविस्तर विश्लेषण करा, शेवटी प्रत्येक भाव फलाचा निष्कर्ष खूप डिटेलमध्ये किमान 2-3 पॅराग्राफमध्ये असला पाहिजे :
+
+1] प्रथम भाव
+2] द्वितीय भाव
+3] तृतीय भाव
+
+आता चतुर्थ, पंचम, षष्ठम यांचे द्या
+आता सप्तम, अष्टम, नवम यांचे द्या
+आता दशम, एकादश, द्वादश यांचे द्या
+----------
+जातकाच्या कुंडलीतील सर्व शुभ योगांची आधी यादी तयार करा, नंतर सर्व शुभ योगांच्या बनण्याची पद्धत आणि त्यांच्या भाव व ग्रहांच्या क्षमतेवर आधारित संभाव्य परिणामांचे सविस्तर विश्लेषण करा, काही योग आणि दोषांच्या याद्या pdf च्या शेवटी दिल्या आहेत, त्यांतून जे शुभ योग आहेत तेही घ्यायचे आहेत. txt मधूनही घ्यायचे आहेत.
+----------
+जातकाच्या कुंडलीतील सर्व दोषांची आधी यादी तयार करा, नंतर सर्व दोषांच्या बनण्याची पद्धत आणि त्यांच्या भाव व ग्रहांच्या क्षमतेवर आधारित संभाव्य परिणामांचे सविस्तर विश्लेषण करा, काही योग आणि दोषांच्या याद्या pdf च्या शेवटी दिल्या आहेत, त्यांतून जे दोष आहेत तेही घ्यायचे आहेत. txt मधूनही घ्यायचे आहेत.
+त्यानंतर दोषांचे उपाय गैरधार्मिक आणि धार्मिक आहेत, आणि जे उपाय कोणत्यातरी ज्योतिषाकडे जाऊन करणे बंधनकारक आहे, त्यांचाही उल्लेख असला पाहिजे. सर्वांचे सविस्तर विश्लेषण असले पाहिजे.
+----------
+➤ मंगल दोष विचार :
+► मंगल दोषाचा संक्षिप्त परिचय : 
+► कुंडलीतील मंगळाची स्थिती। (चंद्र कुंडली आणि लग्न कुंडली)
+► मांगलिक आहात का? (पूर्ण,अर्ध,निम्न,आंशिक)
+► जर मांगलिक दोष असेल, तर त्याचा परिहार (cancellation) होत आहे का (जसे शनी, राहू, केतू यांची त्याच भावांतील स्थिती, किंवा मंगळाची स्वराशी/उच्च राशीतील स्थिती, किंवा दृष्टिसंबंध)।
+► मंगल दोषाचा वैयक्तिक जीवनावर संभावित परिणाम।
+► मंगल दोषाचा वैवाहिक जीवनावर संभावित परिणाम।
+► D9 मध्ये मंगल दोष तयार होत आहे का ? आणि जातकाच्या विवाहानंतर या दोषाचा परिणाम होईल का ?
+➤ एकूण निष्कर्ष:
+----------
+➤ अंक ज्योतिष विश्लेषण :
+► मूलांक : (स्वामी)
+► भाग्यांक : (स्वामी)
+► मूलांक आणि भाग्यांक स्वामींच्या परस्पर नैसर्गिक संबंधाचे विश्लेषण :
+► वैयक्तिक जीवनावर संभावित परिणाम।
+
+➤ एकूण निष्कर्ष:
+----------
+➤ वैयक्तिक ज्योतिषीय अनुकूलता
+➤ तुमच्यासाठी भाग्यशाली (Lucky for You):
+
+► भाग्यशाली अंक (Lucky Number):
+► भाग्यशाली दिवस (Lucky Days):
+► भाग्यशाली वर्षे (Lucky Years):
+► भाग्यशाली धातू (Lucky Metal):
+► भाग्यशाली रत्न (Lucky Gemstone):
+► आराध्य देव/देवी (Benefic Deities):
+
+➤ तुमच्यासाठी शुभ (Auspicious for You):
+
+► शुभ अंक (Auspicious Numbers):
+► शुभ ग्रह (Benefic Planets):
+► मित्र राशी (Friendly Zodiac Signs):
+► शुभ लग्न (Auspicious Ascendants):
+► शुभ रंग (Auspicious Colors):
+► शुभ दिवस (Auspicious Days):
+► शुभ दिशा (Auspicious Directions):
+
+➤ तुमच्यासाठी प्रतिकूल/अशुभ (Inauspicious for You):
+
+► अशुभ अंक (Inauspicious Number):
+► अशुभ ग्रह (Malefic Planets):
+► शत्रू राशी (Enemy Zodiac Signs):
+► अशुभ लग्न (Inauspicious Ascendants):
+► टाळावयाचे रंग (Colors to Avoid):
+► प्रतिकूल दिवस (Less Favorable Days):
+► अशुभ दिशा (Inauspicious Directions):
+
+► सावधानता:
+कुंडलीतील अशुभ ग्रहांशी संबंधित रत्ने (जसे नीलम, गोमेद, लहसुनिया) सखोल विश्लेषण आणि तज्ज्ञांच्या सल्ल्याशिवाय कधीही धारण करू नका, कारण ती नकारात्मक परिणाम अनेकपटींनी वाढवू शकतात।
+
+➤ एकूण निष्कर्ष:
+----------
+सर्व 20 षोडशवर्ग कुंडल्यांचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D16, D20, D24, D27, D30, D40, D45, D60
+----------
+D1 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D2 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D3 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D4 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D5 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D6 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D7 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D8 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D9 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D10 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D11 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D12 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D16 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D20 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D24 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D27 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D30 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D40 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D45 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+D60 षोडशवर्ग कुंडलीचे सविस्तर विश्लेषण करून सांगा की जातकाच्या जीवनावर काय परिणाम होईल।
+----------
+हे सुनिश्चित करा की जेव्हाही मी प्रश्नाच्या विश्लेषणाची मागणी करेन, तेव्हा तुम्ही त्या क्षेत्राशी संबंधित डिव्हिजनल चार्ट D1 सोबत मिळवूनच विश्लेषण कराल, जसे संतानासाठी D1 आणि D7, विवाहासाठी D1 आणि D9, करिअरसाठी D1 आणि D10. तसेच बाकीही...
+----------
+➤ जातकाचा स्वभाव 
+► मूळ व्यक्तित्व आणि प्रकृती (Core Personality & Nature):
+(स्रोत: लग्न, लग्नेश, चंद्र राशी, सूर्य राशी, आत्मकारक (AK))
+► बाह्य व्यक्तित्व आणि सामाजिक वर्तन (Outer Personality & Social Conduct):
+(स्रोत: लग्न, आरूढ लग्न (AL), दहाव्या भावातील ग्रह)
+► आंतरिक आणि भावनिक स्वभाव (Inner & Emotional Nature):
+(स्रोत: चंद्राची स्थिती (नक्षत्रासह), चौथा भाव, स्वांश लग्न (D9 लग्न))
+► मानसिक आणि बौद्धिक पातळी (Mental & Intellectual Level):
+(स्रोत: बुधाची स्थिती, पाचवा भाव, गुरूची दृष्टी, कारकांश लग्न)
+► चारित्र्य आणि नैतिक मूल्ये (Character & Moral Values):
+(स्रोत: गुरू आणि नवव्या भावाची स्थिती, D9 मधील ग्रहांचे बळ)
+► आरोग्य आणि शारीरिक बळ (Health & Physical Vitality):
+(स्रोत: लग्न, लग्नेश, सहावा भाव, सूर्य आणि चंद्राचे बळ)
+----------
+➤ जातकाचे गुण आणि वैशिष्ट्ये
+----------
+➤ जातकाच्या कमजोऱ्या किंवा नकारात्मक बाजू
+----------
+➤ जातकाच्या आवडी आणि छंद
+----------
+➤ जातकाचे जीवनसंघर्ष आणि आव्हाने/अडथळे :
+► कर्जे
+► शत्रू
+► खटले
+----------
+➤ जातकाचे भाग्य :
+----------
+➤ आरोग्य आणि आव्हाने: 
+► जुने आजार
+► मोठे आजार
+► अपघात किंवा दुखापतीचा धोका (संबंधित ग्रह/दोष, दशा)
+----------
+➤ जातकाच्या वैवाहिक जीवनाचे सविस्तर विश्लेषण? (पराशरी D1 आणि D9; जैमिनी; BNN; KP)
+► वैवाहिक जीवनाची मानसिक खोली आणि भावनिक नाते
+► वैवाहिक सुख आणि संबंधाचे स्वरूप
+► विवाह टिकेल की नाही ?
+----------
+➤ जातकाच्या जीवनसाथीचा स्वभाव  (पराशरी : D1 सातवा भाव-सप्तमेश आणि D9 सातवा भाव- सप्तमेश; जैमिनी : DK, UL, A7; BNN; KP)
+----------
+➤ प्रेमसंबंध
+► प्रेम विवाहाचा, 
+► आंतरजातीय विवाहाचा, 
+► पळून जाऊन केलेल्या विवाहाचा किंवा 
+► पारंपरिक विवाहाचा योग आहे का?
+----------
+➤ जातकाचे कौटुंबिक जीवन: 
+► भावंडे आणि आई-वडिलांशी असलेले संबंध
+► वारसा किंवा वडिलोपार्जित संपत्ती मिळण्याची शक्यता
+----------
+➤ जातकाचे संततीसुख: 
+► संततीचा योग आहे का?
+► किती संततीचा योग आहे, आणि त्यांचा क्रम काय असेल, जसे आधी मुलगा की मुलगी आणि त्यानंतर ?
+----------
+➤ जातकाचे भौतिक सुख आणि विलासिता: 
+► वाहन
+► स्वतःचे स्वप्नातील घर
+----------
+➤ जातकाचे प्रवास आणि निवास: 
+► निवासस्थानात बदल
+► परदेश प्रवास
+► परदेशात स्थायिक होण्याची शक्यता (दशा/अंतर्दशा)
+----------
+➤ जातकाचा आध्यात्मिक कल.
+----------
+➤ जातकाचे करियर आणि व्यवसाय: 
+► योग्य करियर क्षेत्र किंवा व्यवसाय 
+► नोकरी किंवा व्यवसाय
+► करियरमधील यशाच्या शक्यता
+----------
+➤ जातकाचे धन आणि आर्थिक स्थिती: 
+► आर्थिक स्थिती 
+► उत्पन्नाचे मुख्य स्रोत
+► आर्थिक स्थिरता
+► गुंतवणूक किती फायदेशीर
+----------
+➤ जातकाचे शिक्षण
+► शिक्षण कसे राहील
+► शिक्षणात काही अडथळा ?
+► उच्च शिक्षणाची शक्यता
+► बुद्धिमत्ता आणि शिकण्याची क्षमता
+----------
+➤ जातकाच्या कुंडलीतील सकारात्मक आणि नकारात्मक बाबी:
+► सर्वात बलवान भाव/ग्रह/योग.
+► सर्वात कमजोर भाव/ग्रह/दोष.
+----------
+मारक ओळख: हा ग्रह द्वितीयेश (2nd lord) किंवा सप्तमेश (7th lord) होऊन मारकेशच्या भूमिकेत आहे का? जर होय, तर कोणता - द्वितीयेश (सामान्य मारक) किंवा सप्तमेश (प्रबळ मारक)?
+
+बाधक ओळख: हा ग्रह लग्नाच्या स्वभावानुसार (चर, स्थिर, द्विस्वभाव) बाधक भावाचा (11व्या, 9व्या किंवा 7व्या) स्वामी आहे का?
+
+दुहेरी भूमिका: हा ग्रह मारक आणि बाधक दोन्ही भूमिका निभावत आहे का? (विशेषतः द्विस्वभाव लग्नासाठी सप्तमेश म्हणून).
+
+कार्यात्मक शुभता: याउलट, हा ग्रह केंद्र/त्रिकोणाचा स्वामी होऊन शुभ 'योगकारक' ग्रह आहे का? किंवा फक्त त्रिकोणाचा स्वामी होऊन अत्यंत शुभ आहे का?
+
+2. नकारात्मकता/सकारात्मकतेच्या तीव्रतेचे मूल्यांकन (Assessing the Intensity):
+
+पापी ग्रहांचा प्रभाव: या ग्रहावर नैसर्गिक पाप ग्रहांची (शनि, मंगळ, राहू, केतू) दृष्टी आहे किंवा तो त्यांच्यासोबत युतीत आहे का? जर होय, तर ते त्याची नकारात्मकता कशी वाढवत आहे?
+
+शुभ ग्रहांचा प्रभाव: या ग्रहावर नैसर्गिक शुभ ग्रहांची (गुरु, शुक्र, शुभ बुध) दृष्टी आहे किंवा तो त्यांच्यासोबत आहे का? यामुळे मारक/बाधक प्रभावात काही घट किंवा संरक्षण (Mitigation) मिळत आहे का?
+
+भाव स्थिती: हा ग्रह कुंडलीच्या कोणत्या भावात स्थित आहे? तो त्रिक भावांत (6, 8, 12) बसून आणखी अशुभ झाला आहे का, किंवा केंद्र/त्रिकोणात बसून त्याची स्थिती काहीशी चांगली आहे का?
+
+राशी बल: हा ग्रह आपल्या नीच राशीत होऊन अत्यंत पीडित आहे का किंवा आपल्या उच्च/स्वतःच्या राशीत होऊन त्याची नकारात्मकता कमी होत आहे का? अथवा ती अधिक शक्तिशाली आणि प्रभावी झाली आहे का?
+
+3. सक्रियकरण आणि संभावित फळ (Activation and Potential Results):
+
+दशा सक्रियकरण: या ग्रहाच्या महादशा किंवा अंतर्दशेत कोणत्या प्रकारचे कष्ट, अडथळे किंवा त्रास (आरोग्य, संबंध, करियर इत्यादींमध्ये) दिसू शकतात?
+
+गोचरचा प्रभाव: जेव्हा शनि किंवा राहूसारखे मोठे ग्रह गोचरात या मारक/बाधक ग्रहावरून जातात, तेव्हा ते त्याची नकारात्मक फळे सक्रिय करू शकतात का?
+प्रभावित क्षेत्र: हा ग्रह आपल्या नैसर्गिक कारकत्वानुसार (जसे शुक्र - संबंध/वाहन, शनि - करियर/रोग) आणि आपल्या भाव स्वामित्वानुसार जीवनाच्या कोणत्या विशिष्ट क्षेत्रांवर सर्वाधिक परिणाम करेल?
+
+4. एकूण निष्कर्ष (Overall Conclusion):
+अंतिम मूल्यांकन: वरील सर्व बाबींचे विश्लेषण केल्यानंतर, या ग्रहाला एक कार्यात्मक अशुभ ग्रह म्हणून 1 ते 10 च्या प्रमाणावर किती रेटिंग द्याल? (जिथे 1 खूप सौम्य आणि 10 अत्यंत हानिकारक हो).
+
+5: समुपदेशन आणि उपाय (Counseling and Remedies)
+(हा विभाग "आव्हाना" (Step 1-4 मध्ये ओळखलेले) चे व्यवस्थापन कसे करावे यावर केंद्रित आहे.)
+
+5.1. ज्योतिषीय शांती उपाय (Astrological Pacification):
+
+मंत्र/जप: या ग्रहाच्या (किंवा त्याच्या अधिपती देवतेच्या) बीज मंत्राचा किंवा वैदिक मंत्राचा जप शांतीसाठी आवश्यक आहे का?
+
+स्तोत्र: दशा-अंतर्दशेदरम्यान विशिष्ट स्तोत्राचे (जसे, शनीसाठी 'शनि महात्म्य' किंवा बुधासाठी 'विष्णू सहस्रनाम') पाठन संरक्षणात्मक ठरेल का?
+
+दान: या ग्रहाच्या नकारात्मक प्रभावाला शांत करण्यासाठी कोणत्या वस्तूंचे दान (रंग, धान्य, धातू) आणि केव्हा (कोणत्या दिवशी) करावे?
+
+5.2. रत्न आणि धारण (Gems and Wearing) - [सर्वात महत्त्वाची सावधगिरी]:
+
+रत्न निषेध: हा ग्रह (मारक/बाधक असल्यामुळे) त्या ग्रहांपैकी आहे का ज्यांचे रत्न कोणत्याही परिस्थितीत धारण करू नये? (स्पष्टपणे लिहा: कारण बलवान मारकेशचे रत्न घालणे म्हणजे "शक्तिशाली शत्रूला आणखी शक्ती देणे" होय.)
+
+पर्यायी धारण: या ग्रहाला शांत करण्याऐवजी, कुंडलीच्या 'रक्षक' ग्रहाचे (जसे लग्नेश किंवा नवमेश) रत्न घालणे चांगला उपाय ठरेल का?
+
+5.3. वर्तणुकीय उपाय (Behavioral Remedies / The Counseling):
+
+जाणीव (Awareness): जातकाने या ग्रहाच्या नकारात्मक स्वभावाबाबत कसे सतर्क राहावे? (जसे: "तुमची वाणी (बुध) हाच तुमचा मारकेश आहे, म्हणून बोलण्यापूर्वी विचार करण्याचा सराव करा.")
+
+बदल (Modification): जातकाला आपल्या कोणत्या सवयी बदलाव्या लागतील? (जसे: "तुमचा गुरु (बाधकेश) तुम्हाला 'आदर्शवादी' बनवून 'अडथळा' देत आहे. तुमचा उपाय म्हणजे इतरांकडून 'परफेक्शन' ची अपेक्षा कमी करणे आणि लवचिक बनणे.")
+
+5.4. आध्यात्मिक/कर्मिक उपाय (Spiritual/Karmic Remedies):
+
+कर्माचा धडा (Karmic Lesson): हा ग्रह आयुष्यात कोणता 'कर्मिक धडा' शिकवायला आला आहे? (जसे: 'वैराग्य' किंवा 'अलगीकरण' याचा धडा).
+
+ऊर्जेचे रूपांतरण (Energy Channeling): जातक या ग्रहाची नकारात्मक ऊर्जा उच्च उद्देशासाठी वापरू शकतो का? (जसे: 'मारक' शनीची ऊर्जा 'अध्यात्म' किंवा 'रुग्णालय सेवा' यात लावणे).
+----------
+➤ जातकाच्या कुंडलीसाठी निष्कर्ष आणि अंतिम सल्ला:
+► संपूर्ण विश्लेषणाचा संक्षिप्त सारांश.
+----------
+➤ जातकासाठी सर्वात महत्त्वाचा सल्ला किंवा मार्गदर्शन.
+► सकारात्मक राहा आणि उपायांचे पालन करा.
+----------
+कृपया संलग्न (Attached) सर्व टेक्स्ट फायलींमध्ये दिलेला ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, चर दशा आणि गोचर) आपल्या मेमोरीत सुरक्षित करून ठेवा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची आवश्यकता नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि आपण तो वाचला आहे याची पुष्टी करा.
+3] पडताळणीसाठी (Verification): फक्त 2026 ची सध्याची स्थिती खाली दिलेल्या फॉरमॅटमध्ये लिहून द्या:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD-PD):
+चर दशा (MD-AD-PD):
+गोचर (गुरु/शनि - लग्न व चंद्रापासून):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+वरील चॅटमध्ये दिलेल्या आणि एक्स्ट्रॅक्ट केलेल्या ज्योतिषीय डेटाच्या (Vimshottari, Yogini, Chara Dasha आणि Gochar Analysis) आधारे, आगामी 20 वर्षांची एक विस्तृत 'मास्टर समय-सारणी' तयार करा.
+
+​तक्त्याचा प्रारूप आणि कॉलम अगदी खालील प्रकारे असावेत:
+
+​| वेळ (वर्ष) | विंशोत्तरी दशा (MD-AD) | योगिनी दशा (MD-AD) | चर दशा (MD-AD) | गुरु गोचर (लग्न/चंद्रापासून भाव) | शनि गोचर (लग्न/चंद्रापासून भाव) |
+
+​डेटा प्रोसेसिंगसाठी महत्त्वाचे नियम:
+
+​दशा बदल: जर एका वर्षात अंतर्दशा (AD) बदलत असेल, तर ती एकाच सेलमध्ये 'Slash' (/) सोबत दाखवा (जसे: बुध AD / केतु AD).
+----------
+➤ जातक XYZ सध्या 00 वर्षांचा आहे, हे लक्षात ठेवून जातकाच्या 2026 पासून येणाऱ्या 10 वर्षांची भविष्यवाणी करा, प्रत्येक वर्ष वेगवेगळे असले पाहिजे, यात विंशोत्तरी महादशा, योगिनी दशा, चर दशा आणि गोचर लक्षात ठेवून, सर्वसमावेशक विश्लेषण झाले पाहिजे, प्रत्येक वर्षाची भविष्यवाणी सुमारे 5-6 परिच्छेदांत असली पाहिजे, जरी आउटपुट काही भागांत विभागावे लागले तरी चालेल.
+----------
+➤ जातकाच्या येणाऱ्या 50 वर्षांच्या विंशोत्तरी दशा-अंतर्दशेचे संक्षिप्तपणे विश्लेषण करा, कुंडलीतील ग्रहांच्या स्थितीच्या आधारे विश्लेषण झाले पाहिजे.
+----------
+➤ जातकाने स्वतःबद्दल माहिती दिली आहे आणि जातकाचे काही प्रश्न आहेत, प्रथम दिलेली माहिती सूचीबद्ध करा, त्यानंतर सर्व प्रश्न सूचीबद्ध करा :
+----------
+आता दिलेल्या माहितीचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, प्रत्येक घटनेचे विस्ताराने विश्लेषण झाले पाहिजे, जर उपाय आवश्यक असेल तर उपायांसह, सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+----------
+आता दिलेल्या प्रश्नांची उत्तरे सखोल संशोधन करून लिहा, विस्ताराने विश्लेषण आणि निष्कर्ष देऊन करा, प्रत्येक प्रश्नाचे विस्ताराने विश्लेषण झाले पाहिजे, उपायांसह, सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+----------
+आतापर्यंत विचारलेल्या सर्व पुढील प्रश्नांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल, यामुळे जातक प्रथमच थोडक्यात उत्तरे वाचेल आणि त्याला ज्या विषयाचे विश्लेषण संदर्भासह वाचायचे आहे, तो विभाग शोधेल...
+----------
+उपरोक्त सर्व आउटपुट एका पीडीएफद्वारे जातकाला पाठवले जातील, त्यामुळे आम्ही या पॅकेजमध्ये astro sage ची लाल किताब कुंडली, रत्न रिपोर्ट, जडी रिपोर्ट आणि देवता सजेशन रिपोर्ट फ्री देतो, तर जरा हा पीडीएफ चेक करा, की रत्न वगैरे आणि सर्व गोष्टी तुमच्या उपरोक्त विश्लेषणाच्या विरोधात तर नाहीत ?
+----------
+पुढील माहिती इंग्रजीत लिहा, (,) ने सेपरेट करून पण स्पेस न देता :
+
+नाव,जन्म स्थान,Date of Birth,वेळ,लिंग
+
+जसे : Sarang,Nagpur,14-02-1995,03:00 AM,MALE
+----------
+जातकाला सर्वप्रथम वाचण्यासाठी पुढील सर्व पैलूंचे ज्योतिषीय शब्दांचा उल्लेख न करता संक्षिप्तपणे विश्लेषण करा, प्रत्येक पैलूचे विश्लेषण 8-9 वाक्यांत संक्षिप्तपणे करा. 
+
+► चारित्र्य
+► आवडी
+► गुण अवगुण आणि कमतरता 
+► सौभाग्य व संतुष्टी
+► जीवनशैली
+► प्रेम इत्यादी
+► विवाह 
+► शिक्षण
+► रोजगार
+► व्यवसाय
+► आरोग्य
+► वित्त आणि धन
+► 9 ग्रह फलित 
+► 12 भाव फलित`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
 
         // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
         const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
@@ -618,7 +1647,7 @@ D60 षोडशवर्ग कुंडलि का विस्तृत व
         function processData() {
             const container = document.getElementById('prompt-container');
             // पहले डैश लाइन्स से तोडें
-            let parts = rawData.split(separatorRegex);
+            let parts = getRawData().split(separatorRegex);
 
             parts.forEach((part, index) => {
                 let cleanText = part.trim();
