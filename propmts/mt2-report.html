@@ -98,6 +98,14 @@
 <body>
 
     <h1> 2nd MT Report Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
     <div class="container" id="prompt-container">
         <!-- Prompts will be loaded here -->
     </div>
@@ -106,7 +114,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+        const rawData_hi = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -127,7 +135,7 @@
 
 
 कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
------------------------------------------
+----------
 उपरोक्त चैट और  PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
 
 लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
@@ -141,7 +149,7 @@
 
 
 आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
------------------------------------------
+----------
 txt फाइल से निम्मलिखित जानकारी को एक के बाद एक बिना बदलाव के जैसी की वैसी लिखे :
 
 1] Jaimini Complete Report
@@ -150,9 +158,9 @@ txt फाइल से निम्मलिखित जानकारी क
 4] D60 Analysis
 5] D1_to_D9_Analysis
 6] D1_to_D60_Analysis
------------------------------------------
+----------
 चलित कुंडली देखकर बताईये की चलित कुंडली में D1 कुंडली से क्या बदला है और इसका क्या प्रभाव पड़ेगा :
------------------------------------------
+----------
 ➤ PN, PB, MB का जीवन पर प्रभाव (Impact on Life)
 
 विषय: वैदिक ज्योतिष - ग्रह एवं भावों के लिए पुष्कर नवांश (PN), पुष्कर भाग (PB) और मृत्यु भाग (MB) की गणना एवं फलादेश।
@@ -171,12 +179,12 @@ txt फाइल से निम्मलिखित जानकारी क
 ​▸ दशा फल: वर्तमान या आगामी महादशा में इन अमृत/विष बिंदुओं का क्या प्रभाव पड़ेगा?
 
 ​▸ ​निष्कर्ष: समग्र रूप से कुंडली में 'अमृत' (PB) और 'विष' (MB) का संतुलन कितना है?
------------------------------------------
+----------
 1] जातक के कुंडली के सभी शुभ योगो की पहले सूचि तयार करें, बाद में सभी शुभ योगों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो शुभ योग है वो भी लेने है.txt से भी लेने है.
 2] जातक के कुंडली के सभी दोषों की पहले सूचि तयार करें, बाद में सभी दोषों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो दोष है वो भी लेने है.txt से भी लेने है.
------------------------------------------
+----------
 जन्म नक्षत्र को आधार मानकर नवतारा चक्र बनाइए और विश्लेषण कीजिए कि कुंडली के सभी 9 ग्रह किन-किन ताराओं (संपत, विपत, वध आदि) के नक्षत्रों में बैठे हैं, और उस तारा के अनुसार प्रत्येक ग्रह अपना कैसा (शुभ/अशुभ) फल देगा? [PDF पेज No 28]
------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), अष्टकवर्ग और जैमिनी कारकत्व के आधार पर होना चाहिए।
 
 प्रत्येक ग्रह के लिए निम्नलिखित जानकारी प्रदान करें:
@@ -205,7 +213,7 @@ txt फाइल से निम्मलिखित जानकारी क
 ➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
-------------------------------------------
+----------
 ⚠️ सिस्टम निर्देश (System Instruction): यह कुंडली विश्लेषण विशेष रूप से 'दूसरे विवाह (Second Marriage)' के लिए किया जा रहा है। जातक का प्रथम विवाह समाप्त हो चुका है। अतः आपको प्रथम विवाह (7वें भाव) के बजाय, द्वितीय विवाह के ज्योतिषीय नियमों (नवम भाव, द्वितीय भाव, KP में 9वें CSL, जैमिनी में UL से 8वाँ भाव और द्विस्वभाव राशियों) को प्राथमिकता देनी है। 
 आप एक अत्यंत अनुभवी और पेशेवर वैदिक ज्योतिषी (Expert Vedic Astrologer) के रूप में कार्य करोगे। तुम्हें पराशरी, कृष्णमूर्ति पद्धति (KP), जैमिनी (Jaimini) और भृगु नंदी नाड़ी (BNN) का गहन ज्ञान है। मैं तुम्हें एक जातक (Client) का कुण्डली डेटा (D1, D9, D60 और KP सिग्निफिकेशन्स) और कुछ विशिष्ट प्रांप्ट्स दूंगा।
 
@@ -242,7 +250,7 @@ D9 और D60 आने वाली दूसरी पत्नी का स�
 संवेदनशीलता चूंकि जातक के साथ एक बड़ी त्रासदी हो चुकी है, इसलिए फलादेश बहुत ही सूक्ष्म (Micro-level) और स्पष्ट होना चाहिए। अगर दूसरे विवाह में भी कोई तनाव या विवाद (6, 8, 12 भाव) का संकेत मिले, तो उसे बिना छुपाए स्पष्ट रूप से चेतावनी के तौर पर बताना है।
 
 यदि तुम ये सारे नियम समझ गए हो, तो 'हाँ, मैं समझ गया हूँ, कुण्डली का डेटा और अपना पहला प्रांप्ट दें' कहकर उत्तर दो।
------------------------------------------
+----------
 ➤ समान्य जानकारी तालिका बनाइये :
 ►D1 लग्न भाव राशी और नक्षत्र
 ►D1 नवम भाव (दूसरा विवाह) राशी और नक्षत्र
@@ -267,7 +275,7 @@ D9 और D60 आने वाली दूसरी पत्नी का स�
 ➤ निष्कर्ष :
 ▸ D1 के लग्न के प्रभावशाली ग्रह और D9 के लग्न के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ?
 ▸ D1 के नवम भाव के प्रभावशाली ग्रह और D9 के नवम भाव के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ?
------------------------------------------
+----------
 उपरोक्त सभी विवरण से जानकारी निकालिए, विश्लेषण नहीं करना है, साथ में दृष्टी डाल रहे ग्रहों को छोड़कर, बाकि ग्रह की अवस्था (उच्च-नीच-निचभंग, शत्रु-मित्र-सम राशी; अस्त-वक्री-वर्गोत्तम) भी ब्राकेट में लिखे. जवाबों के साथ सवाल भी लिखना है.
 
 भाग 1: पराशरी ज्योतिष के अनुसार 'दूसरे विवाह' का वादा (D1 और D9) :
@@ -329,11 +337,11 @@ D9 और D60 आने वाली दूसरी पत्नी का स�
 ➤ 9वें CSL का उप-स्वामी कौन है और वह कहाँ स्थित है?
 ➤ 9वें CSL का  SSL कौन है और वह कहाँ स्थित है?
 ➤ विवाह से संबंधित भावों (2, 9, 11) को सिग्निफाई करने वाले प्रमुख ग्रह कौन से हैं और उनकी स्थिति क्या है?
------------------------------------------
+----------
 सभी चारों प्रणाली (भाग 1-4) की जानकारी को क्रॉस चेक करके सुनिश्चित करिए की वो सही है या कोई त्रुटी है ? जो त्रुटी हो उसकी ही सूचि दीजिए सिर्फ.
-------------------------------------------
+----------
 उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
------------------------------------------
+----------
 यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
 
 1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
@@ -342,9 +350,9 @@ D9 और D60 आने वाली दूसरी पत्नी का स�
 4] System instructions में दिए गए आदेशों का भी पालन करे.
 
 क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
-------------------------------------------
+----------
 भाग 1: पराशरी ज्योतिष (D1-D9), जैमिनी ज्योतिष और BNN ज्योतिष से दुसरे विवाह का वादा कितना स्पष्ट है ?
-------------------------------------------
+----------
 भाग 2: कृष्णमूर्ति पद्धति (KP) के अनुसार 'दूसरे विवाह' का वादा:
 
 1] पहले विवाह की वैवाहिक जीवन की गुणवत्ता और अलगाव (Quality of Married Life & Separation):
@@ -372,7 +380,7 @@ D9 और D60 आने वाली दूसरी पत्नी का स�
 ➤ विवाह से संबंधित भावों (2, 9, 11) को सिग्निफाई करने वाले प्रमुख ग्रह कौन से हैं और उनकी स्थिति क्या है?
 
 विश्लेषण: जीवनसाथी का सामान्य स्वभाव, व्यक्तित्व और वैवाहिक संबंध की समग्र गुणवत्ता।
-------------------------------------------
+----------
 भाग 3:  (षष्टियंश) - दूसरे विवाह का कार्मिक परिणाम, पूर्व पुण्य और अंतिम परिणाम (Karmic Legacy) 
 ​
 ➤ D60 में नवम भाव और नवमेश की स्थिति क्या है? 
@@ -380,7 +388,7 @@ D9 और D60 आने वाली दूसरी पत्नी का स�
 ➤ क्या दूसरा विवाह जीवन में 'सस्टेनेबल' (टिकाऊ) रहेगा?
 
 ➤ विस्तारपूर्वक समग्र D60 निष्कर्ष
-------------------------------------------
+----------
 भाग 4: दुसरे विवाह के योग का अंतिम निष्कर्ष (Promise Verdict)
 
 ➤ चारों प्रणालियों के मुख्य निष्कर्षों का संक्षिप्त सारांश।
@@ -389,12 +397,12 @@ D9 और D60 आने वाली दूसरी पत्नी का स�
 ➤ D60 कुंडली का समर्थन और अंतिम परिणाम ?
 ➤ दुसरे विवाह की संभावना और गुणवत्ता पर अंतिम निष्कर्ष।
 ➤ यदि कोई उपाय या सुझाव आवश्यक हो।
-------------------------------------------
+----------
 अब हम जातक के दुसरे विवाह का समय निकालेंगे, उसके पहले ध्यान रखने योग्य बातें :
 
 1] ध्यान रहे अभी 2026 चल रहा है, जातक/जातिका 00 साल का/की है.
 क्या आप तैयार है, विवाह का समय निर्धारीत करने के लिए, सिर्फ इतना बताईये.
--------------------------------------------
+----------
 कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, त्रिभागी, चर दशा और गोचर) को अपनी मेमोरी में सुरक्षित कर लें।
 
 निर्देश:
@@ -409,7 +417,7 @@ D9 और D60 आने वाली दूसरी पत्नी का स�
 गोचर (गुरु/शनि - लग्न व चंद्र से):
 
 मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
-------------------------------------------
+----------
 उपरोक्त चैट्स में दिए गए और एक्सट्रैक्ट किए गए ज्योतिषीय डेटा (Vimshottari, Yogini, Chara Dasha, Tribhagi Dasha और Gochar Analysis) के आधार पर, आगामी 7 वर्षों की एक विस्तृत 'मास्टर समय-सारणी' तैयार करें।
 
 ​तालिका का प्रारूप और कॉलम बिल्कुल निम्न प्रकार होने चाहिए:
@@ -419,7 +427,7 @@ D9 और D60 आने वाली दूसरी पत्नी का स�
 ​डेटा प्रोसेसिंग के लिए महत्वपूर्ण नियम:
 
 ​दशा परिवर्तन: यदि किसी एक वर्ष के भीतर अंतर्दशा (AD) बदलती है, तो उसे एक ही सेल में 'Slash' (/) के साथ दिखाएं (जैसे: बुध AD / केतु AD)।
-------------------------------------------
+----------
 जातक के निम्नलिखित 'दूसरे विवाह' संबंधित ग्रहों की सूची दीजिए:
 
 A) 9वाँ भाव (दूसरा विवाह)
@@ -493,50 +501,50 @@ F) नवमांश (D9)
 a} क्या प्रथम भाव (लग्न) का 9वें, 2रे या 11वें भाव से मजबूत संबंध बन रहा है?
 b} क्या नैसर्गिक कारक शुक्र और गुरु का 9वें, 2रे या 11वें भाव से मजबूत संबंध बन रहा है?
 c} क्या नैसर्गिक शुभ चन्द्रमा और बुध (द्विस्वभाव कारक) का 9वें, 2रे या 11वें भाव से मजबूत संबंध बन रहा है?
-------------------------------------------
+----------
 1] अब पहले निकाले गए सभी ग्रहों को सूचीबद्ध कीजिए।
 2] अब सभी ग्रहों के संयुक्त प्रभाव का वर्णन कीजिए।
 3] अब सभी ग्रहों के संयुक्त प्रभाव की जांच कर उन्हें दूसरे विवाह के लिए अधिक प्रभावशाली होने के क्रम में लगाइए:
 Group A - दूसरे विवाह की दशा/अंतर्दशा के लिए उच्च प्रभावशाली ग्रह, जिनकी दशा में दूसरा विवाह होना लगभग निश्चित है:
 Group B - दूसरे विवाह की दशा/अंतर्दशा के लिए मध्यम प्रभावशाली ग्रह, जिनकी दशा में दूसरे विवाह होने की संभावना मध्यम है:
 Group C - दूसरे विवाह की दशा/अंतर्दशा के लिए निम्न प्रभावशाली ग्रह, जिनकी दशा दूसरे विवाह में सहायक है, (अगर Group A और B में से किसी की दशा नहीं चल रही हो तो यह सहायक होंगे):
-------------------------------------------
+----------
 भाग 1: पराशरी ज्योतिष के अनुसार दूसरे विवाह के समय का विश्लेषण
 1] विंशोत्तरी दशा :
 ➤ महादशा (MD): क्या जातक की महादशा ऐसे ग्रह की चल रही है जो दूसरे विवाह के लिए प्रभावशाली ग्रह हो? (यह एक लंबी अवधि का संकेत है)।
 ➤ अंतर्दशा (AD): सभी संभावित महादशा के भीतर, क्या अंतर्दशा ऐसे ग्रह की है जो दूसरे विवाह के लिए प्रभावशाली ग्रह हो?
 ➤ प्रत्यंतर दशा (PD): सभी संभावित महादशा और अनुकूल अंतर्दशा के भीतर, दूसरे विवाह के समय के सबसे करीब पहुंचने के लिए, क्या प्रत्यंतर दशा ऐसे ग्रह की है जो दूसरे विवाह के लिए प्रभावशाली ग्रह हो?
-------------------------------------------
+----------
 2] योगिनी दशा :
 ➤ सभी संभावित दशा में चल रही योगिनी महादशा और अंतर्दशा के स्वामी ग्रह, क्या दूसरे विवाह के लिए प्रभावशाली ग्रह हैं?
 ➤ सभी संभावित दशा में चल रही योगिनी अंतर्दशा के प्रत्यंतर दशा स्वामी ग्रह, क्या दूसरे विवाह के लिए प्रभावशाली ग्रह हैं?
 विश्लेषण (दशा): विंशोत्तरी (MD-AD-PD) और योगिनी दशाओं के संयुक्त विश्लेषण से दूसरे विवाह के लिए सबसे संभावित वर्ष और महीनों की सीमा (Time Window) की पहचान करना।
-------------------------------------------
+----------
 कितने संभावित टाइम विंडो निकले है ?
-------------------------------------------
+----------
 2.1] त्रिभागी दशा (सूक्ष्म समय निर्धारण के लिए):
 ➤ महादशा/अंतर्दशा: क्या त्रिभागी दशा में वर्तमान समय/संभावित टाइम विंडो ऐसे ग्रहों का है जो दूसरे विवाह के प्रबल सिग्निफिकेटर (Group A या B) हैं?
 ➤ विंडो रिफाइनमेंट: विंशोत्तरी और योगिनी द्वारा निकाली गई सभी संभावित टाइम विंडो को क्या त्रिभागी दशा और अधिक संकुचित (Narrow down) कर रही है?
 विश्लेषण (त्रिभागी): यदि विंशोत्तरी और त्रिभागी दोनों एक ही समय पर सकारात्मक संकेत दे रहे हैं, तो घटना की सटीकता 100 % के करीब मानी जाएगी।
-------------------------------------------
+----------
 ➤ कृपया तकनीकी जाँच करें कि क्या इस जातक पर 'अष्टोत्तरी दशा' (Ashtottari Dasha) प्रणाली लागू होती है?
 महर्षि पाराशर के दो मुख्य नियमों (राहु की केंद्र/त्रिकोण स्थिति और जन्म पक्ष-समय का संयोजन) के आधार पर विश्लेषण करें और अंतिम निष्कर्ष 'हाँ' या 'नहीं' में दें।
 ▸ राहु लग्न से ४, ५, ७, ९, १० भाव में स्थित हो।
 ▸ कृष्ण पक्ष (Dark Fortnight) में दिन का जन्म हो।
 ▸ शुक्ल पक्ष (Bright Fortnight) में रात का जन्म हो।
-------------------------------------------
+----------
 2.2] अष्टोत्तरी दशा (सूक्ष्म समय निर्धारण के लिए):
 ➤ महादशा/अंतर्दशा: क्या अष्टोत्तरी दशा में वर्तमान समय/संभावित टाइम विंडो ऐसे ग्रहों का है जो दूसरे विवाह के प्रबल सिग्निफिकेटर (Group A या B) हैं?
 ➤ विंडो रिफाइनमेंट: विंशोत्तरी, योगिनी और त्रिभागी द्वारा निकाली गई सभी संभावित टाइम विंडो को क्या अष्टोत्तरी दशा और अधिक संकुचित (Narrow down) कर रही है?
 विश्लेषण (अष्टोत्तरी): यदि विंशोत्तरी और अष्टोत्तरी दोनों एक ही समय पर सकारात्मक संकेत दे रहे हैं, तो घटना की सटीकता 100 % के करीब मानी जाएगी।
-------------------------------------------
+----------
 कृपया निम्लिखित सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
 
 1] गुरु का भिन्नाष्टकवर्ग (BAV) तालिका।
 2] शनी का भिन्नाष्टकवर्ग (BAV) तालिका।
 3] शुक्र का भिन्नाष्टकवर्ग (BAV) तालिका।
 4] सर्वाष्टकवर्ग तालिका
-------------------------------------------
+----------
 3] गोचर विश्लेषण :
 ➤ सभी संभावित दशा अवधि में गुरु और शनि का संयुक्त प्रभाव:
 उपरोक्त कुंडली डेटा और गोचर विवरणों के आधार पर, अगले 7 वर्षों के लिए गुरु (बृहस्पति) और शनि के संयुक्त प्रभाव (Double Transit) की एक विस्तृत तालिका तैयार करें। यह विश्लेषण पूरी तरह से ग्रहों की दृष्टि और स्थिति (Transit Aspects/Positions) पर आधारित होना चाहिए।
@@ -564,7 +572,7 @@ Group C - दूसरे विवाह की दशा/अंतर्दश
 ➤ क्या गोचर के गुरु और शनि, दोनों एक साथ प्रभावित (दृष्टि या युति द्वारा) कर रहे हैं, ऐसी अवधि है?
 
 विश्लेषण (गोचर): दशा द्वारा पहचानी गई "समय सीमा" के भीतर, दोहरे गोचर का नियम उस विशिष्ट वर्ष को इंगित करता है जब दूसरे विवाह की घटना घटित होने की सबसे अधिक संभावना है।
-------------------------------------------
+----------
 उपरोक्त फाइलों और उपलब्ध डेटा के आधार पर, जातक के लिए अगले 7 वर्षों के गुरु (बृहस्पति) के गोचर की एक विस्तृत 'दूसरे विवाह केंद्रित शक्ति तालिका' तैयार करें।
 ​तालिका का प्रारूप और कॉलम (अनिवार्य):
 | गोचर भाव (L/M) | समय (अवधि) | SAV | BAV | BAL | गुणवत्ता | दूसरे विवाह पर प्रभाव | विवाह के सहायक भावों पर प्रभाव | दूसरे विवाह की संभावना का अंतिम निष्कर्ष |
@@ -574,9 +582,9 @@ Group C - दूसरे विवाह की दशा/अंतर्दश
 ​सहायक भावों पर प्रभाव: गुरु का 11वें, 2रे भाव या जन्म शनि से दृष्टि/स्थिति संबंध जाँचे।
 ​गुणवत्ता (Quality) लॉजिक: SAV > 28 और BAL > 500 होने पर 'High', केवल SAV > 28 होने पर 'Medium', अन्यथा 'Low' लिखें।
 ​अंतिम निष्कर्ष: यदि 'दूसरे विवाह पर प्रभाव' सक्रिय है और 'गुणवत्ता' High/Medium है, तो 'प्रबल संभावना' लिखें। यदि दोनों कम हैं, तो 'न्यून' लिखें।
-------------------------------------------
+----------
 SAV/BAV गलत हो गए सभी, मिसमैच हो गए, राशी के अनुसार लो.
-------------------------------------------
+----------
 4] बल और क्षमता का विश्लेषण (गोचर की पुष्टि के लिए) :
 ➤ अष्टकवर्ग :
 A] सर्वाष्टकवर्ग:
@@ -594,9 +602,9 @@ c) क्या गोचर का गुरु उस राशि से ग�
 ▸ क्या जन्म कुंडली का नवम भाव भाव बल में मजबूत है?
 
 विश्लेषण (बल): यह पुष्टि करता है कि क्या ग्रह और भाव फल देने में सक्षम हैं। बलवान ग्रह और भाव गोचर के दौरान निश्चित रूप से फल देते हैं।
-------------------------------------------
+----------
 सभी संभावित टाइम विंडो में कितने-कितने % दूसरे विवाह की संभावना है ?
-------------------------------------------
+----------
 अंतिम समग्र विश्लेषण (पराशरी - दूसरा विवाह):
 एक ऐसा समय जब:
 ➤ विंशोत्तरी दशा (MD-AD-PD) अनुकूल हो।
@@ -606,7 +614,7 @@ c) क्या गोचर का गुरु उस राशि से ग�
 ➤ अष्टकवर्ग उस गोचर का समर्थन कर रहा हो।
 ➤ संबंधित दशा स्वामी षड्बल में बलवान हों।
 ...वही समय दूसरा विवाह होने का सबसे प्रबल और निश्चित समय होता है।
-------------------------------------------
+----------
 जातक के निम्नलिखित जैमिनी 'दूसरे विवाह' संबंधित राशियों और उनके स्वामियों की सूची दीजिए:
 
 A) मुख्य राशियां (दूसरे विवाह के लिए):
@@ -630,7 +638,7 @@ B) सहायक राशियां :
 7] A9 से 7वीं राशि में बैठे ग्रह:
 
 नोट: जांच करें कि क्या शुक्र या गुरु UL, UL-8वें, DK-राशि, या कारकांश-9वें को प्रभावित कर रहे हैं।
-------------------------------------------
+----------
 1] अब निकाली गई सभी मुख्य 'दूसरे विवाह' संबंधित राशियों को सूचीबद्ध कीजिए।
 
 (उदाहरण: UL राशि, UL से 8वीं, DK की D1 राशि, कारकांश से 9वीं, A9 राशि, UL से 2री, आदि)।
@@ -644,7 +652,7 @@ A] मुख्य राशि दशाएं : - दूसरे विवा
 
 B) सहायक राशि दशाएं : - दूसरे विवाह की दशा-अंतर्दशा के लिए मध्यम प्रभावशाली राशियां:
 (इन राशियों की दशा/अंतर्दशा में दूसरे विवाह की संभावना मध्यम है)
-------------------------------------------
+----------
 भाग 2: जैमिनी ज्योतिष के अनुसार दूसरे विवाह के समय का विश्लेषण:
 
 1] चर महादशा द्वारा समय निर्धारण:
@@ -657,7 +665,7 @@ B) सहायक राशि दशाएं : - दूसरे विवा
 ➤ संभावित चर अंतर्दशा में ऐसी राशि की प्रत्यंतर दशाएं जो मुख्य या सहायक राशि की हो में से एक हो?
 
 विश्लेषण (दशा): उपरोक्त राशियों की दशा-अंतर्दशा-प्रत्यंतर दूसरे विवाह के लिए सबसे प्रबल समय होती है। जिस अवधि में इनमें से एक से अधिक शर्तें पूरी होती हैं, वह समय सबसे महत्वपूर्ण है।
-------------------------------------------
+----------
 2] दशा की गुणवत्ता का अर्गला से विश्लेषण (घटना कैसी होगी?):
 ➤ दशा राशि पर अर्गला: दूसरे विवाह के लिए चुनी गई संभावित दशा राशि पर किन ग्रहों की अर्गला (हस्तक्षेप) है?
 ▸ शुभ अर्गला: क्या उस पर शुभ ग्रहों (गुरु, शुक्र) की अर्गला है? यह एक सहज, आनंदमय और बिना बाधा के दूसरे विवाह समारोह का संकेत है।
@@ -665,7 +673,7 @@ B) सहायक राशि दशाएं : - दूसरे विवा
 ➤ विरोध अर्गला: क्या अर्गला बनाने वाले ग्रहों का कोई विरोध हो रहा है? कौन सी शक्ति (अर्गला या विरोध) अधिक बलवान है?
 
 विश्लेषण (अर्गला): यह निर्धारित करता है कि दूसरे विवाह की घटना स्वयं कैसी होगी - सुगम और उत्सवपूर्ण या तनावपूर्ण और बाधाओं से भरी।
-------------------------------------------
+----------
 भाग 3: भृगु नंदी नाड़ी (BNN) के अनुसार दूसरे विवाह के समय का विश्लेषण:
 
 1] जीव कारक (गुरु) का सक्रिय होना:
@@ -681,7 +689,7 @@ B) सहायक राशि दशाएं : - दूसरे विवा
 ▸ जन्म कुंडली का शुक्र (Venus) और बुध (Mercury)।
 ▸ जन्म कुंडली का मंगल (Mars) - (स्त्री जातक के दूसरे विवाह के लिए)।
 ▸ जन्म कुंडली का नवम भाव या नवमेश।
-------------------------------------------
+----------
 3] पुरुष और स्त्री कुंडली के लिए विशिष्ट विश्लेषण:
 ➤ पुरुष की कुंडली में: क्या गोचर का गुरु जन्म कुंडली के शुक्र या बुध से संबंध बना रहा है?
 ➤ स्त्री की कुंडली में: क्या गोचर का गुरु जन्म कुंडली के शुक्र (स्वयं) और मंगल (पति) से संबंध बना रहा है?
@@ -691,7 +699,7 @@ B) सहायक राशि दशाएं : - दूसरे विवा
 ➤ BNN के अनुसार, दूसरा विवाह तब होता है जब "जीव" (गुरु) तैयार होता है और "कर्म" (शनि) उसे अनुमति देता है, और साथ ही बुध (Mercury) का प्रभाव सक्रिय होता है।
 ➤ सबसे प्रबल समय: वह वर्ष जब गोचर का गुरु दूसरे विवाह के कारक ग्रहों (विशेषकर शुक्र/बुध) और नवम भाव को सक्रिय कर रहा हो और साथ ही, गोचर का शनि भी उन्हीं कारक ग्रहों या भावों को अपनी दृष्टि या युति से अनुमोदित (approve) कर रहा हो।
 ➤ सहायक समय: यदि केवल गुरु का गोचर अनुकूल हो, तो भी घटना हो सकती है, लेकिन जब शनि का भी अनुमोदन मिल जाता है, तो दूसरे विवाह का होना लगभग निश्चित हो जाता है।
-------------------------------------------
+----------
 भाग 4: कृष्णमूर्ति पद्धति (KP) के अनुसार दूसरे विवाह के समय का विश्लेषण:
 
 1] दशा विश्लेषण (संभावित अवधि की पुष्टि):
@@ -701,33 +709,1285 @@ B) सहायक राशि दशाएं : - दूसरे विवा
 
 विश्लेषण (दशा): दशा अवधियों के आधार पर दूसरे विवाह की संभावित समय-सीमा।
 KP के अनुसार, दूसरा विवाह केवल उसी MD-AD-PD में संभव है जिसके स्वामी ग्रह 2, 9, और 11 भावों के प्रबल सिग्निफिकेटर हों। यह पराशरी दशा विश्लेषण को फ़िल्टर करने का सबसे सटीक तरीका है।
-------------------------------------------
+----------
 2] गोचर (Transits) का उपयोग:
 
 ➤ प्रमुख ग्रहों का गोचर: दशा द्वारा इंगित अनुकूल अवधि में, क्या गोचर के बृहस्पति (Jupiter) और शनि (Saturn) उन ग्रहों के ऊपर से गुजर रहे हैं जो दूसरे विवाह (2, 9, 11) के प्रबल सिग्निफिकेटर हैं?
 
 विश्लेषण (गोचर): दशा संभावित वर्षों और महीनों की सीमा बताती है, जबकि गोचर उस सीमा के भीतर सटीक महीने और दिन को इंगित करने में मदद करता है।
-------------------------------------------
+----------
 अगर इस अवधि में दूसरा विवाह नही होता है तो और कौनसी संभावित अवधि है और कितने कितने % संभावना है ?
-------------------------------------------
+----------
 भाग 5: दूसरे विवाह के समय का निष्कर्ष और समग्र अवलोकन
 ➤ दूसरे विवाह के समय के लिए सभी प्रणालियों (पराशरी, जैमिनी, BNN, KP) के मुख्य निष्कर्षों का संक्षिप्त सारांश।
 ➤ किन बिंदुओं पर विभिन्न प्रणालियां सहमत हैं और किन पर थोड़ा भिन्न दृष्टिकोण है?
 ➤ सभी विश्लेषणों के आधार पर सभी प्रणालिओं के सर्वसम्मत अवधि की पहचान।
 ➤ अंतिम निष्कर्ष : दूसरे विवाह के समय का सबसे संभावित वर्ष।
-------------------------------------------
+----------
 ➤ जातक ने अपने बारे में जानकरी दी है और जातक के कुछ सवाल है, पहले दी हुयी जानकारी को सूचीबद्ध कीजिये, उसके बाद सभी सवाल सूचीबद्ध कीजिये :
------------------------------------------
+----------
 अब दी हुयी जानकारी का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर कीजिये, एक एक घटना का विस्तार से विश्लेषण होना चाहिए, अगर उपाय आवश्यक हो तो उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
------------------------------------------
+----------
 अब दिए हुए सवालो का जवाब गहन शोध करके लिखिए विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक सवाल का विस्तार से विश्लेषण होना चाहिए,उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
-------------------------------------------
+----------
 दूसरे विवाह के समय का समग्र निष्कर्ष : शुरुआत से पुछे गए जातक के वैवाहिक जीवन संबधी और जातक द्वारा पूछे गए सभी सवालों के विश्लेषण का शोर्ट में निष्कर्ष दीजिए
-------------------------------------------
+----------
 अब तक किये गए सभी निम्मलिखित घटनाओं और सवालों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
 
-जातक के प्रश्न :
-`;
+जातक के प्रश्न :`;
+        const rawData_en = `This PDF is the kundali of native xyz. You must save all the information from it so that the kundali can be analyzed. While analyzing, do not write the page reference of the PDF, but do give this list of which page the following information is on - meaning it will also be easier for you to find it later:
+
+1] Planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra lord, Jaimini chara karakatva)
+2] Sarvashtakavarga table
+3] Shadbala table (Sthana bala, Digbala, Kala bala, Cheshta bala, Naisargika bala, Drishti bala)
+4] Bhava bala table 
+5] Vimshopaka bala table (Shodasha varga, Shad varga, Sapta varga and Dasha varga)
+6] Jaimini Arudha pada (rashi-based)
+7] Vimshottari mahadasha antardasha chart
+8] Yogini dasha antardasha chart
+9] Chara dasha antardasha chart
+10] Krishnamurti Paddhati (KP) bhava position table {Bhava-Rashi lord-Nakshatra lord-Sub lord-Sub-sub lord-Cusp-Rashi-Nakshatra-Pada}
+11] Krishnamurti Paddhati (KP) planet position table {Bhava-Rashi lord-Nakshatra lord-Sub lord-Sub-sub lord-Cusp-Rashi-Nakshatra-Pada}
+12] Krishnamurti Paddhati (KP) house significator planet position table
+13] Krishnamurti Paddhati (KP) planet karakatva position table
+14] D1's 12 bhavas' rashi-nakshatra (Bhava Cusp)
+15] D9 planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra lord) (screenshot)
+16] D9's  12 bhavas' rashi-nakshatra (Bhava Cusp) (screenshot)
+
+
+Please present all the tables in a simple and readable table format.
+----------
+From the above chat and  PDF, write the rashi and bhava lord placed in the twelve bhavas of the lagna kundali, along with the planet presence; also write which planets are uchcha, neecha, vakri, neechabhanga, asta, vargottama. Also write the nakshatra placements (do not write uchcha, neecha, vakri for Rahu-Ketu).
+
+The writing pattern will be as follows, which will be only for example, shown inside  ""  :
+
+"First house (lagna):
+This house has Simha rashi, hence the lagnesh is Surya.
+Surya and Rahu planets are placed in this house.
+Surya: is swagrihi (in his own house) in Simha rashi. Surya is placed in Magha nakshatra. Surya, being the lord of the first house (Simha), sits in the lagna. Surya's drishti is on the seventh house (Kumbha).
+Rahu: in Simha rashi (considered an enemy rashi for Rahu). Rahu is placed in Magha nakshatra. Rahu's drishti is on the fifth house (Dhanu), seventh house (Kumbha) and ninth house (Mesha).
+This house receives the full drishti of Ketu (from the seventh house)."
+
+
+For your convenience, a txt file has been given: "D1_Analysis"
+----------
+Write the following information from the txt file one after another, exactly as-is, without any change:
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D60 Analysis
+5] D1_to_D9_Analysis
+6] D1_to_D60_Analysis
+----------
+Look at the Chalit kundali and tell what has changed in the Chalit kundali compared to the D1 kundali, and what its effect will be:
+----------
+➤ Impact of PN, PB, MB on life (Impact on Life)
+
+Topic: Vedic astrology - calculation and phaladesh of Pushkar Navamsha (PN), Pushkar Bhaga (PB) and Mrityu Bhaga (MB) for planets and bhavas.
+
+Based on the image and TXT calculations, write the impact on the following areas:
+
+​▸ Divine protection (Divine Protection): Which bhavas/planets are protected by Pushkar energy, and in which areas of life will help come 'without asking'?
+
+​▸ Struggles and obstacles (MB Impact): In which areas of life can planets in Mrityu Bhaga create obstacles like 'landmines'?
+
+​▸ Beginning vs outcome (Start vs Middle): Based on the Pushkar difference between the bhava's 'start' and 'middle', tell how the beginning of a task will be and how its end will be?
+
+▸ In the PN and PB calculation, check whether their 'bhavesh' is in MB?
+(If the lord of the bhava (Bhavesh) is in Mrityu Bhaga, then the results will be obstructed even if the bhava is Pushkar)
+
+​▸ Dasha results: What will be the impact of these amrit/vish points in the current or upcoming mahadasha?
+
+​▸ ​Conclusion: Overall, how much is the balance of 'amrit' (PB) and 'vish' (MB) in the kundali?
+----------
+1] First prepare a list of all the shubha yogas in the native's kundali, then analyze in detail the method of formation of all the shubha yogas and their probable results based on their bhava and the capacity of the planets. A list of some yogas and doshas is given at the end of the pdf; take from it those that are shubha yogas. Also take from the txt.
+2] First prepare a list of all the doshas in the native's kundali, then analyze in detail the method of formation of all the doshas and their probable results based on their bhava and the capacity of the planets. A list of some yogas and doshas is given at the end of the pdf; take from it those that are doshas. Also take from the txt.
+----------
+Taking the janma nakshatra as the base, create the Navatara chakra and analyze in which taras' (Sampat, Vipat, Vadha etc.) nakshatras all 9 planets of the kundali are placed, and according to that tara, how will each planet give its (shubha/ashubha) results? [PDF page No 28]
+----------
+Please provide a list of astrological facts/figures for all 9 planets (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu) based on the birth details of the above chats and PDF. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on the kundali's phalit, Shadbala, Vimshopaka anshas (Shodasha varga), Ashtakavarga and Jaimini karakatva.
+
+Provide the following information for each planet:
+1. [Planet's name]
+➤ Jaimini karakatva:
+➤ Bhava lordship: (of which bhavas it is the lord)
+➤ Position: (in which bhava and rashi)
+➤ Position in rashi: (mitra, shatru, sama, uchcha, neecha, moolatrikona, swarashi)
+➤ Nakshatra and pada: (in which nakshatra and which pada the planet is, and the influence of the nakshatra lord.)
+➤ Drishti: (drishti on which bhavas/planets) 
+➤ Drishti on [planet's name]: (drishti of which planets)
+➤ Yuti: (in yuti with which planets)
+➤ Avastha (degree/latitude): (degree and the name of the avastha like Bala, Kumara etc.)
+➤ Bhavanatmak/avastha strength: vakri/asta/neecha/neechabhanga/vargottama position: (yes/no or the name of the position)
+➤ Navamsha position:  (in the Navamsha kundali, in which rashi, nakshatra (lord) the planet is, and its influence.)
+➤ Strength in Navamsha: afflicted/strong
+➤ Position change and effect in Chalit 
+➤ Bhavabala: (value only)
+➤ Shadbala :  (value in rupas and how its strength is - better than average, rank etc.)
+➤ Bhinnashtakavarga (BAV) points: (value between 0-8): (based on points: practical strength - weak/average/powerful)
+➤ Vimshopaka anshas (Shodasha varga): (value and its rank among the planets, if applicable.)
+➤ Position and effect in Pushkar Navamsha (PN)/Pushkar Bhaga (PB)/Mrityu Bhaga (MB):
+​➤ Navatara position and effect: (based on the janma nakshatra, in which tara - like Sampat, Vipat, Sadhaka etc. - this planet is placed, and what auspiciousness or obstacles will come in its natural and bhava results due to that specific tara.)
+➤ Brief answer of probable results in gochar and dasha: (generally how that planet will give results in its dasha/antardasha and gochar - good, bad, or medium.
+
+➤ Conclusion: Overall, is the planet strong or afflicted? (percentage)
+
+➤ In the end, the conclusion regarding all planets being strong and afflicted (based on percentage)
+----------
+⚠️ System instruction (System Instruction): This kundali analysis is being done especially for the 'second marriage (Second Marriage)'. The native's first marriage has ended. Hence, instead of the first marriage (7th bhava), you must give priority to the astrological rules of the second marriage (ninth bhava, second bhava, 9th CSL in KP, 8th bhava from UL in Jaimini and dwiswabhava rashis). 
+You will work as a highly experienced and professional Vedic astrologer (Expert Vedic Astrologer). You have deep knowledge of Parashari, Krishnamurti Paddhati (KP), Jaimini and Bhrigu Nandi Nadi (BNN). I will give you the kundali data (D1, D9, D60 and KP significations) of a native (Client) and some specific prompts.
+
+➤ The native's life introduction and current situation (Client Context)
+
+Female/Male native xyz is 00 years old.
+
+Gender: Male/Female
+
+Children: has 0 children.
+
+First marriage:
+
+Separation:
+
+Reason for separation:
+
+Current objective: The native is now looking for girls for the 'second marriage' (Second Marriage) to take care of their children and complete the family.
+
+➤ Your main task and important rules (Strict Instructions for AI)
+
+Focus on the 'second marriage' - our entire analysis for this native will be focused only and only on the second marriage.
+
+Adaptation of prompts (Prompt Adaptation) - Whatever analysis prompts (Prompts) I give you ahead, they may have been designed for the 'first marriage' or general married life. But you must use your intelligence to decode all those prompts only according to the rules of the 'second marriage' (like the 2nd bhava, 9th bhava, 2nd CSL, 9th CSL and Jaimini's second upapada lagna - UL2).
+
+➤ Correct use of the methods
+
+KP (Krishnamurti Paddhati) - consider the 2nd CSL as the main one for the promise of marriage (Promise), and use the 9th CSL to see how the second marriage will go.
+
+Jaimini - analyze the 'second upapada lagna' (UL2) formed by the lord of the 8th bhava from the first UL, for the second marriage. 
+
+D9 and D60 - judge the nature of the upcoming second wife, her behavior towards the children and the success of the marriage based on the 2nd, 9th and 11th bhavas of D9 (Navamsha).
+
+Sensitivity - since a major tragedy has happened with the native, the phaladesh must be very subtle (Micro-level) and clear. If any sign of tension or dispute (6, 8, 12 bhavas) is found in the second marriage too, it must be stated clearly as a warning without hiding it.
+
+If you have understood all these rules, then reply by saying 'Yes, I have understood; give me the kundali data and your first prompt.'
+----------
+➤ Make a general information table:
+►D1 lagna bhava rashi and nakshatra
+►D1 ninth bhava (second marriage) rashi and nakshatra
+►D9 lagna bhava rashi and nakshatra
+►D9 ninth bhava (second marriage) rashi and nakshatra
+►Chandra rashi
+►Chandra nakshatra
+►Chandra nakshatra lord
+►D1 lagna bhava nakshatra lord
+►D1 lagnesh
+►D1 ninth bhava (second marriage) nakshatra lord
+►D1 navamesh
+►D9 lagna bhava nakshatra lord
+►D9 lagnesh
+►D9 ninth bhava (second marriage) nakshatra lord
+►D9 navamesh
+➤ After making the table, analyze the following points.
+▸ Of the planet placed in the lagna, the lagnesh, and the lagna nakshatra lord in both D1 and D9, who is stronger?
+▸ Of the planet placed in the lagna, the lagnesh, and the lagna nakshatra lord in D1 and D9, which planet is the most influential and ultimately directs the person's personality?
+▸ Of the planet placed in the ninth bhava, the navamesh, and the ninth bhava nakshatra lord in both D1 and D9, who is stronger?
+▸ Of the planet placed in the ninth bhava, the navamesh, and the ninth bhava nakshatra lord in D1 and D9, which planet is the most influential and ultimately directs the person's second marriage?
+➤ Conclusion:
+▸ Which is more influential - the influential planet of D1's lagna or the influential planet of D9's lagna?
+▸ Which is more influential - the influential planet of D1's ninth bhava or the influential planet of D9's ninth bhava?
+----------
+Extract information from all the above details; no analysis is to be done. Along with that, except for the planets casting drishti, also write the avastha of the remaining planets (uchcha-neecha-neechabhanga, shatru-mitra-sama rashi; asta-vakri-vargottama) in brackets. The questions must also be written along with the answers.
+
+Part 1: Promise of the 'second marriage' as per Parashari astrology (D1 and D9):
+
+1] Navamesh and Dwitiyesh (main lords of the second marriage):
+➤ Which planet is the lord of the ninth bhava (9th House - the bhava of the second marriage)?
+➤ In which rashi, bhava and nakshatra (lord) is the navamesh planet placed?
+➤ Is the navamesh planet in a dwiswabhava rashi (Mithuna, Kanya, Dhanu, Meena)?
+➤ With which planets is the navamesh in yuti and drishti?
+➤ Where and in what condition is the lord of the second bhava (family growth) (dwitiyesh)?
+
+2] Position of the ninth bhava (9th House):
+➤ Which planets are placed in the ninth bhava? (along with their nakshatra lords)
+➤ Which planets are casting drishti on the ninth bhava?
+➤ Is any dwiswabhava rashi rising in the ninth bhava?
+
+3] Second marriage in the Navamsha kundali (D9 Chart):
+➤ In Navamsha (D9), in which rashi is the ninth bhava and which planets are placed in it?
+➤ In Navamsha, in which bhava and rashi is the navamesh (9th Lord of D9) placed?
+➤ In (D9) Navamsha, in which bhava and rashi is the navamesh of D1 placed, and is it strong?
+➤ In D9, is there an influence of dwiswabhava planets (Budha/Guru) on the ninth bhava or navamesh?
+
+Part 2: Analysis of the 'second marriage' as per Jaimini astrology:
+
+1] Second upapada (8th from UL - the place of the second spouse):
+➤ Which rashi is placed in the 8th bhava from the Upapada lagna (UL)?
+➤ Where is the lord planet of the 8th bhava from UL placed?
+➤ Which planets (chara karakas) are placed in the 8th bhava from UL?
+➤ The Jaimini rashi drishti of which rashis/planets is on the 8th bhava from UL?
+
+2] Darakaraka (DK) and Atmakaraka (AK):
+➤ Is the Darakaraka (DK) planet in a dwiswabhava rashi (Dual Sign) or in Navamsha?
+➤ Is DK forming any relation with the 8th bhava from UL or its lord?
+
+Part 3: Analysis of the 'second marriage' as per Bhrigu Nandi Nadi (BNN):
+
+1] Marriage karakas (Guru/Shukra) and dwiswabhava karaka (Budha):
+➤ Is the Jiva karaka (Guru) or the spouse karaka (Shukra) forming any relation (yuti, 1-5-9, 2-12) with Budha (Mercury)? (Budha is a strong karaka of plurality and the second relationship).
+➤ Is there an influence of Rahu/Ketu on Shukra or Guru? (which indicates remarriage deviating from tradition).
+➤ Are Guru and Shukra placed in dwiswabhava rashis (3, 6, 9, 12)?
+
+Part 4: Promise of the 'second marriage' as per Krishnamurti Paddhati (KP):
+
+1] Quality of married life and separation of the first marriage (Quality of Married Life & Separation):
+
+➤ Is the 7th CSL strongly showing the shubha bhavas (2, 7, 11) for marriage?
+➤ Is the 7th CSL signifying the bhavas of separation/divorce (1, 6, 8, 10)? (Note: the 6th bhava is the 12th from the 7th).
+➤ Is there a relation of the 7th CSL or 11th CSL with the 12th bhava (lack of bed pleasures/hidden troubles)?
+
+2] Promise of the second marriage (Promise of 2nd Marriage):
+➤ Who is the cuspal sub-lord (9th CSL) of the 9th bhava?
+➤ Is the 9th CSL connected with a dwiswabhava rashi or dwiswabhava planets (Budha/Guru)?
+➤ Which bhavas is this 9th CSL signifying (especially regarding the 2, 9, 11 bhavas)?
+➤ Is this 9th CSL also signifying the bhavas that deny the second marriage (like 1, 8, 10 - which indicate separation or obstacles in the second marriage)?
+
+3] Nature of the second spouse and marital relations (Nature of Spouse & Marital Relations):
+
+➤ Who is the nakshatra lord of the 9th CSL and where is it placed?
+➤ Who is the sub-lord of the 9th CSL and where is it placed?
+➤ Who is the  SSL of the 9th CSL and where is it placed?
+➤ Which are the main planets signifying the marriage-related bhavas (2, 9, 11) and what is their position?
+----------
+Cross-check the information of all four systems (Parts 1-4) and ensure whether it is correct or there is any error? Give a list of only the errors, if any.
+----------
+Give a short list of what all information you have received so far above for the kundali analysis.
+----------
+Ensure that you will strictly follow the following orders,
+
+1] Cross-check the data before giving the output.
+2] Do not do any kind of sugar-coating (Sugar-coating). If there is any dosha, struggle or negative yoga in the kundali, state it in clear and bitter words. I do not have to please the client, but tell the truth. Keep in mind you should not be completely negative; tell the truth by keeping a balance of positive and negative.
+3] Do not start your answer with any greeting or conversational phrase (like 'certainly', 'surely', 'the following is' etc.). Your answer must begin directly with the asked information.
+4] Also follow the orders given in the System instructions.
+
+Are you ready? Just tell which orders you will follow.
+----------
+Part 1: How clear is the promise of the second marriage from Parashari astrology (D1-D9), Jaimini astrology and BNN astrology?
+----------
+Part 2: Promise of the 'second marriage' as per Krishnamurti Paddhati (KP):
+
+1] Quality of married life and separation of the first marriage (Quality of Married Life & Separation):
+
+➤ Is the 7th CSL strongly showing the shubha bhavas (2, 7, 11) for marriage?
+➤ Is the 7th CSL signifying the bhavas of separation/divorce (1, 6, 8, 10)? (Note: the 6th bhava is the 12th from the 7th).
+
+Analysis: How happy will the married life of the first marriage be? Is there any clear possibility of divorce, separation (Separation) or a heavy decline in marital happiness in the future?
+
+2] Promise of the second marriage (Promise of 2nd Marriage):
+
+➤ Who is the cuspal sub-lord (9th CSL) of the 9th bhava?
+➤ Is the 9th CSL connected with a dwiswabhava rashi (Dual Sign: Mithuna, Kanya, Dhanu, Meena) or dwiswabhava planets (Budha/Guru)? Or is it in Budha's nakshatra?
+➤ Which bhavas is this 9th CSL signifying (especially regarding the 2, 9, 11 bhavas)?
+➤ Is the cuspal sub-lord (2nd CSL) of the 2nd bhava also supporting this promise?
+➤ Is this 9th CSL also signifying the bhavas that harm the second marriage (like 1, 8, 10 - which indicate separation or obstacles in the second marriage)?
+
+Analysis: Based on the 9th CSL, is there a clear promise of the second marriage in the kundali, or a possibility of denial? (What percentage out of 100 is the probability of the promise of the second marriage?)
+
+3] Nature of the second spouse and marital relations (Nature of Spouse & Marital Relations):
+
+➤ Who is the nakshatra lord of the 9th CSL and where is it placed?
+➤ Who is the sub-lord of the 9th CSL and where is it placed?
+➤ Who is the  SSL of the 9th CSL and where is it placed?
+➤ Which are the main planets signifying the marriage-related bhavas (2, 9, 11) and what is their position?
+
+Analysis: The general nature, personality of the spouse and the overall quality of the marital relationship.
+----------
+Part 3:  (Shashtiyansha) - karmic results of the second marriage, past merits and final outcome (Karmic Legacy) 
+​
+➤ What is the position of the ninth bhava and navamesh in D60? 
+➤ Are the yogas of the second marriage in D1/D9 cursed or afflicted in D60? 
+➤ Will the second marriage remain 'sustainable' (durable) in life?
+
+➤ Detailed overall D60 conclusion
+----------
+Part 4: Final Verdict on the Second-Marriage Yoga (Promise Verdict)
+
+➤ A brief summary of the key findings of all four systems.
+➤ On which points do all four systems agree, and on which do they take a slightly different perspective?
+➤ Promise of the second marriage: Is the marriage yoga certain? If yes, will it happen smoothly or after obstacles?
+➤ Support from the D60 chart and the final outcome ?
+➤ Final conclusion on the possibility and quality of the second marriage.
+➤ If any remedies or suggestions are required.
+----------
+Now we will determine the timing of the native's second marriage; before that, a few points to keep in mind:
+
+1] Please note that 2026 is currently underway, and the native is 00 years old.
+Are you ready to determine the marriage timing? Just let me know.
+----------
+Please store securely in your memory all the astrological data (Vimshottari, Yogini, Tribhagi, Chara dasha, and Gochar) given in all the attached text files.
+
+Instructions:
+
+1] There is no need to rewrite this data in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For confirmation (Verification): give only the current status of 2026 in the format below:
+Vimshottari (MD-AD-PD):
+Yogini (MD-AD-PD):
+Tribhagi (MD-AD-PD):
+Chara dasha (MD-AD-PD):
+Gochar (Jupiter/Saturn - from Lagna and Moon):
+
+I will then ask you specific analysis-related questions directly, and you must use all this data.
+----------
+Based on the astrological data given and extracted in the above chats (Vimshottari, Yogini, Chara Dasha, Tribhagi Dasha, and Gochar Analysis), prepare a detailed 'Master Timeline' of the coming 7 years.
+
+The table format and columns must be exactly as follows:
+
+| Time (Year) | Vimshottari Dasha (MD-AD) | Yogini Dasha (MD-AD) | Chara Dasha (MD-AD) | Tribhagi Dasha (MD-AD) | Jupiter Gochar (Bhava from Lagna/Moon) | Saturn Gochar (Bhava from Lagna/Moon) |
+
+Important rules for data processing:
+
+Dasha change: If the antardasha (AD) changes within a single year, show it in the same cell with a 'Slash' (/) (e.g., Mercury AD / Ketu AD).
+----------
+Give the list of the native's following 'second marriage' related planets:
+
+A) 9th Bhava (Second Marriage)
+
+1] Lord of the 9th bhava (Navamesh)
+2] Nakshatra lord of the 9th bhava
+3] Planets sitting in the 9th bhava
+4] Planets aspecting the 9th bhava
+5] Lord of the rashi in which the Navamesh is sitting (Dispositor)
+6] Lord of the nakshatra in which the Navamesh is sitting
+7] Planets in conjunction with the Navamesh
+8] Planets aspecting the Navamesh
+9] Cuspal sub-lord of the 9th bhava (9th CSL)
+10] Nakshatra lord (NL) of the 9th CSL
+11] Sub-lord (SL) of the 9th CSL
+12] Sub-sub lord (SSL) of the 9th CSL
+
+B) 2nd Bhava (Family Growth)
+
+1] Lord of the 2nd bhava (Dwitiyesh)
+2] Planets sitting in the 2nd bhava
+3] Nakshatra lord of the 2nd bhava
+4] Lord of the rashi in which the Dwitiyesh is sitting
+5] Planets in conjunction with the Dwitiyesh
+6] Significator (KP) of the 2nd bhava
+
+C) 11th Bhava (Gains/Wish Fulfillment)
+
+1] Lord of the 11th bhava (Ekadashesh)
+2] Planets sitting in the 11th bhava
+3] Nakshatra lord of the 11th bhava
+4] Lord of the rashi in which the Ekadashesh is sitting
+5] Planets in conjunction with the Ekadashesh
+6] Significator (KP) of the 11th bhava
+
+D) Lagna (Personality)
+
+1] Lord of the 1st bhava (Lagnesh)
+2] Planets sitting in the 1st bhava
+3] Nakshatra lord of the 1st bhava
+4] Lord of the rashi in which the Lagnesh is sitting
+5] Planets in conjunction with the Lagnesh
+
+E) Natural Karakas and Benefic Planets
+
+1] Rashi lord of Venus, the natural karaka of marriage
+2] Nakshatra lord of Venus, the natural karaka of marriage
+3] Planets in conjunction with Venus, the natural karaka of marriage
+4] Rashi lord of Jupiter, the natural benefic planet
+5] Nakshatra lord of Jupiter, the natural benefic planet
+6] Planets in conjunction with Jupiter and Venus, the natural benefic planets
+7] Lord of the 9th bhava from Venus (for the second marriage)
+8] Lord of the 9th bhava from the Moon (for the second marriage)
+9] Planets related to the 5th bhava (for love marriage/romance)
+
+F) Navamsa (D9)
+
+1] Lord of the 9th bhava of the Navamsa (D9)
+2] Planets sitting in the 9th bhava of the Navamsa (D9)
+3] Planets aspecting the 9th bhava of the Navamsa (D9)
+4] Lord of the rashi in which the Navamsa (D9) Navamesh is sitting
+5] Planets in conjunction with the Navamsa (D9) Navamesh
+6] Planets aspecting the Navamsa (D9) Navamesh
+7] Lord of the Lagna bhava of the Navamsa (D9)
+8] Lord of the rashi in which the Navamsa (D9) Lagnesh is sitting
+9] Planets in conjunction with the Navamsa (D9) Lagnesh
+10] Planets sitting in the Lagna of the Navamsa (D9)
+11] Lord planets of the 2nd and 11th bhavas in the Navamsa (D9)
+
+➤ Important checks:
+a} Is the 1st bhava (Lagna) forming a strong connection with the 9th, 2nd, or 11th bhava?
+b} Are Venus and Jupiter, the natural karakas, forming a strong connection with the 9th, 2nd, or 11th bhava?
+c} Are the natural benefic Moon and Mercury (dual-natured karakas) forming a strong connection with the 9th, 2nd, or 11th bhava?
+----------
+1] Now list all the planets extracted earlier.
+2] Now describe the combined influence of all the planets.
+3] Now verify the combined influence of all the planets and arrange them in order of being most influential for the second marriage:
+Group A - Highly influential planets for the dasha/antardasha of the second marriage, in whose dasha the second marriage is almost certain:
+Group B - Moderately influential planets for the dasha/antardasha of the second marriage, in whose dasha the possibility of the second marriage is moderate:
+Group C - Low-influence planets for the dasha/antardasha of the second marriage, whose dasha is helpful for the second marriage (if the dasha of neither Group A nor B is running, these will be helpful):
+----------
+Part 1: Analysis of the Second-Marriage Timing as per Parashari Astrology
+1] Vimshottari Dasha:
+➤ Mahadasha (MD): Is the native currently running the mahadasha of a planet that is an influential planet for the second marriage? (This is a long-period indication).
+➤ Antardasha (AD): Within all possible mahadashas, is the antardasha of a planet that is an influential planet for the second marriage?
+➤ Pratyantar dasha (PD): Within all possible mahadashas and favorable antardashas, to get closest to the time of the second marriage, is the pratyantar dasha of a planet that is an influential planet for the second marriage?
+----------
+2] Yogini Dasha:
+➤ Are the lord planets of the running Yogini mahadasha and antardasha in all possible dashas influential planets for the second marriage?
+➤ Are the pratyantar dasha lord planets of the running Yogini antardasha in all possible dashas influential planets for the second marriage?
+Analysis (Dashas): Identifying the most probable year and month range (Time Window) for the second marriage from the combined analysis of Vimshottari (MD-AD-PD) and Yogini dashas.
+----------
+How many probable time windows have emerged ?
+----------
+2.1] Tribhagi Dasha (for micro timing):
+➤ Mahadasha/Antardasha: Is the current time/potential time window in Tribhagi dasha of planets that are strong significators (Group A or B) of the second marriage?
+➤ Window refinement: Is Tribhagi dasha further narrowing down all the potential time windows extracted by Vimshottari and Yogini?
+Analysis (Tribhagi): If both Vimshottari and Tribhagi give positive indications at the same time, the event's accuracy will be considered close to 100%.
+----------
+➤ Please technically check whether the 'Ashtottari Dasha' system applies to this native?
+Analyze based on the two main rules of Maharshi Parashar (Rahu's kendra/trikona position and the combination of birth paksha-time) and give the final conclusion as 'Yes' or 'No'.
+▸ Rahu is placed in the 4th, 5th, 7th, 9th, 10th bhavas from the lagna.
+▸ Birth during the day in Krishna Paksha (Dark Fortnight).
+▸ Birth during the night in Shukla Paksha (Bright Fortnight).
+----------
+2.2] Ashtottari Dasha (for micro timing):
+➤ Mahadasha/Antardasha: Is the current time/potential time window in Ashtottari dasha of planets that are strong significators (Group A or B) of the second marriage?
+➤ Window refinement: Is Ashtottari dasha further narrowing down all the potential time windows extracted by Vimshottari, Yogini, and Tribhagi?
+Analysis (Ashtottari): If both Vimshottari and Ashtottari give positive indications at the same time, the event's accuracy will be considered close to 100%.
+----------
+Please present all the following tables in a simple and readable table format.
+
+1] Jupiter's Bhinna Ashtakavarga (BAV) table.
+2] Saturn's Bhinna Ashtakavarga (BAV) table.
+3] Venus's Bhinna Ashtakavarga (BAV) table.
+4] Sarva Ashtakavarga table.
+----------
+3] Gochar Analysis:
+➤ Combined effect of Jupiter and Saturn during all possible dasha periods:
+Based on the above kundali data and gochar details, prepare a detailed table of the combined effect (Double Transit) of Jupiter and Saturn for the next 7 years. This analysis must be based entirely on the planets' aspects and positions (Transit Aspects/Positions).
+Table format and columns:
+| Time (Period) | Jupiter's Gochar Effect (D1+D9) | Saturn's Gochar Effect (D1+D9) | Combined Effect (Double Transit) | Final Conclusion on Second-Marriage Possibility |
+Main checklist instructions for verification:
+
+For each gochar period, examine minutely the effect (aspect or conjunction) of Jupiter and Saturn on the following points:
+
+1] For the gochar Jupiter:
+- Birth kundali (D1): 9th bhava/9th lord, lagna/lagnesh, labha bhava/labha lord, parivar bhava/dwitiyesh.
+- Karakas: natal Venus, natal Jupiter, Chandra lagna (rashi).
+- Navamsa (D9): navamsa lagna and navamsa 9th bhava.
+
+2] For the gochar Saturn:
+- Birth kundali (D1): lagna/lagnesh, 9th bhava/9th lord, labha bhava/labha lord, parivar bhava/dwitiyesh.
+- Karakas: natal Venus, natal Jupiter, Chandra lagna (rashi).
+- Navamsa (D9): navamsa lagna and navamsa 9th bhava.
+
+Table rules:
+- Effect columns: Write only the names of the affected points that are forming a connection (e.g., 'aspect on the 9th bhava and natal Venus').
+- Combined effect: If Jupiter and Saturn are both simultaneously affecting any second-marriage factors (especially lagna or the 9th bhava), write 'Active (Double Transit Active)'.
+- Conclusion: Based on the intensity of the effect and the activity of the double transit, write 'Strong', 'Average', or 'Weak'.
+
+➤ Is there a period when both the gochar Jupiter and Saturn are simultaneously affecting (by aspect or conjunction)?
+
+Analysis (Gochar): Within the "time window" identified by the dashas, the double-transit rule points to the specific year in which the second-marriage event is most likely to occur.
+----------
+Based on the above files and available data, prepare a detailed 'Second-Marriage-Focused Power Table' of the gochar of Jupiter (Brihaspati) for the next 7 years for the native.
+Table format and columns (mandatory):
+| Gochar Bhava (L/M) | Time (Period) | SAV | BAV | BAL | Quality | Effect on Second Marriage | Effect on Supporting Bhavas for Marriage | Final Conclusion on Second-Marriage Possibility |
+Strict rules for data processing:
+Strength data (SAV/BAV/BAL): Extract these values from the kundali's Ashtakavarga (Sarva/Bhinna) and Bhava Bala sections.
+Effect on second marriage: Check Jupiter's aspect/position connection in gochar with the 9th bhava, Navamesh, natal Venus, or natal Jupiter.
+Effect on supporting bhavas: Check Jupiter's aspect/position connection with the 11th, 2nd bhavas, or natal Saturn.
+Quality logic: Write 'High' if SAV > 28 and BAL > 500, 'Medium' if only SAV > 28, otherwise 'Low'.
+Final conclusion: If the 'effect on second marriage' is active and 'quality' is High/Medium, write 'Strong possibility'. If both are low, write 'Weak'.
+----------
+All the SAV/BAV values have gone wrong, they have become mismatched; take them as per the rashi.
+----------
+4] Analysis of Strength and Capability (for confirming the gochar):
+➤ Ashtakavarga:
+A] Sarva Ashtakavarga:
+a) Is the gochar Jupiter passing through a rashi with favorable points (more than 28) in the 9th bhava or lagna?
+b) Is the gochar Jupiter passing through a rashi with favorable points (more than 28) in the extracted strong time window?
+c) Is the gochar Jupiter passing through a rashi with favorable points (more than 28) in the extracted second strong time window?
+
+B] Bhinna Ashtakavarga:
+a) Is the gochar Jupiter passing through a rashi with 5 or more points in Venus's Bhinna Ashtakavarga in the extracted strong time window?
+b) Is the gochar Jupiter passing through a rashi with 5 or more points in Venus's Bhinna Ashtakavarga in the extracted second strong time window?
+c) Is the gochar Jupiter passing through the rashi in which the Navamesh (9th Lord) is sitting, and that rashi has received good points in Sarva Ashtakavarga?
+
+➤ Shadbala-Bhava Bala:
+▸ In all the extracted potential time windows, are the dasha lords (MD/AD/PD lords) strong in Shadbala?
+▸ Is the 9th bhava of the birth kundali strong in Bhava Bala?
+
+Analysis (Strength): This confirms whether the planets and bhavas are capable of giving results. Strong planets and bhavas definitely give results during gochar.
+----------
+In all possible time windows, what is the % probability of a second marriage in each ?
+----------
+Final comprehensive analysis (Parashari - second marriage):
+A time when:
+➤ The Vimshottari dasha (MD-AD-PD) is favourable.
+➤ The Yogini dasha (MD-AD-PD) is favourable.
+➤ The Tribhagi dasha (MD-AD-PD) is favourable.
+➤ The double transit of Jupiter and Saturn is simultaneously activating the principal second-marriage points (lagna/9th bhava/lord of the 9th).
+➤ Ashtakavarga is supporting that transit.
+➤ The concerned dasha lords are strong in shadbala.
+...that is the strongest and most certain time for the second marriage to occur.
+----------
+List the native's following Jaimini 'second marriage' related rashis and their lords:
+
+A) Main rashis (for second marriage):
+
+1] The rashi in which the Darakaraka (DK) planet is placed:
+2] The rashis that are 8th and 9th from Darakaraka (DK) :
+3] The rashi in which the Upapada Lagna (UL) is placed :
+4] The 8th rashi from Upapada Lagna (UL) (UL-8 - the place of the second spouse) :
+5] The rashi in which A9 (the 9th Arudha - the arudha of the second marriage) is placed :
+6] The 8th rashi from A1 (Arudha Lagna) :
+7] The 9th rashi from Swansha/Karakansha :
+
+B) Supporting rashis :
+
+1] The rashi in which Jupiter or Venus is placed:
+2] The rashi in which the Atmakaraka (AK) planet is placed:
+3] The rashi in which A1/AL (Arudha Lagna) is placed:
+4] Planets placed in the UL rashi:
+5] Planets placed in the A9 rashi:
+6] Planets placed in the 8th rashi from UL:
+7] Planets placed in the 7th rashi from A9:
+
+Note: Check whether Venus or Jupiter are influencing UL, the UL-8th, the DK-rashi, or the Karakansha-9th.
+----------
+1] Now list all the main 'second marriage' related rashis that have been derived.
+
+(Example: UL rashi, 8th from UL, DK's D1 rashi, 9th from Karakansha, A9 rashi, 2nd from UL, etc.).
+
+2] Describe which planets (such as DK, AK, Venus, Jupiter) have influence (presence or Jaimini aspect) on all these rashis.
+
+3] Now examine all the rashis and arrange them in order of their greater influence for the second marriage. This is the list of those rashis in whose Jaimini Chara Dasha (Chara Dasha) or other rashi-based dasha the second marriage has a strong probability of occurring:
+
+A] Main rashi dashas : - Highly influential rashis for the dasha-antardasha of the second marriage:
+(In the dasha/antardasha of these rashis, the second marriage is almost certain)
+
+B) Supporting rashi dashas : - Moderately influential rashis for the dasha-antardasha of the second marriage:
+(In the dasha/antardasha of these rashis, the probability of the second marriage is moderate)
+----------
+Part 2: Analysis of the second marriage timing as per Jaimini astrology:
+
+1] Timing through Chara Mahadasha:
+➤ Is the Chara dasha of such a rashi currently running that is one of the main or supporting rashis?
+
+2] Timing through Chara Antardasha:
+➤ In the probable Chara Mahadasha, antardashas of such rashis that are among the main or supporting rashis?
+
+3] Timing through Chara Pratyantar Dasha:
+➤ In the probable Chara Antardasha, pratyantar dashas of such rashis that are among the main or supporting rashis?
+
+Analysis (Dasha): The dasha-antardasha-pratyantar of the above rashis is the strongest time for the second marriage. The period in which more than one of these conditions is fulfilled is the most important time.
+----------
+2] Analysis of the dasha's quality through argala (how will the event be?):
+➤ Argala on the dasha rashi: Which planets have argala (interference) on the probable dasha rashi chosen for the second marriage?
+▸ Benefic argala: Is there argala of benefic planets (Jupiter, Venus) on it? This is a sign of a smooth, joyful and unobstructed second marriage ceremony.
+▸ Malefic argala: Is there argala of malefic planets (Saturn, Rahu, Mars) on it? This can indicate some obstacle, dispute (especially regarding matters of the first marriage), expense or hardship at the time of the second marriage.
+➤ Opposing argala: Is there any opposition to the planets forming the argala? Which force (argala or opposition) is stronger?
+
+Analysis (Argala): This determines how the event of the second marriage itself will be - smooth and celebratory or tense and full of obstacles.
+----------
+Part 3: Analysis of the second marriage timing as per Bhrigu Nandi Nadi (BNN):
+
+1] Activation of the Jiva karaka (Jupiter):
+➤ Transiting Jupiter (Transit Jupiter): Is transiting Jupiter activating the following planets or bhavas of the birth chart (in conjunction with them, or in 2-12, or in trikona (1-5-9) from them)?
+▸ The birth chart's Jupiter (Jupiter).
+▸ The birth chart's Venus (Venus) and Mercury (Mercury - which is the karaka of second/dual relationships).
+▸ The birth chart's Mars (Mars) - (for the female native's second marriage).
+▸ The birth chart's 9th bhava or its lord.
+
+2] Approval of the Karmaphaladata (Saturn):
+➤ Transiting Saturn (Transit Saturn): Is transiting Saturn activating the following planets or bhavas of the birth chart (passing over them, or casting its aspect on them)?
+▸ The birth chart's Jupiter (Jupiter).
+▸ The birth chart's Venus (Venus) and Mercury (Mercury).
+▸ The birth chart's Mars (Mars) - (for the female native's second marriage).
+▸ The birth chart's 9th bhava or its lord.
+----------
+3] Specific analysis for male and female charts:
+➤ In a man's chart: Is transit Jupiter forming a relation with the birth chart's Venus or Mercury?
+➤ In a woman's chart: Is transit Jupiter forming a relation with the birth chart's Venus (self) and Mars (husband)?
+
+Analysis:
+
+➤ According to BNN, the second marriage happens when the 'jiva' (Jupiter) is ready and 'karma' (Saturn) permits it, and at the same time the influence of Mercury (Mercury) is active.
+➤ Strongest time: The year when transit Jupiter is activating the karaka planets of the second marriage (especially Venus/Mercury) and the 9th bhava, and at the same time transit Saturn is also approving (approve) those same karaka planets or bhavas through its aspect or conjunction.
+➤ Supporting time: If only Jupiter's transit is favourable, the event can still happen, but when Saturn's approval is also obtained, the second marriage becomes almost certain.
+----------
+Part 4: Analysis of the second marriage timing as per Krishnamurti Paddhati (KP):
+
+1] Dasha analysis (confirmation of the probable period):
+➤ Qualification of the dasha lords: In all the derived possible time windows, are the lord planets of the Vimshottari Mahadasha (MD), Antardasha (AD), and Pratyantar Dasha (PD) "qualified" (Qualified) for the second marriage?
+▸ Check of qualification: Are these dasha lord planets becoming strong significators of the principal bhavas of the second marriage (2, 9, 11) through their position, nakshatra lord or sub-lord?
+▸ Check of negative bhavas: Are these dasha lords also simultaneously signifying the bhavas obstructive to the second marriage (1, 8, 10 - which are the vyaya bhavas of 2, 9, 11)? (If yes, the second marriage will happen after struggle or obstacles).
+
+Analysis (Dasha): The probable time-frame of the second marriage based on the dasha periods.
+According to KP, the second marriage is possible only in that MD-AD-PD whose lord planets are strong significators of the 2nd, 9th and 11th bhavas. This is the most accurate way to filter the Parashari dasha analysis.
+----------
+2] Use of Transits (Transits):
+
+➤ Transit of major planets: In the favourable period indicated by the dasha, are transit Jupiter (Jupiter) and Saturn (Saturn) passing over those planets which are strong significators of the second marriage (2, 9, 11)?
+
+Analysis (Transit): The dasha indicates the range of probable years and months, while the transit helps pinpoint the exact month and day within that range.
+----------
+If the second marriage does not take place in this period, then which other possible periods are there, and what is the % probability in each ?
+----------
+Part 5: Conclusion and overall overview of the second marriage timing
+➤ A brief summary of the main conclusions of all systems (Parashari, Jaimini, BNN, KP) for the second marriage timing.
+➤ On which points the different systems agree, and on which they have a slightly different viewpoint?
+➤ Identification of the consensus period of all systems based on all the analyses.
+➤ Final conclusion : The most probable year of the second marriage.
+----------
+➤ The native has provided information about himself/herself and the native has some questions; first list the given information, then list all the questions :
+----------
+Now do in-depth research on the given information and give a detailed astrological analysis with conclusions; each event should be analyzed in detail; along with remedies if remedies are necessary; first answer the first question, I will ask the rest later.
+----------
+Now write answers to the given questions after doing in-depth research; do a detailed analysis and give conclusions; each question should be analyzed in detail; along with remedies; first answer the first question, I will ask the rest later.
+----------
+Overall conclusion of the second marriage timing : Give a brief conclusion of the analysis of the native's married life and all the questions asked by the native from the beginning
+----------
+Now rewrite all the aforementioned events and questions asked so far and give their brief answers, because this list will be placed at the very beginning of this analysis; this way the native will read the answers in short beforehand, and will find the section whose analysis they wish to read with references...
+
+Questions of the native :`;
+        const rawData_mr = `ही PDF जातक xyz ची कुंडली आहे. यातील सगळी माहिती तुम्हाला सेव्ह करून ठेवायची आहे, जेणेकरून कुंडलीचे विश्लेषण होऊ शकेल. विश्लेषण करताना PDF च्या पेजचा संदर्भ लिहू नका, पण खालील माहिती कोणत्या पेजवर आहे, ही सूची द्या - म्हणजे तुम्हाला पुढे शोधायलाही सोपे जाईल :
+
+1] ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तालिका
+3] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+4] भाव बल तालिका 
+5] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+6] जैमिनी आरूढ पद (राशी आधारित)
+7] विंशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] चर दशा अंतर्दशा चार्ट
+10] कृष्णमूर्ति पद्धति (KP) भाव स्थिती तालिका {भाव-राशी-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशी-नक्षत्र-पद}
+11] कृष्णमूर्ति पद्धति (KP) ग्रह स्थिती तालिका {भाव-राशी-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशी-नक्षत्र-पद}
+12] कृष्णमूर्ति पद्धति (KP) घराचे कारक ग्रह स्थिती तालिका
+13] कृष्णमूर्ति पद्धति (KP) ग्रह कारकत्व स्थिती तालिका
+14] D1 च्या 12 भावांची राशी-नक्षत्र (Bhava Cusp)
+15] D9 ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+16] D9  च्या 12 भावांची राशी-नक्षत्र (Bhava Cusp) (स्क्रीनशॉट)
+
+
+कृपया सर्व तालिका सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा.
+----------
+वरील चॅट आणि  PDF मधील लग्न कुंडलीच्या बारा भावांतील राशी आणि भाव स्वामी तसेच ग्रह उपस्थिती लिहा, जो ग्रह उच्च, नीच, वक्री, नीचभंग, अस्त, वर्गोत्तम आहे तेही लिहा. नक्षत्रातील स्थितीही लिहा (राहू-केतूला उच्च, नीच, वक्री लिहू नका).
+
+लेखनाचा पॅटर्न खालीलप्रमाणे असेल जो फक्त उदाहरणासाठी असेल, जो  ""  मध्ये दाखवला आहे :
+
+"पहिला भाव (लग्न):
+या भावात सिंह राशी आहे, म्हणून लग्नेश सूर्य आहेत.
+या भावात सूर्य आणि राहू ग्रह स्थित आहेत.
+सूर्य: सिंह राशीत स्वगृही (आपल्याच घरात) आहेत. सूर्य मघा नक्षत्रात स्थित आहेत. सूर्य प्रथम भावाचा (सिंह) स्वामी होऊन लग्नात बसले आहेत. सूर्याची दृष्टी सातव्या भावावर (कुंभ) आहे.
+राहू: सिंह राशीत (राहूसाठी शत्रू राशी मानली जाते). राहू मघा नक्षत्रात स्थित आहे. राहूची दृष्टी पाचव्या भावावर (धनू), सातव्या भावावर (कुंभ) आणि नवव्या भावावर (मेष) आहे.
+या भावावर केतूची (सातव्या भावातून) पूर्ण दृष्टी आहे."
+
+
+तुमच्या सोयीसाठी txt फाइल दिली आहे : "D1_Analysis"
+----------
+txt फाइलमधील खालील माहिती एकापाठोपाठ एक कोणताही बदल न करता जशीच्या तशी लिहा :
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D60 Analysis
+5] D1_to_D9_Analysis
+6] D1_to_D60_Analysis
+----------
+चलित कुंडली पाहून सांगा की D1 कुंडलीच्या तुलनेत चलित कुंडलीत काय बदलले आहे आणि त्याचा काय परिणाम होईल :
+----------
+➤ PN, PB, MB चा जीवनावर परिणाम (Impact on Life)
+
+विषय: वैदिक ज्योतिष - ग्रह आणि भावांसाठी पुष्कर नवांश (PN), पुष्कर भाग (PB) आणि मृत्यू भाग (MB) यांची गणना व फलादेश.
+
+प्रतिमा आणि TXT गणनांच्या आधारे खालील क्षेत्रांवरील परिणाम लिहा:
+
+​▸ दैवी सुरक्षा (Divine Protection): कोणते भाव/ग्रह पुष्कर ऊर्जेने सुरक्षित आहेत आणि जीवनाच्या कोणत्या क्षेत्रांत 'न मागता' मदत मिळेल?
+
+​▸ संघर्ष आणि अडथळे (MB Impact): मृत्यू भागातील ग्रह जीवनाच्या कोणत्या क्षेत्रांत 'लँडमाइन'सारखे अडथळे निर्माण करू शकतात?
+
+​▸ सुरुवात विरुद्ध परिणाम (Start vs Middle): भावाच्या 'प्रारंभ' आणि 'मध्य' मधील पुष्कर फरकाच्या आधारे सांगा की कामाची सुरुवात कशी होईल आणि त्याचा शेवट कसा होईल?
+
+▸ PN आणि PB च्या गणनेत पहा की त्यांचा 'भावेश' MB मध्ये आहे का?
+(जर भावाचा स्वामी (Bhavesh) मृत्यू भागात असेल, तर भाव पुष्कर असूनही फळ बाधित होईल)
+
+​▸ दशा फळ: सध्याच्या किंवा आगामी महादशेत या अमृत/विष बिंदूंचा काय परिणाम होईल?
+
+​▸ ​निष्कर्ष: एकूणच कुंडलीत 'अमृत' (PB) आणि 'विष' (MB) यांचा समतोल किती आहे?
+----------
+1] जातकाच्या कुंडलीतील सर्व शुभ योगांची आधी सूची तयार करा, नंतर सर्व शुभ योगांच्या बनण्याच्या पद्धतीचे आणि त्यांच्या भाव व ग्रहांच्या क्षमतेवर आधारित संभाव्य परिणामांचे विस्तारपूर्वक विश्लेषण करा, काही योग आणि दोषांची सूची pdf च्या शेवटी दिली आहे, त्यातले जे शुभ योग आहेत तेही घ्यायचे आहेत. txt मधूनही घ्यायचे आहेत.
+2] जातकाच्या कुंडलीतील सर्व दोषांची आधी सूची तयार करा, नंतर सर्व दोषांच्या बनण्याच्या पद्धतीचे आणि त्यांच्या भाव व ग्रहांच्या क्षमतेवर आधारित संभाव्य परिणामांचे विस्तारपूर्वक विश्लेषण करा, काही योग आणि दोषांची सूची pdf च्या शेवटी दिली आहे, त्यातले जे दोष आहेत तेही घ्यायचे आहेत. txt मधूनही घ्यायचे आहेत.
+----------
+जन्म नक्षत्राला आधार मानून नवतारा चक्र तयार करा आणि विश्लेषण करा की कुंडलीचे सर्व 9 ग्रह कोणकोणत्या ताऱ्यांच्या (संपत, विपत, वध इत्यादी) नक्षत्रांत बसले आहेत, आणि त्या ताऱ्यानुसार प्रत्येक ग्रह आपले कसे (शुभ/अशुभ) फळ देईल? [PDF पेज No 28]
+----------
+कृपया वरील सर्व चॅट आणि PDF च्या जन्म तपशीलांच्या आधारे सर्व ९ ग्रहांची (सूर्य, चंद्र, मंगळ, बुध, गुरू, शुक्र, शनि, राहू, केतू) ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत स्पष्टीकरणाची गरज नाही. ही सूची कुंडलीचे फलित, षड्बल, विमशोपक अंश (षोडश वर्ग), अष्टकवर्ग आणि जैमिनी कारकत्व यांच्या आधारे असावी.
+
+प्रत्येक ग्रहासाठी खालील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ जैमिनी कारकत्व:
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रु, सम, उच्च, नीच, मूलत्रिकोण, स्वराशी)
+➤ नक्षत्र व पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी) 
+➤ [ग्रहाचे नाव] वर दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांसोबत युतीत आहे)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इत्यादी)
+➤ भावनात्मक/अवस्था शक्ती: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (होय/नाही किंवा स्थितीचे नाव)
+➤ नवमांश स्थिती:  (नवमांश कुंडलीत ग्रह कोणत्या राशीत, नक्षत्रात (स्वामी) आहे आणि त्याचा प्रभाव.)
+➤ नवमांशातील शक्ती: पीडित/बलवान
+➤ चलितमधील स्थिती बदल आणि प्रभाव 
+➤ भावबल: (फक्त मान)
+➤ षड्बल :  (रूपांत मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी.)
+➤ भिन्नाष्टकवर्ग (BAV) बिंदू: (0-8 दरम्यान मान) : (बिंदूंवर आधारित: व्यावहारिक शक्ती - कमकुवत/सरासरी/शक्तिशाली)
+➤ विमशोपक अंश (षोडश वर्ग): (मान आणि ग्रहांमध्ये त्याचा रँक, लागू असल्यास.)
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB)/मृत्यू भाग (MB) मधील स्थिती आणि प्रभाव :
+​➤ नवतारा स्थिती व प्रभाव: (जन्म नक्षत्राच्या आधारे हा ग्रह कोणत्या ताऱ्यात - जसे संपत, विपत, साधक इत्यादी - बसला आहे, आणि त्या विशिष्ट ताऱ्यामुळे त्याच्या नैसर्गिक व भाव फळांत कोणती शुभता किंवा अडथळे येतील.)
+➤ गोचर आणि दशेतील संभाव्य फळाचे संक्षिप्त उत्तर : (साधारणपणे तो ग्रह आपल्या दशा/अंतर्दशा आणि गोचरात कसे फळ देईल - चांगले, वाईट, किंवा मध्यम.
+
+➤ निष्कर्ष : एकूणच ग्रह मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रहांच्या बलवान आणि पीडित असण्याबद्दल निष्कर्ष (टक्केवारीच्या आधारे)
+----------
+⚠️ सिस्टम निर्देश (System Instruction): हे कुंडली विश्लेषण विशेषतः 'दुसऱ्या विवाहा'साठी (Second Marriage) केले जात आहे. जातकाचा पहिला विवाह संपला आहे. म्हणून पहिल्या विवाहाऐवजी (7वा भाव), तुम्हाला दुसऱ्या विवाहाच्या ज्योतिषीय नियमांना (नवम भाव, द्वितीय भाव, KP मधील 9वा CSL, जैमिनीतील UL पासून 8वा भाव आणि द्विस्वभाव राशी) प्राधान्य द्यायचे आहे. 
+तुम्ही अत्यंत अनुभवी आणि व्यावसायिक वैदिक ज्योतिषी (Expert Vedic Astrologer) म्हणून काम कराल. तुम्हाला पराशरी, कृष्णमूर्ति पद्धती (KP), जैमिनी आणि भृगु नंदी नाडी (BNN) यांचे सखोल ज्ञान आहे. मी तुम्हाला एका जातकाचा (Client) कुंडली डेटा (D1, D9, D60 आणि KP सिग्निफिकेशन्स) आणि काही विशिष्ट प्रॉम्प्ट्स देईन.
+
+➤ जातकाची जीवन ओळख आणि सध्याची स्थिती (Client Context)
+
+जातिका/जातक xyz 00 वर्षांची/चा आहे.
+
+लिंग : पुरुष/स्त्री
+
+संतान : 0 मुले आहेत.
+
+प्रथम विवाह :
+
+संबंध विच्छेद :
+
+संबंध विच्छेद कारण :
+
+सध्याचा उद्देश : जातक आता आपल्या मुलांना सांभाळण्यासाठी आणि कुटुंब पूर्ण करण्यासाठी 'दुसऱ्या विवाहा'साठी (Second Marriage) मुली पाहत आहे.
+
+➤ तुमचे मुख्य टास्क आणि महत्त्वाचे नियम (Strict Instructions for AI)
+
+फोकस 'दुसऱ्या विवाहा'वर - या जातकासाठी आमचे संपूर्ण विश्लेषण फक्त आणि फक्त दुसऱ्या विवाहावर केंद्रित असेल.
+
+प्रॉम्प्ट्सचे अनुकूलन (Prompt Adaptation) - मी पुढे विश्लेषणाचे जे प्रॉम्प्ट्स (Prompts) देईन, ते कदाचित 'पहिल्या विवाहा'साठी किंवा सामान्य वैवाहिक जीवनासाठी डिझाइन केलेले असू शकतात. पण तुम्हाला तुमची बुद्धिमत्ता वापरून त्या सर्व प्रॉम्प्ट्सचे 'दुसऱ्या विवाहा'च्या नियमांनुसारच (जसे 2रा भाव, 9वा भाव, 2nd CSL, 9th CSL आणि जैमिनीचे दुसरे उपपद लग्न - UL2) डीकोड करायचे आहे.
+
+➤ पद्धतींचा योग्य वापर
+
+KP (कृष्णमूर्ति पद्धती) - विवाह होण्याच्या वचनासाठी (Promise) 2nd CSL ला मुख्य माना, आणि दुसरा विवाह कसा चालेल हे पाहण्यासाठी 9th CSL चा वापर करा.
+
+जैमिनी - दुसऱ्या विवाहासाठी पहिल्या UL पासून 8व्या भावाच्या स्वामीने तयार केलेल्या 'दुसऱ्या उपपद लग्ना'चे (UL2) विश्लेषण करा. 
+
+D9 आणि D60 - येणाऱ्या दुसऱ्या पत्नीचा स्वभाव, मुलांप्रती तिचे वर्तन आणि विवाहाचे यश D9 (नवमांश) च्या 2ऱ्या, 9व्या आणि 11व्या भावांच्या आधारे तपासा.
+
+संवेदनशीलता - जातकासोबत एक मोठी शोकांतिका घडली असल्याने, फलादेश अतिशय सूक्ष्म (Micro-level) आणि स्पष्ट असावा. दुसऱ्या विवाहातही तणाव किंवा वादाचे (6, 8, 12 भाव) काही संकेत मिळाले, तर ते न लपवता स्पष्टपणे इशारा म्हणून सांगा.
+
+जर तुम्ही हे सर्व नियम समजलात, तर 'होय, मला समजले आहे; कुंडलीचा डेटा आणि तुमचा पहिला प्रॉम्प्ट द्या' असे म्हणून उत्तर द्या.
+----------
+➤ सामान्य माहिती तालिका तयार करा :
+►D1 लग्न भाव राशी आणि नक्षत्र
+►D1 नवम भाव (दुसरा विवाह) राशी आणि नक्षत्र
+►D9 लग्न भाव राशी आणि नक्षत्र
+►D9 नवम भाव (दुसरा विवाह) राशी आणि नक्षत्र
+►चंद्र राशी
+►चंद्र नक्षत्र
+►चंद्र नक्षत्र स्वामी
+►D1 लग्न भाव नक्षत्र स्वामी
+►D1 लग्नेश
+►D1 नवम भाव (दुसरा विवाह) नक्षत्र स्वामी
+►D1 नवमेश
+►D9 लग्न भाव नक्षत्र स्वामी
+►D9 लग्नेश
+►D9 नवम भाव (दुसरा विवाह) नक्षत्र स्वामी
+►D9 नवमेश
+➤ तालिका तयार केल्यानंतर खालील मुद्द्यांचे विश्लेषण करा.
+▸ D1 आणि D9 दोन्हींच्या लग्नात बसलेला ग्रह, लग्नेश आणि लग्न नक्षत्र स्वामी यांत कोण मजबूत आहे ?
+▸ D1 आणि D9 मध्ये लग्नात बसलेला ग्रह, लग्नेश आणि लग्न नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वांत प्रभावी आहे आणि व्यक्तीच्या व्यक्तिमत्त्वाला अंतिम रूपाने निर्देशित करतो ?
+▸ D1 आणि D9 दोन्हींच्या नवम भावात बसलेला ग्रह, नवमेश आणि नवम भाव नक्षत्र स्वामी यांत कोण मजबूत आहे ?
+▸ D1 आणि D9 मध्ये नवम भावात बसलेला ग्रह, नवमेश आणि नवम भाव नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वांत प्रभावी आहे आणि व्यक्तीच्या दुसऱ्या विवाहाला अंतिम रूपाने निर्देशित करतो ?
+➤ निष्कर्ष :
+▸ D1 च्या लग्नाचा प्रभावी ग्रह आणि D9 च्या लग्नाचा प्रभावी ग्रह यांत कोण अधिक प्रभावी आहे ?
+▸ D1 च्या नवम भावाचा प्रभावी ग्रह आणि D9 च्या नवम भावाचा प्रभावी ग्रह यांत कोण अधिक प्रभावी आहे ?
+----------
+वरील सर्व तपशिलांतून माहिती काढा, विश्लेषण करायचे नाही, सोबत दृष्टी टाकत असलेल्या ग्रहांना वगळून, उरलेल्या ग्रहांची अवस्था (उच्च-नीच-नीचभंग, शत्रू-मित्र-सम राशी; अस्त-वक्री-वर्गोत्तम) ही कंसात लिहा. उत्तरांसोबत प्रश्नही लिहायचे आहेत.
+
+भाग 1: पराशरी ज्योतिषानुसार 'दुसऱ्या विवाहा'चे वचन (D1 आणि D9) :
+
+1] नवमेश आणि द्वितीयेश (दुसऱ्या विवाहाचे मुख्य स्वामी):
+➤ कोणता ग्रह नवम भावाचा (9th House - दुसऱ्या विवाहाचा भाव) स्वामी आहे?
+➤ नवमेश ग्रह कोणत्या राशीत, भावात आणि नक्षत्रात (स्वामी) स्थित आहे?
+➤ नवमेश ग्रह द्विस्वभाव राशीत (मिथुन, कन्या, धनू, मीन) आहे का?
+➤ नवमेशाची युती आणि दृष्टी कोणत्या ग्रहांशी होत आहे?
+➤ द्वितीय भावाचा (कुटुंब वृद्धी) स्वामी (द्वितीयेश) कुठे आणि कोणत्या स्थितीत आहे?
+
+2] नवम भावाची (9th House) स्थिती:
+➤ नवम भावात कोणकोणते ग्रह स्थित आहेत? (त्यांच्या नक्षत्र-स्वामींसह)
+➤ नवम भावावर कोणकोणते ग्रह दृष्टी टाकत आहेत?
+➤ नवम भावात कोणती द्विस्वभाव राशी उदित होत आहे का?
+
+3] नवमांश कुंडलीत (D9 Chart) दुसरा विवाह:
+➤ नवमांशात (D9) नवम भाव कोणत्या राशीत आहे आणि त्यात कोणते ग्रह बसले आहेत?
+➤ नवमांशात नवमेश (9th Lord of D9) कोणत्या भावात आणि राशीत स्थित आहे?
+➤ (D9) नवमांशात D1 चा नवमेश कोणत्या भावात आणि राशीत स्थित आहे आणि तो मजबूत आहे का?
+➤ D9 मध्ये नवम भावावर किंवा नवमेशावर द्विस्वभाव ग्रहांचा (बुध/गुरू) प्रभाव आहे का?
+
+भाग 2: जैमिनी ज्योतिषानुसार 'दुसऱ्या विवाहा'चे विश्लेषण:
+
+1] द्वितीय उपपद (8th from UL - दुसऱ्या जीवनसाथीचे स्थान):
+➤ उपपद लग्ना (UL) पासून 8व्या भावात कोणती राशी स्थित आहे?
+➤ UL पासून 8व्या भावाचा स्वामी ग्रह कुठे स्थित आहे?
+➤ UL पासून 8व्या भावात कोणकोणते ग्रह (चर कारक) स्थित आहेत?
+➤ UL पासून 8व्या भावावर कोणत्या राशींची/ग्रहांची जैमिनी राशी दृष्टी आहे?
+
+2] दाराकारक (DK) आणि आत्माकारक (AK):
+➤ दाराकारक (DK) ग्रह द्विस्वभाव राशीत (Dual Sign) किंवा नवमांशात आहे का?
+➤ DK चा UL पासून 8व्या भावाशी किंवा त्याच्या स्वामीशी कोणता संबंध बनत आहे का?
+
+भाग 3: भृगु नंदी नाडीनुसार (BNN) 'दुसऱ्या विवाहा'चे विश्लेषण:
+
+1] विवाह कारक (गुरू/शुक्र) आणि द्विस्वभाव कारक (बुध):
+➤ जीव कारक (गुरू) किंवा जीवनसाथी कारक (शुक्र) याचा बुध (Mercury) सोबत कोणता संबंध (युती, 1-5-9, 2-12) बनत आहे का? (बुध बहुलता आणि दुसऱ्या संबंधाचा प्रबळ कारक आहे).
+➤ शुक्र किंवा गुरूवर राहू/केतूचा प्रभाव आहे का? (जो परंपरेपेक्षा वेगळा पुनर्विवाह दर्शवतो).
+➤ गुरू आणि शुक्र द्विस्वभाव राशींमध्ये (3, 6, 9, 12) स्थित आहेत का?
+
+भाग 4: कृष्णमूर्ति पद्धतीनुसार (KP) 'दुसऱ्या विवाहा'चे वचन:
+
+1] पहिल्या विवाहाच्या वैवाहिक जीवनाची गुणवत्ता आणि वेगळेपण (Quality of Married Life & Separation):
+
+➤ 7th CSL विवाहासाठी शुभ भावांना (2, 7, 11) ठामपणे दाखवत आहे का?
+➤ 7th CSL वेगळेपण/घटस्फोटाच्या भावांना (1, 6, 8, 10) सिग्निफाय करत आहे का? (लक्षात घ्या: 6वा भाव 7व्याचा 12वा आहे).
+➤ 7th CSL किंवा 11th CSL चा संबंध 12व्या भावाशी (शय्या सुखाची कमतरता/गुप्त अडचणी) होत आहे का?
+
+2] दुसऱ्या विवाहाचे वचन (Promise of 2nd Marriage):
+➤ 9व्या भावाचा कस्पल सब-लॉर्ड (9th CSL) कोण आहे?
+➤ 9th CSL द्विस्वभाव राशीशी किंवा द्विस्वभाव ग्रहांशी (बुध/गुरू) जोडलेला आहे का?
+➤ हा 9th CSL कोणत्या भावांना सिग्निफाय करत आहे (विशेषतः 2, 9, 11 भावांच्या संदर्भात)?
+➤ हा 9th CSL दुसऱ्या विवाहाला नाकारणाऱ्या भावांनाही (जसे 1, 8, 10 - जे दुसऱ्या विवाहात वेगळेपण किंवा अडथळा दर्शवतात) सिग्निफाय करत आहे का?
+
+3] दुसऱ्या जीवनसाथीचा स्वभाव आणि वैवाहिक संबंध (Nature of Spouse & Marital Relations):
+
+➤ 9व्या CSL चा नक्षत्र स्वामी कोण आहे आणि तो कुठे स्थित आहे?
+➤ 9व्या CSL चा उप-स्वामी कोण आहे आणि तो कुठे स्थित आहे?
+➤ 9व्या CSL चा  SSL कोण आहे आणि तो कुठे स्थित आहे?
+➤ विवाहाशी संबंधित भावांना (2, 9, 11) सिग्निफाय करणारे प्रमुख ग्रह कोणते आहेत आणि त्यांची स्थिती काय आहे?
+----------
+सर्व चारही प्रणालींच्या (भाग 1-4) माहितीचे क्रॉस चेक करून खात्री करा की ती बरोबर आहे की काही त्रुटी आहे ? जी त्रुटी असेल तिचीच सूची द्या फक्त.
+----------
+वरील आतापर्यंत तुम्हाला कुंडली विश्लेषणासाठी कोणकोणती माहिती मिळाली, तिची थोडक्यात सूची द्या.
+----------
+हे सुनिश्चित करा की तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल,
+
+1] आउटपुट देण्यापूर्वी डेटाचे क्रॉसचेक करून घ्या.
+2] कोणत्याही प्रकारचे शुगर-कोटिंग (Sugar-coating) करू नका. जर कुंडलीत कोणता दोष, संघर्ष किंवा नकारात्मक योग असेल, तर तो स्पष्ट आणि कडू शब्दांत सांगा. मला क्लायंटला खुश करायचे नाही, तर खरे सांगायचे आहे. लक्षात ठेवा पूर्णपणे नकारात्मक होता कामा नये, सकारात्मक आणि नकारात्मक यांचा समतोल राखून जे खरे आहे ते सांगा ।
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'निश्चितपणे', 'जरूर', 'खालील आहे' इत्यादी) करू नका. तुमचे उत्तर थेट मागितलेल्या माहितीपासूनच सुरू व्हायला हवे.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का? फक्त एवढे सांगा की कोणत्या आदेशांचे पालन कराल.
+----------
+भाग 1: पराशरी ज्योतिष (D1-D9), जैमिनी ज्योतिष आणि BNN ज्योतिषानुसार दुसऱ्या विवाहाचे वचन किती स्पष्ट आहे ?
+----------
+भाग 2: कृष्णमूर्ति पद्धतीनुसार (KP) 'दुसऱ्या विवाहा'चे वचन:
+
+1] पहिल्या विवाहाच्या वैवाहिक जीवनाची गुणवत्ता आणि वेगळेपण (Quality of Married Life & Separation):
+
+➤ 7th CSL विवाहासाठी शुभ भावांना (2, 7, 11) ठामपणे दाखवत आहे का?
+➤ 7th CSL वेगळेपण/घटस्फोटाच्या भावांना (1, 6, 8, 10) सिग्निफाय करत आहे का? (लक्षात घ्या: 6वा भाव 7व्याचा 12वा आहे).
+
+विश्लेषण: पहिल्या विवाहाचे वैवाहिक जीवन किती सुखी राहील? भविष्यात घटस्फोट, वेगळेपण (Separation) किंवा वैवाहिक सुखात मोठी घट होण्याची कोणती स्पष्ट शक्यता आहे का?
+
+2] दुसऱ्या विवाहाचे वचन (Promise of 2nd Marriage):
+
+➤ 9व्या भावाचा कस्पल सब-लॉर्ड (9th CSL) कोण आहे?
+➤ 9th CSL द्विस्वभाव राशीशी (Dual Sign: मिथुन, कन्या, धनू, मीन) किंवा द्विस्वभाव ग्रहांशी (बुध/गुरू) जोडलेला आहे का? किंवा बुधाच्या नक्षत्रात आहे का?
+➤ हा 9th CSL कोणत्या भावांना सिग्निफाय करत आहे (विशेषतः 2, 9, 11 भावांच्या संदर्भात)?
+➤ 2ऱ्या भावाचा कस्पल सब-लॉर्ड (2nd CSL) ही या वचनाचे समर्थन करत आहे का?
+➤ हा 9th CSL दुसऱ्या विवाहाला हानी पोहोचवणाऱ्या भावांनाही (जसे 1, 8, 10 - जे दुसऱ्या विवाहात वेगळेपण किंवा अडथळा दर्शवतात) सिग्निफाय करत आहे का?
+
+विश्लेषण: 9व्या CSL च्या आधारे कुंडलीत दुसऱ्या विवाहाचे स्पष्ट वचन आहे की नकाराची शक्यता आहे? (दुसऱ्या विवाहाच्या वचनाची 100 पैकी किती टक्के शक्यता आहे?)
+
+3] दुसऱ्या जीवनसाथीचा स्वभाव आणि वैवाहिक संबंध (Nature of Spouse & Marital Relations):
+
+➤ 9व्या CSL चा नक्षत्र स्वामी कोण आहे आणि तो कुठे स्थित आहे?
+➤ 9व्या CSL चा उप-स्वामी कोण आहे आणि तो कुठे स्थित आहे?
+➤ 9व्या CSL चा  SSL कोण आहे आणि तो कुठे स्थित आहे?
+➤ विवाहाशी संबंधित भावांना (2, 9, 11) सिग्निफाय करणारे प्रमुख ग्रह कोणते आहेत आणि त्यांची स्थिती काय आहे?
+
+विश्लेषण: जीवनसाथीचा सामान्य स्वभाव, व्यक्तिमत्त्व आणि वैवाहिक संबंधाची एकूण गुणवत्ता.
+----------
+भाग 3:  (षष्टियंश) - दुसऱ्या विवाहाचे कार्मिक परिणाम, पूर्व पुण्य आणि अंतिम परिणाम (Karmic Legacy) 
+​
+➤ D60 मध्ये नवम भाव आणि नवमेशाची स्थिती काय आहे? 
+➤ D1/D9 मधील दुसऱ्या विवाहाचे जे योग आहेत, ते D60 मध्ये शापित किंवा पीडित तर नाहीत ना? 
+➤ दुसरा विवाह जीवनात 'सस्टेनेबल' (टिकाऊ) राहील का?
+
+➤ विस्तारपूर्वक समग्र D60 निष्कर्ष
+----------
+भाग 4: दुसऱ्या विवाहाच्या योगाचा अंतिम निष्कर्ष (Promise Verdict)
+
+➤ चारही प्रणाल्यांच्या मुख्य निष्कर्षांचा संक्षिप्त सारांश।
+➤ कोणत्या मुद्द्यांवर चारही प्रणाल्या सहमत आहेत आणि कोणत्यांवर थोडा भिन्न दृष्टिकोन आहे?
+➤ दुसऱ्या विवाहाचे वचन: विवाहाचा योग निश्चित आहे का? असल्यास, सहजतेने की अडथळ्यांनंतर?
+➤ D60 कुंडलीचे समर्थन आणि अंतिम परिणाम ?
+➤ दुसऱ्या विवाहाच्या शक्यतेवर आणि गुणवत्तेवर अंतिम निष्कर्ष।
+➤ जर काही उपाय किंवा सूचना आवश्यक असतील।
+----------
+आता आपण जातकाच्या दुसऱ्या विवाहाची वेळ काढणार आहोत, त्याआधी लक्षात ठेवण्यासारख्या गोष्टी :
+
+1] लक्षात राहू द्या की सध्या 2026 चालू आहे, जातक 00 वर्षांचा आहे.
+तुम्ही तयार आहात का, विवाहाची वेळ ठरवण्यासाठी, फक्त एवढे सांगा.
+----------
+कृपया संलग्न (Attached) केलेल्या सर्व टेक्स्ट फाइल्समध्ये दिलेला ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, त्रिभागी, चर दशा आणि गोचर) आपल्या मेमरीमध्ये सुरक्षित ठेवा.
+
+निर्देश:
+
+1] हा डेटा सध्या चॅटमध्ये पुन्हा लिहिण्याची आवश्यकता नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला असल्याची पुष्टी करा.
+3] पुष्टीसाठी (Verification): केवळ 2026 ची सध्याची स्थिती खालील फॉरमॅटमध्ये लिहून द्या:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD-PD):
+त्रिभागी (MD-AD-PD):
+चर दशा (MD-AD-PD):
+गोचर (गुरु/शनि - लग्न व चंद्रापासून):
+
+मी त्यानंतर थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+वरील चॅट्समध्ये दिलेल्या आणि काढलेल्या ज्योतिषीय डेटाच्या (Vimshottari, Yogini, Chara Dasha, Tribhagi Dasha आणि Gochar Analysis) आधारे, येत्या 7 वर्षांची एक विस्तृत 'मास्टर वेळापत्रक' तयार करा.
+
+तक्त्याचा फॉरमॅट आणि कॉलम अगदी खालीलप्रमाणे असले पाहिजेत:
+
+| वेळ (वर्ष) | विंशोत्तरी दशा (MD-AD) | योगिनी दशा (MD-AD) | चर दशा (MD-AD) | त्रिभागी दशा (MD-AD) | गुरु गोचर (लग्न/चंद्रापासून भाव) | शनि गोचर (लग्न/चंद्रापासून भाव) |
+
+डेटा प्रोसेसिंगसाठी महत्त्वाचे नियम:
+
+दशा बदल: जर एकाच वर्षात अंतर्दशा (AD) बदलत असेल, तर ती एकाच सेलमध्ये 'Slash' (/) ने दाखवा (उदा.: बुध AD / केतु AD).
+----------
+जातकाच्या 'दुसऱ्या विवाहा'शी संबंधित ग्रहांची खालील यादी द्या:
+
+A) 9वे भाव (दुसरे विवाह)
+
+1] नवम भावाचा स्वामी (नवमेश)
+2] नवम भावाचा नक्षत्र स्वामी
+3] नवम भावात बसलेले ग्रह
+4] नवम भावावर दृष्टी ठेवणारे ग्रह
+5] नवमेश ज्या राशीत बसला आहे त्या राशीचा स्वामी (डिस्पोजिटर)
+6] नवमेश ज्या नक्षत्रात बसला आहे त्या नक्षत्राचा स्वामी
+7] नवमेशाबरोबर युत ग्रह
+8] नवमेशावर दृष्टी ठेवणारे ग्रह
+9] 9व्या भावाचा कस्पल सब-लॉर्ड (9th CSL)
+10] 9व्या CSL चा नक्षत्र स्वामी (NL)
+11] 9व्या CSL चा उप-स्वामी (SL)
+12] 9व्या CSL चा उप-उप स्वामी (SSL)
+
+B) 2रे भाव (कुटुंब वाढ)
+
+1] 2ऱ्या भावाचा स्वामी (द्वितीयेश)
+2] 2ऱ्या भावात बसलेले ग्रह
+3] 2ऱ्या भावाचा नक्षत्र स्वामी
+4] द्वितीयेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+5] द्वितीयेशाबरोबर युत ग्रह
+6] 2ऱ्या भावाचा सिग्निफिकेटर (KP)
+
+C) 11वे भाव (लाभ/इच्छा पूर्ती)
+
+1] 11व्या भावाचा स्वामी (एकादशेश)
+2] 11व्या भावात बसलेले ग्रह
+3] 11व्या भावाचा नक्षत्र स्वामी
+4] एकादशेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+5] एकादशेशाबरोबर युत ग्रह
+6] 11व्या भावाचा सिग्निफिकेटर (KP)
+
+D) लग्न (व्यक्तिमत्त्व)
+
+1] 1ल्या भावाचा स्वामी (लग्नेश)
+2] 1ल्या भावात बसलेले ग्रह
+3] 1ल्या भावाचा नक्षत्र स्वामी
+4] लग्नेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+5] लग्नेशाबरोबर युत ग्रह
+
+E) नैसर्गिक कारक आणि शुभ ग्रह
+
+1] विवाहाचा नैसर्गिक कारक शुक्राचा राशि स्वामी
+2] विवाहाचा नैसर्गिक कारक शुक्राचा नक्षत्र स्वामी
+3] विवाहाचा नैसर्गिक कारक शुक्राबरोबर युत ग्रह
+4] नैसर्गिक शुभ ग्रह गुरूचा राशि स्वामी
+5] नैसर्गिक शुभ ग्रह गुरूचा नक्षत्र स्वामी
+6] नैसर्गिक शुभ ग्रह गुरु आणि शुक्राबरोबर युत ग्रह
+7] शुक्रापासून नवम भावाचा स्वामी (दुसऱ्या विवाहासाठी)
+8] चंद्रापासून नवम भावाचा स्वामी (दुसऱ्या विवाहासाठी)
+9] 5व्या भावाशी संबंधित ग्रह (प्रेम विवाह/रोमान्ससाठी)
+
+F) नवमांश (D9)
+
+1] नवमांश (D9) च्या नवम भावाचा स्वामी
+2] नवमांश (D9) च्या नवम भावात बसलेले ग्रह
+3] नवमांश (D9) च्या नवम भावावर दृष्टी ठेवणारे ग्रह
+4] नवमांश (D9) चा नवमेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+5] नवमांश (D9) च्या नवमेशाबरोबर युत ग्रह
+6] नवमांश (D9) च्या नवमेशावर दृष्टी ठेवणारे ग्रह
+7] नवमांश (D9) च्या लग्न भावाचा स्वामी
+8] नवमांश (D9) चा लग्नेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+9] नवमांश (D9) च्या लग्नेशाबरोबर युत ग्रह
+10] नवमांश (D9) च्या लग्नात बसलेले ग्रह
+11] नवमांश (D9) मधील 2ऱ्या आणि 11व्या भावांचे स्वामी ग्रह
+
+➤ महत्त्वाची तपासणी:
+a} प्रथम भावाचा (लग्न) 9व्या, 2ऱ्या किंवा 11व्या भावाशी मजबूत संबंध बनत आहे का?
+b} नैसर्गिक कारक शुक्र आणि गुरूचा 9व्या, 2ऱ्या किंवा 11व्या भावाशी मजबूत संबंध बनत आहे का?
+c} नैसर्गिक शुभ चंद्र आणि बुध (द्विस्वभाव कारक) चा 9व्या, 2ऱ्या किंवा 11व्या भावाशी मजबूत संबंध बनत आहे का?
+----------
+1] आता आधी काढलेल्या सर्व ग्रहांची यादी करा.
+2] आता सर्व ग्रहांच्या संयुक्त प्रभावाचे वर्णन करा.
+3] आता सर्व ग्रहांच्या संयुक्त प्रभावाची तपासणी करून त्यांना दुसऱ्या विवाहासाठी अधिक प्रभावशाली असण्याच्या क्रमाने लावा:
+Group A - दुसऱ्या विवाहाच्या दशा/अंतर्दशासाठी उच्च प्रभावशाली ग्रह, ज्यांच्या दशेत दुसरे विवाह होणे जवळजवळ निश्चित आहे:
+Group B - दुसऱ्या विवाहाच्या दशा/अंतर्दशासाठी मध्यम प्रभावशाली ग्रह, ज्यांच्या दशेत दुसरे विवाह होण्याची शक्यता मध्यम आहे:
+Group C - दुसऱ्या विवाहाच्या दशा/अंतर्दशासाठी कमी प्रभावशाली ग्रह, ज्यांची दशा दुसऱ्या विवाहात उपयुक्त आहे, (जर Group A आणि B पैकी कोणाचीही दशा चालू नसेल तर हे उपयुक्त ठरतील):
+----------
+भाग 1: पराशरी ज्योतिषानुसार दुसऱ्या विवाहाच्या वेळेचे विश्लेषण
+1] विंशोत्तरी दशा :
+➤ महादशा (MD): जातकाची सध्या दुसऱ्या विवाहासाठी प्रभावशाली ग्रह असलेल्या ग्रहाची महादशा चालू आहे का? (हे दीर्घ कालावधीचे संकेत आहे).
+➤ अंतर्दशा (AD): सर्व संभाव्य महादशांमध्ये, अंतर्दशा दुसऱ्या विवाहासाठी प्रभावशाली ग्रह असलेल्या ग्रहाची आहे का?
+➤ प्रत्यंतर दशा (PD): सर्व संभाव्य महादशा आणि अनुकूल अंतर्दशांमध्ये, दुसऱ्या विवाहाच्या वेळेच्या सर्वात जवळ पोहोचण्यासाठी, प्रत्यंतर दशा दुसऱ्या विवाहासाठी प्रभावशाली ग्रह असलेल्या ग्रहाची आहे का?
+----------
+2] योगिनी दशा :
+➤ सर्व संभाव्य दशांमध्ये चालू असलेल्या योगिनी महादशा आणि अंतर्दशाचे स्वामी ग्रह, दुसऱ्या विवाहासाठी प्रभावशाली ग्रह आहेत का?
+➤ सर्व संभाव्य दशांमध्ये चालू असलेल्या योगिनी अंतर्दशाचे प्रत्यंतर दशा स्वामी ग्रह, दुसऱ्या विवाहासाठी प्रभावशाली ग्रह आहेत का?
+विश्लेषण (दशा): विंशोत्तरी (MD-AD-PD) आणि योगिनी दशांच्या संयुक्त विश्लेषणातून दुसऱ्या विवाहासाठी सर्वात संभाव्य वर्ष आणि महिन्यांची मर्यादा (Time Window) ओळखणे.
+----------
+किती संभाव्य टाइम विंडो निघाले आहेत ?
+----------
+2.1] त्रिभागी दशा (सूक्ष्म वेळ निर्धारणासाठी):
+➤ महादशा/अंतर्दशा: त्रिभागी दशेतील सध्याची वेळ/संभाव्य टाइम विंडो दुसऱ्या विवाहाचे प्रबल सिग्निफिकेटर (Group A किंवा B) असलेल्या ग्रहांची आहे का?
+➤ विंडो रिफाइनमेंट: विंशोत्तरी आणि योगिनीने काढलेल्या सर्व संभाव्य टाइम विंडो त्रिभागी दशा आणखी संकुचित (Narrow down) करत आहे का?
+विश्लेषण (त्रिभागी): जर विंशोत्तरी आणि त्रिभागी दोन्ही एकाच वेळी सकारात्मक संकेत देत असतील, तर घटनेची अचूकता 100 % च्या जवळ मानली जाईल.
+----------
+➤ कृपया तांत्रिक तपासणी करा की या जातकाला 'अष्टोत्तरी दशा' (Ashtottari Dasha) प्रणाली लागू होते का?
+महर्षि पराशरांच्या दोन मुख्य नियमांच्या (राहुची केंद्र/त्रिकोण स्थिती आणि जन्म पक्ष-वेळेचे संयोजन) आधारे विश्लेषण करा आणि अंतिम निष्कर्ष 'होय' किंवा 'नाही' मध्ये द्या.
+▸ राहु लग्नापासून ४, ५, ७, ९, १० भावांमध्ये स्थित असावा.
+▸ कृष्ण पक्षात (Dark Fortnight) दिवसा जन्म असावा.
+▸ शुक्ल पक्षात (Bright Fortnight) रात्री जन्म असावा.
+----------
+2.2] अष्टोत्तरी दशा (सूक्ष्म वेळ निर्धारणासाठी):
+➤ महादशा/अंतर्दशा: अष्टोत्तरी दशेतील सध्याची वेळ/संभाव्य टाइम विंडो दुसऱ्या विवाहाचे प्रबल सिग्निफिकेटर (Group A किंवा B) असलेल्या ग्रहांची आहे का?
+➤ विंडो रिफाइनमेंट: विंशोत्तरी, योगिनी आणि त्रिभागीने काढलेल्या सर्व संभाव्य टाइम विंडो अष्टोत्तरी दशा आणखी संकुचित (Narrow down) करत आहे का?
+विश्लेषण (अष्टोत्तरी): जर विंशोत्तरी आणि अष्टोत्तरी दोन्ही एकाच वेळी सकारात्मक संकेत देत असतील, तर घटनेची अचूकता 100 % च्या जवळ मानली जाईल.
+----------
+कृपया खालील सर्व तक्ते सोप्या आणि वाचनीय टेबल फॉरमॅटमध्ये सादर करा.
+
+1] गुरुचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+2] शनीचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+3] शुक्राचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+4] सर्वाष्टकवर्ग तक्ता
+----------
+3] गोचर विश्लेषण :
+➤ सर्व संभाव्य दशा कालावधीत गुरु आणि शनीचा संयुक्त प्रभाव:
+वरील कुंडली डेटा आणि गोचर तपशिलांच्या आधारे, पुढील 7 वर्षांसाठी गुरु (बृहस्पति) आणि शनीच्या संयुक्त प्रभावाचा (Double Transit) एक विस्तृत तक्ता तयार करा. हे विश्लेषण पूर्णपणे ग्रहांच्या दृष्टी आणि स्थितीवर (Transit Aspects/Positions) आधारित असले पाहिजे.
+तक्त्याचा फॉरमॅट आणि कॉलम:
+| वेळ (कालावधी) | गुरुचा गोचर प्रभाव (D1+D9) | शनीचा गोचर प्रभाव (D1+D9) | संयुक्त प्रभाव (Double Transit) | दुसऱ्या विवाहाच्या शक्यतेचा अंतिम निष्कर्ष |
+तपासणीसाठी मुख्य चेकलिस्ट निर्देश:
+
+प्रत्येक गोचर कालावधीसाठी, खालील मुद्द्यांवर गुरु आणि शनीच्या प्रभावाची (दृष्टी किंवा युती) सूक्ष्म तपासणी करा:
+
+1] गोचरच्या गुरु (Jupiter) साठी:
+- जन्म कुंडली (D1): नवम भाव/नवमेश, लग्न/लग्नेश, लाभ भाव/लाभेश, परिवार भाव/द्वितीयेश.
+- कारक: जन्म शुक्र, जन्म गुरु, चंद्र लग्न (राशी).
+- नवांश (D9): नवांश लग्न आणि नवांश नवम भाव.
+
+2] गोचरच्या शनी (Saturn) साठी:
+- जन्म कुंडली (D1): लग्न/लग्नेश, नवम भाव/नवमेश, लाभ भाव/लाभेश, परिवार भाव/द्वितीयेश.
+- कारक: जन्म शुक्र, जन्म गुरु, चंद्र लग्न (राशी).
+- नवांश (D9): नवांश लग्न आणि नवांश नवम भाव.
+
+तक्त्याचे नियम:
+- प्रभाव कॉलम: फक्त त्या प्रभावित मुद्द्यांची नावे लिहा ज्यांचा संबंध बनत आहे (उदा.: 'नवम भाव आणि जन्म शुक्रावर दृष्टी').
+- संयुक्त प्रभाव: जर गुरु आणि शनी दोघे एकत्रितपणे कोणत्याही दुसऱ्या विवाह कारकांना (विशेषतः लग्न किंवा 9व्या भावाला) प्रभावित करत असतील, तर 'सक्रिय (Double Transit Active)' लिहा.
+- निष्कर्ष: प्रभावाच्या तीव्रतेवर आणि दुहेरी गोचरच्या सक्रियतेवर आधारित 'प्रबळ', 'सरासरी' किंवा 'कमी' लिहा.
+
+➤ गोचरचे गुरु आणि शनी, दोघे एकत्रितपणे प्रभावित (दृष्टी किंवा युतीद्वारे) करत आहेत, असा कालावधी आहे का?
+
+विश्लेषण (गोचर): दशांनी ओळखलेल्या "वेळ मर्यादे"मध्ये, दुहेरी गोचरचा नियम त्या विशिष्ट वर्षाकडे निर्देश करतो जेव्हा दुसऱ्या विवाहाची घटना घडण्याची सर्वात जास्त शक्यता असते.
+----------
+वरील फाइल्स आणि उपलब्ध डेटाच्या आधारे, जातकासाठी पुढील 7 वर्षांच्या गुरु (बृहस्पति) च्या गोचरची एक विस्तृत 'दुसऱ्या विवाह केंद्रित शक्ति तक्ता' तयार करा.
+तक्त्याचा फॉरमॅट आणि कॉलम (अनिवार्य):
+| गोचर भाव (L/M) | वेळ (कालावधी) | SAV | BAV | BAL | गुणवत्ता | दुसऱ्या विवाहावर प्रभाव | विवाहाच्या सहाय्यक भावांवर प्रभाव | दुसऱ्या विवाहाच्या शक्यतेचा अंतिम निष्कर्ष |
+डेटा प्रोसेसिंगचे कठोर नियम:
+शक्ति डेटा (SAV/BAV/BAL): ही मूल्ये कुंडलीच्या अष्टकवर्ग (Sarva/Bhinna) आणि भाव-बल (Bhava Bala) विभागातून काढा.
+दुसऱ्या विवाहावर प्रभाव: गोचरमधील गुरुचा 9व्या भाव, नवमेश, जन्म शुक्र किंवा जन्म गुरुशी दृष्टी/स्थिती संबंध तपासा.
+सहाय्यक भावांवर प्रभाव: गुरुचा 11व्या, 2ऱ्या भावाशी किंवा जन्म शनीशी दृष्टी/स्थिती संबंध तपासा.
+गुणवत्ता (Quality) लॉजिक: SAV > 28 आणि BAL > 500 असल्यास 'High', फक्त SAV > 28 असल्यास 'Medium', अन्यथा 'Low' लिहा.
+अंतिम निष्कर्ष: जर 'दुसऱ्या विवाहावर प्रभाव' सक्रिय असेल आणि 'गुणवत्ता' High/Medium असेल, तर 'प्रबळ शक्यता' लिहा. जर दोन्ही कमी असतील, तर 'कमी' लिहा.
+----------
+सर्व SAV/BAV चुकले आहेत, मिसमॅच झाले आहेत, राशीनुसार घ्या.
+----------
+4] बल आणि क्षमतेचे विश्लेषण (गोचरच्या पुष्टीसाठी) :
+➤ अष्टकवर्ग :
+A] सर्वाष्टकवर्ग:
+a) गोचरचा बृहस्पति नवम भावात किंवा लग्नात अनुकूल बिंदू (28 पेक्षा जास्त) असलेल्या राशीतून जात आहे का?
+b) गोचरचा बृहस्पति काढलेल्या प्रबळ टाइम विंडोमध्ये अनुकूल बिंदू (28 पेक्षा जास्त) असलेल्या राशीतून जात आहे का?
+c) गोचरचा बृहस्पति काढलेल्या द्वितीय प्रबळ टाइम विंडोमध्ये अनुकूल बिंदू (28 पेक्षा जास्त) असलेल्या राशीतून जात आहे का?
+
+B] भिन्नाष्टकवर्ग:
+a) गोचरचा बृहस्पति काढलेल्या प्रबळ टाइम विंडोमध्ये, शुक्राच्या भिन्नाष्टकवर्गात 5 किंवा जास्त बिंदू असलेल्या राशीतून जात आहे का?
+b) गोचरचा बृहस्पति काढलेल्या द्वितीय प्रबळ टाइम विंडोमध्ये, शुक्राच्या भिन्नाष्टकवर्गात 5 किंवा जास्त बिंदू असलेल्या राशीतून जात आहे का?
+c) गोचरचा गुरु त्या राशीतून जात आहे का जिथे नवमेश (9th Lord) बसला आहे आणि त्या राशीला सर्वाष्टकवर्गात चांगले बिंदू मिळाले आहेत?
+
+➤ षड्बल-भावबल :
+▸ काढलेल्या सर्व संभाव्य टाइम विंडोंमध्ये दशा स्वामी (MD/AD/PD lords) षड्बलात बलवान आहेत का?
+▸ जन्म कुंडलीचा नवम भाव भाव बलात मजबूत आहे का?
+
+विश्लेषण (बल): हे पुष्टी करते की ग्रह आणि भाव फळ देण्यास सक्षम आहेत की नाही. बलवान ग्रह आणि भाव गोचरदरम्यान नक्कीच फळ देतात.
+----------
+सर्व संभाव्य टाइम विंडोमध्ये दुसऱ्या विवाहाची किती-किती % शक्यता आहे ?
+----------
+अंतिम समग्र विश्लेषण (पराशरी - दुसरा विवाह):
+असा काळ जेव्हा:
+➤ विंशोत्तरी दशा (MD-AD-PD) अनुकूल असेल.
+➤ योगिनी दशा (MD-AD-PD) अनुकूल असेल.
+➤ त्रिभागी दशा (MD-AD-PD) अनुकूल असेल.
+➤ गुरु आणि शनिचे दुहेरी गोचर प्रमुख दुसऱ्या विवाहाच्या बिंदूंना (लग्न/नवम भाव/नवमेश) एकाच वेळी सक्रिय करत असेल.
+➤ अष्टकवर्ग त्या गोचराला समर्थन देत असेल.
+➤ संबंधित दशा स्वामी षड्बलात बलवान असतील.
+...तोच काळ दुसरा विवाह होण्याचा सर्वात प्रबल आणि निश्चित काळ असतो.
+----------
+जातकाच्या खालील जैमिनी 'दुसऱ्या विवाहा'संबंधित राशी आणि त्यांचे स्वामी यांची यादी द्या:
+
+A) मुख्य राशी (दुसऱ्या विवाहासाठी):
+
+1] ज्या राशीत दाराकारक (DK) ग्रह स्थित आहे:
+2] दाराकारक (DK) पासून अष्टम आणि नवम असलेल्या राशी :
+3] ज्या राशीत उपपद लग्न (UL) स्थित आहे :
+4] उपपद लग्न (UL) पासून 8वी राशी (UL-8 - दुसऱ्या जीवनसाथीचे स्थान) :
+5] ज्या राशीत A9 (नवम आरूढ - दुसऱ्या विवाहाचा आरूढ) स्थित आहे :
+6] A1 (आरूढ लग्न) पासून 8वी राशी :
+7] स्वांश/कारकांश पासून 9वी राशी :
+
+B) सहायक राशी :
+
+1] ज्या राशीत गुरु किंवा शुक्र स्थित आहे:
+2] ज्या राशीत आत्माकारक (AK) ग्रह स्थित आहे:
+3] ज्या राशीत A1/AL (आरूढ लग्न) स्थित आहे:
+4] UL राशीत बसलेले ग्रह:
+5] A9 राशीत बसलेले ग्रह:
+6] UL पासून 8व्या राशीत बसलेले ग्रह:
+7] A9 पासून 7व्या राशीत बसलेले ग्रह:
+
+नोट: शुक्र किंवा गुरु UL, UL-8वा, DK-राशी, किंवा कारकांश-9वा यांना प्रभावित करत आहेत का ते तपासा.
+----------
+1] आता काढलेल्या सर्व मुख्य 'दुसऱ्या विवाहा'संबंधित राशी सूचीबद्ध करा.
+
+(उदाहरण: UL राशी, UL पासून 8वी, DK ची D1 राशी, कारकांश पासून 9वी, A9 राशी, UL पासून 2री, इत्यादी).
+
+2] या सर्व राशींवर कोणत्या ग्रहांचा (जसे DK, AK, शुक्र, गुरु) प्रभाव (उपस्थिती किंवा जैमिनी दृष्टी) आहे, त्याचे वर्णन करा.
+
+3] आता सर्व राशींची तपासणी करून त्यांना दुसऱ्या विवाहासाठी अधिक प्रभावशाली असण्याच्या क्रमाने लावा. ही यादी त्या राशींची आहे ज्यांच्या जैमिनी चर दशेत (Chara Dasha) किंवा इतर राशी-आधारित दशेत दुसरा विवाह होण्याची प्रबल शक्यता आहे:
+
+A] मुख्य राशी दशा : - दुसऱ्या विवाहाच्या दशा-अंतर्दशेसाठी उच्च प्रभावशाली राशी:
+(या राशींच्या दशा/अंतर्दशेत दुसरा विवाह होणे जवळजवळ निश्चित आहे)
+
+B) सहायक राशी दशा : - दुसऱ्या विवाहाच्या दशा-अंतर्दशेसाठी मध्यम प्रभावशाली राशी:
+(या राशींच्या दशा/अंतर्दशेत दुसऱ्या विवाहाची शक्यता मध्यम आहे)
+----------
+भाग 2: जैमिनी ज्योतिषानुसार दुसऱ्या विवाहाच्या वेळेचे विश्लेषण:
+
+1] चर महादशेद्वारे वेळ निश्चिती:
+➤ सध्या अशा राशीची चर दशा चालू आहे का जी मुख्य किंवा सहायक राशींपैकी एक आहे?
+
+2] चर अंतर्दशेद्वारे वेळ निश्चिती:
+➤ संभाव्य चर महादशेत अशा राशींच्या अंतर्दशा ज्या मुख्य किंवा सहायक राशींपैकी एक आहेत?
+
+3] चर प्रत्यंतर दशेद्वारे वेळ निश्चिती:
+➤ संभाव्य चर अंतर्दशेत अशा राशींच्या प्रत्यंतर दशा ज्या मुख्य किंवा सहायक राशींपैकी एक आहेत?
+
+विश्लेषण (दशा): वरील राशींची दशा-अंतर्दशा-प्रत्यंतर हा दुसऱ्या विवाहासाठी सर्वात प्रबल काळ असतो. ज्या कालावधीत यापैकी एकापेक्षा जास्त अटी पूर्ण होतात, तो काळ सर्वात महत्त्वाचा असतो.
+----------
+2] अर्गलाद्वारे दशेच्या गुणवत्तेचे विश्लेषण (घटना कशी असेल?):
+➤ दशा राशीवर अर्गला: दुसऱ्या विवाहासाठी निवडलेल्या संभाव्य दशा राशीवर कोणत्या ग्रहांची अर्गला (हस्तक्षेप) आहे?
+▸ शुभ अर्गला: त्यावर शुभ ग्रहांची (गुरु, शुक्र) अर्गला आहे का? हे एक सहज, आनंदमय आणि अडथळ्याशिवाय होणाऱ्या दुसऱ्या विवाह समारंभाचे लक्षण आहे.
+▸ पाप अर्गला: त्यावर पाप ग्रहांची (शनि, राहु, मंगल) अर्गला आहे का? हे दुसऱ्या विवाहाच्या वेळी काही अडथळा, वाद (विशेषतः पहिल्या विवाहाच्या बाबतीत), खर्च किंवा कष्ट यांचे संकेत देऊ शकते.
+➤ विरोध अर्गला: अर्गला करणाऱ्या ग्रहांना कोणी विरोध करत आहे का? कोणती शक्ती (अर्गला किंवा विरोध) अधिक बलवान आहे?
+
+विश्लेषण (अर्गला): हे ठरवते की दुसऱ्या विवाहाची घटना स्वतः कशी असेल - सुगम आणि उत्सवपूर्ण की तणावपूर्ण आणि अडथळ्यांनी भरलेली.
+----------
+भाग 3: भृगु नंदी नाडीनुसार (BNN) दुसऱ्या विवाहाच्या वेळेचे विश्लेषण:
+
+1] जीव कारक (गुरु) सक्रिय होणे:
+➤ गोचराचा बृहस्पति (Transit Jupiter): गोचराचा बृहस्पति जन्म कुंडलीतील खालील ग्रह किंवा भावांना सक्रिय करत आहे का (त्यांच्याशी युती करत आहे, किंवा 2-12, किंवा त्यांच्यापासून त्रिकोण (1-5-9) मध्ये आहे)?
+▸ जन्म कुंडलीचा बृहस्पति (Jupiter).
+▸ जन्म कुंडलीचा शुक्र (Venus) आणि बुध (Mercury - जो दुसऱ्या/द्विस्वभाव संबंधाचा कारक आहे).
+▸ जन्म कुंडलीचा मंगल (Mars) - (स्त्री जातकाच्या दुसऱ्या विवाहासाठी).
+▸ जन्म कुंडलीचा नवम भाव किंवा नवमेश.
+
+2] कर्मफलदाता (शनि) चे अनुमोदन:
+➤ गोचराचा शनि (Transit Saturn): गोचराचा शनि जन्म कुंडलीतील खालील ग्रह किंवा भावांना सक्रिय करत आहे का (त्यांच्यावरून जात आहे, किंवा त्यांच्यावर दृष्टी टाकत आहे)?
+▸ जन्म कुंडलीचा बृहस्पति (Jupiter).
+▸ जन्म कुंडलीचा शुक्र (Venus) आणि बुध (Mercury).
+▸ जन्म कुंडलीचा मंगल (Mars) - (स्त्री जातकाच्या दुसऱ्या विवाहासाठी).
+▸ जन्म कुंडलीचा नवम भाव किंवा नवमेश.
+----------
+3] पुरुष आणि स्त्री कुंडलीसाठी विशिष्ट विश्लेषण:
+➤ पुरुषाच्या कुंडलीत: गोचराचा गुरु जन्म कुंडलीच्या शुक्र किंवा बुधाशी संबंध बनवत आहे का?
+➤ स्त्रीच्या कुंडलीत: गोचराचा गुरु जन्म कुंडलीच्या शुक्र (स्वतः) आणि मंगल (पती) यांच्याशी संबंध बनवत आहे का?
+
+विश्लेषण:
+
+➤ BNN नुसार, दुसरा विवाह तेव्हा होतो जेव्हा 'जीव' (गुरु) तयार असतो आणि 'कर्म' (शनि) त्याला परवानगी देतो, आणि त्याचबरोबर बुध (Mercury) चा प्रभाव सक्रिय असतो.
+➤ सर्वात प्रबल काळ: ते वर्ष जेव्हा गोचराचा गुरु दुसऱ्या विवाहाच्या कारक ग्रहांना (विशेषतः शुक्र/बुध) आणि नवम भावाला सक्रिय करत असेल आणि त्याचबरोबर, गोचराचा शनिही त्याच कारक ग्रहांना किंवा भावांना आपल्या दृष्टीने किंवा युतीने अनुमोदित (approve) करत असेल.
+➤ सहायक काळ: जर फक्त गुरुचा गोचर अनुकूल असेल, तरीही घटना होऊ शकते, पण जेव्हा शनिचेही अनुमोदन मिळते, तेव्हा दुसरा विवाह होणे जवळजवळ निश्चित होते.
+----------
+भाग 4: कृष्णमूर्ति पद्धतीनुसार (KP) दुसऱ्या विवाहाच्या वेळेचे विश्लेषण:
+
+1] दशा विश्लेषण (संभाव्य कालावधीची पुष्टी):
+➤ दशा स्वामींची योग्यता: काढलेल्या सर्व संभाव्य टाइम विंडोमध्ये विंशोत्तरी महादशा (MD), अंतर्दशा (AD), आणि प्रत्यंतर दशा (PD) चे स्वामी ग्रह दुसऱ्या विवाहासाठी "योग्य" (Qualified) आहेत का?
+▸ योग्यतेची तपासणी: हे दशा स्वामी ग्रह आपल्या स्थिती, नक्षत्र स्वामी किंवा उप-स्वामी यांद्वारे दुसऱ्या विवाहाच्या प्रमुख भावांचे (2, 9, 11) प्रबल सिग्निफिकेटर बनत आहेत का?
+▸ नकारात्मक भावांची तपासणी: हे दशा स्वामी त्याचबरोबर दुसऱ्या विवाहात बाधक भावांनाही (1, 8, 10 - जे 2, 9, 11 चे व्यय भाव आहेत) सिग्निफाय करत आहेत का? (जर हो, तर दुसरा विवाह संघर्ष किंवा अडथळ्यांनंतर होईल).
+
+विश्लेषण (दशा): दशा कालावधींच्या आधारे दुसऱ्या विवाहाची संभाव्य वेळ-सीमा.
+KP नुसार, दुसरा विवाह फक्त त्याच MD-AD-PD मध्ये शक्य आहे ज्याचे स्वामी ग्रह 2, 9, आणि 11 भावांचे प्रबल सिग्निफिकेटर असतील. हे पराशरी दशा विश्लेषणाला फिल्टर करण्याचा सर्वात अचूक मार्ग आहे.
+----------
+2] गोचराचा (Transits) वापर:
+
+➤ प्रमुख ग्रहांचे गोचर: दशेने दर्शवलेल्या अनुकूल कालावधीत, गोचराचे बृहस्पति (Jupiter) आणि शनि (Saturn) त्या ग्रहांवरून जात आहेत का जे दुसऱ्या विवाहाचे (2, 9, 11) प्रबल सिग्निफिकेटर आहेत?
+
+विश्लेषण (गोचर): दशा संभाव्य वर्षे आणि महिन्यांची सीमा सांगते, तर गोचर त्या सीमेतील अचूक महिना आणि दिवस निश्चित करण्यात मदत करते.
+----------
+जर या कालावधीत दुसरा विवाह होत नसेल तर आणखी कोणते संभाव्य कालावधी आहेत आणि प्रत्येकात किती-किती % शक्यता आहे ?
+----------
+भाग 5: दुसऱ्या विवाहाच्या वेळेचा निष्कर्ष आणि समग्र अवलोकन
+➤ दुसऱ्या विवाहाच्या वेळेसाठी सर्व प्रणालींच्या (पराशरी, जैमिनी, BNN, KP) मुख्य निष्कर्षांचा संक्षिप्त सारांश.
+➤ कोणत्या मुद्द्यांवर विविध प्रणाली सहमत आहेत आणि कोणत्यावर त्यांचा थोडा वेगळा दृष्टिकोन आहे?
+➤ सर्व विश्लेषणांच्या आधारे सर्व प्रणालींच्या सर्वसंमत कालावधीची ओळख.
+➤ अंतिम निष्कर्ष : दुसऱ्या विवाहाच्या वेळेचे सर्वात संभाव्य वर्ष.
+----------
+➤ जातकाने स्वतःबद्दल माहिती दिली आहे आणि जातकाचे काही प्रश्न आहेत; आधी दिलेली माहिती सूचीबद्ध करा, त्यानंतर सर्व प्रश्न सूचीबद्ध करा :
+----------
+आता दिलेल्या माहितीवर सखोल संशोधन करून तपशीलवार ज्योतिषीय विश्लेषण आणि निष्कर्ष द्या; प्रत्येक घटनेचे तपशीलवार विश्लेषण झाले पाहिजे; उपाय आवश्यक असल्यास उपायांसहित; आधी पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+----------
+आता दिलेल्या प्रश्नांची उत्तरे सखोल संशोधन करून लिहा; तपशीलवार विश्लेषण आणि निष्कर्ष द्या; प्रत्येक प्रश्नाचे तपशीलवार विश्लेषण झाले पाहिजे; उपायांसहित; आधी पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+----------
+दुसऱ्या विवाहाच्या वेळेचा समग्र निष्कर्ष : सुरुवातीपासून विचारलेल्या जातकाच्या वैवाहिक जीवनासंबंधी आणि जातकाने विचारलेल्या सर्व प्रश्नांच्या विश्लेषणाचा थोडक्यात निष्कर्ष द्या
+----------
+आता आतापर्यंत केलेल्या सर्व खालील घटनांची आणि प्रश्नांची पुन्हा लिहून त्यांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीलाच लावली जाईल; यामुळे जातक आधीच थोडक्यात उत्तरे वाचेल आणि ज्याचे विश्लेषण संदर्भासहित वाचायचे आहे, तो सेक्शन शोधेल...
+
+जातकाचे प्रश्न :`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
 
         // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
         const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
@@ -735,7 +1995,7 @@ KP के अनुसार, दूसरा विवाह केवल उ�
         function processData() {
             const container = document.getElementById('prompt-container');
             // पहले डैश लाइन्स से तोडें
-            let parts = rawData.split(separatorRegex);
+            let parts = getRawData().split(separatorRegex);
 
             parts.forEach((part, index) => {
                 let cleanText = part.trim();
