@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ताजिक वर्षफल Calculator v2</title>
+<title>ताजिक वर्षफल Calculator v6</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--primary:#8e44ad;--dark:#2c3e50;--bg:#f4f6f8;--ok:#27ae60;}
@@ -38,12 +38,30 @@ td:first-child{text-align:left;font-weight:bold}
 .yes{color:#27ae60;font-weight:bold}.no{color:#999}
 .tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.8rem;font-weight:bold}
 .tag-good{background:#d5f5e3;color:#1e8449}.tag-bad{background:#fadbd8;color:#922b21}.tag-mid{background:#fef9e7;color:#7d6608}
+
+.tab-bar{display:flex;gap:10px;justify-content:center;margin:14px 0;flex-wrap:wrap}
+.tab-btn{padding:10px 22px;border:2px solid #8e44ad;background:#fff;color:#8e44ad;border-radius:8px;font-size:.95em;font-weight:600;cursor:pointer}
+.tab-btn.active{background:#8e44ad;color:#fff}
+.tab-page{display:none}
+.tab-page.active{display:block}
+.m-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.78rem;font-weight:600;margin:1px;white-space:nowrap}
+.m-md{background:#fff3e0;color:#bf360c;border:1px solid #ffcc80}
+.m-ad{background:#e3f2fd;color:#0d47a1;border:1px solid #90caf9}
+.m-mudda{background:#f3e5f5;color:#6a1b9a;border:1px solid #ce93d8}
+.m-yog{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}
+.m-bhava{font-weight:bold;color:#1565c0;font-size:.82rem}
+.ref-strip{background:#fff8e1;border:2px solid #ffa000;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.9rem}
 </style>
 </head>
 <body>
 <div class="container" id="capture-area">
 <h1>🗓️ ताजिक वर्षफल Calculator</h1>
-<div class="sub">9 तालिकाएँ — Solar Return से संपूर्ण ताजिक गणना — v2</div>
+<div class="sub">9 तालिकाएँ + मासिक भविष्यफल — Solar Return से संपूर्ण ताजिक गणना — v6</div>
+<div class="tab-bar">
+<button class="tab-btn active" id="tb-varshphal" onclick="swTab('varshphal')">🗓️ वर्षफल</button>
+<button class="tab-btn" id="tb-monthly" onclick="swTab('monthly')">📅 मासिक भविष्यफल</button>
+</div>
+<div id="pg-varshphal" class="tab-page active">
 
 <div class="card">
 <h2>📥 जन्म विवरण</h2>
@@ -71,7 +89,52 @@ td:first-child{text-align:left;font-weight:bold}
 <button class="btn btn-green" onclick="downloadPng()">📸 PNG स्क्रीनशॉट</button>
 </div>
 </div>
-<div class="foot">ताजिक वर्षफल v2 • Swiss Ephemeris (Lahiri) • B.V. Raman / Tajika Neelkanthi आधारित • tools give data, judgement Gemini करेगा</div>
+</div><!-- /pg-varshphal -->
+
+<div id="pg-monthly" class="tab-page">
+<div class="card">
+<h2>📅 मासिक भविष्यफल जेनरेटर</h2>
+<div class="note">पहले 🗓️ वर्षफल टैब में गणना करें — उसी डेटा से 12 महीने का दशा+गोचर टेबल बनेगा।</div>
+<div class="row2">
+<div>
+<label>अवधि चुनें:</label>
+<select id="m-year"></select>
+</div>
+<div>
+<label>&nbsp;</label>
+<button class="btn btn-green" style="margin-top:0" onclick="genMonthly()">📊 Generate</button>
+</div>
+</div>
+<div class="status" id="m-status"></div>
+</div>
+<!-- View toggle: 12-month overview vs single-month detail -->
+<div class="tab-bar" id="m-view-toggle" style="display:none">
+<button class="tab-btn active" id="mv-12" onclick="swMonthlyView('12')">📊 12 महीने</button>
+<button class="tab-btn" id="mv-1" onclick="swMonthlyView('1')">📅 एक महीना</button>
+</div>
+<div id="monthly-output"></div>
+<!-- Single-month detail view -->
+<div id="single-month-wrap" style="display:none">
+<div class="card">
+<div style="display:flex;gap:8px;align-items:center;justify-content:center;margin:4px 0 12px">
+<button class="tab-btn" onclick="singleMonthNav(-1)" style="padding:10px 18px">◀</button>
+<select id="sm-month" onchange="renderSingleMonth()" style="font-size:1rem;padding:10px 14px;border:2px solid #8e44ad;border-radius:8px;flex:1;max-width:400px"></select>
+<button class="tab-btn" onclick="singleMonthNav(1)" style="padding:10px 18px">▶</button>
+</div>
+<div id="single-month-output"></div>
+</div>
+<div class="btn-row" id="sm-dl-row">
+<button class="btn btn-green" onclick="downloadSingleMonthPng()">📸 PNG स्क्रीनशॉट</button>
+<button class="btn btn-green" onclick="downloadSingleMonthTxt()">💾 TXT डाउनलोड</button>
+</div>
+</div>
+<div class="btn-row" id="m-dl-row" style="display:none">
+<button class="btn btn-green" onclick="downloadMonthlyPng()">📸 PNG स्क्रीनशॉट</button>
+<button class="btn btn-green" onclick="downloadMonthlyTxt()">💾 TXT डाउनलोड</button>
+</div>
+</div><!-- /pg-monthly -->
+
+<div class="foot">ताजिक वर्षफल v6 • Swiss Ephemeris (Lahiri) • B.V. Raman / Tajika Neelkanthi आधारित • tools give data, judgement Gemini करेगा</div>
 
 <script>
 /* ================= Swiss Ephemeris ================= */
@@ -624,4 +687,505 @@ window.downloadPng=function(){
         a.click();
     });
 };
+
+/* ================= Tab Switching ================= */
+window.swTab=function(w){
+    document.getElementById('pg-varshphal').classList.toggle('active',w==='varshphal');
+    document.getElementById('pg-monthly').classList.toggle('active',w==='monthly');
+    document.getElementById('tb-varshphal').classList.toggle('active',w==='varshphal');
+    document.getElementById('tb-monthly').classList.toggle('active',w==='monthly');
+};
+
+/* ================= Monthly Prediction Tab ================= */
+const MONTH_HI=['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+const MONTH_SHORT=['जन','फ़र','मार्च','अप्रै','मई','जून','जुला','अग','सितं','अक्टू','नवं','दिसं'];
+const ZOD_SYM=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+const DPY_M=365.256364;
+const VIM_E={Ketu:7,Venus:20,Sun:6,Moon:10,Mars:7,Rahu:18,Jupiter:16,Saturn:19,Mercury:17};
+const VIM_O=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const VIM_H={Ketu:'केतु',Venus:'शुक्र',Sun:'सूर्य',Moon:'चंद्र',Mars:'मंगल',Rahu:'राहु',Jupiter:'गुरु',Saturn:'शनि',Mercury:'बुध'};
+const YOG_E={Mangala:1,Pingala:2,Dhanya:3,Bhramari:4,Bhadrika:5,Ulka:6,Siddha:7,Sankata:8};
+const YOG_O=['Mangala','Pingala','Dhanya','Bhramari','Bhadrika','Ulka','Siddha','Sankata'];
+const YOG_H={Mangala:'मंगला',Pingala:'पिंगला',Dhanya:'धान्या',Bhramari:'भ्रामरी',Bhadrika:'भद्रिका',Ulka:'उल्का',Siddha:'सिद्धा',Sankata:'संकटा'};
+
+function dashaAtJD(jd,order,years,cycle,startLord,startJD){
+    const n=order.length;
+    let idx=order.indexOf(startLord);
+    let mdStart=startJD,m=0;
+    while(m<300){
+        const mdLord=order[(idx+m)%n];
+        const mdDays=years[mdLord]*DPY_M;
+        const mdEnd=mdStart+mdDays;
+        if(jd>=mdStart&&jd<mdEnd){
+            const mdPos=order.indexOf(mdLord);
+            let adStart=mdStart;
+            for(let i=0;i<n;i++){
+                const adLord=order[(mdPos+i)%n];
+                const adDays=(mdDays/cycle)*years[adLord];
+                const adEnd=adStart+adDays;
+                if(jd>=adStart&&jd<adEnd){
+                    const adPos=order.indexOf(adLord);
+                    let pdStart=adStart;
+                    for(let j=0;j<n;j++){
+                        const pdLord=order[(adPos+j)%n];
+                        const pdDays=(adDays/cycle)*years[pdLord];
+                        const pdEnd=pdStart+pdDays;
+                        if(jd>=pdStart&&jd<pdEnd)return{md:mdLord,ad:adLord,pd:pdLord};
+                        pdStart=pdEnd;
+                    }
+                    return{md:mdLord,ad:adLord,pd:null};
+                }
+                adStart=adEnd;
+            }
+            return{md:mdLord,ad:null,pd:null};
+        }
+        mdStart=mdEnd;m++;
+    }
+    return null;
+}
+
+async function getGochar(jd,swe){
+    const res={};
+    const pl=[['सूर्य',_SEP.Sun],['चंद्र',_SEP.Moon],['मंगल',_SEP.Mars],['बुध',_SEP.Mercury],['गुरु',_SEP.Jupiter],['शुक्र',_SEP.Venus],['शनि',_SEP.Saturn]];
+    for(const [hi,sep] of pl){
+        const lon=norm360(swe.calculatePosition(jd,sep,0).longitude-swe.getAyanamsa(jd));
+        res[hi]={lon,sign:Math.floor(lon/30)};
+    }
+    const rahuLon=norm360(swe.calculatePosition(jd,10,0).longitude-swe.getAyanamsa(jd));
+    res['राहु']={lon:rahuLon,sign:Math.floor(rahuLon/30)};
+    const ketuLon=norm360(rahuLon+180);
+    res['केतु']={lon:ketuLon,sign:Math.floor(ketuLon/30)};
+    return res;
+}
+
+let monthlyData=null;
+
+function populateYearSel(){
+    const sel=document.getElementById('m-year');
+    if(sel.options.length>0||!lastResult)return;
+    const ty=lastResult.ty;
+    const opts=[
+        {v:ty+',1',t:ty+' (Jan-Dec)'},
+        {v:ty+',3',t:ty+'-'+(ty+1)+' (Mar-Feb)'},
+        {v:(ty+1)+',1',t:(ty+1)+' (Jan-Dec)'}
+    ];
+    for(const o of opts){
+        const el=document.createElement('option');
+        el.value=o.v;el.textContent=o.t;
+        sel.appendChild(el);
+    }
+    sel.selectedIndex=1;
+}
+
+window.genMonthly=async function(){
+    const out=document.getElementById('monthly-output');
+    const st=document.getElementById('m-status');
+    if(!lastResult){
+        out.innerHTML='<div class="note">⚠️ पहले 🗓️ वर्षफल टैब में "संपूर्ण वर्षफल गणना करें" दबाएं, फिर यहां Generate करें।</div>';
+        document.getElementById('m-dl-row').style.display='none';
+        return;
+    }
+    populateYearSel();
+    try{
+        st.textContent='गणना हो रही है…';
+        const swe=await ensureSwe();
+        const r=lastResult, ad=r.ad;
+        // Birth JD & Moon for dasha
+        const bJD=jdFromYMDH(ad.y,ad.mo,ad.d,ad.hh+ad.mi/60-ad.tzH);
+        const natalMoon=norm360(swe.calculatePosition(bJD,_SEP.Moon,0).longitude-swe.getAyanamsa(bJD));
+        const nakSpan=360/27;
+        const nakIdx=Math.floor(natalMoon/nakSpan);
+        const remFrac=(nakSpan-(natalMoon%nakSpan))/nakSpan;
+        const vStartLord=VIM_O[nakIdx%9];
+        const vStartJD=bJD-(1-remFrac)*VIM_E[vStartLord]*DPY_M;
+        const yStartLord=YOG_O[(nakIdx+3)%8];
+        const yStartJD=bJD-(1-remFrac)*YOG_E[yStartLord]*DPY_M;
+        // Lagna signs
+        const natalLagna=norm360(swe.calculateHouses(bJD,ad.lat,ad.lon,'P').ascendant-swe.getAyanamsa(bJD));
+        const nSign=Math.floor(natalLagna/30);
+        const cSign=Math.floor(natalMoon/30);
+        const vSign=r.vLagnaSign;
+        // Months
+        const [sy,sm]=document.getElementById('m-year').value.split(',').map(Number);
+        const rows=[];
+        for(let i=0;i<12;i++){
+            let y=sy,m=sm+i;
+            while(m>12){m-=12;y++;}
+            const jd=jdFromYMDH(y,m,1,12-ad.tzH);
+            const vim=dashaAtJD(jd,VIM_O,VIM_E,120,vStartLord,vStartJD);
+            const yog=dashaAtJD(jd,YOG_O,YOG_E,36,yStartLord,yStartJD);
+            let muddaP='—',muddaD=0;
+            for(const mr of r.mudda.rows){
+                if(jd>=mr.start&&jd<mr.end){
+                    muddaP=mr.planet.replace(' (प्रारंभ)','').replace(' (समापन)','');
+                    muddaD=mr.days;break;
+                }
+            }
+            const go=await getGochar(jd,swe);
+            rows.push({y,m,jd,vim,yog,muddaP,muddaD,go});
+        }
+        monthlyData={rows,nSign,cSign,vSign,sy,sm,ref:r,tzH:ad.tzH};
+        renderMonthly();
+        populateSingleMonthSel();
+        document.getElementById('m-view-toggle').style.display='flex';
+        swMonthlyView('12');
+        document.getElementById('m-dl-row').style.display='flex';
+        st.textContent='मासिक डेटा तैयार ✓';
+    }catch(err){
+        st.textContent='';
+        out.innerHTML='<div class="err" style="display:block">त्रुटि: '+(err.message||err)+'</div>';
+    }
+};
+
+function planetCells(hi,go,nSign,cSign,vSign){
+    const g=go[hi];
+    const b1=((g.sign-nSign)%12+12)%12+1;
+    const b2=((g.sign-cSign)%12+12)%12+1;
+    const b3=((g.sign-vSign)%12+12)%12+1;
+    return `<td>${RASHI[g.sign]} ${ZOD_SYM[g.sign]}</td><td>${b1}</td><td>${b2}</td><td>${b3}</td>`;
+}
+
+function renderMonthly(){
+    const d=monthlyData;
+    const r=d.ref;
+    // Ref strip: varshesh, muntha, yogas, sahams
+    const yesYogas=r.yogas.filter(y=>y.yes).map(y=>y.name.split(' ')[0]).slice(0,4).join(', ')||'—';
+    const vivahSaham=r.sahams.find(s=>s.name.includes('विवाह'));
+    let h='<div class="ref-strip">';
+    h+=`<b>📌 वर्षफल संदर्भ:</b> वर्षेश: <b>${r.varshesh.planet}</b> (${r.varshesh.role}) | मुंथा: <b>${RASHI[r.munthaSign]}</b> (भाव ${r.munthaBhava}) | मुख्य योग: <b>${yesYogas}</b>`;
+    if(vivahSaham)h+=` | विवाह सहम: <b>${degFmt(vivahSaham.lon)}</b>`;
+    h+=` | वर्षफल लग्न: <b>${RASHI[r.vLagnaSign]}</b></div>`;
+    // Monthly table — each fast planet: rashi + 3 separate bhava columns
+    h+='<div class="card"><h2>📅 12 महीने — दशा + गोचर</h2>';
+    h+='<div style="overflow-x:auto"><table>';
+    h+='<tr><th rowspan="2">महीना</th><th rowspan="2">विंशोत्तरी MD-AD-PD</th><th rowspan="2">योगिनी MD-AD</th><th rowspan="2">मुद्दा दशा</th>';
+    for(const pl of ['सूर्य ☀️','मंगल ♂️','बुध ☿','शुक्र ♀']){
+        h+=`<th colspan="4">${pl}</th>`;
+    }
+    h+='</tr><tr>';
+    for(let k=0;k<4;k++){
+        h+='<th>राशि</th><th>भाव (जन्म)</th><th>भाव (चंद्र)</th><th>भाव (वर्षफल)</th>';
+    }
+    h+='</tr>';
+    for(const row of d.rows){
+        h+=`<tr><td style="text-align:left"><b>${MONTH_HI[row.m-1]} ${row.y}</b></td>`;
+        h+=`<td><span class="m-tag m-md">${VIM_H[row.vim.md]} MD</span><br><span class="m-tag m-ad">${VIM_H[row.vim.ad]} AD</span><br><small>PD: ${row.vim.pd?VIM_H[row.vim.pd]:'—'}</small></td>`;
+        h+=`<td><span class="m-tag m-yog">${YOG_H[row.yog.md]}</span><br><span class="m-tag m-ad">${YOG_H[row.yog.ad]}</span></td>`;
+        h+=`<td><span class="m-tag m-mudda">${row.muddaP}</span><br><small>${row.muddaD.toFixed(0)} दिन</small></td>`;
+        for(const pl of ['सूर्य','मंगल','बुध','शुक्र']){
+            h+=planetCells(pl,row.go,d.nSign,d.cSign,d.vSign);
+        }
+        h+='</tr>';
+    }
+    h+='</table></div></div>';
+    // Slow planets table — Option B: separate independent row per period
+    // Columns: ग्रह | अवधि | राशि | भाव (जन्म) | भाव (चंद्र) | भाव (वर्षफल) | नक्षत्र
+    h+='<div class="card"><h2>🪐 धीमे ग्रह</h2>';
+    h+='<table><tr><th>ग्रह</th><th>अवधि</th><th>राशि</th><th>भाव (जन्म)</th><th>भाव (चंद्र)</th><th>भाव (वर्षफल)</th><th>नक्षत्र</th></tr>';
+    for(const pl of ['गुरु','शनि','राहु','केतु']){
+        // Detect rashi segments across the 12 month-start positions
+        const segs=[];
+        let curS=0, curSign=d.rows[0].go[pl].sign;
+        for(let i=1;i<=12;i++){
+            const sg=i<12?d.rows[i].go[pl].sign:-1;
+            if(sg!==curSign){
+                segs.push({sign:curSign,s:curS,e:i-1,lon:d.rows[curS].go[pl].lon});
+                curS=i;curSign=sg;
+            }
+        }
+        const bhavaOf=(sign,lagna)=>((sign-lagna)%12+12)%12+1;
+        const segLbl=sg=>{
+            const a=d.rows[sg.s],b=d.rows[sg.e];
+            if(sg.s===0&&sg.e===11)return 'पूरे वर्ष';
+            if(sg.s===sg.e)return `${MONTH_HI[a.m-1]} ${a.y}`;
+            if(a.y===b.y)return `${MONTH_SHORT[a.m-1]}–${MONTH_SHORT[b.m-1]} ${a.y}`;
+            return `${MONTH_SHORT[a.m-1]} ${a.y}–${MONTH_SHORT[b.m-1]} ${b.y}`;
+        };
+        // One independent row per segment
+        segs.forEach((sg,ix)=>{
+            h+='<tr>';
+            h+=ix===0?`<td rowspan="${segs.length}"><b>${pl}</b></td>`:'';
+            h+=`<td>${segLbl(sg)}</td>`;
+            h+=`<td><b>${RASHI[sg.sign]} ${ZOD_SYM[sg.sign]}</b></td>`;
+            h+=`<td><span class="m-bhava">${bhavaOf(sg.sign,d.nSign)}</span></td>`;
+            h+=`<td><span class="m-bhava">${bhavaOf(sg.sign,d.cSign)}</span></td>`;
+            h+=`<td><span class="m-bhava">${bhavaOf(sg.sign,d.vSign)}</span></td>`;
+            h+=`<td>${nakInfo(sg.lon)}</td>`;
+            h+='</tr>';
+        });
+    }
+    h+='</table><div class="note">ज = जन्म लग्न से &nbsp;|&nbsp; चं = चंद्र लग्न से &nbsp;|&nbsp; व = वर्षफल लग्न से</div></div>';
+    document.getElementById('monthly-output').innerHTML=h;
+}
+
+function buildMonthlyTxt(){
+    const d=monthlyData;
+    const r=d.ref;
+    let t=`मासिक भविष्यफल डेटा — ${MONTH_HI[d.sm-1]} ${d.sy} से 12 महीने\n`;
+    t+=`${'='.repeat(50)}\n`;
+    t+=`वर्षेश: ${r.varshesh.planet} (${r.varshesh.role})\n`;
+    t+=`मुंथा: ${RASHI[r.munthaSign]} (भाव ${r.munthaBhava})\n`;
+    t+=`वर्षफल लग्न: ${RASHI[r.vLagnaSign]}\n\n`;
+    for(const row of d.rows){
+        t+=`--- ${MONTH_HI[row.m-1]} ${row.y} ---\n`;
+        t+=`विंशोत्तरी: ${VIM_H[row.vim.md]} MD / ${VIM_H[row.vim.ad]} AD / ${row.vim.pd?VIM_H[row.vim.pd]:'—'} PD\n`;
+        t+=`योगिनी: ${YOG_H[row.yog.md]} MD / ${YOG_H[row.yog.ad]} AD\n`;
+        t+=`मुद्दा दशा: ${row.muddaP} (${row.muddaD.toFixed(0)} दिन)\n`;
+        for(const pl of ['सूर्य','मंगल','बुध','शुक्र','गुरु','शनि','राहु','केतु']){
+            const g=row.go[pl];
+            t+=`${pl}: ${RASHI[g.sign]} | जन्म भाव ${((g.sign-d.nSign)%12+12)%12+1} | चंद्र भाव ${((g.sign-d.cSign)%12+12)%12+1} | वर्षफल भाव ${((g.sign-d.vSign)%12+12)%12+1}\n`;
+        }
+        t+=`\n`;
+    }
+    return t;
+}
+
+window.downloadMonthlyPng=function(){
+    if(!monthlyData)return;
+    html2canvas(document.getElementById('monthly-output'),{scale:2}).then(cv=>{
+        const a=document.createElement('a');
+        a.href=cv.toDataURL('image/png');
+        a.download=`Monthly-Prediction-${monthlyData.sy}.png`;
+        a.click();
+    });
+};
+
+window.downloadMonthlyTxt=function(){
+    if(!monthlyData)return;
+    const t=buildMonthlyTxt();
+    const blob=new Blob([t],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`Monthly-Prediction-${monthlyData.sy}.txt`;
+    a.click();
+};
+
+/* ================= Single-Month Detail View (v6) ================= */
+window.swMonthlyView=function(v){
+    document.getElementById('mv-12').classList.toggle('active',v==='12');
+    document.getElementById('mv-1').classList.toggle('active',v==='1');
+    document.getElementById('monthly-output').style.display=v==='12'?'block':'none';
+    document.getElementById('m-dl-row').style.display=v==='12'?'flex':'none';
+    document.getElementById('single-month-wrap').style.display=v==='1'?'block':'none';
+    if(v==='1')renderSingleMonth();
+};
+
+function populateSingleMonthSel(){
+    const sel=document.getElementById('sm-month');
+    sel.innerHTML='';
+    if(!monthlyData)return;
+    monthlyData.rows.forEach((row,i)=>{
+        const el=document.createElement('option');
+        el.value=i;
+        el.textContent=`${MONTH_HI[row.m-1]} ${row.y}`;
+        sel.appendChild(el);
+    });
+    sel.selectedIndex=0;
+}
+
+window.singleMonthNav=function(dir){
+    const sel=document.getElementById('sm-month');
+    let ix=sel.selectedIndex+dir;
+    if(ix<0)ix=sel.options.length-1;
+    if(ix>=sel.options.length)ix=0;
+    sel.selectedIndex=ix;
+    renderSingleMonth();
+};
+
+// Mudda Dasha MD-AD-PD at a given JD
+function muddaAtJD(jd,muddaRows){
+    for(const mr of muddaRows){
+        if(jd>=mr.start&&jd<mr.end){
+            const mdP=mr.planet.replace(' (प्रारंभ)','').replace(' (समापन)','');
+            const mdDays=mr.end-mr.start;
+            const adDays=mdDays/9;
+            const mdPos=VIM_ORDER.indexOf(mdP);
+            let adP=mdP,adStart=mr.start;
+            for(let i=0;i<9;i++){
+                const p=VIM_ORDER[(mdPos+i)%9];
+                const aEnd=adStart+adDays;
+                if(jd>=adStart&&jd<aEnd){
+                    adP=p;
+                    const pdDays=adDays/9;
+                    const adPos=VIM_ORDER.indexOf(p);
+                    let pdP=p;
+                    let pdStart=adStart;
+                    for(let j=0;j<9;j++){
+                        const q=VIM_ORDER[(adPos+j)%9];
+                        const pEnd=pdStart+pdDays;
+                        if(jd>=pdStart&&jd<pEnd){pdP=q;break;}
+                        pdStart=pEnd;
+                    }
+                    return{md:mdP,ad:adP,pd:pdP};
+                }
+                adStart=aEnd;
+            }
+            return{md:mdP,ad:adP,pd:null};
+        }
+    }
+    return{md:'—',ad:'—',pd:'—'};
+}
+
+// Detect rashi segments for a planet within a month (daily sampling)
+async function monthSegments(y,m,planetHi,swe,tzH){
+    const sepMap={'सूर्य':_SEP.Sun,'मंगल':_SEP.Mars,'बुध':_SEP.Mercury,'शुक्र':_SEP.Venus,'गुरु':_SEP.Jupiter,'शनि':_SEP.Saturn};
+    const sep=sepMap[planetHi];
+    const isNode=(planetHi==='राहु'||planetHi==='केतु');
+    const daysInMonth=new Date(y,m,0).getDate();
+    const segs=[];
+    let curSign=-1,curStart=1,curLon=0;
+    for(let d=1;d<=daysInMonth;d++){
+        const jd=jdFromYMDH(y,m,d,12-tzH);
+        let lon;
+        if(isNode){
+            const rl=norm360(swe.calculatePosition(jd,10,0).longitude-swe.getAyanamsa(jd));
+            lon=planetHi==='राहु'?rl:norm360(rl+180);
+        }else{
+            lon=norm360(swe.calculatePosition(jd,sep,0).longitude-swe.getAyanamsa(jd));
+        }
+        const sg=Math.floor(lon/30);
+        if(sg!==curSign){
+            if(curSign>=0)segs.push({sign:curSign,s:curStart,e:d-1,lon:curLon});
+            curSign=sg;curStart=d;curLon=lon;
+        }else{
+            curLon=lon;
+        }
+    }
+    segs.push({sign:curSign,s:curStart,e:daysInMonth,lon:curLon});
+    return segs;
+}
+
+window.renderSingleMonth=async function(){
+    if(!monthlyData)return;
+    const d=monthlyData;
+    const sel=document.getElementById('sm-month');
+    const row=d.rows[sel.selectedIndex||0];
+    const out=document.getElementById('single-month-output');
+    out.innerHTML='<div class="note">गणना हो रही है…</div>';
+    try{
+        const swe=await ensureSwe();
+        const r=d.ref, ad=r.ad;
+        // Dasha at month mid-point
+        const midJD=jdFromYMDH(row.y,row.m,15,12-ad.tzH);
+        // Vimshottari & Yogini from genMonthly logic - recompute at mid-month
+        const bJD=jdFromYMDH(ad.y,ad.mo,ad.d,ad.hh+ad.mi/60-ad.tzH);
+        const natalMoon=norm360(swe.calculatePosition(bJD,_SEP.Moon,0).longitude-swe.getAyanamsa(bJD));
+        const nakSpan=360/27;
+        const nakIdx=Math.floor(natalMoon/nakSpan);
+        const remFrac=(nakSpan-(natalMoon%nakSpan))/nakSpan;
+        const vStartLord=VIM_O[nakIdx%9];
+        const vStartJD=bJD-(1-remFrac)*VIM_E[vStartLord]*DPY_M;
+        const yStartLord=YOG_O[(nakIdx+3)%8];
+        const yStartJD=bJD-(1-remFrac)*YOG_E[yStartLord]*DPY_M;
+        const vim=dashaAtJD(midJD,VIM_O,VIM_E,120,vStartLord,vStartJD);
+        const yog=dashaAtJD(midJD,YOG_O,YOG_E,36,yStartLord,yStartJD);
+        const mud=muddaAtJD(midJD,r.mudda.rows);
+
+        let h=`<div style="background:linear-gradient(135deg,#8e44ad,#6c3483);color:#fff;text-align:center;padding:18px;border-radius:10px;margin-bottom:14px">`;
+        h+=`<div style="font-size:1.8rem;font-weight:bold">${MONTH_HI[row.m-1]} ${row.y}</div>`;
+        h+=`<div style="font-size:.9rem;opacity:.9">वर्षफल वर्ष: ${r.ty}-${r.ty+1}</div></div>`;
+
+        // Dasha section
+        h+='<div class="card"><h2>🪐 दशाएं</h2><table>';
+        h+='<tr><th>दशा प्रकार</th><th>महादशा</th><th>अंतर्दशा</th><th>प्रत्यंतर</th></tr>';
+        h+=`<tr><td><b>विंशोत्तरी</b></td><td><span class="m-tag m-md">${VIM_H[vim.md]} MD</span></td><td><span class="m-tag m-ad">${VIM_H[vim.ad]} AD</span></td><td>${vim.pd?VIM_H[vim.pd]+' PD':'—'}</td></tr>`;
+        h+=`<tr><td><b>योगिनी</b></td><td><span class="m-tag m-yog">${YOG_H[yog.md]}</span></td><td><span class="m-tag m-ad">${YOG_H[yog.ad]}</span></td><td>${yog.pd?YOG_H[yog.pd]+' PD':'—'}</td></tr>`;
+        h+=`<tr><td><b>मुद्दा दशा</b></td><td><span class="m-tag m-mudda">${mud.md}</span></td><td><span class="m-tag m-ad">${mud.ad}</span></td><td>${mud.pd?mud.pd+' PD':'—'}</td></tr>`;
+        h+='</table></div>';
+
+        const bhavaOf=(sign,lagna)=>((sign-lagna)%12+12)%12+1;
+        const segLbl=(sg,y,m)=>{
+            if(sg.s===1&&sg.e===new Date(y,m,0).getDate())return 'पूरा महीना';
+            if(sg.s===sg.e)return `${sg.s} ${MONTH_SHORT[m-1]}`;
+            return `${sg.s}-${sg.e} ${MONTH_SHORT[m-1]}`;
+        };
+
+        // Fast planets (no Moon)
+        h+='<div class="card"><h2>⚡ तेज ग्रह गोचर</h2><table>';
+        h+='<tr><th>ग्रह</th><th>अवधि</th><th>राशि</th><th>भाव (जन्म)</th><th>भाव (चंद्र)</th><th>भाव (वर्षफल)</th><th>नक्षत्र</th></tr>';
+        for(const pl of ['सूर्य','मंगल','बुध','शुक्र']){
+            const segs=await monthSegments(row.y,row.m,pl,swe,ad.tzH);
+            segs.forEach((sg,ix)=>{
+                h+='<tr>';
+                h+=ix===0?`<td rowspan="${segs.length}"><b>${pl}</b></td>`:'';
+                h+=`<td>${segLbl(sg,row.y,row.m)}</td>`;
+                h+=`<td><b>${RASHI[sg.sign]} ${ZOD_SYM[sg.sign]}</b></td>`;
+                h+=`<td><span class="m-bhava">${bhavaOf(sg.sign,d.nSign)}</span></td>`;
+                h+=`<td><span class="m-bhava">${bhavaOf(sg.sign,d.cSign)}</span></td>`;
+                h+=`<td><span class="m-bhava">${bhavaOf(sg.sign,d.vSign)}</span></td>`;
+                h+=`<td>${nakInfo(sg.lon)}</td>`;
+                h+='</tr>';
+            });
+        }
+        h+='</table></div>';
+
+        // Slow planets
+        h+='<div class="card"><h2>🐢 धीमे ग्रह गोचर</h2><table>';
+        h+='<tr><th>ग्रह</th><th>अवधि</th><th>राशि</th><th>भाव (जन्म)</th><th>भाव (चंद्र)</th><th>भाव (वर्षफल)</th><th>नक्षत्र</th></tr>';
+        for(const pl of ['गुरु','शनि','राहु','केतु']){
+            const segs=await monthSegments(row.y,row.m,pl,swe,ad.tzH);
+            segs.forEach((sg,ix)=>{
+                h+='<tr>';
+                h+=ix===0?`<td rowspan="${segs.length}"><b>${pl}</b></td>`:'';
+                h+=`<td>${segLbl(sg,row.y,row.m)}</td>`;
+                h+=`<td><b>${RASHI[sg.sign]} ${ZOD_SYM[sg.sign]}</b></td>`;
+                h+=`<td><span class="m-bhava">${bhavaOf(sg.sign,d.nSign)}</span></td>`;
+                h+=`<td><span class="m-bhava">${bhavaOf(sg.sign,d.cSign)}</span></td>`;
+                h+=`<td><span class="m-bhava">${bhavaOf(sg.sign,d.vSign)}</span></td>`;
+                h+=`<td>${nakInfo(sg.lon)}</td>`;
+                h+='</tr>';
+            });
+        }
+        h+='</table><div class="note">ज = जन्म लग्न से &nbsp;|&nbsp; चं = चंद्र लग्न से &nbsp;|&nbsp; व = वर्षफल लग्न से</div></div>';
+
+        out.innerHTML=h;
+        // Store for TXT download
+        window._singleMonthData={row,vim,yog,mud,y:row.y,m:row.m};
+    }catch(err){
+        out.innerHTML='<div class="err" style="display:block">त्रुटि: '+(err.message||err)+'</div>';
+    }
+};
+
+function buildSingleMonthTxt(){
+    const smd=window._singleMonthData;
+    if(!smd||!monthlyData)return '';
+    const d=monthlyData;
+    const{row,vim,yog,mud}=smd;
+    let t=`मासिक भविष्यफल — ${MONTH_HI[row.m-1]} ${row.y}\n`;
+    t+=`${'='.repeat(50)}\n\n`;
+    t+=`--- दशाएं ---\n`;
+    t+=`विंशोत्तरी: ${VIM_H[vim.md]} MD / ${VIM_H[vim.ad]} AD / ${vim.pd?VIM_H[vim.pd]+' PD':'—'}\n`;
+    t+=`योगिनी: ${YOG_H[yog.md]} / ${YOG_H[yog.ad]} / ${yog.pd?YOG_H[yog.pd]+' PD':'—'}\n`;
+    t+=`मुद्दा दशा: ${mud.md} / ${mud.ad} / ${mud.pd?mud.pd+' PD':'—'}\n\n`;
+    t+=`--- गोचर ---\n`;
+    for(const pl of ['सूर्य','मंगल','बुध','शुक्र','गुरु','शनि','राहु','केतु']){
+        const g=row.go[pl];
+        t+=`${pl}: ${RASHI[g.sign]} | जन्म भाव ${((g.sign-d.nSign)%12+12)%12+1} | चंद्र भाव ${((g.sign-d.cSign)%12+12)%12+1} | वर्षफल भाव ${((g.sign-d.vSign)%12+12)%12+1} | ${nakInfo(g.lon)}\n`;
+    }
+    return t;
+}
+
+window.downloadSingleMonthPng=function(){
+    const el=document.getElementById('single-month-output');
+    if(!el||!el.innerHTML)return;
+    html2canvas(el,{scale:2}).then(cv=>{
+        const a=document.createElement('a');
+        a.href=cv.toDataURL('image/png');
+        const smd=window._singleMonthData;
+        a.download=`Single-Month-${smd?smd.m+'-'+smd.y:'x'}.png`;
+        a.click();
+    });
+};
+
+window.downloadSingleMonthTxt=function(){
+    const t=buildSingleMonthTxt();
+    if(!t)return;
+    const blob=new Blob([t],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    const smd=window._singleMonthData;
+    a.download=`Single-Month-${smd?smd.m+'-'+smd.y:'x'}.txt`;
+    a.click();
+};
+
 </script>
