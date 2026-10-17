@@ -98,6 +98,14 @@
 <body>
 
     <h1>Child Birth Report Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
     <div class="container" id="prompt-container">
         <!-- Prompts will be loaded here -->
     </div>
@@ -106,7 +114,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी : 
+        const rawData_hi = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी : 
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -128,7 +136,7 @@
 18] D7  के 12 भाव के राशी-नक्षत्र (Bhava Cusp) 
 
 कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
-------------------------------------------
+----------
 उपरोक्त चैट और  PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
 
 लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
@@ -142,7 +150,7 @@
 
 
 आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
------------------------------------------
+----------
 txt फाइल से निम्मलिखित जानकारी को एक के बाद एक बिना बदलाव के जैसी की वैसी लिखे :
 
 1] Jaimini Complete Report
@@ -153,9 +161,9 @@ txt फाइल से निम्मलिखित जानकारी क
 6] D1_to_D9_Analysis
 7] D1_to_D7_Analysis
 8] D1_to_D60_Analysis
------------------------------------------
+----------
 चलित कुंडली देखकर बताईये की चलित कुंडली में D1 कुंडली से क्या बदला है और इसका क्या प्रभाव पड़ेगा :
------------------------------------------
+----------
 ➤ PN, PB, MB का जीवन पर प्रभाव (Impact on Life)
 
 विषय: वैदिक ज्योतिष - ग्रह एवं भावों के लिए पुष्कर नवांश (PN), पुष्कर भाग (PB) और मृत्यु भाग (MB) की गणना एवं फलादेश।
@@ -174,12 +182,12 @@ txt फाइल से निम्मलिखित जानकारी क
 ​▸ दशा फल: वर्तमान या आगामी महादशा में इन अमृत/विष बिंदुओं का क्या प्रभाव पड़ेगा?
 
 ​▸ ​निष्कर्ष: समग्र रूप से कुंडली में 'अमृत' (PB) और 'विष' (MB) का संतुलन कितना है?
------------------------------------------
+----------
 1] जातक के कुंडली के सभी शुभ योगो की पहले सूचि तयार करें, बाद में सभी शुभ योगों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो शुभ योग है वो भी लेने है.txt से भी लेने है.
 2] जातक के कुंडली के सभी दोषों की पहले सूचि तयार करें, बाद में सभी दोषों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो दोष है वो भी लेने है.txt से भी लेने है.
------------------------------------------
+----------
 जन्म नक्षत्र को आधार मानकर नवतारा चक्र बनाइए और विश्लेषण कीजिए कि कुंडली के सभी 9 ग्रह किन-किन ताराओं (संपत, विपत, वध आदि) के नक्षत्रों में बैठे हैं, और उस तारा के अनुसार प्रत्येक ग्रह अपना कैसा (शुभ/अशुभ) फल देगा? [PDF पेज No 28]
------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), अष्टकवर्ग और जैमिनी कारकत्व के आधार पर होना चाहिए।
 
 प्रत्येक ग्रह के लिए निम्नलिखित जानकारी प्रदान करें:
@@ -208,7 +216,7 @@ txt फाइल से निम्मलिखित जानकारी क
 ➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
-------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर D1 के सभी 12 भावों का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल, अष्टकवर्ग के आधार पर होना चाहिए।
 
 
@@ -226,7 +234,7 @@ txt फाइल से निम्मलिखित जानकारी क
 ➤ निष्कर्ष : समग्र रूप से भाव मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी भाव के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
------------------------------------------
+----------
 ➤ समान्य जानकारी तालिका बनाइये :
 
 ►D1 लग्न भाव राशी और नक्षत्र
@@ -268,8 +276,8 @@ txt फाइल से निम्मलिखित जानकारी क
 
 ➤ निष्कर्ष : 
 ▸ D1,D9 के लग्न के प्रभावशाली ग्रह और  D7 के लग्न के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ? 
-▸ D1,D9 के पंचम भाव के प्रभावशाली ग्रह और  D7 के पंचम भाव के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ?  
-------------------------------------------
+▸ D1,D9 के पंचम भाव के प्रभावशाली ग्रह और  D7 के पंचम भाव के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ?
+----------
 उपरोक्त सभी विवरण से जानकारी निकालिए, विश्लेषण नहीं करना है,  "विश्लेषण:" वाले पॉइंट का विश्लेषण नही करना है बस जैसा का वैसा लिखना है. साथ में दृष्टी डाल रहे ग्रहों को छोड़कर, बाकि ग्रह की अवस्था (उच्च-नीच-निचभंग, शत्रु-मित्र-सम राशी; अस्त-वक्री-वर्गोत्तम) भी ब्राकेट में लिखे. जवाबों के साथ सवाल भी लिखें और 'to be continued...' भी बस जैसा का वैसा लिखना है.
 
 भाग 1 A: पराशरी ज्योतिष के अनुसार संतान का विश्लेषण
@@ -363,7 +371,7 @@ to be continued...
 विश्लेषण: दूसरी संतान की संभावना और उससे संबंधित विषय। (इसी तरह नवम भाव तीसरी संतान के लिए
 
 to be continued...
------------------------------------------
+----------
 उपरोक्त सभी विवरण से जानकारी निकालिए, विश्लेषण नहीं करना है,  "विश्लेषण:" वाले पॉइंट का विश्लेषण नही करना है बस जैसा का वैसा लिखना है. साथ में दृष्टी डाल रहे ग्रहों को छोड़कर, बाकि ग्रह की अवस्था (उच्च-नीच-निचभंग, शत्रु-मित्र-सम राशी; अस्त-वक्री-वर्गोत्तम) भी ब्राकेट में लिखे. जवाबों के साथ सवाल भी लिखें और 'to be continued...' भी बस जैसा का वैसा लिखना है.
 
 भाग 1 B: पराशरी ज्योतिष के बीज स्फुट और क्षेत्र स्फुट की गणना अनुसार संतान का विश्लेषण :
@@ -406,7 +414,7 @@ to be continued...
 ➤ यह क्षेत्र स्फुट बिंदु नवमांश कुंडली (D9) में किस राशि में स्थित है और वहां उस पर क्या प्रभाव है?
 
 अंतिम निष्कर्ष: इन सभी विश्लेषणों के आधार पर, स्त्री की प्रजनन क्षमता (क्षेत्र स्फुट) बलवान है, मध्यम है, या पीड़ित है?
--------------------------------------------
+----------
 उपरोक्त सभी विवरण से जानकारी निकालिए, विश्लेषण नहीं करना है, "विश्लेषण:" वाले पॉइंट का विश्लेषण नही करना है बस जैसा का वैसा लिखना है.जवाबों के साथ सवाल भी लिखें और 'to be continued...' भी बस जैसा का वैसा लिखना है.
 
 भाग 2: जैमिनी ज्योतिष के अनुसार संतान का विश्लेषण
@@ -441,7 +449,7 @@ to be continued...
 विश्लेषण: संतान के जीवन में आने वाले अदृश्य अवसर और बाधाएं।
 
 to be continued...
-------------------------------------------
+----------
 उपरोक्त सभी विवरण से जानकारी निकालिए, विश्लेषण नहीं करना है, "विश्लेषण:" वाले पॉइंट का विश्लेषण नही करना है बस जैसा का वैसा लिखना है, साथ में ग्रह की अवस्था (उच्च, नीच, निचभंग, अस्त, वक्री, शत्रु-मित्र-सम राशी) भी ब्राकेट में लिखे. जवाबों के साथ सवाल भी लिखें और 'to be continued...' भी बस जैसा का वैसा लिखना है.
 
 भाग 3: भृगु नंदी नाड़ी (BNN) के अनुसार संतान का विश्लेषण
@@ -463,7 +471,7 @@ to be continued...
 विश्लेषण: संतान के लिंग का एक अनुमानित आकलन।
 
 to be continued...
-------------------------------------------
+----------
 उपरोक्त सभी विवरण से जानकारी निकालिए, विश्लेषण नहीं करना है, "विश्लेषण:" वाले पॉइंट का विश्लेषण नही करना है बस जैसा का वैसा लिखना है, साथ में ग्रह अगर वक्री हो तो उसे भी ब्राकेट में लिखे.जवाबों के साथ सवाल भी लिखें और 'to be continued...' भी बस जैसा का वैसा लिखना है.
 
 भाग 4: कृष्णमूर्ति पद्धति (KP) के अनुसार संतान का विश्लेषण
@@ -485,11 +493,11 @@ to be continued...
 विश्लेषण: संतान प्राप्ति के वैकल्पिक तरीकों की संभावना।
 
 to be continued...
-------------------------------------------
+----------
 सभी चारों प्रणाली (भाग 1-4) की जानकारी को क्रॉस चेक करके सुनिश्चित करिए की वो सही है या कोई त्रुटी है ? जो त्रुटी हो उसकी ही सूचि दीजिए सिर्फ.
------------------------------------------
+----------
 उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
------------------------------------------
+----------
 यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
 
 1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
@@ -498,9 +506,9 @@ to be continued...
 4] System instructions में दिए गए आदेशों का भी पालन करे.
 
 क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
-------------------------------------------
+----------
 https://sites.google.com/view/astropropmt/Child-Birth-Report/CHBR-Paste
------------------------------------------
+----------
 ➤ D60 (षष्टियंश) - पूर्व पुण्य और अंतिम परिणाम (Karmic Legacy) 
 ​
 अगर D1 और D9 में  संतान संबधी जो योग हैं, लेकिन D60 में वह ग्रह शापित है, तो संतान प्राप्ति में विलंब या डिनायल आ सकती है। यह 'सस्टेनेबल सक्सेस' (टिकाऊ सफलता) देखने के D60 का विश्लेषण । 
@@ -513,7 +521,7 @@ https://sites.google.com/view/astropropmt/Child-Birth-Report/CHBR-Paste
 यह विश्लेषण सीधे तौर पर यह बताएगा कि D1/D9 के शक्तिशाली राजयोग D60 में कितने मजबूत हैं।
 
 ➤ विस्तारपूर्वक समग्र D60 निष्कर्ष
-__________________________________________
+----------
 भाग 5: निष्कर्ष और समग्र अवलोकन
 
 ➤ चारों प्रणालियों के मुख्य निष्कर्षों का संक्षिप्त सारांश।
@@ -523,12 +531,12 @@ __________________________________________
 ➤ D60 कुंडली का समर्थन और अंतिम परिणाम ?
 ➤ संतान प्राप्ती की संभावना और गुणवत्ता पर अंतिम निष्कर्ष।
 ➤ यदि कोई उपाय या सुझाव आवश्यक हो। तो उसके निवारण के लिए क्या ज्योतिषीय उपाय, रत्न या पूजा-पाठ किए जा सकते हैं।
-------------------------------------------
+----------
 अब हम जातक के संतान प्राप्ति के संभावित समय  निकालेंगे, उसके पहले ध्यान रखने योग्य बातें :
 
 1] ध्यान रहे अभी 2026 चल रहा है और जातिका/जातक xyz 00 साल की/का है, और उसके शादी को 00 साल हो गए है,
 क्या आप तैयार है, संतान प्राप्ति का समय निर्धारीत करने के लिए, सिर्फ इतना बताईये.
-------------------------------------------
+----------
 कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, त्रिभागी, चर दशा और गोचर) को अपनी मेमोरी में सुरक्षित कर लें।
 
 निर्देश:
@@ -543,7 +551,7 @@ __________________________________________
 गोचर (गुरु/शनि - लग्न व चंद्र से):
 
 मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
-------------------------------------------
+----------
 उपरोक्त चैट्स में दिए गए और एक्सट्रैक्ट किए गए ज्योतिषीय डेटा (Vimshottari, Yogini, Chara Dasha, Tribhagi Dasha और Gochar Analysis) के आधार पर, आगामी 7 वर्षों की एक विस्तृत 'मास्टर समय-सारणी' तैयार करें।
 
 ​तालिका का प्रारूप और कॉलम बिल्कुल निम्न प्रकार होने चाहिए:
@@ -553,7 +561,7 @@ __________________________________________
 ​डेटा प्रोसेसिंग के लिए महत्वपूर्ण नियम:
 
 ​दशा परिवर्तन: यदि किसी एक वर्ष के भीतर अंतर्दशा (AD) बदलती है, तो उसे एक ही सेल में 'Slash' (/) के साथ दिखाएं (जैसे: बुध AD / केतु AD)।
-------------------------------------------
+----------
 जातक के निम्मलिखित संतान प्राप्ति संबंधित ग्रहों की सूची दिजीए
 
 A) 5वा भाव (संतान प्राप्ति)
@@ -636,7 +644,7 @@ a} क्या प्रथम भाव का 5वें, 2रे या 11�
 b} क्या नैसर्गिक कारक गुरु का 5वें, 2रे या 11वें भाव से मजबूत संबंध बना रहा है ?
 
 c} क्या नैसर्गिक शुभ चन्द्रमा, शुक्र और बुध का 5वें, 2रे या 11वें भाव से मजबूत संबंध बना रहा है ?
--------------------------------------------
+----------
 1] अब पहले निकाले गए सभी ग्रहो को सूचीबद्ध किजिये
 
 2] अब सभी ग्रहो के संयुक्त प्रभाव का वर्णन किजिए
@@ -648,21 +656,21 @@ Group A - संतान प्राप्ति की दशा अंतर
 Group B - संतान प्राप्ति की दशा अंतर्दशा के लिए मध्यम प्रभावशाली ग्रह, जिनकी दशा में संतान प्राप्ति होने की संभावना मध्यम है :
 
 Group C - संतान प्राप्ति की दशा अंतर्दशा के लिए निम्म प्रभावशाली ग्रह, जिनकी दशा में संतान प्राप्ति होने की संभावना सहायक है, अगर Group A और B में से किसी की दशा नही चल रही हो तो यह सहायक होगा :
--------------------------------------------
+----------
 भाग 1: पराशरी ज्योतिष के अनुसार संतान प्राप्ति के समय का विश्लेषण
 1] विंशोत्तरी दशा :
 ➤ महादशा (MD): क्या जातक की महादशा ऐसे ग्रह की चल रही है जो संतान प्राप्ति के लिए प्रभावशाली ग्रह हो? (यह एक लंबी अवधि का संकेत है)।
 ➤ अंतर्दशा (AD): सभी संभावित महादशा के भीतर, क्या अंतर्दशा ऐसे ग्रह की है जो संतान प्राप्ति के लिए प्रभावशाली ग्रह हो?
 ➤ प्रत्यंतर दशा (PD):सभी संभावित महादशा अनुकूल अंतर्दशा के भीतर, संतान प्राप्ति के समय के सबसे करीब पहुंचने के लिए, क्या प्रत्यंतर दशा ऐसे ग्रह की है जो संतान प्राप्ति के लिए प्रभावशाली ग्रह हो?
------------------------------------------
+----------
 2] योगिनी दशा :
 ➤ सभी संभावित दशा में चल रही योगिनी महादशा और अंतर्दशा के स्वामी ग्रह जो संतान प्राप्ति के लिए प्रभावशाली ग्रह हो??
 ➤ सभी संभावित दशा में चल रही योगिनी अंतर्दशा के प्रत्यंतर दशा स्वामी ग्रह जो संतान प्राप्ति के लिए प्रभावशाली ग्रह हो??
 
 विश्लेषण (दशा): विंशोत्तरी (MD-AD-PD) और योगिनी दशाओं के संयुक्त विश्लेषण से संतान प्राप्ति के लिए सबसे संभावित वर्ष और महीनों की सीमा (Time Window) की पहचान करना।
------------------------------------------
+----------
 कितने संभावित टाइम विंडो निकले है ?
------------------------------------------
+----------
 2.1] त्रिभागी दशा (सूक्ष्म समय निर्धारण के लिए):
 
 ➤ महादशा/अंतर्दशा: क्या त्रिभागी दशा में वर्तमान समय ऐसे ग्रहों का है जो संतान प्राप्ति के प्रबल सिग्निफिकेटर (Group A या B) हैं?
@@ -670,7 +678,7 @@ Group C - संतान प्राप्ति की दशा अंतर
 ➤ विंडो रिफाइनमेंट: विंशोत्तरी और योगिनी द्वारा निकाली गई सभी संभावित टाइम विंडो को क्या त्रिभागी दशा और अधिक संकुचित (Narrow down) कर रही है?
 
 विश्लेषण (त्रिभागी): यदि विंशोत्तरी और त्रिभागी दोनों एक ही समय पर सकारात्मक संकेत दे रहे हैं, तो घटना की सटीकता 100 % के करीब मानी जाएगी।
------------------------------------------
+----------
 3] गोचर विश्लेषण :
 ➤ सभी संभावित दशा अवधि में गुरु और शनि का संयुक्त प्रभाव: 
 
@@ -702,13 +710,13 @@ Group C - संतान प्राप्ति की दशा अंतर
 ➤ क्या गोचर के गुरु और शनि, दोनों एक साथ प्रभावित (दृष्टि या युति द्वारा) कर रहे हैं, ऐसी अवधि है?
 
 विश्लेषण (गोचर): दशा द्वारा पहचानी गई "समय सीमा" के भीतर, दोहरे गोचर का नियम उस विशिष्ट वर्ष को इंगित करता है जब संतान प्राप्ति की घटना घटित होने की सबसे अधिक संभावना है।
------------------------------------------
+----------
 कृपया निम्लिखित सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
 
 1] गुरु का भिन्नाष्टकवर्ग (BAV) तालिका।
 2] शनी का भिन्नाष्टकवर्ग (BAV) तालिका।
 3] सर्वाष्टकवर्ग तालिका
-------------------------------------------
+----------
 उपरोक्त फाइलों और उपलब्ध डेटा के आधार पर, जातक के लिए अगले 7 वर्षों के गुरु (बृहस्पति) के गोचर की एक विस्तृत 'संतान प्राप्ति केंद्रित शक्ति तालिका' तैयार करें।
 ​तालिका का प्रारूप और कॉलम (अनिवार्य):
 | गोचर भाव (L/M) | समय (अवधि) | SAV | BAV | BAL | गुणवत्ता | संतान प्राप्ति पर प्रभाव | संतान के सहायक भावों पर प्रभाव | संतान प्राप्ति की संभावना का अंतिम निष्कर्ष |
@@ -718,7 +726,7 @@ Group C - संतान प्राप्ति की दशा अंतर
 ​सहायक भावों पर प्रभाव: गुरु का 11वें, 2रे, 9वें भाव या जैमिनी पुत्रकारक से दृष्टि/स्थिति संबंध जाँचे।
 ​गुणवत्ता (Quality) लॉजिक: SAV > 28 और BAL > 500 होने पर 'High', केवल SAV > 28 होने पर 'Medium', अन्यथा 'Low' लिखें।
 ​अंतिम निष्कर्ष: यदि 'संतान प्राप्ति पर प्रभाव' सक्रिय है और 'गुणवत्ता' High/Medium है, तो 'प्रबल संभावना' लिखें। यदि दोनों कम हैं, तो 'न्यून' लिखें।
------------------------------------------
+----------
 उपरोक्त फाइलों के आधार पर, जातक के लिए अगले 7 वर्षों के शनि के गोचर की एक तकनीकी शक्ति और संतान प्राप्ति विश्लेषण तालिका तैयार करें।
 ​तालिका का प्रारूप और कॉलम (अनिवार्य):
 | गोचर भाव (L/M) | समय (अवधि) | SAV | BAV (Saturn) | भाव बल (BAL) | गुणवत्ता | संतान पर प्रभाव | संतान प्राप्ति के सहायक भावों पर प्रभाव | अंतिम निष्कर्ष |
@@ -728,7 +736,7 @@ Group C - संतान प्राप्ति की दशा अंतर
 ​सहायक भावों पर प्रभाव: शनि का 11वें, 2रे, 9वें भाव या जैमिनी पुत्रकारक से संबंध जाँचे।
 ​गुणवत्ता लॉजिक: SAV > 28 और BAL > 500 होने पर 'High', केवल SAV > 28 होने पर 'Medium', अन्यथा 'Low' लिखें।
 ​अंतिम निष्कर्ष: यह बताएं कि शनि का यह गोचर घटना को 'अनुमोदित' (Approve) कर रहा है या 'बाधित' (Delay) कर रहा है।
------------------------------------------
+----------
 4] बल और क्षमता का विश्लेषण (गोचर की पुष्टि के लिए) :
 ➤ अष्टकवर्ग :
 ▸ सर्वाष्टकवर्ग: क्या गोचर का बृहस्पति पंचम भाव में या लग्न में अनुकूल बिंदुओं (28 से अधिक) वाली राशि से गुजर रहा है?
@@ -740,9 +748,9 @@ Group C - संतान प्राप्ति की दशा अंतर
 ▸ क्या जन्म कुंडली का पंचम भाव भाव बल में मजबूत है?
 
 विश्लेषण (बल): यह पुष्टि करता है कि क्या ग्रह और भाव फल देने में सक्षम हैं। बलवान ग्रह और भाव गोचर के दौरान निश्चित रूप से फल देते हैं।
------------------------------------------
+----------
 सभी संभावित टाइम विंडो में कितने कितने % विवाह की संभावना है ?
------------------------------------------
+----------
 अंतिम समग्र विश्लेषण (पराशरी):
 एक ऐसा समय जब:
 ➤ विंशोत्तरी दशा (MD-AD-PD) अनुकूल हो।
@@ -752,7 +760,7 @@ Group C - संतान प्राप्ति की दशा अंतर
 ➤ अष्टकवर्ग उस गोचर का समर्थन कर रहा हो।
 ➤ संबंधित दशा स्वामी षड्बल में बलवान हों।
 ...वही समय संतान प्राप्ति होने का सबसे प्रबल और निश्चित समय होता है।
-__________________________________________
+----------
 जातक के निम्मलिखित जैमिनी संतान प्राप्ति संबंधित राशियों और उनके स्वामियों की सूची दिजीए:
 
 A) मुख्य राशि :
@@ -777,7 +785,7 @@ B) सहायक राशि :
 
 
 नोट: जांच करें कि क्या गुरु UL, UL-5वें, PK-राशि, या कारकांश-5वें को प्रभावित कर रहे हैं।
--------------------------------------------
+----------
 1] अब निकाली गई सभी मुख्य संतान प्राप्ति-संबंधित राशियों को सूचीबद्ध किजिये।
 
 (उदाहरण: UL राशि, UL से 5वीं, PK की D1 राशि, कारकांश से 5वीं, A5 राशि, UL से 2री, आदि)।
@@ -793,7 +801,7 @@ A] मुख्य राशि दशाएं : - संतान प्रा
 B) सहायक राशि दशाएं : - संतान प्राप्ति की दशा-अंतर्दशा के लिए मध्यम प्रभावशाली राशियाँ:
 
 (इन राशियों की दशा/अंतर्दशा में संतान प्राप्ति की संभावना मध्यम है)
--------------------------------------------
+----------
 भाग 2: जैमिनी ज्योतिष के अनुसार संतान प्राप्ति के समय का विश्लेषण:
 
 1] चर महादशा द्वारा समय निर्धारण: 
@@ -809,7 +817,7 @@ B) सहायक राशि दशाएं : - संतान प्रा
 ➤  संभावित चर अंतर्दशा में ऐसी राशि की प्रत्यंतर दशाएँ जो मुख्य या सहायक राशि की हो में से एक हो? 
 
 विश्लेषण (दशा): उपरोक्त राशियों की दशा-अंतर्दशा-प्रत्यंतर संतान प्राप्ति के लिए सबसे प्रबल समय होती है। जिस अवधि में इनमें से एक से अधिक शर्तें पूरी होती हैं, वह समय सबसे महत्वपूर्ण है।
------------------------------------------
+----------
 2] दशा की गुणवत्ता का अर्गला से विश्लेषण (घटना कैसी होगी?):
 ➤ दशा राशि पर अर्गला: संतान प्राप्ति के लिए चुनी गई संभावित दशा राशि पर किन ग्रहों की अर्गला (हस्तक्षेप) है?
 ▸ शुभ अर्गला: क्या उस पर शुभ ग्रहों (गुरु, शुक्र) की अर्गला है? यह एक सहज, आनंदमय और बिना बाधा के संतान प्राप्ति समारोह का संकेत है।
@@ -817,7 +825,7 @@ B) सहायक राशि दशाएं : - संतान प्रा
 ➤ विरोध अर्गला: क्या अर्गला बनाने वाले ग्रहों का कोई विरोध हो रहा है? कौन सी शक्ति (अर्गला या विरोध) अधिक बलवान है?
 
 विश्लेषण (अर्गला): यह निर्धारित करता है कि संतान प्राप्ति की घटना स्वयं कैसी होगी - सुगम और उत्सवपूर्ण या तनावपूर्ण और बाधाओं से भरी।
------------------------------------------
+----------
 भाग 3: भृगु नंदी नाड़ी (BNN) के अनुसार संतान के समय का विश्लेषण
 
 1] गुरु का गोचर:
@@ -828,7 +836,7 @@ B) सहायक राशि दशाएं : - संतान प्रा
 ➤ गोचर का शनि जब जन्म कुंडली के गुरु, पंचम भाव या पंचमेश पर दृष्टि डालता है या उनसे संबंध बनाता है (कर्म का फल देने के लिए)।
 
 विश्लेषण: गोचर के आधार पर संतान के जन्म के संभावित वर्षों का निर्धारण।
------------------------------------------
+----------
 भाग 4: कृष्णमूर्ति पद्धति (KP) के अनुसार संतान के समय का विश्लेषण:
 
 1] संतान प्राप्ति का समय - दशा विश्लेषण (संभावित टाइम विंडो की पुष्टि (Timing of Conception/Birth):
@@ -843,15 +851,15 @@ B) सहायक राशि दशाएं : - संतान प्रा
 ➤ गोचर में बृहस्पति और सूर्य संतान के सिग्निफिकेटर ग्रहों और भावों (2, 5, 11) पर कब प्रभाव डाल रहे हैं?
 
 विश्लेषण: गोचर के माध्यम से संतान प्राप्ति के संभावित महीनों और दिनों की पुष्टि।
-------------------------------------------
+----------
 अगर इस अवधि में संतान प्राप्ति नही होती है तो और कौनसी संभावित अवधि है और कितने कितने % संभावना है ?
-------------------------------------------
+----------
 भाग 5: निष्कर्ष और समग्र अवलोकन
 ➤ सभी प्रणालियों (पराशरी, जैमिनी, BNN, KP) के मुख्य निष्कर्षों का संक्षिप्त सारांश।
 ➤ किन बिंदुओं पर विभिन्न प्रणालियां सहमत हैं और किन पर थोड़ा भिन्न दृष्टिकोण है?
 ➤ संभावित समय: संतान प्राप्ति के लिए सबसे संभावित वर्ष कौन से हैं?।
 ➤ यदि कोई उपाय या सुझाव आवश्यक हो।
-------------------------------------------
+----------
 मारक पहचान: क्या यह ग्रह द्वितीयेश (2nd lord) या सप्तमेश (7th lord) होकर मारकेश की भूमिका में है? यदि हाँ, तो कौन सी - द्वितीयेश (सामान्य मारक) या सप्तमेश (प्रबल मारक)?
 
 बाधक पहचान: क्या यह ग्रह लग्न के स्वभाव (चर, स्थिर, द्विस्वभाव) के अनुसार बाधक भाव (11वें, 9वें, या 7वें) का स्वामी है?
@@ -908,63 +916,63 @@ B) सहायक राशि दशाएं : - संतान प्रा
 कर्म का पाठ (Karmic Lesson): यह ग्रह जीवन में क्या 'कार्मिक सबक' सिखाने आया है? (जैसे: 'वैराग्य' या 'अलगाव' का सबक)।
 
 ऊर्जा का रूपांतरण (Energy Channeling): क्या जातक इस ग्रह की नकारात्मक ऊर्जा को एक उच्च उद्देश्य के लिए उपयोग कर सकता है? (जैसे: 'मारक' शनि की ऊर्जा को 'अध्यात्म' या 'अस्पताल सेवा' में लगाना)।
-------------------------------------------
+----------
 उपरोक्त चैट और पीडीएफ की और शुरू से आपको दी गयी सभी जानकारी के आधार पर निम्मलिखित सवालों का गहन और विस्तार से विश्लेषण करके निष्कर्ष सहित देना है, ध्यान रहे विश्लेषण संदर्भ के आलावा भी अपने बुद्धि का उपयोग करते हुए आवश्यकता अनुसार ज्योतिष ज्योतिष प्रणाली का उपयोग करते हुए होनी चाहिए। 
 और क्या निर्देश है जिनका आपको सख्ती से पालन करना है वो आपको याद है ?  कौनसे है ?
 तो पहला सवाल दू ?
-------------------------------------------
+----------
 1] मेरी कुंडली के अनुसार कुल कितनी संतान का योग है? उनका संभावित क्रम क्या होगा (जैसे पहले पुत्र या पुत्री, और उसके बाद)?
 (स्रोत: पराशरी - पंचम, सप्तम, नवम भावों का बल; D7 कुंडली का विस्तृत विश्लेषण; BNN - गुरु का पुरुष/स्त्री ग्रहों से संबंध; जैमिनी - पुत्रकारक की स्थिति। यह एक अनुमानित विश्लेषण है और सटीकता कई कारकों पर निर्भर करती है)।
------------------------------------------
+----------
 2] क्या मेरी कुंडली में संतान प्राप्ति का स्पष्ट योग (Promise of Progeny) है? यदि हाँ, तो यह सहजता से होगा या कुछ बाधाओं के बाद?
 (स्रोत: KP - 5वें CSL का 2, 5, 11 भावों को सिग्निफाई करना; पराशरी - पंचम भाव और पंचमेश पर शुभ/अशुभ प्रभाव; जैमिनी - PK और AK का संबंध; D7 कुंडली का समग्र बल)।
------------------------------------------
+----------
 3] संतान प्राप्ति में किसी भी प्रकार की देरी या चिकित्सा संबंधी चुनौतियों (Medical Challenges) की संभावना है क्या?
 (स्रोत: पराशरी - पंचम भाव/पंचमेश पर शनि/राहु/केतु/मंगल का प्रभाव, त्रिक भावों में स्थिति; KP - 5वें CSL का 1, 4, 8, 12 भावों से संबंध; बीज/क्षेत्र स्फुट का विश्लेषण)।
------------------------------------------
+----------
 4] संतान प्राप्ति के लिए सबसे उपयुक्त और संभावित समय (Most Favorable Time Period) कौन-सा है?
 (स्रोत: KP - 2, 5, 11 को सिग्निफाई करने वाले ग्रहों की दशा/अंतर्दशा/प्रत्यंतर दशा; पराशरी - पंचमेश/गुरु की दशा; BNN - गुरु/शनि का गोचर; जैमिनी - पुत्रकारक से संबंधित राशि की चर दशा)।
------------------------------------------
+----------
 5] मेरी संतान का सामान्य स्वभाव, व्यक्तित्व और स्वास्थ्य कैसा रहेगा?
 (स्रोत: पराशरी - पंचम भाव में स्थित ग्रह और राशि, पंचमेश की प्रकृति; जैमिनी - पुत्रकारक (PK) ग्रह का स्वभाव; D7 लग्न और लग्नेश का विश्लेषण)।
------------------------------------------
+----------
 6] क्या मेरी संतान मेरे लिए भाग्यशाली (Lucky) साबित होगी? क्या उनके जन्म के बाद मेरे जीवन में सकारात्मक बदलाव (जैसे करियर या धन में वृद्धि) आएंगे?
 (स्रोत: पराशरी - पंचमेश का लग्न, नवम (भाग्य), दशम (कर्म) या एकादश (लाभ) भाव से शुभ संबंध; जैमिनी - PK का AK से शुभ संबंध; D7 में ग्रहों की बलवान स्थिति)।
------------------------------------------
+----------
 7. मेरा और मेरी संतान का आपसी संबंध (Parent-Child Relationship) कैसा रहेगा? क्या यह प्रेमपूर्ण और सहयोगी होगा या तनावपूर्ण?
 (स्रोत: जैमिनी - आत्मकारक (AK) और पुत्रकारक (PK) का आपसी संबंध; पराशरी - लग्नेश और पंचमेश का आपसी संबंध (मैत्री/शत्रुता); BNN - जातक के गुरु का संतान के ग्रहों से संबंध)।
------------------------------------------
+----------
 8] मेरी संतान की शिक्षा और करियर की संभावनाएं कैसी रहेंगी? क्या वे अपने जीवन में सफल होंगे?
 (स्रोत: पराशरी - पंचम भाव से पंचम (नवम भाव) और दशम (द्वितीय भाव) का विश्लेषण; D7 कुंडली में दशम भाव और ग्रहों का बल)।
------------------------------------------
+----------
 9] क्या कुंडली में IVF (कृत्रिम गर्भाधान) या दत्तक ग्रहण (Adoption) जैसी वैकल्पिक विधियों से संतान प्राप्ति का कोई संकेत है?
 (स्रोत: KP - 5वें CSL का 4, 8, 12 भावों से मजबूत संबंध; पराशरी - पंचम भाव/पंचमेश का शनि और बुध जैसे ग्रहों से पीड़ित होना और संबंध बनाना)।
------------------------------------------
+----------
 10] क्या संतान के संबंध में किसी प्रकार की चिंता, जैसे उनके स्वास्थ्य या व्यवहार को लेकर, के योग हैं?
 (स्रोत: पराशरी - पंचम भाव या पंचमेश का षष्ठम (रोग) या अष्टम (कष्ट) भाव से संबंध; D7 में पीड़ित ग्रह; जैमिनी - PK पर पाप ग्रहों की अर्गला या दृष्टि)।
------------------------------------------
+----------
 11] मेरी पहली और दूसरी संतान के बीच क्या कोई विशेष अंतर (स्वभाव, भाग्य आदि में) देखने को मिलेगा?
 (स्रोत: पराशरी - पंचम भाव (पहली संतान) और सप्तम भाव (दूसरी संतान) का तुलनात्मक विश्लेषण; D7 कुंडली में पंचम और सप्तम भावों का विश्लेषण)।
------------------------------------------
+----------
 12] क्या संतान प्राप्ति के लिए किसी विशेष स्थान (जैसे जन्म स्थान से दूर) या यात्रा का योग है?
 (स्रोत: पराशरी - पंचमेश का द्वादश (दूर स्थान) या नवम (लंबी यात्रा) भाव से संबंध; KP - 5वें CSL का 9 या 12 भावों को सिग्निफाई करना)।
------------------------------------------
+----------
 13] वर्तमान ग्रह दशाएं और गोचर संतान प्राप्ति की संभावनाओं को कैसे प्रभावित कर रहे हैं?
 (स्रोत: सभी प्रणालियों के समय निर्धारण तकनीकों का संयुक्त विश्लेषण, विशेष रूप से वर्तमान दशा और बृहस्पति/शनि के गोचर का पंचम भाव/पंचमेश/PK पर प्रभाव)।
------------------------------------------
-14] मेरी कुंडली के अनुसार मुझमे प्रजनन क्षमता कितनी है ? 
------------------------------------------
+----------
+14] मेरी कुंडली के अनुसार मुझमे प्रजनन क्षमता कितनी है ?
+----------
 15] यदि संतान प्राप्ति में कोई बाधा या विलंब है, तो उसके निवारण के लिए क्या कोई विशेष ज्योतिषीय उपाय, रत्न या पूजा-पाठ सुझाए जा सकते हैं?
 (स्रोत: कुंडली में पीड़ित ग्रहों (पंचमेश, गुरु, PK) और भावों की पहचान करना और उनकी शांति के लिए उपाय सुझाना)।
-------------------------------------------
+----------
 ➤ जातक ने अपने बारे में जानकरी दी है और जातक के कुछ सवाल है, पहले दी हुयी जानकारी को सूचीबद्ध कीजिये, उसके बाद सभी सवाल सूचीबद्ध कीजिये :
------------------------------------------
+----------
 अब दी हुयी जानकारी का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर कीजिये, एक एक घटना का विस्तार से विश्लेषण होना चाहिए, अगर उपाय आवश्यक हो तो उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
------------------------------------------
+----------
 अब दिए हुए सवालो का जवाब गहन शोध करके लिखिए विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक सवाल का विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक घटना का विस्तार से विश्लेषण होना चाहिए,उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
-------------------------------------------
+----------
 सुरवात से पुछे गए जातक के जीवन संबधी सभी सवालों के विश्लेषण का शोर्ट में निष्कर्ष दीजिए
-------------------------------------------
+----------
 अब तक किये गए सभी निम्मलिखित घटनाओं और सवालों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
 
 1] मेरी कुंडली के अनुसार कुल कितनी संतान का योग है? उनका संभावित क्रम क्या होगा (जैसे पहले पुत्र या पुत्री, और उसके बाद)?
@@ -997,9 +1005,1802 @@ B) सहायक राशि दशाएं : - संतान प्रा
 
 15] यदि संतान प्राप्ति में कोई बाधा या विलंब है, तो उसके निवारण के लिए क्या कोई विशेष ज्योतिषीय उपाय, रत्न या पूजा-पाठ सुझाए जा सकते हैं?
 
-जातक के प्रश्न :
+जातक के प्रश्न :`;
+        const rawData_en = `This PDF is the kundali of the native xyz. Save all the information from it, so that the kundali can be analysed. While analysing, do not write the page reference of the PDF, but give a list stating on which page the following information is - it will be easier for you to find later: 
 
-`;
+1] Graha sthiti table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord, Jaimini chara karakatva)
+2] Sarvashtakavarga table
+3] Shadbala table (Sthana bala, Dig bala, Kala bala, Cheshta bala, Naisargika bala, Drishti bala)
+4] Bhava bala table 
+5] Vimshopaka bala table (Shodasha varga, Shad varga, Sapta varga and Dasha varga)
+6] Jaimini Arudha Pada (rashi-based)
+7] Vimshottari mahadasha antardasha chart
+8] Yogini dasha antardasha chart
+9] Chara dasha antardasha chart
+10] Krishnamurti Paddhati (KP) bhava position table {bhava-rashi-lord-nakshatra lord-sub lord-sub-sub lord-Cusp-rashi-nakshatra-pada}
+11] Krishnamurti Paddhati (KP) planet position table {bhava-rashi-lord-nakshatra lord-sub lord-sub-sub lord-Cusp-rashi-nakshatra-pada}
+12] Krishnamurti Paddhati (KP) house-significator planet position table
+13] Krishnamurti Paddhati (KP) planet-significator position table
+14] D1's 12 bhavas' rashi-nakshatra (Bhava Cusp)
+15] D9 graha sthiti table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord) 
+16] D9's  12 bhavas' rashi-nakshatra (Bhava Cusp) 
+17] D7 graha sthiti table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord) 
+18] D7's  12 bhavas' rashi-nakshatra (Bhava Cusp) 
+
+Please present all the tables in a simple and readable table format.
+----------
+From the above chat and the PDF, write the rashi and bhava lord placed in the twelve bhavas of the lagna kundali, the planets present, and also write which planets are exalted, debilitated, retrograde, neecha-bhanga, combust, vargottama. Also write the nakshatra placement (do not write exalted, debilitated, retrograde for Rahu-Ketu).
+
+The writing pattern will be as follows, which is only an example, shown in "" :
+
+"First bhava (lagna):
+In this bhava there is Simha rashi, so the lagnesh is Surya.
+In this bhava Surya and Rahu are placed.
+Surya: in Simha rashi is in swagriha (in its own house). Surya is placed in Magha nakshatra. Surya, being the lord of the first bhava (Simha), sits in the lagna. Surya's aspect is on the seventh bhava (Kumbha).
+Rahu: in Simha rashi (it is considered an enemy rashi for Rahu). Rahu is placed in Magha nakshatra. Rahu's aspect is on the fifth bhava (Dhanu), seventh bhava (Kumbha) and ninth bhava (Mesha).
+On this bhava there is the full aspect of Ketu (from the seventh bhava)."
+
+
+For your convenience the txt file is given: "D1_Analysis"
+----------
+From the txt file, write the following information one after another exactly as it is, without any change:
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D7 Analysis
+5] D60 Analysis
+6] D1_to_D9_Analysis
+7] D1_to_D7_Analysis
+8] D1_to_D60_Analysis
+----------
+Looking at the chalit kundali, tell what has changed in the chalit kundali compared to the D1 kundali, and what effect it will have:
+----------
+➤ Impact of PN, PB, MB on life (Impact on Life)
+
+Subject: Vedic astrology - calculation and phaladesh of Pushkara Navamsha (PN), Pushkara Bhaga (PB) and Mrityu Bhaga (MB) for planets and bhavas.
+
+Based on the image and TXT calculations, write the impact on the following areas:
+
+​▸ Divine Protection: which bhavas/planets are protected by Pushkara energy and in which areas of life will help come 'without asking'?
+
+​▸ Struggle and obstacles (MB Impact): in which areas of life can planets in Mrityu Bhaga create obstacles like 'landmines'?
+
+​▸ Start vs result (Start vs Middle): based on the Pushkara difference between the 'beginning' and 'middle' of the bhava, tell how the beginning of a task will be and how its end will be?
+
+▸ In the calculation of PN and PB, check whether their 'bhavesh' is in MB?
+(If the lord of the bhava (Bhavesh) is in Mrityu Bhaga, then the fruit will be obstructed even if the bhava is Pushkara)
+
+​▸ Dasha phala: what will be the impact of these amrita/visha points in the current or upcoming mahadasha?
+
+​▸ ​Conclusion: overall, how balanced are 'amrita' (PB) and 'visha' (MB) in the kundali?
+----------
+1] First prepare a list of all the auspicious yogas in the native's kundali, then analyse in detail the method of formation of all the auspicious yogas and the possible results based on the capacity of their bhavas and planets. Some yoga and dosha lists are given at the end of the pdf; take the auspicious yogas from them too. Also take from the txt.
+2] First prepare a list of all the doshas in the native's kundali, then analyse in detail the method of formation of all the doshas and the possible results based on the capacity of their bhavas and planets. Some yoga and dosha lists are given at the end of the pdf; take the doshas from them too. Also take from the txt.
+----------
+Taking the birth nakshatra as the base, make the Navatara chakra and analyse in which taras' (Sampat, Vipat, Vadha etc.) nakshatras all the 9 planets of the kundali are placed, and according to that tara how will each planet give its fruit (auspicious/inauspicious)? [PDF page No 28]
+----------
+Please provide a list of astrological facts/figures for all 9 planets (Surya, Chandra, Mangal, Budha, Guru, Shukra, Shani, Rahu, Ketu) based on the birth details in all the above chats and the PDF. The information should be concise and point-wise; detailed explanation is not needed. This list should be based on the kundali's phalit, shadbala, vimshopaka amshas (shodasha varga), ashtakavarga and Jaimini karakatva.
+
+Provide the following information for each planet:
+1. [Planet name]
+➤ Jaimini karakatva:
+➤ Bhava lordship: (which bhavas it is the lord of)
+➤ Position: (in which bhava and rashi)
+➤ Position in rashi: (friend, enemy, neutral, exalted, debilitated, moolatrikona, swarashi)
+➤ Nakshatra and pada: (in which nakshatra and which pada the planet is, and the influence of the nakshatra lord.)
+➤ Aspect: (on which bhavas/planets it aspects) 
+➤ Aspect on [planet name]: (which planets aspect it)
+➤ Yuti: (with which planets it is in yuti)
+➤ Avastha (degree/latitude): (the degree and the name of the avastha like bala, kumara etc.)
+➤ Emotional/avastha strength: retrograde/combust/debilitated/neecha-bhanga/vargottama state: (yes/no or the name of the state)
+➤ Navamsha position:  (in the navamsha kundali, in which rashi, nakshatra (lord) the planet is and its influence.)
+➤ Strength in navamsha: afflicted/strong
+➤ Change in position in chalit and its impact 
+➤ Bhavabala: (only the value)
+➤ Shadbala:  (the value in rupas and how its bala is - better than average, rank etc.)
+➤ Bhinnashtakavarga (BAV) points: (value between 0-8): (based on the points: practical strength - weak/average/strong)
+➤ Vimshopaka amshas (shodasha varga): (the value and its rank among the planets, if applicable.)
+➤ Position and impact in Pushkara Navamsha (PN)/Pushkara Bhaga (PB)/Mrityu Bhaga (MB):
+​➤ Navatara position and impact: (based on the birth nakshatra, in which tara - like Sampat, Vipat, Sadhaka etc. - this planet sits, and due to that specific tara what auspiciousness or obstacles will come in its natural and bhava fruits.)
+➤ Brief answer on possible fruits in gochar and dasha: (in general how that planet will give fruit in its dasha/antardasha and gochar - good, bad, or average.
+
+➤ Conclusion: overall is the planet strong or afflicted? (percentage)
+
+➤ At the end, the conclusion regarding all planets being strong and afflicted (based on percentage)
+----------
+Please provide a list of astrological facts/figures for all 12 bhavas of D1 based on the birth details in all the above chats and the PDF. The information should be concise and point-wise; detailed explanation is not needed. This list should be based on karakatva, bhava bala, ashtakavarga.
+
+
+Provide the following information for each bhava:
+
+1. First bhava (lagna): name of rashi [Arudha pada]
+➤ Karakatva: 
+➤ Bhava lord (lagnesh):
+➤ Position of bhavesh: 
+➤ Planets placed: 
+➤ Aspect on bhava: 
+➤ Bhava bala: the value in rupas and how its bala is - better than average, rank etc. (weak or strong bhava in the kundali).
+➤ Sarvashtakavarga (SAV) points: (total points) (bhava's capacity: if more than 28 then 'uttam', if less than 25 then 'challenging')
+➤ Position and impact in Pushkara Navamsha (PN)/Pushkara Bhaga (PB):
+➤ Conclusion: overall is the bhava strong or afflicted? (percentage)
+
+➤ At the end, the conclusion regarding all bhavas being strong and afflicted (based on percentage)
+----------
+➤ Make a general information table:
+
+►D1 lagna bhava rashi and nakshatra
+►D1 fifth bhava rashi and nakshatra
+►D9 lagna bhava rashi and nakshatra
+►D9 fifth bhava rashi and nakshatra
+►D7 lagna bhava rashi and nakshatra
+►D7 fifth bhava rashi and nakshatra
+
+►Chandra rashi 
+►Chandra nakshatra
+►Chandra nakshatra lord
+
+►D1 lagna bhava nakshatra lord
+►D1 lagnesh  
+►D1 fifth bhava nakshatra lord
+►D1 panchamesh
+►D9 lagna bhava nakshatra lord
+►D9 lagnesh  
+►D9 fifth bhava nakshatra lord
+►D9 panchamesh
+►D7 lagna bhava nakshatra lord
+►D7 lagnesh  
+►D7 fifth bhava nakshatra lord
+►D7 panchamesh
+
+➤ After making the table, analyse the following points. 
+
+▸ Which is stronger among the planet placed in the lagna, the lagnesh and the lagna nakshatra lord of both D1 and  D9? 
+▸ Which planet is the most influential among the planet placed in the lagna, the lagnesh, and the lagna nakshatra lord in D1 and D9, and ultimately guides the person's personality?
+
+▸ Which planet is the most influential among the planet placed in the lagna, the lagnesh, and the lagna nakshatra lord in D7, and ultimately guides the person's D7?
+
+▸ Which is stronger among the planet placed in the fifth bhava, the panchamesh and the fifth bhava nakshatra lord of both D1 and  D9? 
+▸ Which planet is the most influential among the planet placed in the fifth bhava, the panchamesh and the fifth bhava nakshatra lord in D1 and D9, and ultimately guides the person's progeny?
+
+▸ Which planet is the most influential among the planet placed in the fifth bhava, the panchamesh and the fifth bhava nakshatra lord in D7, and ultimately guides the person's progeny?
+
+
+➤ Conclusion: 
+▸ Which is more influential between the influential planet of the lagna of D1,D9 and  the influential planet of the lagna of D7? 
+▸ Which is more influential between the influential planet of the fifth bhava of D1,D9 and  the influential planet of the fifth bhava of D7?
+----------
+Extract the information from all the above details; do not analyse - do not analyse the "Analysis:" points, just write them as they are. Also, except for the planets casting aspect, write the avastha of the remaining planets (exalted-debilitated-neecha-bhanga, enemy-friend-neutral rashi; combust-retrograde-vargottama) in brackets. Write the questions along with the answers, and write 'to be continued...' just as it is.
+
+Part 1 A: Analysis of progeny according to Parashari astrology
+
+(This part is for understanding the foundation of the possibility of progeny, number, happiness and their nature.)
+
+1] Panchamesh (lord of the 5th bhava):
+➤ Which planet is the lord of the fifth bhava? 
+➤ In which rashi-bhava is the panchamesh planet placed? (especially the position in kendra/trikona)
+➤ In which nakshatra (lord) is the panchamesh planet placed?
+➤ With which planets is the panchamesh planet in yuti?
+➤ In which nakshatra (lord) is the planet in yuti with the panchamesh placed?
+➤ Which planets aspect the panchamesh?
+➤ Is there enmity/friendship/neutrality between the lagnesh and the panchamesh?
+
+Analysis: the capacity for having progeny, the fortune of the progeny and the native's attachment towards the progeny.
+
+2] Fifth bhava (progeny bhava):
+➤ In which rashi and nakshatra (lord) is the fifth bhava placed?
+➤ Which planets are placed in the fifth bhava?
+➤ In which nakshatra (lord) is the planet placed in the fifth bhava?
+➤ Which planets are casting aspect on the fifth bhava?
+
+Analysis: the basic possibility of having progeny, the nature of the first progeny and the overall happiness related to progeny.
+
+to be continued...
+
+3] Analysis of the Navamsha kundali (D9) - assessment of the fortune of progeny and inner happiness
+
+A) Fifth bhava and panchamesh in D9:
+➤ In which rashi and nakshatra (lord) is the fifth bhava placed in the navamsha?
+➤ Which planets are placed in the fifth bhava in the navamsha? (with their nakshatra-lords)
+➤ Which planets aspect the fifth bhava in the navamsha?
+➤ Which planet is the panchamesh in the navamsha and in which bhava, rashi and nakshatra (lord) is it placed?
+➤ With which planets is the panchamesh in yuti or aspect in the navamsha?
+➤ In which nakshatra is the planet in yuti with the panchamesh placed in the navamsha?
+
+B) Lagna and lagnesh in D9:
+➤ In which rashi and nakshatra (lord) is the lagna placed in the navamsha?
+➤ Which planets are placed in the lagna bhava in the navamsha? (nakshatra-lord)
+➤ In which bhava, rashi and nakshatra (lord) is the lagnesh planet placed in the navamsha?
+➤ With which planets is the lagnesh in yuti or aspect in the navamsha?
+➤ What is Guru's position in the navamsha?
+
+C) Position of D1's panchamesh in the navamsha (D9):
+➤ In which bhava, rashi and nakshatra (lord) is D1's panchamesh placed in the (D9) navamsha?
+➤ With whom is D1's panchamesh placed in the (D9) navamsha?
+➤ Which planets aspect D1's panchamesh in the (D9) navamsha?
+
+Analysis: minute and accurate assessment of progeny happiness. It clearly shows the obstacles in having progeny, their number and their fortune.
+
+to be continued...
+
+4] Analysis of the Saptamsha kundali (D7) - minute and detailed analysis of progeny
+
+A) Fifth bhava and panchamesh in D7:
+➤ In which rashi and nakshatra (lord) is the fifth bhava placed in the saptamsha?
+➤ Which planets are placed in the fifth bhava in the saptamsha? (with their nakshatra-lords)
+➤ Which planets aspect the fifth bhava in the saptamsha?
+➤ Which planet is the panchamesh in the saptamsha and in which bhava, rashi and nakshatra (lord) is it placed?
+➤ With which planets is the panchamesh in yuti or aspect in the saptamsha?
+➤ In which nakshatra is the planet in yuti with the panchamesh placed in the saptamsha?
+
+B) Lagna and lagnesh in D7:
+➤ In which rashi and nakshatra (lord) is the lagna placed in the saptamsha?
+➤ Which planets are placed in the lagna bhava in the saptamsha? (nakshatra-lord)
+➤ In which bhava, rashi and nakshatra (lord) is the lagnesh planet placed in the saptamsha?
+➤ With which planets is the lagnesh in yuti or aspect in the saptamsha?
+➤ What is Guru's position in the saptamsha?
+
+C) Analysis of the birth kundali's (D1) planets in D7:
+➤ In which bhava, rashi and nakshatra (lord) is the birth kundali's panchamesh placed (in D7)?
+➤ With whom is D1's panchamesh placed in the (D7) saptamsha?
+➤ Which planets aspect D1's panchamesh in the (D7) saptamsha?
+
+Analysis: clearly shows the number of progeny, the health of progeny, the form of progeny, the nature of progeny.
+
+to be continued...
+
+5] Progeny karaka Brihaspati (Jupiter):
+➤ What is Brihaspati's position in the kundali? (strong, retrograde, combust, afflicted).
+➤ What is Brihaspati's relation with the fifth bhava or panchamesh?
+➤ In which nakshatra is the planet Brihaspati placed?
+➤ Brihaspati in D9: what is Brihaspati's position and strength in the navamsha?
+
+Analysis: the quality of progeny happiness and the moral and character traits of the progeny.
+
+6] Seventh bhava (second progeny):
+➤ The seventh bhava (third from the fifth) and the position of its lord.
+
+Analysis: the possibility of the second progeny and subjects related to it. (Similarly the ninth bhava for the third progeny
+
+to be continued...
+----------
+Extract the information from all the above details; do not analyse - do not analyse the "Analysis:" points, just write them as they are. Also, except for the planets casting aspect, write the avastha of the remaining planets (exalted-debilitated-neecha-bhanga, enemy-friend-neutral rashi; combust-retrograde-vargottama) in brackets. Write the questions along with the answers, and write 'to be continued...' just as it is.
+
+Part 1 B: Analysis of progeny according to the calculation of Beeja Sphuta and Kshetra Sphuta of Parashari astrology:
+
+For a man's kundali (Beeja Sphuta)
+
+For [man's name]'s kundali, please do the following calculation and analysis:
+
+1. Degrees of planets in the man's kundali:
+➤ Surya (Sun): [degree]° [minute]' [second]" in [rashi]
+➤ Shukra (Venus): [degree]° [minute]' [second]" in [rashi]
+➤ Brihaspati (Jupiter): [degree]° [minute]' [second]" in [rashi]
+
+2. Calculation:
+➤ Based on the above data, calculate the Beeja Sphuta and tell at which rashi, degrees, minutes and seconds it is placed.
+
+3. Analysis:
+➤ Is this Beeja Sphuta point in an odd rashi or an even rashi?
+➤ Which planets are in yuti or aspect on this Beeja Sphuta point in the birth kundali (D1)? (especially mention the auspicious and malefic planets).
+➤ In which rashi is this Beeja Sphuta point placed in the navamsha kundali (D9) and what is its influence there?
+
+Final conclusion: based on all these analyses, is the man's reproductive capacity (Beeja Sphuta) strong, average, or afflicted?
+
+
+For a woman's kundali (Kshetra Sphuta)
+
+For [woman's name]'s kundali, please do the following calculation and analysis:
+
+1. Degrees of planets in the woman's kundali:
+➤ Chandrama (Moon): [degree]° [minute]' [second]" in [rashi]
+➤ Mangal (Mars): [degree]° [minute]' [second]" in [rashi]
+➤ Brihaspati (Jupiter): [degree]° [minute]' [second]" in [rashi]
+
+2. Calculation:
+➤ Based on the above data, calculate the Kshetra Sphuta and tell at which rashi, degrees, minutes and seconds it is placed.
+
+3. Analysis:
+➤ Is this Kshetra Sphuta point in an odd rashi or an even rashi?
+"Which planets are in yuti or aspect on this Kshetra Sphuta point in the birth kundali (D1)? (especially mention the auspicious and malefic planets)."
+➤ In which rashi is this Kshetra Sphuta point placed in the navamsha kundali (D9) and what is its influence there?
+
+Final conclusion: based on all these analyses, is the woman's reproductive capacity (Kshetra Sphuta) strong, average, or afflicted?
+----------
+Extract the information from all the above details; do not analyse - do not analyse the "Analysis:" points, just write them as they are. Write the questions along with the answers, and write 'to be continued...' just as it is.
+
+Part 2: Analysis of progeny according to Jaimini astrology
+
+(This part is for understanding the fortune of progeny and their role in the native's life.)
+
+1] Putrakaraka (PK - Putra Karaka):
+➤ Which planet is the Putrakaraka? (It is one of the chara karakas).
+➤ Where is the PK placed in the birth kundali and which planets aspect it?
+
+Analysis: it is the main representative of progeny and shows their overall fortune, nature and their role in the native's life.
+
+2] Relation of Atmakaraka (AK) and Putrakaraka (PK):
+➤ Are AK and PK in auspicious bhavas (kendra, trikona) from each other?
+
+Analysis: the nature of the relationship between the native and his/her progeny. An auspicious relation shows deep love and cooperation.
+
+to be continued...
+
+3] Putra Pada (A5) - image of progeny and the happiness received from them:
+➤ In which bhava is A5 (the arudha pada of the fifth bhava) placed?
+➤ Which planets sit in A5 or which planets have Jaimini rashi aspect on it? (the influence of auspicious planets gives progeny fame and happiness, the influence of malefic planets can give struggle or infamy).
+➤ Is a relation of A5 being formed with the lagna arudha (AL), Atmakaraka (AK) or Putrakaraka (PK)?
+
+Analysis: it assesses the social status of the progeny, their public image and what kind of happiness (or sorrow) the native will receive from his/her progeny.
+
+4] Argala analysis:
+➤ Argala on the fifth bhava: which forces are supporting or obstructing the attainment of progeny and their life?
+➤ Argala on the Putrakaraka (PK): analysis of the support or challenges received personally by the progeny.
+➤ Argala on A5 (Putra Pada): which invisible forces are influencing the social image of the progeny and the happiness received from them?
+
+Analysis: the invisible opportunities and obstacles coming in the life of the progeny.
+
+to be continued...
+----------
+Extract the information from all the above details; do not analyse - do not analyse the "Analysis:" points, just write them as they are. Also write the avastha of the planet (exalted, debilitated, neecha-bhanga, combust, retrograde, enemy-friend-neutral rashi) in brackets. Write the questions along with the answers, and write 'to be continued...' just as it is.
+
+Part 3: Analysis of progeny according to Bhrigu Nandi Nadi (BNN)
+
+(This part is for understanding the arrival of progeny and the pattern of their life.)
+
+1] Position of Guru (the main karaka of progeny):
+➤ Which planet is in the fifth bhava from Guru?
+➤ Which planets are in Guru's trikona (1-5-9)? (especially Shukra, Chandrama).
+
+Analysis: the possibility of having progeny and their nature.
+
+to be continued...
+
+2] Male and female progeny:
+➤ If Guru has a relation with Surya/Mangal/Ketu then the possibility of male progeny.
+➤ If Guru has a relation with Shukra/Chandrama/Rahu then the possibility of female progeny.
+
+Analysis: an estimated assessment of the gender of the progeny.
+
+to be continued...
+----------
+Extract the information from all the above details; do not analyse - do not analyse the "Analysis:" points, just write them as they are. Also, if a planet is retrograde, write it in brackets. Write the questions along with the answers, and write 'to be continued...' just as it is.
+
+Part 4: Analysis of progeny according to Krishnamurti Paddhati (KP)
+
+(This part is for accurately assessing the promise and timing of having progeny.)
+
+1] Promise of progeny:
+➤ Who is the cuspal sub-lord (CSL) of the 5th bhava?
+➤ Which bhavas is this CSL signifying? (for progeny, the connection of the 2, 5, 11 bhavas is essential).
+➤ Is this CSL also signifying the bhavas that deny progeny (1, 4, 10)?
+
+Analysis: whether there is a clear promise of progeny in the kundali, or the possibility of obstacle/denial. (What is the percentage probability of the promise of progeny out of 100?)
+
+to be continued...
+
+2] IVF or adoption:
+➤ If the 5th CSL makes a connection with bhavas like 4, 8, 12 and also signifies 2, 5, 11, then this can be an indication of artificial insemination or adoption.
+
+Analysis: the possibility of alternative ways of attaining progeny.
+
+to be continued...
+----------
+Cross-check the information of all four systems (parts 1-4) and make sure whether it is correct or there is any error? Give only the list of errors, if any.
+----------
+Give in short a list of what all information you have received so far for kundali analysis.
+----------
+Make sure that you will strictly follow the following orders,
+
+1] Before giving the output, cross-check the data.
+2] Do not do any kind of sugar-coating. If there is any dosha, struggle or negative yoga in the kundali, tell it in clear and bitter words. I do not want to make the client happy, I want to tell the truth. Note that it should not be completely negative; keeping a balance of positive and negative, tell what is true.
+3] Do not begin your answer with any greeting or conversational phrase (like 'certainly', 'sure', 'the following is' etc.). Your answer must start directly with the requested information.
+4] Also follow the orders given in the system instructions.
+
+Just tell whether you are ready and which orders you will follow.
+----------
+https://sites.google.com/view/astropropmt/Child-Birth-Report/CHBR-Paste
+----------
+➤ D60 (Shashtiamsha) - past merit and final result (Karmic Legacy) 
+​
+If the progeny-related yogas are there in D1 and  D9, but that planet is cursed in D60, then delay or denial can come in attaining progeny. This is the analysis of D60 for seeing 'sustainable success'. 
+
+1] D60 lagna and lagnesh - karmic blueprint (The Karmic Blueprint)
+
+2] D60 fifth bhava and panchamesh - karmic action (The Karmic Action)
+
+3] Position of Rajayoga karaka planets in D60
+This analysis will directly tell how strong the powerful rajayogas of D1/D9 are in D60.
+
+➤ Detailed overall D60 conclusion
+----------
+Part 5: Conclusion and overall overview
+
+➤ Brief summary of the main conclusions of the four systems.
+➤ On which points do the four systems agree and on which do they have a slightly different view?
+➤ Promise of progeny: is the yoga of progeny certain? If yes, then easily or after obstacles?
+➤ Overall picture of progeny happiness and the relation with progeny.
+➤ Support of the D60 kundali and the final result?
+➤ Final conclusion on the probability and quality of attaining progeny.
+➤ If any remedy or suggestion is needed, then what astrological remedies, gemstones or puja-paath can be done for its remedy.
+----------
+Now we will find out the possible timing of the native's progeny attainment; before that, things to keep in mind:
+
+1] Please note that it is currently 2026 and the native xyz is 00 years old, and 00 years have passed since their marriage,
+are you ready to determine the timing of progeny attainment, just tell me that.
+----------
+Please save in your memory the astrological data (Vimshottari, Yogini, Tribhagi, Chara dasha and gochar) given in all the attached (Attached) text files.
+
+Instructions:
+
+1] There is no need to write this data again in the chat right now.
+2] Just analyse the data and confirm that you have read it.
+3] For verification (Verification): give only the current status of 2026 in the format given below:
+Vimshottari (MD-AD-PD):
+Yogini (MD-AD-PD):
+Tribhagi (MD-AD-PD):
+Chara dasha (MD-AD-PD):
+Gochar (Guru/Shani - from lagna and Chandra):
+
+I will directly ask specific questions related to the analysis after this; then you have to use this entire data.
+----------
+Based on the astrological data given and extracted in the above chats (Vimshottari, Yogini, Chara Dasha, Tribhagi Dasha and Gochar Analysis), prepare a detailed 'Master Timeline' for the upcoming 7 years.
+
+​The table's format and columns must be exactly as follows:
+
+​| Time (Year) | Vimshottari Dasha (MD-AD) | Yogini Dasha (MD-AD) | Chara Dasha (MD-AD) | Tribhagi Dasha (MD-AD) | Jupiter Gochar (bhava from lagna/Moon) | Saturn Gochar (bhava from lagna/Moon) |
+
+​Important rules for data processing:
+
+​Dasha change: If the antardasha (AD) changes within a single year, show it in the same cell with a 'Slash' (/) (e.g.: Mercury AD / Ketu AD).
+----------
+List the native's following childbirth-related planets:
+
+A) 5th bhava (childbirth)
+
+1] Lord of the 5th bhava
+2] Nakshatra lord of the 5th bhava
+3] Planets placed in the 5th bhava
+4] Planet aspecting the 5th bhava
+5] Lord of the rashi in which Panchamesh is placed
+6] Lord of the nakshatra in which Panchamesh is placed
+5] Planets conjunct with Panchamesh
+8] Planet aspecting Panchamesh
+9] Cuspal sub-lord (CSL) of the 5th bhava
+11] Nakshatra lord (NL) of the 5th CSL
+12] Sub-lord (SL) of the 5th CSL
+13] SSL of the 5th CSL
+
+B) 2nd bhava (family)
+
+1] Lord of the 2nd bhava
+2] Planets placed in the 2nd bhava
+3] Nakshatra lord of the 2nd bhava
+4] Lord of the rashi in which Dwitiyesh is placed
+5] Planets conjunct with Dwitiyesh
+6] Significator of the 2nd bhava
+
+C) 11th bhava (gains)
+
+1] Lord of the 11th bhava
+2] Planets placed in the 11th bhava
+3] Nakshatra lord of the 11th bhava
+4] Lord of the rashi in which Ekadashesh is placed
+5] Planets conjunct with Ekadashesh
+6] Significator of the 11th bhava
+
+D) Lagna (personality)
+
+1] Lord of the 1st bhava
+2] Planets placed in the 1st bhava
+3] Nakshatra lord of the 1st bhava
+4] Lord of the rashi in which Lagnesh is placed
+5] Planets conjunct with Lagnesh
+
+E) Natural karakas and benefics
+
+1] Rashi lord of Jupiter, the natural karaka for childbirth
+2] Nakshatra lord of Jupiter, the natural karaka for childbirth
+3] Planets conjunct with Jupiter, the natural karaka for childbirth
+
+F) Navamsa (D9)
+
+1] Lord of the 5th bhava of Navamsa (D9)
+2] Planets placed in the 5th bhava of Navamsa (D9)
+3] Planet aspecting the 5th bhava of Navamsa (D9)
+4] Lord of the rashi in which the Panchamesh of Navamsa (D9) is placed
+5] Planets conjunct with the Panchamesh of Navamsa (D9)
+6] Planet aspecting the Panchamesh of Navamsa (D9)
+5] Lord of the lagna bhava of Navamsa (D9)
+8] Lord of the rashi in which the Lagnesh of Navamsa (D9) is placed
+9] Planets conjunct with the Lagnesh of Navamsa (D9)
+10] Planets placed in the lagna of Navamsa (D9)
+11] Lord planets of the 2nd and 11th bhavas of Navamsa (D9)
+
+G) Saptamsa (D7)
+
+1] Lord of the 5th bhava of Saptamsa (D7)
+2] Planets placed in the 5th bhava of Saptamsa (D7)
+3] Planet aspecting the 5th bhava of Saptamsa (D7)
+4] Lord of the rashi in which the Panchamesh of Saptamsa (D7) is placed
+5] Planets conjunct with the Panchamesh of Saptamsa (D7)
+6] Planet aspecting the Panchamesh of Saptamsa (D7)
+5] Lord of the lagna bhava of Saptamsa (D7)
+8] Lord of the rashi in which the Lagnesh of Saptamsa (D7) is placed
+7] Planets conjunct with the Lagnesh of Saptamsa (D7)
+10] Planets placed in the lagna of Saptamsa (D7)
+11] Lord planets of the 2nd and 11th bhavas of Saptamsa (D7)
+
+a} Is a strong connection being formed between the 1st bhava and the 5th, 2nd or 11th bhava?
+
+b} Is a strong connection being formed between the natural karaka Jupiter and the 5th, 2nd or 11th bhava?
+
+c} Is a strong connection being formed between the natural benefics Moon, Venus and Mercury and the 5th, 2nd or 11th bhava?
+----------
+1] Now list all the planets extracted earlier
+
+2] Now describe the combined influence of all the planets
+
+3] Now examine the combined influence of all the planets and arrange them in order of being more influential for childbirth:
+
+Group A - Highly influential planets for childbirth dasha-antardasha, in whose dasha childbirth is certain:
+
+Group B - Moderately influential planets for childbirth dasha-antardasha, in whose dasha the probability of childbirth is medium:
+
+Group C - Low influential planets for childbirth dasha-antardasha, in whose dasha the probability of childbirth is supportive; if no dasha of Group A or B is running, this will be supportive:
+----------
+Part 1: Analysis of the timing of childbirth as per Parashari astrology
+1] Vimshottari Dasha :
+➤ Mahadasha (MD): Is the native's mahadasha of a planet that is an influential planet for childbirth? (This is a long-term indicator).
+➤ Antardasha (AD): Within all possible mahadashas, is the antardasha of a planet that is an influential planet for childbirth?
+➤ Pratyantar Dasha (PD):Within all possible mahadasha-compatible antardashas, to get closest to the time of childbirth, is the pratyantar dasha of a planet that is an influential planet for childbirth?
+----------
+2] Yogini Dasha :
+➤ The lord planets of the Yogini mahadasha and antardasha running in all possible dashas which are influential planets for childbirth??
+➤ The lord planets of the pratyantar dasha of the Yogini antardasha running in all possible dashas which are influential planets for childbirth??
+
+Analysis (dasha): Identifying the most probable range of years and months (Time Window) for childbirth from the combined analysis of Vimshottari (MD-AD-PD) and Yogini dashas.
+----------
+How many potential time windows have emerged?
+----------
+2.1] Tribhagi Dasha (for micro time determination):
+
+➤ Mahadasha/Antardasha: Is the current time in Tribhagi dasha of planets that are strong significators of childbirth (Group A or B)?
+
+➤ Window Refinement: Is Tribhagi dasha further narrowing down all the potential time windows drawn out by Vimshottari and Yogini (Narrow down)?
+
+Analysis (Tribhagi): If both Vimshottari and Tribhagi are giving positive indications at the same time, the accuracy of the event will be considered close to 100%.
+----------
+3] Gochar Analysis:
+➤ Combined influence of Jupiter and Saturn in all potential dasha periods: 
+
+Based on the above kundali data and transit details, prepare a detailed table of the combined influence (Double Transit) of Jupiter and Saturn for the next 7 years. This analysis must be based entirely on the planets' aspects and positions (Transit Aspects/Positions).
+
+Format and columns of the table:
+| Time (Period) | Jupiter's Gochar Effect (D1+D9+D7) | Saturn's Gochar Effect (D1+D9+D7) | Combined Effect (Double Transit) | Final Conclusion on Probability of Childbirth |
+
+Main checklist instructions for verification:
+For each transit period, minutely examine the influence (aspect or conjunction) of Jupiter and Saturn on the following points:
+
+1] For transit Jupiter (Jupiter):
+- Natal kundali (D1): 5th bhava/Panchamesh, Lagna/Lagnesh, Labh bhava/Labhesh, Family bhava/Dwitiyesh.
+- Karaka: natal Jupiter.
+- Navamsa (D9): Navamsa lagna and Navamsa 5th bhava.
+- Saptamsa (D7): D7's lagna/lagnesh and D7's 5th bhava/Panchamesh.
+
+2] For transit Saturn (Saturn):
+- Natal kundali (D1): 5th bhava/Panchamesh, Lagna/Lagnesh, Labh bhava/Labhesh, Family bhava/Dwitiyesh.
+- Karaka: natal Jupiter.
+- Navamsa (D9): Navamsa lagna and Navamsa 5th bhava.
+- Saptamsa (D7): D7's lagna/lagnesh and D7's 5th bhava/Panchamesh.
+
+Rules of the table:
+- Influence column: Write only the names of those affected points with which a connection is being formed (e.g.: 'aspect on the 5th bhava and natal Jupiter').
+- Combined effect: If both Jupiter and Saturn are together influencing any childbirth factors (especially D7/D9 lagna or the 5th bhava), write 'active (Double Transit Active)'.
+- Conclusion: Based on the intensity of influence and the activity of the double transit, write 'strong', 'average' or 'low'.
+
+➤ Is there a period when both transit Jupiter and Saturn are together influencing (by aspect or conjunction)?
+
+Analysis (Gochar): Within the "time frame" identified by the dasha, the double transit rule indicates the specific year when the childbirth event is most likely to occur.
+----------
+Please present all the following tables in a simple and readable table format.
+
+1] Jupiter's Bhinnashtakavarga (BAV) table.
+2] Saturn's Bhinnashtakavarga (BAV) table.
+3] Sarvashtakavarga table
+----------
+Based on the above files and available data, prepare a detailed 'childbirth-focused strength table' of the native's Jupiter (Brihaspati) transits for the next 7 years.
+​Mandatory format and columns of the table:
+| Gochar Bhava (L/M) | Time (Period) | SAV | BAV | BAL | Quality | Effect on Childbirth | Effect on Supportive Bhavas for Childbirth | Final Conclusion on Probability of Childbirth |
+​Strict rules for data processing:
+​Strength data (SAV/BAV/BAL): Extract these values from the kundali's Ashtakavarga (Sarva/Bhinna) and Bhava Bala sections.
+​Effect on childbirth: Check transit Jupiter's aspect/placement relation with the 5th bhava, Panchamesh or natal Jupiter, or the aspect/placement relation of natal Jupiter.
+​Effect on supportive bhavas: Check Jupiter's aspect/placement relation with the 11th, 2nd, 9th bhavas or the Jaimini Putrakaraka.
+​Quality logic: Write 'High' when SAV > 28 and BAL > 500, 'Medium' when only SAV > 28, otherwise 'Low'.
+​Final conclusion: If 'effect on childbirth' is active and 'quality' is High/Medium, write 'strong probability'. If both are low, write 'low'.
+----------
+Based on the above files, prepare a technical strength and childbirth analysis table of the native's Saturn transits for the next 7 years.
+​Mandatory format and columns of the table:
+| Gochar Bhava (L/M) | Time (Period) | SAV | BAV (Saturn) | Bhava Bala (BAL) | Quality | Effect on Child | Effect on Supportive Bhavas for Childbirth | Final Conclusion |
+​Strict rules for data processing:
+​Strength data: Extract the values of SAV, BAV (Saturn) and Bhava Bala (BAL) from the kundali's relevant sections.
+​Effect on childbirth: Check transit Saturn's aspect/placement relation with the 5th bhava, Panchamesh or natal Jupiter.
+​Effect on supportive bhavas: Check Saturn's relation with the 11th, 2nd, 9th bhavas or the Jaimini Putrakaraka.
+​Quality logic: Write 'High' when SAV > 28 and BAL > 500, 'Medium' when only SAV > 28, otherwise 'Low'.
+​Final conclusion: State whether this transit of Saturn is 'approving' (Approve) the event or 'delaying' (Delay) it.
+----------
+4] Analysis of strength and capability (for confirmation of the transit):
+➤ Ashtakavarga:
+▸ Sarvashtakavarga: Is transiting Jupiter passing through a rashi with favourable points (more than 28) in the 5th bhava or lagna?
+▸ Bhinnashtakavarga: Is transiting Jupiter passing through a rashi with 5 or more points in Jupiter's Bhinnashtakavarga?
+▸ Is transiting Jupiter passing through the rashi where Saptamesh (5th Lord) is placed and that rashi has good points in Sarvashtakavarga?
+
+➤ Shadbala-Bhavabala:
+▸ Are the dasha lords (MD/AD/PD lords) indicating the time of childbirth strong in Shadbala?
+▸ Is the natal kundali's 5th bhava strong in Bhava Bala?
+
+Analysis (strength): This confirms whether the planets and bhavas are capable of giving results. Strong planets and bhavas definitely give results during transits.
+----------
+What is the % probability of marriage in each of the possible time windows?
+----------
+Final comprehensive analysis (Parashari):
+A time when:
+➤ Vimshottari dasha (MD-AD-PD) is favourable.
+➤ Yogini dasha (MD-AD-PD) is favourable.
+➤ Tribhagi dasha (MD-AD-PD) is favourable.
+➤ The double transit of Jupiter and Saturn is simultaneously activating the key childbirth points (lagna/5th bhava/Panchamesh).
+➤ Ashtakavarga is supporting that transit.
+➤ The related dasha lords are strong in Shadbala.
+...that time is the most powerful and certain time for childbirth.
+----------
+List the native's following Jaimini childbirth-related rashis and their lords:
+
+A) Main rashis:
+
+1] The rashi in which the Putrakaraka (PK) planet is placed:
+2] The rashi 5th from Putrakaraka (PK):
+3] The rashi in which Upapada Lagna (UL) is placed:
+4] The rashi 5th from Upapada Lagna (UL):
+5] The rashi in which A5 (5th Arudha) is placed:
+6] The rashi 5th from A1 (Arudha Lagna):
+7] The rashi 5th from Swamsa/Karakamsa:
+
+B) Supporting rashis:
+
+1] The rashi in which Jupiter is placed:
+2] The rashi in which the Atmakaraka (AK) planet is placed:
+3] The rashi in which A1/AL (Arudha Lagna) is placed:
+4] Planets placed in the UL rashi:
+5] Planets placed in the A5 rashi:
+6] Planets placed in the 5th rashi from UL:
+7] Planets placed in the 5th rashi from A5:
+
+
+Note: Check whether Jupiter is influencing UL, UL-5th, PK-rashi, or Karakamsa-5th.
+----------
+1] Now list all the main childbirth-related rashis extracted.
+
+(Example: UL rashi, 5th from UL, PK's D1 rashi, 5th from Karakamsa, A5 rashi, 2nd from UL, etc).
+
+2] Describe which planets (such as PK, AK, Jupiter, Venus,) have an influence (presence or Jaimini aspect) on all these rashis.
+
+3] Now arrange all the rashis in order of being more influential for childbirth. This is a list of those rashis in whose Jaimini Chara Dasha or other rashi-based dasha there is a strong probability of childbirth:
+
+A] Main rashi dashas: - Highly influential rashis for childbirth dasha-antardasha:
+
+(Childbirth is almost certain in the dasha/antardasha of these rashis)
+
+B) Supporting rashi dashas: - Moderately influential rashis for childbirth dasha-antardasha:
+
+(Childbirth has a medium probability in the dasha/antardasha of these rashis)
+----------
+Part 2: Analysis of the timing of childbirth as per Jaimini astrology:
+
+1] Time determination by Chara Mahadasha: 
+
+➤  Is a Chara dasha of such a rashi currently running which is one of the main or supporting rashis?
+
+2] Time determination by Chara Antardasha:
+
+➤  In the potential Chara Mahadasha, antardashas of such a rashi which is one of the main or supporting rashis? 
+
+3] Time determination by Chara Pratyantar Dasha:
+
+➤  In the potential Chara Antardasha, pratyantar dashas of such a rashi which is one of the main or supporting rashis? 
+
+Analysis (dasha): The dasha-antardasha-pratyantar of the above rashis is the most powerful time for childbirth. The period in which more than one of these conditions is fulfilled is the most important time.
+----------
+2] Analysis of the quality of the dasha through Argala (how will the event be?):
+➤ Argala on the dasha rashi: Which planets have argala (intervention) on the potential dasha rashi chosen for childbirth?
+▸ Benefic argala: Is there argala of benefic planets (Jupiter, Venus) on it? This is a sign of an easy, joyful and obstacle-free childbirth celebration.
+▸ Malefic argala: Is there argala of malefic planets (Saturn, Rahu, Mars) on it? This may indicate some obstruction, dispute, expense or hardship at the time of childbirth.
+➤ Virodha argala: Is there any virodha (obstruction) of the planets forming argala? Which force (argala or virodha) is stronger?
+
+Analysis (argala): This determines how the childbirth event itself will be - smooth and celebratory or stressful and full of obstacles.
+----------
+Part 3: Analysis of the timing of the child as per Bhrigu Nandi Nadi (BNN)
+
+1] Jupiter's transit:
+➤ When transit Jupiter forms a relation (conjunction, trine) with the natal kundali's Jupiter (Jeeva karaka) or Venus (reproduction).
+➤ When transit Jupiter activates the natal kundali's 5th bhava or Panchamesh.
+
+2] Saturn's transit:
+➤ When transit Saturn aspects the natal kundali's Jupiter, 5th bhava or Panchamesh or forms a relation with them (to give the fruits of karma).
+
+Analysis: Determination of the probable years of the child's birth based on transits.
+----------
+Part 4: Analysis of the timing of the child as per Krishnamurti Paddhati (KP):
+
+1] Time of childbirth - dasha analysis (confirmation of potential time windows (Timing of Conception/Birth):
+➤ Selection of dasha lords: Are the lord planets of Vimshottari Mahadasha (MD), Antardasha (AD) and Pratyantar Dasha (PD) "capable" (Capable) of childbirth in all the potential time windows (Potential Time Windows) extracted?
+➤ Checking signification: Are these dasha lord planets becoming strong significators of the child's key bhavas (2, 5, 11) through their placement, nakshatra lord or sub-lord?
+➤ Caution of negative bhavas: Are the dasha lords in these time windows giving more strength to the obstructive bhavas (1, 4, 10)? (If 1, 4, 10 are strong, conception may be delayed or medical assistance may be needed).
+
+Analysis: Precise determination of the probable time frame of the child's birth.
+
+2] Use of transits (Transits):
+➤ When is the relation of Jupiter and the Sun in transit with the 5th cusp or its CSL happening?
+➤ When are Jupiter and the Sun in transit influencing the child's significator planets and bhavas (2, 5, 11)?
+
+Analysis: Confirmation of the probable months and days of childbirth through transits.
+----------
+If childbirth does not happen in this period, then what other potential periods are there and what is the % probability in each?
+----------
+Part 5: Conclusion and overall overview
+➤ A brief summary of the main conclusions of all systems (Parashari, Jaimini, BNN, KP).
+➤ On which points do the different systems agree, and on which do they have a slightly different view?
+➤ Probable time: Which are the most probable years for childbirth?.
+➤ If any remedy or suggestion is needed.
+----------
+Marak identification: Is this planet playing the role of a marakesh by being the dwitiyesh (2nd lord) or saptamesh (7th lord)? If yes, which one - dwitiyesh (ordinary marak) or saptamesh (powerful marak)?
+
+Badhak identification: Is this planet the lord of the badhak bhava (11th, 9th, or 7th) according to the nature of the lagna (chara, sthira, dwiswabhava)?
+
+Dual role: Is this planet playing the roles of both marak and badhak? (Especially as the saptamesh for a dwiswabhava lagna).
+
+Functional beneficence: On the contrary, is this planet an auspicious 'yogkarak' planet by being the lord of a kendra/trikona? Or is it extremely auspicious by being the lord of only a trikona?
+
+2. Assessing the intensity of negativity/positivity (Assessing the Intensity):
+
+Influence of malefic planets: Is there the drishti of natural malefic planets (Saturn, Mars, Rahu, Ketu) on this planet, or is it in conjunction with them? If yes, how is this increasing its negativity?
+
+Influence of benefic planets: Is there the drishti of natural benefic planets (Jupiter, Venus, benefic Mercury) on this planet, or is it with them? Is this giving any reduction or protection (Mitigation) in the marak/badhak effect?
+
+Bhava position: In which bhava of the kundali is this planet placed? Has it become even more malefic by sitting in the trik bhavas (6, 8, 12), or is its position somewhat better by sitting in a kendra/trikona?
+
+Rashi strength: Is this planet extremely afflicted by being in its debilitated rashi, or is its negativity decreasing by being in its exalted/own rashi? Or has it become more powerful and effective?
+
+3. Activation and potential results (Activation and Potential Results):
+
+Dasha activation: What kinds of hardships, obstacles or troubles (in health, relationships, career etc.) may be seen in this planet's mahadasha or antardasha?
+
+Effect of gochar: When major planets like Saturn or Rahu pass over this marak/badhak planet in gochar, can they activate its negative results?
+Affected areas: Which specific areas of life will this planet affect the most, based on its natural karakatva (e.g. Venus - relationships/vehicles, Saturn - career/diseases) and its bhava lordship?
+
+4. Overall conclusion (Overall Conclusion):
+Final evaluation: After analyzing all the above points, what rating would you give this planet as a functionally malefic planet on a scale of 1 to 10? (Where 1 is very mild and 10 extremely harmful).
+
+5: Counseling and remedies (Counseling and Remedies)
+(This section is focused on how to manage the "challenge" (identified in Steps 1-4).)
+
+5.1. Astrological pacification (Astrological Pacification):
+
+Mantra/Jap: Is chanting the beej mantra or Vedic mantra of this planet (or its presiding deity) necessary for pacification?
+
+Stotra: Will reciting a specific stotra (e.g. 'Shani Mahatmya' for Saturn or 'Vishnu Sahasranam' for Mercury) during the dasha-antardasha be protective?
+
+Daan: Which items (colour, grain, metal) should be donated, and when (on which day), to pacify this planet's negative effect?
+
+5.2. Gems and wearing (Gems and Wearing) - [Most important caution]:
+
+Gem prohibition: Is this planet (being marak/badhak) among the planets whose gem should not be worn under any circumstances? (Write clearly: because wearing the gem of a strong marakesh is "giving more power to a powerful enemy".)
+
+Alternative wearing: Instead of pacifying this planet, would it be a better remedy to wear the gem of the kundali's 'protector' planet (like the lagnesh or navamesh)?
+
+5.3. Behavioral remedies (Behavioral Remedies / The Counseling):
+
+Awareness: How should the native remain alert about this planet's negative nature? (E.g.: "Your speech (Mercury) itself is your marakesh, so practice thinking before speaking.")
+
+Modification: Which habits will the native have to change? (E.g.: "Your Jupiter (badhekesh) is giving you 'obstacles' by making you 'idealistic'. Your remedy is to reduce expecting 'perfection' from others and become flexible.")
+
+5.4. Spiritual/Karmic remedies (Spiritual/Karmic Remedies):
+
+Karmic lesson: What 'karmic lesson' has this planet come to teach in life? (E.g.: the lesson of 'detachment' or 'separation').
+
+Energy channeling: Can the native use this planet's negative energy for a higher purpose? (E.g.: directing the energy of 'marak' Saturn into 'spirituality' or 'hospital service'.)
+----------
+Based on the above chat and PDF, and all the information given to you from the beginning, the following questions need to be analyzed deeply and in detail, with conclusions. Please note, the analysis should be done using the astrology system as needed, beyond the reference context, using your own intellect. 
+And what are the instructions that you must strictly follow - do you remember ?  Which ones ?
+So, shall I give the first question ?
+----------
+1] According to my kundali, how many children in total am I likely to have? What would be their probable order (e.g. first son or daughter, and then)?
+(Source: Parashari - strength of the 5th, 7th, 9th bhavas; detailed analysis of the D7 kundali; BNN - Jupiter's relationship with male/female planets; Jaimini - position of the Putrakaraka. This is an approximate analysis and accuracy depends on many factors).
+----------
+2] Does my kundali have a clear promise of having children (Promise of Progeny)? If yes, will it happen easily or after some obstacles?
+(Source: KP - the 5th CSL signifying the 2nd, 5th, 11th bhavas; Parashari - benefic/malefic effects on the 5th bhava and 5th lord; Jaimini - relationship of PK and AK; overall strength of the D7 kundali).
+----------
+3] Is there any possibility of delay in having children or medical challenges?
+(Source: Parashari - influence of Saturn/Rahu/Ketu/Mars on the 5th bhava/5th lord, placement in trik bhavas; KP - relationship of the 5th CSL with the 1st, 4th, 8th, 12th bhavas; analysis of Beej/Kshetra sphuta).
+----------
+4] Which is the most suitable and probable time period for having children (Most Favorable Time Period)?
+(Source: KP - dasha/antardasha/pratyantar dasha of planets signifying 2, 5, 11; Parashari - dasha of the 5th lord/Jupiter; BNN - gochar of Jupiter/Saturn; Jaimini - Chara dasha of the rashi related to the Putrakaraka).
+----------
+5] What will be the general nature, personality and health of my children?
+(Source: Parashari - planets and rashi placed in the 5th bhava, nature of the 5th lord; Jaimini - nature of the Putrakaraka (PK) planet; analysis of the D7 lagna and lagnesh).
+----------
+6] Will my children prove lucky for me? After their birth, will there be positive changes in my life (like increase in career or wealth)?
+(Source: Parashari - auspicious relationship of the 5th lord with the lagna, 9th (bhagya), 10th (karma) or 11th (labha) bhava; Jaimini - auspicious relationship of PK with AK; strong placement of planets in D7).
+----------
+7. What will be the mutual relationship (Parent-Child Relationship) between me and my children? Will it be loving and supportive or stressful?
+(Source: Jaimini - mutual relationship of Atmakaraka (AK) and Putrakaraka (PK); Parashari - mutual relationship (maitri/shatruta) of the lagnesh and 5th lord; BNN - relationship of the native's Jupiter with the children's planets).
+----------
+8] What will be the education and career prospects of my children? Will they be successful in their lives?
+(Source: Parashari - analysis of the 5th from the 5th (9th bhava) and the 10th from the 5th (2nd bhava); strength of the 10th bhava and planets in the D7 kundali).
+----------
+9] Does the kundali show any indication of having children through alternative methods like IVF (artificial insemination) or adoption (Adoption)?
+(Source: KP - strong relationship of the 5th CSL with the 4th, 8th, 12th bhavas; Parashari - affliction of the 5th bhava/5th lord by planets like Saturn and Mercury and forming a relationship).
+----------
+10] Are there any yogas of worry regarding children, like regarding their health or behavior?
+(Source: Parashari - relationship of the 5th bhava or 5th lord with the 6th (disease) or 8th (trouble) bhava; afflicted planets in D7; Jaimini - argala or drishti of malefic planets on PK).
+----------
+11] Will there be any special difference (in nature, fortune etc.) seen between my first and second child?
+(Source: Parashari - comparative analysis of the 5th bhava (first child) and 7th bhava (second child); analysis of the 5th and 7th bhavas in the D7 kundali).
+----------
+12] Is there a yoga of any special place (like far from the birthplace) or travel for having children?
+(Source: Parashari - relationship of the 5th lord with the 12th (distant places) or 9th (long journeys) bhava; KP - the 5th CSL signifying the 9th or 12th bhavas).
+----------
+13] How are the current planetary dashas and gochar affecting the possibilities of having children?
+(Source: combined analysis of the timing techniques of all systems, especially the effect of the current dasha and the gochar of Jupiter/Saturn on the 5th bhava/5th lord/PK).
+----------
+14] According to my kundali, how much fertility do I have?
+----------
+15] If there is any obstacle or delay in having children, can any special astrological remedies, gems or puja-path be suggested for its removal?
+(Source: identifying the afflicted planets (5th lord, Jupiter, PK) and bhavas in the kundali and suggesting remedies for their pacification).
+----------
+➤ The native has shared information about themselves and has some questions; first list the given information, then list all the questions :
+----------
+Now research the given information deeply and do a detailed astrological analysis with conclusions; each event should be analyzed in detail; if remedies are necessary, include remedies; first answer the first question, I will ask the rest later.
+----------
+Now write the answers to the given questions after deep research, with detailed analysis and conclusions; analyze each question in detail with conclusions; each event should be analyzed in detail, with remedies; first answer the first question, I will ask the rest later.
+----------
+Give a brief conclusion of the analysis of all the life-related questions asked by the native from the beginning
+----------
+Rewrite all the following events and questions analyzed so far and give their brief answers, because this list will be placed at the very beginning of this analysis; the native will first read the answers in short and will look for the section whose analysis with reference they want to read...
+
+1] According to my kundali, how many children in total am I likely to have? What would be their probable order (e.g. first son or daughter, and then)?
+
+2] Does my kundali have a clear promise of having children (Promise of Progeny)? If yes, will it happen easily or after some obstacles?
+
+3] Is there any possibility of delay in having children or medical challenges?
+
+4] Which is the most suitable and probable time period for having children (Most Favorable Time Period)?
+
+5] What will be the general nature, personality and health of my children?
+
+6] Will my children prove lucky for me? After their birth, will there be positive changes in my life (like increase in career or wealth)?
+
+7. What will be the mutual relationship (Parent-Child Relationship) between me and my children? Will it be loving and supportive or stressful?
+
+8] What will be the education and career prospects of my children? Will they be successful in their lives?
+
+9] Does the kundali show any indication of having children through alternative methods like IVF (artificial insemination) or adoption (Adoption)?
+
+10] Are there any yogas of worry regarding children, like regarding their health or behavior?
+
+11] Will there be any special difference (in nature, fortune etc.) seen between my first and second child?
+
+12] Is there a yoga of any special place (like far from the birthplace) or travel for having children?
+
+13] How are the current planetary dashas and gochar affecting the possibilities of having children?
+
+14] According to my kundali, how much fertility do I have? 
+
+15] If there is any obstacle or delay in having children, can any special astrological remedies, gems or puja-path be suggested for its removal?
+
+Native's questions :`;
+        const rawData_mr = `हे PDF जातक xyz ची कुंडली आहे, त्यातील सर्व माहिती तुम्हाला सेव करून ठेवायची आहे, जेणेकरून कुंडलीचे विश्लेषण होऊ शकेल. विश्लेषण करताना PDF च्या पेजचा संदर्भ लिहू नका, परंतु खालील माहिती कोणत्या पेजवर आहे, याची सूची द्या म्हणजे तुम्हालाही पुढे शोधायला सोपे जाईल: 
+
+1] ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तालिका
+3] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+4] भाव बल तालिका 
+5] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+6] जैमिनी आरूढ पद (राशी आधारित)
+7] विंशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] चर दशा अंतर्दशा चार्ट
+10] कृष्णमूर्ति पद्धती (KP) भाव स्थिती तालिका {भाव-राशी-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशी-नक्षत्र-पद}
+11] कृष्णमूर्ति पद्धती (KP) ग्रह स्थिती तालिका {भाव-राशी-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशी-नक्षत्र-पद}
+12] कृष्णमूर्ति पद्धती (KP) घराचे कारक ग्रह स्थिती तालिका
+13] कृष्णमूर्ति पद्धती (KP) ग्रह कारकत्व स्थिती तालिका
+14] D1 च्या 12 भावांचे राशी-नक्षत्र (Bhava Cusp)
+15] D9 ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) 
+16] D9 च्या  12 भावांचे राशी-नक्षत्र (Bhava Cusp) 
+17] D7 ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) 
+18] D7 च्या  12 भावांचे राशी-नक्षत्र (Bhava Cusp) 
+
+कृपया सर्व तालिका सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा.
+----------
+वरील चॅट आणि PDF मधून लग्न कुंडलीच्या बारा भावांमध्ये असलेली राशी आणि भाव स्वामी तसेच ग्रह उपस्थिती लिहा, आणि कोणते ग्रह उच्च, नीच, वक्री, नीचभंग, अस्त, वर्गोत्तम आहेत तेही लिहा. नक्षत्रात असलेलेही लिहा (राहू-केतूसाठी उच्च, नीच, वक्री लिहू नका).
+
+लिहिण्याचा पॅटर्न खालीलप्रमाणे राहील, जो फक्त उदाहरणासाठी असेल, ज्याला "" यात दाखवले आहे:
+
+"पहिला भाव (लग्न):
+या भावात सिंह राशी आहे, म्हणून लग्नेश सूर्य आहे.
+या भावात सूर्य आणि राहू ग्रह आहेत.
+सूर्य: सिंह राशीत स्वगृही (स्वतःच्याच घरात) आहेत. सूर्य मघा नक्षत्रात आहे. सूर्य प्रथम भावाचा (सिंह) स्वामी होऊन लग्नात बसला आहे. सूर्याची दृष्टी सातव्या भावावर (कुंभ) आहे.
+राहू: सिंह राशीत (राहूसाठी शत्रू राशी मानली जाते). राहू मघा नक्षत्रात आहे. राहूची दृष्टी पाचव्या भावावर (धनु), सातव्या भावावर (कुंभ) आणि नवव्या भावावर (मेष) आहे.
+या भावावर केतूची (सातव्या भावातून) पूर्ण दृष्टी आहे."
+
+
+तुमच्या सोयीसाठी txt फाइल दिली आहे: "D1_Analysis"
+----------
+txt फाइलमधून खालील माहिती एकामागोमाग बदल न करता जशीच्या तशी लिहा:
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D7 Analysis
+5] D60 Analysis
+6] D1_to_D9_Analysis
+7] D1_to_D7_Analysis
+8] D1_to_D60_Analysis
+----------
+चलित कुंडली पाहून सांगा की चलित कुंडलीमध्ये D1 कुंडलीपेक्षा काय बदलले आहे आणि त्याचा काय परिणाम होईल:
+----------
+➤ PN, PB, MB चा जीवनावर प्रभाव (Impact on Life)
+
+विषय: वैदिक ज्योतिष - ग्रह आणि भावांसाठी पुष्कर नवांश (PN), पुष्कर भाग (PB) आणि मृत्यु भाग (MB) यांची गणना आणि फलादेश.
+
+छायाचित्र आणि TXT गणनांवर आधारित खालील क्षेत्रांवर परिणाम लिहा:
+
+​▸ दैवीय सुरक्षा (Divine Protection): कोणते भाव/ग्रह पुष्कर ऊर्जेने सुरक्षित आहेत आणि जीवनाच्या कोणत्या क्षेत्रांत 'न मागता' मदत मिळेल?
+
+​▸ संघर्ष आणि अडथळे (MB Impact): मृत्यु भागातील ग्रह जीवनाच्या कोणत्या क्षेत्रांत 'लँडमाइन'प्रमाणे अडथळा निर्माण करू शकतात?
+
+​▸ सुरुवात विरुद्ध परिणाम (Start vs Middle): भावाच्या 'प्रारंभ' आणि 'मध्य' यांच्यातील पुष्कर फरकावर आधारित सांगा की कामाची सुरुवात कशी होईल आणि त्याचा शेवट कसा होईल?
+
+▸ PN आणि PB च्या गणनेत पहा की त्यांचा 'भावेश' MB मध्ये आहे का?
+(भावाचा स्वामी (Bhavesh) मृत्यु भागात असेल, तर भाव पुष्कर असूनही फल बाधित होईल)
+
+​▸ दशा फल: सध्याच्या किंवा आगामी महादशेत या अमृत/विष बिंदूंचा काय परिणाम होईल?
+
+​▸ ​निष्कर्ष: एकूणच कुंडलीत 'अमृत' (PB) आणि 'विष' (MB) यांचे संतुलन किती आहे?
+----------
+1] प्रथम जातकाच्या कुंडलीतील सर्व शुभ योगांची सूची तयार करा, नंतर सर्व शुभ योगांच्या बनण्याच्या पद्धती आणि त्यांच्या भाव तसेच ग्रहांच्या क्षमतेवर आधारित संभावित परिणामांचे सविस्तर विश्लेषण करा. काही योग आणि दोषांची सूची pdf च्या शेवटी दिली आहे, त्यातून जे शुभ योग आहेत तेही घ्या. txt मधूनही घ्या.
+2] प्रथम जातकाच्या कुंडलीतील सर्व दोषांची सूची तयार करा, नंतर सर्व दोषांच्या बनण्याच्या पद्धती आणि त्यांच्या भाव तसेच ग्रहांच्या क्षमतेवर आधारित संभावित परिणामांचे सविस्तर विश्लेषण करा. काही योग आणि दोषांची सूची pdf च्या शेवटी दिली आहे, त्यातून जे दोष आहेत तेही घ्या. txt मधूनही घ्या.
+----------
+जन्म नक्षत्र आधार मानून नवतारा चक्र बनवा आणि विश्लेषण करा की कुंडलीतील सर्व 9 ग्रह कोणत्या तारांच्या (संपत, विपत, वध इत्यादी) नक्षत्रांत बसले आहेत, आणि त्या तारेनुसार प्रत्येक ग्रह कसे (शुभ/अशुभ) फल देईल? [PDF पेज No 28]
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशीलांवर आधारित सर्व ९ ग्रहांचे (सूर्य, चंद्र, मंगळ, बुध, गुरु, शुक्र, शनि, राहू, केतू) ज्योतिषीय तथ्ये/आकडे यांची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, सविस्तर स्पष्टीकरणाची गरज नाही. ही सूची कुंडलीच्या फलित, षड्बल, विमशोपक अंश (षोडश वर्ग), अष्टकवर्ग आणि जैमिनी कारकत्व यांवर आधारित असावी.
+
+प्रत्येक ग्रहासाठी खालील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ जैमिनी कारकत्व:
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रू, सम, उच्च, नीच, मूलत्रिकोण, स्वराशी)
+➤ नक्षत्र आणि पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी) 
+➤ [ग्रहाचे नाव] वर दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांबरोबर युतीत आहे)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इत्यादी)
+➤ भावनात्मक/अवस्था शक्ती: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (होय/नाही किंवा स्थितीचे नाव)
+➤ नवांश स्थिती:  (नवांश कुंडलीत ग्रह कोणत्या राशीत, नक्षत्रात (स्वामी) आहे आणि त्याचा प्रभाव.)
+➤ नवांशातील शक्ती: पीडित/बलवान
+➤ चलितमधील स्थितीतील बदल आणि प्रभाव 
+➤ भावबल: (फक्त मान)
+➤ षड्बल:  (रूपात मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी.)
+➤ भिन्नाष्टकवर्ग (BAV) बिंदू: (0-8 मधील मान): (बिंदूंच्या आधारावर: व्यावहारिक शक्ती - कमकुवत/सरासरी/शक्तिशाली)
+➤ विमशोपक अंश (षोडश वर्ग): (मान आणि ग्रहांमध्ये त्याचा रँक, जर लागू असेल.)
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB)/मृत्यु भाग (MB) मधील स्थिती आणि प्रभाव:
+​➤ नवतारा स्थिती आणि प्रभाव: (जन्म नक्षत्राच्या आधारावर हा ग्रह कोणत्या ताऱ्यात - जसे संपत, विपत, साधक इत्यादी - बसला आहे, आणि त्या विशिष्ट ताऱ्यामुळे त्याच्या नैसर्गिक व भाव फलांत किती शुभता किंवा अडथळे येतील.)
+➤ गोचर आणि दशेत संभावित फलाचे संक्षिप्त उत्तर: (सर्वसाधारणपणे तो ग्रह आपल्या दशा/अंतर्दशेत आणि गोचरात कसे फल देईल - चांगले, खराब, किंवा मध्यम.
+
+➤ निष्कर्ष: एकूणच ग्रह मजबूत आहे की पीडित आहे? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रह बलवान आणि पीडित असल्याबद्दल निष्कर्ष (टक्केवारीच्या आधारावर)
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशीलांवर आधारित D1 च्या सर्व 12 भावांची ज्योतिषीय तथ्ये/आकडे यांची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, सविस्तर स्पष्टीकरणाची गरज नाही. ही सूची कारकत्व, भाव बल, अष्टकवर्ग यांवर आधारित असावी.
+
+
+प्रत्येक भावासाठी खालील माहिती द्या:
+
+1. पहिला भाव (लग्न): राशीचे नाव [आरूढ पद]
+➤ कारकत्व: 
+➤ भाव स्वामी (लग्नेश):
+➤ भावेशाची स्थिती: 
+➤ स्थित ग्रह: 
+➤ भावावर दृष्टी: 
+➤ भाव बल: रूपात मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी. (कुंडलीतील कमकुवत किंवा मजबूत भाव).
+➤ सर्वाष्टकवर्ग (SAV) बिंदू: (एकूण बिंदू) (भावाची क्षमता: 28 पेक्षा जास्त असल्यास 'उत्तम', 25 पेक्षा कमी असल्यास 'आव्हानात्मक')
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB) मधील स्थिती आणि प्रभाव:
+➤ निष्कर्ष: एकूणच भाव मजबूत आहे की पीडित आहे? (टक्केवारी)
+
+➤ शेवटी सर्व भाव बलवान आणि पीडित असल्याबद्दल निष्कर्ष (टक्केवारीच्या आधारावर)
+----------
+➤ सामान्य माहिती तालिका बनवा:
+
+►D1 लग्न भाव राशी आणि नक्षत्र
+►D1 पंचम भाव राशी आणि नक्षत्र
+►D9 लग्न भाव राशी आणि नक्षत्र
+►D9 पंचम भाव राशी आणि नक्षत्र
+►D7 लग्न भाव राशी आणि नक्षत्र
+►D7 पंचम भाव राशी आणि नक्षत्र
+
+►चंद्र राशी 
+►चंद्र नक्षत्र
+►चंद्र नक्षत्र स्वामी
+
+►D1 लग्न भाव नक्षत्र स्वामी
+►D1 लग्नेश  
+►D1 पंचम भाव नक्षत्र स्वामी
+►D1 पंचमेश
+►D9 लग्न भाव नक्षत्र स्वामी
+►D9 लग्नेश  
+►D9 पंचम भाव नक्षत्र स्वामी
+►D9 पंचमेश
+►D7 लग्न भाव नक्षत्र स्वामी
+►D7 लग्नेश  
+►D7 पंचम भाव नक्षत्र स्वामी
+►D7 पंचमेश
+
+➤ तालिका बनवल्यानंतर खालील मुद्द्यांचे विश्लेषण करा. 
+
+▸ D1 आणि  D9 दोन्हींच्या लग्नात बसलेला ग्रह, लग्नेश आणि लग्न नक्षत्र स्वामी यांपैकी कोण मजबूत आहे? 
+▸ D1 आणि D9 मधील लग्नात बसलेला ग्रह, लग्नेश, आणि लग्न नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वांत प्रभावशाली आहे आणि व्यक्तीच्या व्यक्तिमत्त्वाला अंतिम रूपाने मार्गदर्शन करतो?
+
+▸ D7 मधील लग्नात बसलेला ग्रह, लग्नेश, आणि लग्न नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वांत प्रभावशाली आहे आणि व्यक्तीच्या D7 ला अंतिम रूपाने मार्गदर्शन करतो?
+
+▸ D1 आणि  D9 दोन्हींच्या पंचम भावात बसलेला ग्रह, पंचमेश आणि पंचम भाव नक्षत्र स्वामी यांपैकी कोण मजबूत आहे? 
+▸ D1 आणि D9 मधील पंचम भावात बसलेला ग्रह, पंचमेश आणि पंचम भाव नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वांत प्रभावशाली आहे आणि व्यक्तीच्या संतानाला अंतिम रूपाने मार्गदर्शन करतो?
+
+▸ D7 मधील पंचम भावात बसलेला ग्रह, पंचमेश आणि पंचम भाव नक्षत्र स्वामी यांपैकी कोणता ग्रह सर्वांत प्रभावशाली आहे आणि व्यक्तीच्या संतानाला अंतिम रूपाने मार्गदर्शन करतो?
+
+
+➤ निष्कर्ष: 
+▸ D1,D9 च्या लग्नाचा प्रभावशाली ग्रह आणि  D7 च्या लग्नाचा प्रभावशाली ग्रह यांपैकी कोण अधिक प्रभावशाली आहे? 
+▸ D1,D9 च्या पंचम भावाचा प्रभावशाली ग्रह आणि  D7 च्या पंचम भावाचा प्रभावशाली ग्रह यांपैकी कोण अधिक प्रभावशाली आहे?
+----------
+वरील सर्व तपशीलांतून माहिती काढा, विश्लेषण करू नका, "विश्लेषण:" असलेल्या मुद्द्यांचे विश्लेषण करू नका, फक्त जसेच्या तसे लिहा. त्याचबरोबर दृष्टी टाकणाऱ्या ग्रहांना सोडून, बाकी ग्रहांची अवस्था (उच्च-नीच-नीचभंग, शत्रू-मित्र-सम राशी; अस्त-वक्री-वर्गोत्तम) ब्रॅकेटमध्ये लिहा. उत्तरांसोबत प्रश्नही लिहा आणि 'to be continued...' सुद्धा फक्त जसेच्या तसे लिहा.
+
+भाग 1 A: पराशरी ज्योतिषानुसार संतानाचे विश्लेषण
+
+(हा भाग संतानाची शक्यता, संख्या, सुख आणि त्यांच्या स्वभावाची पायाभूत माहिती समजण्यासाठी आहे.)
+
+1] पंचमेश (5व्या भावाचा स्वामी):
+➤ कोणता ग्रह पंचम भावाचा स्वामी आहे? 
+➤ पंचमेश ग्रह कोणत्या राशी-भावात आहे? (विशेषतः केंद्र/त्रिकोणातील स्थिती)
+➤ पंचमेश ग्रह कोणत्या नक्षत्रात (स्वामी) आहे?
+➤ पंचमेश ग्रहाची युती कोणत्या ग्रहांबरोबर होत आहे?
+➤ पंचमेशाशी युतीत असलेला ग्रह कोणत्या नक्षत्रात (स्वामी) आहे?
+➤ पंचमेशावर कोणत्या ग्रहांची दृष्टी आहे?
+➤ लग्नेश आणि पंचमेश यांच्यात शत्रुता/मित्रता/समानता आहे का?
+
+विश्लेषण: संतान होण्याची क्षमता, संतानाचे भाग्य आणि जातकाचे संतानाप्रती आकर्षण.
+
+2] पंचम भाव (संतान भाव):
+➤ पंचम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ पंचम भावात कोणकोणते ग्रह आहेत?
+➤ पंचम भावात असलेला ग्रह कोणत्या नक्षत्रात (स्वामी) आहे?
+➤ पंचम भावावर कोणकोणते ग्रह दृष्टी टाकत आहेत?
+
+विश्लेषण: संतान होण्याची मूलभूत शक्यता, पहिल्या संतानाचे स्वरूप आणि संतानाशी संबंधित एकूण सुख.
+
+to be continued...
+
+3] नवांश कुंडली (D9) चे विश्लेषण - संतानाच्या भाग्याचे आणि आंतरिक सुखाचे मूल्यांकन
+
+A) D9 मधील पंचम भाव आणि पंचमेश:
+➤ नवांशात पंचम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ नवांशात पंचम भावात कोणकोणते ग्रह आहेत? (त्यांच्या नक्षत्र-स्वामिंसह)
+➤ नवांशात पंचम भावावर कोणत्या ग्रहांची दृष्टी आहे?
+➤ नवांशात पंचमेश ग्रह कोणता आहे आणि तो कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ नवांशात पंचमेशाची युती किंवा दृष्टी कोणत्या ग्रहांबरोबर होत आहे?
+➤ नवांशात पंचमेशाशी युतीत असलेला ग्रह कोणत्या नक्षत्रात आहे?
+
+B) D9 मधील लग्न आणि लग्नेश:
+➤ नवांशात लग्न कोणत्या राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ नवांशात लग्न भावात कोणकोणते ग्रह आहेत? (नक्षत्र-स्वामी)
+➤ नवांशात लग्नेश ग्रह कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ नवांशात लग्नेशाची युती किंवा दृष्टी कोणत्या ग्रहांबरोबर होत आहे?
+➤ नवांशात गुरूची स्थिती काय आहे?
+
+C) D1 च्या पंचमेशाची नवांशात (D9) स्थिती:
+➤ (D9) नवांशात D1 चा पंचमेश कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ (D9) नवांशात D1 चा पंचमेश कोणाबरोबर बसला आहे?
+➤ (D9) नवांशात D1 च्या पंचमेशावर कोणत्या ग्रहांची दृष्टी आहे?
+
+विश्लेषण: संतान सुखाचे सूक्ष्म आणि अचूक मूल्यांकन. हे संतान होण्यातील अडथळे, त्यांची संख्या आणि त्यांचे भाग्य स्पष्टपणे दाखवते.
+
+to be continued...
+
+4] सप्तांश कुंडली (D7) चे विश्लेषण - संतानाचे सूक्ष्म आणि सविस्तर विश्लेषण
+
+A) D7 मधील पंचम भाव आणि पंचमेश:
+➤ सप्तांशात पंचम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ सप्तांशात पंचम भावात कोणकोणते ग्रह आहेत? (त्यांच्या नक्षत्र-स्वामिंसह)
+➤ सप्तांशात पंचम भावावर कोणत्या ग्रहांची दृष्टी आहे?
+➤ सप्तांशात पंचमेश ग्रह कोणता आहे आणि तो कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ सप्तांशात पंचमेशाची युती किंवा दृष्टी कोणत्या ग्रहांबरोबर होत आहे?
+➤ सप्तांशात पंचमेशाशी युतीत असलेला ग्रह कोणत्या नक्षत्रात आहे?
+
+B) D7 मधील लग्न आणि लग्नेश:
+➤ सप्तांशात लग्न कोणत्या राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ सप्तांशात लग्न भावात कोणकोणते ग्रह आहेत? (नक्षत्र-स्वामी)
+➤ सप्तांशात लग्नेश ग्रह कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ सप्तांशात लग्नेशाची युती किंवा दृष्टी कोणत्या ग्रहांबरोबर होत आहे?
+➤ सप्तांशात गुरूची स्थिती काय आहे?
+
+C) जन्म कुंडली (D1) च्या ग्रहांचे D7 मधील विश्लेषण:
+➤ (D7 मध्ये) जन्म कुंडलीचा पंचमेश कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?
+➤ (D7) सप्तांशात D1 चा पंचमेश कोणाबरोबर बसला आहे?
+➤ (D7) सप्तांशात D1 च्या पंचमेशावर कोणत्या ग्रहांची दृष्टी आहे?
+
+विश्लेषण: संतानाची संख्या, संतानाचे आरोग्य, संतानाचे स्वरूप, संतानाचा स्वभाव स्पष्टपणे दाखवते.
+
+to be continued...
+
+5] संतान कारक बृहस्पती (Jupiter):
+➤ कुंडलीत बृहस्पतीची स्थिती काय आहे? (बलवान, वक्री, अस्त, पीडित).
+➤ बृहस्पतीचा पंचम भाव किंवा पंचमेशाशी काय संबंध आहे?
+➤ बृहस्पती ग्रह कोणत्या नक्षत्रात आहे?
+➤ D9 मध्ये बृहस्पती: नवांशात बृहस्पतीची स्थिती आणि बल काय आहे?
+
+विश्लेषण: संतान सुखाची गुणवत्ता आणि संतानाचे नैतिक आणि चारित्रिक गुण.
+
+6] सप्तम भाव (द्वितीय संतान):
+➤ सप्तम भाव (पंचमापासून तिसरा) आणि त्याच्या स्वामीची स्थिती.
+
+विश्लेषण: दुसऱ्या संतानाची शक्यता आणि त्याच्याशी संबंधित विषय. (तसेच नवम भाव तिसऱ्या संतानासाठी
+
+to be continued...
+----------
+वरील सर्व तपशीलांतून माहिती काढा, विश्लेषण करू नका, "विश्लेषण:" असलेल्या मुद्द्यांचे विश्लेषण करू नका, फक्त जसेच्या तसे लिहा. त्याचबरोबर दृष्टी टाकणाऱ्या ग्रहांना सोडून, बाकी ग्रहांची अवस्था (उच्च-नीच-नीचभंग, शत्रू-मित्र-सम राशी; अस्त-वक्री-वर्गोत्तम) ब्रॅकेटमध्ये लिहा. उत्तरांसोबत प्रश्नही लिहा आणि 'to be continued...' सुद्धा फक्त जसेच्या तसे लिहा.
+
+भाग 1 B: पराशरी ज्योतिषाच्या बीज स्फुट आणि क्षेत्र स्फुट गणनेनुसार संतानाचे विश्लेषण:
+
+पुरुषाच्या कुंडलीसाठी (बीज स्फुट)
+
+[पुरुषाचे नाव] च्या कुंडलीसाठी, कृपया खालील गणना आणि विश्लेषण करा:
+
+1. पुरुषाच्या कुंडलीतील ग्रहांचे डिग्री:
+➤ सूर्य (Sun): [डिग्री]° [मिनिट]' [सेकंद]" [राशी] मध्ये
+➤ शुक्र (Venus): [डिग्री]° [मिनिट]' [सेकंद]" [राशी] मध्ये
+➤ बृहस्पति (Jupiter): [डिग्री]° [मिनिट]' [सेकंद]" [राशी] मध्ये
+
+2. गणना:
+➤ वरील डेटावर आधारित, बीज स्फुटाची गणना करा आणि ते कोणत्या राशी, अंश, कला आणि विकलेवर स्थित आहे ते सांगा.
+
+3. विश्लेषण:
+➤ हा बीज स्फुट बिंदू विषम राशीत आहे की सम राशीत?
+➤ जन्म कुंडलीत (D1) या बीज स्फुट बिंदूवर कोणत्या ग्रहांची युती किंवा दृष्टी आहे? (विशेषतः शुभ आणि पाप ग्रहांचा उल्लेख करा).
+➤ हा बीज स्फुट बिंदू नवांश कुंडलीत (D9) कोणत्या राशीत स्थित आहे आणि तिथे त्याचा काय प्रभाव आहे?
+
+अंतिम निष्कर्ष: या सर्व विश्लेषणांवर आधारित, पुरुषाची प्रजनन क्षमता (बीज स्फुट) बलवान आहे, मध्यम आहे, की पीडित आहे?
+
+
+स्त्रीच्या कुंडलीसाठी (क्षेत्र स्फुट)
+
+[स्त्रीचे नाव] च्या कुंडलीसाठी, कृपया खालील गणना आणि विश्लेषण करा:
+
+1. स्त्रीच्या कुंडलीतील ग्रहांचे डिग्री:
+➤ चंद्रमा (Moon): [डिग्री]° [मिनिट]' [सेकंद]" [राशी] मध्ये
+➤ मंगळ (Mars): [डिग्री]° [मिनिट]' [सेकंद]" [राशी] मध्ये
+➤ बृहस्पति (Jupiter): [डिग्री]° [मिनिट]' [सेकंद]" [राशी] मध्ये
+
+2. गणना:
+➤ वरील डेटावर आधारित, क्षेत्र स्फुटाची गणना करा आणि ते कोणत्या राशी, अंश, कला आणि विकलेवर स्थित आहे ते सांगा.
+
+3. विश्लेषण:
+➤ हा क्षेत्र स्फुट बिंदू विषम राशीत आहे की सम राशीत?
+"जन्म कुंडलीत (D1) या क्षेत्र स्फुट बिंदूवर कोणत्या ग्रहांची युती किंवा दृष्टी आहे? (विशेषतः शुभ आणि पाप ग्रहांचा उल्लेख करा)."
+➤ हा क्षेत्र स्फुट बिंदू नवांश कुंडलीत (D9) कोणत्या राशीत स्थित आहे आणि तिथे त्याचा काय प्रभाव आहे?
+
+अंतिम निष्कर्ष: या सर्व विश्लेषणांवर आधारित, स्त्रीची प्रजनन क्षमता (क्षेत्र स्फुट) बलवान आहे, मध्यम आहे, की पीडित आहे?
+----------
+वरील सर्व तपशीलांतून माहिती काढा, विश्लेषण करू नका, "विश्लेषण:" असलेल्या मुद्द्यांचे विश्लेषण करू नका, फक्त जसेच्या तसे लिहा. उत्तरांसोबत प्रश्नही लिहा आणि 'to be continued...' सुद्धा फक्त जसेच्या तसे लिहा.
+
+भाग 2: जैमिनी ज्योतिषानुसार संतानाचे विश्लेषण
+
+(हा भाग संतानाचे भाग्य आणि जातकाच्या जीवनातील त्यांची भूमिका समजण्यासाठी आहे.)
+
+1] पुत्रकारक (PK - Putra Karaka):
+➤ पुत्रकारक ग्रह कोणता आहे? (हा चर कारकांपैकी एक आहे).
+➤ PK जन्म कुंडलीत कुठे स्थित आहे आणि त्यावर कोणत्या ग्रहांची दृष्टी आहे?
+
+विश्लेषण: हा संतानाचा मुख्य प्रतिनिधी आहे आणि त्यांचे एकूण भाग्य, स्वभाव आणि जातकाच्या जीवनातील त्यांची भूमिका दाखवतो.
+
+2] आत्मकारक (AK) आणि पुत्रकारक (PK) यांचे संबंध:
+➤ AK आणि PK एकमेकांपासून शुभ भावांत (केंद्र, त्रिकोण) आहेत का?
+
+विश्लेषण: जातक आणि त्याची संतान यांच्यातील संबंधाचे स्वरूप. शुभ संबंध खोल प्रेम आणि सहकार्य दाखवतो.
+
+to be continued...
+
+3] पुत्र पद (A5) - संतानाची प्रतिमा आणि त्यांच्याकडून मिळणारे सुख:
+➤ A5 (पंचम भावाचे आरूढ पद) कोणत्या भावात स्थित आहे?
+➤ A5 मध्ये कोणते ग्रह बसले आहेत किंवा त्यावर कोणत्या ग्रहांची जैमिनी राशी दृष्टी आहे? (शुभ ग्रहांचा प्रभाव संतानाला प्रसिद्धी आणि सुख देतो, पाप ग्रहांचा प्रभाव संघर्ष किंवा बदनामी देऊ शकतो).
+➤ A5 चा संबंध लग्न आरूढ (AL), आत्मकारक (AK) किंवा पुत्रकारक (PK) शी बनत आहे का?
+
+विश्लेषण: हे संतानाची सामाजिक स्थिती, त्यांची सार्वजनिक प्रतिमा आणि जातकाला आपल्या संतानाकडून कोणत्या प्रकारचे सुख (किंवा दुःख) मिळेल, याचे मूल्यांकन करते.
+
+4] अर्गला विश्लेषण:
+➤ पंचम भावावर अर्गला: संतान प्राप्ती आणि त्यांच्या जीवनाला कोणत्या शक्ती सहाय्य करत आहेत किंवा अडथळा टाकत आहेत?
+➤ पुत्रकारक (PK) वर अर्गला: संतानाला वैयक्तिकरित्या मिळणाऱ्या सहाय्याचे किंवा आव्हानांचे विश्लेषण.
+➤ A5 (पुत्र पद) वर अर्गला: संतानाची सामाजिक प्रतिमा आणि त्यांच्याकडून मिळणाऱ्या सुखावर कोणत्या अदृश्य शक्ती प्रभाव टाकत आहेत?
+
+विश्लेषण: संतानाच्या जीवनात येणाऱ्या अदृश्य संधी आणि अडथळे.
+
+to be continued...
+----------
+वरील सर्व तपशीलांतून माहिती काढा, विश्लेषण करू नका, "विश्लेषण:" असलेल्या मुद्द्यांचे विश्लेषण करू नका, फक्त जसेच्या तसे लिहा, त्याचबरोबर ग्रहाची अवस्था (उच्च, नीच, नीचभंग, अस्त, वक्री, शत्रू-मित्र-सम राशी) ब्रॅकेटमध्ये लिहा. उत्तरांसोबत प्रश्नही लिहा आणि 'to be continued...' सुद्धा फक्त जसेच्या तसे लिहा.
+
+भाग 3: भृगु नंदी नाडी (BNN) नुसार संतानाचे विश्लेषण
+
+(हा भाग संतानाच्या आगमनाचा आणि त्यांच्या जीवनाच्या पॅटर्नचा समजण्यासाठी आहे.)
+
+1] गुरु (संतानाचा मुख्य कारक) ची स्थिती:
+➤ गुरूपासून पंचम भावात कोणता ग्रह आहे?
+➤ गुरुच्या त्रिकोणात (1-5-9) कोणते ग्रह आहेत? (विशेषतः शुक्र, चंद्र).
+
+विश्लेषण: संतान होण्याची शक्यता आणि त्यांचा स्वभाव.
+
+to be continued...
+
+2] पुरुष आणि स्त्री संतान:
+➤ गुरूचा संबंध सूर्य/मंगळ/केतूशी असेल तर पुरुष संतानाची शक्यता.
+➤ गुरूचा संबंध शुक्र/चंद्र/राहूशी असेल तर स्त्री संतानाची शक्यता.
+
+विश्लेषण: संतानाच्या लिंगाचे अंदाजे मूल्यांकन.
+
+to be continued...
+----------
+वरील सर्व तपशीलांतून माहिती काढा, विश्लेषण करू नका, "विश्लेषण:" असलेल्या मुद्द्यांचे विश्लेषण करू नका, फक्त जसेच्या तसे लिहा, त्याचबरोबर ग्रह जर वक्री असेल तर ते ब्रॅकेटमध्ये लिहा. उत्तरांसोबत प्रश्नही लिहा आणि 'to be continued...' सुद्धा फक्त जसेच्या तसे लिहा.
+
+भाग 4: कृष्णमूर्ति पद्धती (KP) नुसार संतानाचे विश्लेषण
+
+(हा भाग संतान होण्याच्या वचनाचे आणि वेळेचे अचूक मूल्यांकन करण्यासाठी आहे.)
+
+1] संतानाचे वचन (Promise of Progeny):
+➤ 5व्या भावाचा कस्पल सब-लॉर्ड (CSL) कोण आहे?
+➤ हा CSL कोणत्या भावांना सैगनिफाई करत आहे? (संतानासाठी 2, 5, 11 भावांचा संबंध आवश्यक आहे).
+➤ हा CSL संतानाला नाकारणाऱ्या भावांनाही (1, 4, 10) सैगनिफाई करत आहे का?
+
+विश्लेषण: कुंडलीत संतानाचे स्पष्ट वचन आहे का, किंवा अडथळा/नकाराची शक्यता आहे. (संतानाच्या वचनाची 100 पैकी किती टक्के शक्यता आहे?)
+
+to be continued...
+
+2] IVF किंवा दत्तक ग्रहण (Adoption):
+➤ जर 5वा CSL 4, 8, 12 सारख्या भावांशी संबंध बनवत असेल आणि 2, 5, 11 लाही सैगनिफाई करत असेल, तर हे कृत्रिम गर्भाधान किंवा दत्तक घेण्याचे संकेत असू शकते.
+
+विश्लेषण: संतान प्राप्तीच्या पर्यायी मार्गांची शक्यता.
+
+to be continued...
+----------
+सर्व चार प्रणालींची (भाग 1-4) माहिती क्रॉस चेक करून खात्री करा की ती बरोबर आहे की काही चूक आहे? जी चूक असेल त्याचीच सूची द्या फक्त.
+----------
+आतापर्यंत कुंडली विश्लेषणासाठी तुम्हाला कोणकोणती माहिती मिळाली, त्याची थोडक्यात सूची द्या.
+----------
+हे निश्चित करा की तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल,
+
+1] आउटपुट देण्यापूर्वी डेटाला क्रॉसचेक करून घ्या.
+2] कोणत्याही प्रकारची शुगर-कोटिंग (Sugar-coating) करू नका. कुंडलीत जर कोणता दोष, संघर्ष किंवा नकारात्मक योग असेल, तर ते स्पष्ट आणि कडू शब्दांत सांगा. मला क्लायंटला खुश करायचे नाही, तर सत्य सांगायचे आहे. लक्षात ठेवा पूर्णपणे नकारात्मक नसावे, सकारात्मक आणि नकारात्मकाचा बॅलन्स ठेवून जे सत्य आहे ते सांगा.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'निश्चितपणे', 'नक्कीच', 'खालील आहे' इत्यादी) करू नका. तुमचे उत्तर थेट मागितलेल्या माहितीपासूनच सुरू झाले पाहिजे.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का फक्त एवढेच सांगा आणि कोणत्या आदेशांचे पालन कराल.
+----------
+https://sites.google.com/view/astropropmt/Child-Birth-Report/CHBR-Paste
+----------
+➤ D60 (षष्ट्यंश) - पूर्व पुण्य आणि अंतिम परिणाम (Karmic Legacy) 
+​
+जर D1 आणि D9 मध्ये  संतान संबंधी जे योग आहेत, पण D60 मध्ये तो ग्रह शापित असेल, तर संतान प्राप्तीत विलंब किंवा नकार येऊ शकतो. हे 'सस्टेनेबल सक्सेस' (टिकाऊ यश) पाहण्यासाठी D60 चे विश्लेषण. 
+
+1] D60 लग्न आणि लग्नेश - कार्मिक ब्लूप्रिंट (The Karmic Blueprint)
+
+2] D60 पंचम भाव आणि पंचमेश - कार्मिक कर्म (The Karmic Action)
+
+3] राजयोग कारक ग्रहांची D60 मधील स्थिती
+हे विश्लेषण थेट सांगेल की D1/D9 चे शक्तिशाली राजयोग D60 मध्ये किती मजबूत आहेत.
+
+➤ सविस्तर समग्र D60 निष्कर्ष
+----------
+भाग 5: निष्कर्ष आणि समग्र अवलोकन
+
+➤ चार प्रणालींच्या मुख्य निष्कर्षांचा संक्षिप्त सारांश.
+➤ कोणत्या मुद्द्यांवर चार प्रणाली सहमत आहेत आणि कोणत्यांवर थोडा वेगळा दृष्टिकोन आहे?
+➤ संतानाचे वचन: संतानाचा योग निश्चित आहे का? जर होय, तर सहजतेने की अडथळ्यानंतर?
+➤ संतान सुख आणि संतानाशी संबंधाची समग्र प्रतिमा.
+➤ D60 कुंडलीचे समर्थन आणि अंतिम परिणाम?
+➤ संतान प्राप्तीची शक्यता आणि गुणवत्तेवर अंतिम निष्कर्ष.
+➤ जर कोणताही उपाय किंवा सूचना आवश्यक असेल, तर त्याच्या निवारणासाठी कोणते ज्योतिषीय उपाय, रत्न किंवा पूजा-पाठ करता येतील.
+----------
+आता आपण जातकाच्या संतान प्राप्तीचा संभावित वेळ काढू, त्याआधी लक्षात ठेवण्यासारख्या गोष्टी:
+
+1] लक्षात ठेवा आत्ता 2026 चालू आहे आणि जातक/जातिका xyz 00 वर्षांचा/ची आहे, आणि त्याच्या/तिच्या लग्नाला 00 वर्षे झाली आहेत,
+तुम्ही तयार आहात का, संतान प्राप्तीचा वेळ निश्चित करण्यासाठी, फक्त एवढेच सांगा.
+----------
+कृपया संलग्न (Attached) सर्व टेक्स्ट फाइलांमध्ये दिलेला ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, त्रिभागी, चर दशा आणि गोचर) आपल्या मेमरीमध्ये सुरक्षित करून घ्या.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला आहे याची पुष्टी करा.
+3] पडताळणीसाठी (Verification): फक्त 2026 ची सध्याची स्थिती खाली दिलेल्या फॉर्मेटमध्ये लिहून द्या:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD-PD):
+त्रिभागी (MD-AD-PD):
+चर दशा (MD-AD-PD):
+गोचर (गुरु/शनि - लग्न व चंद्रापासून):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+वरील चॅट्समध्ये दिलेल्या आणि एक्स्ट्रॅक्ट केलेल्या ज्योतिषीय डेटाच्या आधारे (Vimshottari, Yogini, Chara Dasha, Tribhagi Dasha आणि Gochar Analysis), आगामी 7 वर्षांचे एक विस्तृत 'मास्टर वेळापत्रक' तयार करा.
+
+​तक्त्याचा फॉर्मॅट आणि कॉलम अगदी खालीलप्रमाणे असले पाहिजेत:
+
+​| वेळ (वर्ष) | विंशोत्तरी दशा (MD-AD) | योगिनी दशा (MD-AD) | चर दशा (MD-AD) | त्रिभागी दशा (MD-AD) | गुरु गोचर (लग्न/चंद्रमापासून भाव) | शनि गोचर (लग्न/चंद्रमापासून भाव) |
+
+​डेटा प्रोसेसिंगसाठी महत्त्वाचे नियम:
+
+​दशा बदल: जर एका वर्षामध्ये अंतर्दशा (AD) बदलत असेल, तर ती एकाच सेलमध्ये 'Slash' (/) सहित दाखवा (उदा: बुध AD / केतु AD).
+----------
+जातकाच्या खालील संतानप्राप्तीसंबंधित ग्रहांची यादी द्या:
+
+A) 5वा भाव (संतानप्राप्ती)
+
+1] पंचम भावाचा स्वामी
+2] पंचम भावाचा नक्षत्र स्वामी
+3] पंचम भावात बसलेले ग्रह
+4] पंचम भावावर दृष्टी ठेवणारा ग्रह
+5] पंचमेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+6] पंचमेश ज्या नक्षत्रात बसला आहे त्या नक्षत्राचा स्वामी
+5] पंचमेशाशी युती असलेले ग्रह
+8] पंचमेशावर दृष्टी ठेवणारा ग्रह
+9] 5व्या भावाचा कस्पल सब-लॉर्ड (CSL)
+11] 5व्या CSL चा नक्षत्र स्वामी (NL)
+12] 5व्या CSL चा उप-स्वामी (SL)
+13] 5व्या CSL चा SSL
+
+B) 2रा भाव (कुटुंब)
+
+1] 2ऱ्या भावाचा स्वामी
+2] 2ऱ्या भावात बसलेले
+3] 2ऱ्या भावाचा नक्षत्र स्वामी
+4] द्वितीयेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+5] द्वितीयेशाशी युती असलेले ग्रह
+6] 2ऱ्या भावाचा सैगनिफिकेटर
+
+C) 11वा भाव (लाभ)
+
+1] 11व्या भावाचा स्वामी
+2] 11व्या भावात बसलेले
+3] 11व्या भावाचा नक्षत्र स्वामी
+4] एकादशेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+5] एकादशेशाशी युती असलेले ग्रह
+6] 11व्या भावाचा सैगनिफिकेटर
+
+D) लग्न (व्यक्तिमत्व)
+
+1] 1ल्या भावाचा स्वामी
+2] 1ल्या भावात बसलेले
+3] 1ल्या भावाचा नक्षत्र स्वामी
+4] लग्नेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+5] लग्नेशाशी युती असलेले ग्रह
+
+E) नैसर्गिक कारक आणि शुभ
+
+1] संतानप्राप्तीसाठी नैसर्गिक कारक गुरूचा राशी स्वामी
+2] संतानप्राप्तीसाठी नैसर्गिक कारक गुरूचा नक्षत्र स्वामी
+3] संतानप्राप्तीसाठी नैसर्गिक कारक गुरूशी युती असलेले ग्रह
+
+F) नवमांश (D9)
+
+1] नवमांश (D9) च्या पंचम भावाचा स्वामी
+2] नवमांश (D9) च्या पंचम भावात बसलेले ग्रह
+3] नवमांश (D9) च्या पंचम भावावर दृष्टी ठेवणारा ग्रह
+4] नवमांश (D9) चा पंचमेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+5] नवमांश (D9) च्या पंचमेशाशी युती असलेले ग्रह
+6] नवमांश (D9) च्या पंचमेशावर दृष्टी ठेवणारा ग्रह
+5] नवमांश (D9) च्या लग्न भावाचा स्वामी
+8] नवमांश (D9) चा लग्नेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+9] नवमांश (D9) च्या लग्नेशाशी युती असलेले ग्रह
+10] नवमांश (D9) च्या लग्नात बसलेले ग्रह
+11] नवमांश (D9) च्या 2ऱ्या आणि 11व्या भावांचे स्वामी ग्रह
+
+G) सप्तांश (D7)
+
+1] सप्तांश (D7) च्या पंचम भावाचा स्वामी
+2] सप्तांश (D7) च्या पंचम भावात बसलेले ग्रह
+3] सप्तांश (D7) च्या पंचम भावावर दृष्टी ठेवणारा ग्रह
+4] सप्तांश (D7) चा पंचमेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+5] सप्तांश (D7) च्या पंचमेशाशी युती असलेले ग्रह
+6] सप्तांश (D7) च्या पंचमेशावर दृष्टी ठेवणारा ग्रह
+5] सप्तांश (D7) च्या लग्न भावाचा स्वामी
+8] सप्तांश (D7) चा लग्नेश ज्या राशीत बसला आहे त्या राशीचा स्वामी
+7] सप्तांश (D7) च्या लग्नेशाशी युती असलेले ग्रह
+10] सप्तांश (D7) च्या लग्नात बसलेले ग्रह
+11] सप्तांश (D7) च्या 2ऱ्या आणि 11व्या भावांचे स्वामी ग्रह
+
+a} प्रथम भावाचा 5व्या, 2ऱ्या किंवा 11व्या भावाशी मजबूत संबंध तयार होत आहे का?
+
+b} नैसर्गिक कारक गुरुचा 5व्या, 2ऱ्या किंवा 11व्या भावाशी मजबूत संबंध तयार होत आहे का?
+
+c} नैसर्गिक शुभ चंद्रमा, शुक्र आणि बुधाचा 5व्या, 2ऱ्या किंवा 11व्या भावाशी मजबूत संबंध तयार होत आहे का?
+----------
+1] आता आधी काढलेले सर्व ग्रह सूचीबद्ध करा
+
+2] आता सर्व ग्रहांच्या संयुक्त प्रभावाचे वर्णन करा
+
+3] आता सर्व ग्रहांच्या संयुक्त प्रभावाची तपासणी करून त्यांना संतानप्राप्तीसाठी अधिक प्रभावशाली असण्याच्या क्रमाने लावा:
+
+Group A - संतानप्राप्तीच्या दशा-अंतर्दशेसाठी उच्च प्रभावशाली ग्रह, ज्यांच्या दशेत संतानप्राप्ती होणे निश्चित आहे:
+
+Group B - संतानप्राप्तीच्या दशा-अंतर्दशेसाठी मध्यम प्रभावशाली ग्रह, ज्यांच्या दशेत संतानप्राप्ती होण्याची संभावना मध्यम आहे:
+
+Group C - संतानप्राप्तीच्या दशा-अंतर्दशेसाठी निम्न प्रभावशाली ग्रह, ज्यांच्या दशेत संतानप्राप्ती होण्याची संभावना सहाय्यक आहे, जर Group A आणि B पैकी कोणाचीही दशा चालू नसेल तर हे सहाय्यक ठरेल:
+----------
+भाग 1: पराशरी ज्योतिषानुसार संतानप्राप्तीच्या वेळेचे विश्लेषण
+1] विंशोत्तरी दशा :
+➤ महादशा (MD): जातकाची महादशा अशा ग्रहाची चालू आहे का जो संतानप्राप्तीसाठी प्रभावशाली ग्रह असेल? (हा दीर्घकालीन संकेत आहे).
+➤ अंतर्दशा (AD): सर्व संभाव्य महादशांमध्ये, अंतर्दशा अशा ग्रहाची आहे का जो संतानप्राप्तीसाठी प्रभावशाली ग्रह असेल?
+➤ प्रत्यंतर दशा (PD):सर्व संभाव्य महादशा-अनुकूल अंतर्दशांमध्ये, संतानप्राप्तीच्या वेळेच्या सर्वात जवळ पोहोचण्यासाठी, प्रत्यंतर दशा अशा ग्रहाची आहे का जो संतानप्राप्तीसाठी प्रभावशाली ग्रह असेल?
+----------
+2] योगिनी दशा :
+➤ सर्व संभाव्य दशांमध्ये चालू असलेल्या योगिनी महादशा आणि अंतर्दशाचे स्वामी ग्रह जे संतानप्राप्तीसाठी प्रभावशाली ग्रह असतील??
+➤ सर्व संभाव्य दशांमध्ये चालू असलेल्या योगिनी अंतर्दशाच्या प्रत्यंतर दशाचे स्वामी ग्रह जे संतानप्राप्तीसाठी प्रभावशाली ग्रह असतील??
+
+विश्लेषण (दशा): विंशोत्तरी (MD-AD-PD) आणि योगिनी दशांच्या संयुक्त विश्लेषणातून संतानप्राप्तीसाठी सर्वात संभाव्य वर्ष आणि महिन्यांची मर्यादा (Time Window) ओळखणे.
+----------
+किती संभाव्य टाइम विंडो निघाले आहेत?
+----------
+2.1] त्रिभागी दशा (सूक्ष्म वेळ निश्चितीसाठी):
+
+➤ महादशा/अंतर्दशा: त्रिभागी दशेत सध्याची वेळ अशा ग्रहांची आहे का जे संतानप्राप्तीचे प्रबल सैगनिफिकेटर (Group A किंवा B) आहेत?
+
+➤ विंडो रिफाइनमेंट: विंशोत्तरी आणि योगिनीने काढलेल्या सर्व संभाव्य टाइम विंडोंना त्रिभागी दशा आणखी संकुचित (Narrow down) करत आहे का?
+
+विश्लेषण (त्रिभागी): जर विंशोत्तरी आणि त्रिभागी दोन्ही एकाच वेळी सकारात्मक संकेत देत असतील, तर घटनेची अचूकता 100 % च्या जवळ मानली जाईल.
+----------
+3] गोचर विश्लेषण:
+➤ सर्व संभाव्य दशा कालावधीत गुरु आणि शनीचा संयुक्त प्रभाव: 
+
+वरील कुंडली डेटा आणि गोचर तपशीलांच्या आधारे, पुढील 7 वर्षांसाठी गुरु (बृहस्पति) आणि शनीच्या संयुक्त प्रभावाची (Double Transit) एक विस्तृत तक्ता तयार करा. हे विश्लेषण पूर्णपणे ग्रहांच्या दृष्टी आणि स्थितीवर (Transit Aspects/Positions) आधारित असले पाहिजे.
+
+तक्त्याचा फॉर्मॅट आणि कॉलम:
+| वेळ (कालावधी) | गुरुचा गोचर प्रभाव (D1+D9+D7) | शनीचा गोचर प्रभाव (D1+D9+D7) | संयुक्त प्रभाव (Double Transit) | संतानप्राप्तीच्या संभाव्यतेचा अंतिम निष्कर्ष |
+
+तपासणीसाठी मुख्य चेकलिस्ट निर्देश:
+प्रत्येक गोचर कालावधीसाठी, खालील मुद्द्यांवर गुरु आणि शनीच्या प्रभावाची (दृष्टी किंवा युती) बारकाईने तपासणी करा:
+
+1] गोचरच्या गुरु (Jupiter) साठी:
+- जन्म कुंडली (D1): पंचम भाव/पंचमेश, लग्न/लग्नेश, लाभ भाव/लाभेश, कुटुंब भाव/द्वितीयेश.
+- कारक: जन्म गुरु.
+- नवांश (D9): नवांश लग्न आणि नवांश पंचम भाव.
+- सप्तमांश (D7): D7 चे लग्न/लग्नेश आणि D7 चे पंचम भाव/पंचमेश.
+
+2] गोचरच्या शनी (Saturn) साठी:
+- जन्म कुंडली (D1): पंचम भाव/पंचमेश, लग्न/लग्नेश, लाभ भाव/लाभेश, कुटुंब भाव/द्वितीयेश.
+- कारक: जन्म गुरु.
+- नवांश (D9): नवांश लग्न आणि नवांश पंचम भाव.
+- सप्तमांश (D7): D7 चे लग्न/लग्नेश आणि D7 चे पंचम भाव/पंचमेश.
+
+तक्त्याचे नियम:
+- प्रभाव कॉलम: फक्त त्या प्रभावित बिंदूंची नावे लिहा ज्यांचा संबंध तयार होत आहे (उदा: 'पंचम भाव आणि जन्म गुरुवर दृष्टी').
+- संयुक्त प्रभाव: जर गुरु आणि शनी दोन्ही एकत्र कोणत्याही संतान कारकांवर (विशेषतः D7/D9 लग्न किंवा 5व्या भावावर) प्रभाव टाकत असतील, तर 'सक्रिय (Double Transit Active)' लिहा.
+- निष्कर्ष: प्रभावाच्या तीव्रतेवर आणि दुहेरी गोचरच्या सक्रियतेवर आधारित 'प्रबल', 'सरासरी' किंवा 'न्यून' लिहा.
+
+➤ गोचरचे गुरु आणि शनी, दोन्ही एकत्र प्रभावित (दृष्टी किंवा युतीद्वारे) करत आहेत, असा कालावधी आहे का?
+
+विश्लेषण (गोचर): दशेने ओळखलेल्या "वेळ मर्यादे"मध्ये, दुहेरी गोचरचा नियम त्या विशिष्ट वर्षाकडे निर्देश करतो जेव्हा संतानप्राप्तीची घटना घडण्याची सर्वाधिक शक्यता आहे.
+----------
+कृपया खालील सर्व तक्ते सोप्या आणि वाचनीय टेबल फॉर्मॅटमध्ये सादर करा.
+
+1] गुरुचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+2] शनीचा भिन्नाष्टकवर्ग (BAV) तक्ता.
+3] सर्वाष्टकवर्ग तक्ता
+----------
+वरील फायली आणि उपलब्ध डेटाच्या आधारे, जातकासाठी पुढील 7 वर्षांतील गुरु (बृहस्पति)च्या गोचरची एक विस्तृत 'संतानप्राप्ती केंद्रित शक्ती तक्ता' तयार करा.
+​तक्त्याचा फॉर्मॅट आणि कॉलम (अनिवार्य):
+| गोचर भाव (L/M) | वेळ (कालावधी) | SAV | BAV | BAL | गुणवत्ता | संतानप्राप्तीवर प्रभाव | संतानप्राप्तीच्या सहाय्यक भावांवर प्रभाव | संतानप्राप्तीच्या संभाव्यतेचा अंतिम निष्कर्ष |
+​डेटा प्रोसेसिंगचे कठोर नियम:
+​शक्ती डेटा (SAV/BAV/BAL): ही मूल्ये कुंडलीच्या अष्टकवर्ग (Sarva/Bhinna) आणि भाव-बल (Bhava Bala) विभागांतून काढा.
+​संतानप्राप्तीवर प्रभाव: गुरुचा गोचरमध्ये 5व्या भावाशी, पंचमेशाशी किंवा जन्म गुरुशी, किंवा जन्म गुरुच्या दृष्टी/स्थिती संबंधाची तपासणी करा.
+​सहाय्यक भावांवर प्रभाव: गुरुचा 11व्या, 2ऱ्या, 9व्या भावाशी किंवा जैमिनी पुत्रकारकाशी दृष्टी/स्थिती संबंध तपासा.
+​गुणवत्ता (Quality) लॉजिक: SAV > 28 आणि BAL > 500 असल्यास 'High', फक्त SAV > 28 असल्यास 'Medium', अन्यथा 'Low' लिहा.
+​अंतिम निष्कर्ष: जर 'संतानप्राप्तीवर प्रभाव' सक्रिय असेल आणि 'गुणवत्ता' High/Medium असेल, तर 'प्रबल संभावना' लिहा. जर दोन्ही कमी असतील, तर 'न्यून' लिहा.
+----------
+वरील फायलींच्या आधारे, जातकासाठी पुढील 7 वर्षांतील शनीच्या गोचरची एक तांत्रिक शक्ती आणि संतानप्राप्ती विश्लेषण तक्ता तयार करा.
+​तक्त्याचा फॉर्मॅट आणि कॉलम (अनिवार्य):
+| गोचर भाव (L/M) | वेळ (कालावधी) | SAV | BAV (Saturn) | भाव बल (BAL) | गुणवत्ता | संतानावर प्रभाव | संतानप्राप्तीच्या सहाय्यक भावांवर प्रभाव | अंतिम निष्कर्ष |
+​डेटा प्रोसेसिंगचे कठोर नियम:
+​शक्ती डेटा: SAV, BAV (Saturn) आणि भाव-बल (BAL) ची मूल्ये कुंडलीच्या संबंधित विभागांतून काढा.
+​संतानप्राप्तीवर प्रभाव: शनीचा गोचरमध्ये 5व्या भावाशी, पंचमेशाशी किंवा जन्म गुरुशी दृष्टी/स्थिती संबंध तपासा.
+​सहाय्यक भावांवर प्रभाव: शनीचा 11व्या, 2ऱ्या, 9व्या भावाशी किंवा जैमिनी पुत्रकारकाशी संबंध तपासा.
+​गुणवत्ता लॉजिक: SAV > 28 आणि BAL > 500 असल्यास 'High', फक्त SAV > 28 असल्यास 'Medium', अन्यथा 'Low' लिहा.
+​अंतिम निष्कर्ष: शनीचा हा गोचर घटनेला 'अनुमोदन' (Approve) देत आहे की 'विलंब' (Delay) करत आहे, हे सांगा.
+----------
+4] बल आणि क्षमतेचे विश्लेषण (गोचरच्या पुष्टीसाठी):
+➤ अष्टकवर्ग:
+▸ सर्वाष्टकवर्ग: गोचरचा बृहस्पति पंचम भावात किंवा लग्नात अनुकूल बिंदू (28 पेक्षा जास्त) असलेल्या राशीतून जात आहे का?
+▸ भिन्नाष्टकवर्ग: गोचरचा बृहस्पति, गुरुच्या भिन्नाष्टकवर्गात 5 किंवा अधिक बिंदू असलेल्या राशीतून जात आहे का?
+▸ गोचरचा गुरु त्या राशीतून जात आहे का जिथे सप्तमेश (5th Lord) बसला आहे आणि त्या राशीला सर्वाष्टकवर्गात चांगले बिंदू मिळाले आहेत?
+
+➤ षड्बल-भावबल:
+▸ संतानप्राप्तीची वेळ सांगणारे दशा स्वामी (MD/AD/PD lords) षड्बलात बलवान आहेत का?
+▸ जन्म कुंडलीचा पंचम भाव भाव बलात मजबूत आहे का?
+
+विश्लेषण (बल): हे पुष्टी करते की ग्रह आणि भाव फल देण्यास सक्षम आहेत का. बलवान ग्रह आणि भाव गोचरदरम्यान नक्कीच फल देतात.
+----------
+सर्व संभाव्य टाइम विंडोंमध्ये प्रत्येकी किती % विवाहाची संभावना आहे?
+----------
+अंतिम समग्र विश्लेषण (पराशरी):
+एक अशी वेळ जेव्हा:
+➤ विंशोत्तरी दशा (MD-AD-PD) अनुकूल असेल.
+➤ योगिनी दशा (MD-AD-PD) अनुकूल असेल.
+➤ त्रिभागी दशा (MD-AD-PD) अनुकूल असेल.
+➤ गुरु आणि शनीचा दुहेरी गोचर प्रमुख संतानप्राप्ती बिंदूंना (लग्न/पंचम भाव/पंचमेश) एकत्र सक्रिय करत असेल.
+➤ अष्टकवर्ग त्या गोचरला समर्थन देत असेल.
+➤ संबंधित दशा स्वामी षड्बलात बलवान असतील.
+...तीच वेळ संतानप्राप्ती होण्याची सर्वात प्रबल आणि निश्चित वेळ असते.
+----------
+जातकाच्या खालील जैमिनी संतानप्राप्तीसंबंधित राशी आणि त्यांच्या स्वामींची यादी द्या:
+
+A) मुख्य राशी:
+
+1] ती राशी ज्यात पुत्रकारक (PK) ग्रह स्थित आहे:
+2] पुत्रकारक (PK) पासून पंचम असलेली राशी:
+3] ती राशी ज्यात उपपद लग्न (UL) स्थित आहे:
+4] उपपद लग्न (UL) पासून पंचम असलेली राशी:
+5] ती राशी ज्यात A5 (पंचम आरूढ़) स्थित आहे:
+6] A1 (आरूढ़ लग्न) पासून पंचम असलेली राशी:
+7] स्वांश/कारकांश पासून पंचम असलेली राशी:
+
+B) सहाय्यक राशी:
+
+1] ती राशी ज्यात गुरु स्थित आहे:
+2] ती राशी ज्यात आत्माकारक (AK) ग्रह स्थित आहे:
+3] ती राशी ज्यात A1/AL (आरूढ़ लग्न) स्थित आहे:
+4] UL राशीत बसलेले ग्रह:
+5] A5 राशीत बसलेले ग्रह:
+6] UL पासून 5व्या राशीत बसलेले ग्रह:
+7] A5 पासून 5व्या राशीत बसलेले ग्रह:
+
+
+नोट: तपासा की गुरु UL, UL-5व्या, PK-राशी किंवा कारकांश-5व्यावर प्रभाव टाकत आहेत का.
+----------
+1] आता काढलेल्या सर्व मुख्य संतानप्राप्तीसंबंधित राशींची यादी करा.
+
+(उदाहरण: UL राशी, UL पासून 5वी, PK ची D1 राशी, कारकांशापासून 5वी, A5 राशी, UL पासून 2री, इत्यादी).
+
+2] या सर्व राशींवर कोणत्या ग्रहांचा (जसे PK, AK, गुरु, शुक्र,) प्रभाव (उपस्थिती किंवा जैमिनी दृष्टी) आहे, त्याचे वर्णन करा.
+
+3] आता सर्व राशींना त्यांच्या संतानप्राप्तीसाठी अधिक प्रभावशाली असण्याच्या क्रमाने लावा. ही यादी त्या राशींची आहे ज्यांच्या जैमिनी चर दशेत (Chara Dasha) किंवा इतर राशी-आधारित दशेत संतानप्राप्ती होण्याची प्रबल संभावना आहे:
+
+A] मुख्य राशी दशा: - संतानप्राप्तीच्या दशा-अंतर्दशेसाठी उच्च प्रभावशाली राशी:
+
+(या राशींच्या दशा/अंतर्दशेत संतानप्राप्ती होणे जवळजवळ निश्चित आहे)
+
+B) सहाय्यक राशी दशा: - संतानप्राप्तीच्या दशा-अंतर्दशेसाठी मध्यम प्रभावशाली राशी:
+
+(या राशींच्या दशा/अंतर्दशेत संतानप्राप्तीची संभावना मध्यम आहे)
+----------
+भाग 2: जैमिनी ज्योतिषानुसार संतानप्राप्तीच्या वेळेचे विश्लेषण:
+
+1] चर महादशेद्वारे वेळ निश्चिती: 
+
+➤  सध्या अशा राशीची चर दशा चालू आहे का जी मुख्य किंवा सहाय्यक राशींपैकी एक असेल?
+
+2] चर अंतर्दशेद्वारे वेळ निश्चिती:
+
+➤  संभाव्य चर महादशेत अशा राशीच्या अंतर्दशा ज्या मुख्य किंवा सहाय्यक राशींपैकी एक असतील? 
+
+3] चर प्रत्यंतर दशेद्वारे वेळ निश्चिती:
+
+➤  संभाव्य चर अंतर्दशेत अशा राशीच्या प्रत्यंतर दशा ज्या मुख्य किंवा सहाय्यक राशींपैकी एक असतील? 
+
+विश्लेषण (दशा): वरील राशींची दशा-अंतर्दशा-प्रत्यंतर संतानप्राप्तीसाठी सर्वात प्रबल वेळ असते. ज्या कालावधीत यापैकी एकापेक्षा जास्त अटी पूर्ण होतात, ती वेळ सर्वात महत्त्वाची आहे.
+----------
+2] अर्गलाद्वारे दशेच्या गुणवत्तेचे विश्लेषण (घटना कशी असेल?):
+➤ दशा राशीवर अर्गला: संतानप्राप्तीसाठी निवडलेल्या संभाव्य दशा राशीवर कोणत्या ग्रहांची अर्गला (हस्तक्षेप) आहे?
+▸ शुभ अर्गला: त्यावर शुभ ग्रहांची (गुरु, शुक्र) अर्गला आहे का? हे एक सहज, आनंदमय आणि अडथळा नसलेल्या संतानप्राप्ती समारंभाचे लक्षण आहे.
+▸ पाप अर्गला: त्यावर पाप ग्रहांची (शनि, राहु, मंगल) अर्गला आहे का? हे संतानप्राप्तीच्या वेळी काही बाधा, वाद, खर्च किंवा कष्टाचे संकेत देऊ शकते.
+➤ विरोध अर्गला: अर्गला तयार करणाऱ्या ग्रहांना कोणता विरोध होत आहे? कोणती शक्ती (अर्गला किंवा विरोध) अधिक बलवान आहे?
+
+विश्लेषण (अर्गला): हे ठरवते की संतानप्राप्तीची घटना स्वतः कशी असेल - सुलभ आणि उत्सवपूर्ण किंवा तणावपूर्ण आणि अडथळ्यांनी भरलेली.
+----------
+भाग 3: भृगु नंदी नाड़ी (BNN) नुसार संतानाच्या वेळेचे विश्लेषण
+
+1] गुरुचा गोचर:
+➤ गोचरचा गुरु जेव्हा जन्म कुंडलीच्या गुरु (जीव कारक) किंवा शुक्र (प्रजनन) यांच्याशी संबंध (युती, त्रिकोण) तयार करतो.
+➤ गोचरचा गुरु जेव्हा जन्म कुंडलीच्या पंचम भावाला किंवा पंचमेशाला सक्रिय करतो.
+
+2] शनीचा गोचर:
+➤ गोचरचा शनी जेव्हा जन्म कुंडलीच्या गुरु, पंचम भाव किंवा पंचमेशावर दृष्टी टाकतो किंवा त्यांच्याशी संबंध तयार करतो (कर्माचे फल देण्यासाठी).
+
+विश्लेषण: गोचरच्या आधारे संतानाच्या जन्माच्या संभाव्य वर्षांचे निर्धारण.
+----------
+भाग 4: कृष्णमूर्ति पद्धती (KP) नुसार संतानाच्या वेळेचे विश्लेषण:
+
+1] संतानप्राप्तीची वेळ - दशा विश्लेषण (संभाव्य टाइम विंडोंची पुष्टी (Timing of Conception/Birth):
+➤ दशा स्वामींची निवड: काढलेल्या सर्व संभाव्य टाइम विंडोंमध्ये (Potential Time Windows) विंशोत्तरी महादशा (MD), अंतर्दशा (AD) आणि प्रत्यंतर दशा (PD) चे स्वामी ग्रह संतानप्राप्तीसाठी "सक्षम" (Capable) आहेत का?
+➤ सिग्निफिकेशनची तपासणी: हे दशा स्वामी ग्रह आपल्या स्थिती, नक्षत्र स्वामी किंवा उप-स्वामीद्वारे संतानाच्या प्रमुख भावांचे (2, 5, 11) प्रबल सैगनिफिकेटर बनत आहेत का?
+➤ नकारात्मक भावांची सावधगिरी: या टाइम विंडोंमध्ये दशा स्वामी कुठे बाधक भावांना (1, 4, 10) अधिक बल तर देत नाहीत? (जर 1, 4, 10 प्रबल असतील, तर गर्भधारणेत विलंब किंवा वैद्यकीय मदतीची गरज भासू शकते).
+
+विश्लेषण: संतानाच्या जन्माच्या संभाव्य वेळ-मर्यादेचे अचूक निर्धारण.
+
+2] गोचर (Transits) चा वापर:
+➤ गोचरमध्ये बृहस्पति आणि सूर्याचा संबंध 5व्या कस्पशी किंवा त्याच्या CSL शी केव्हा होत आहे?
+➤ गोचरमध्ये बृहस्पति आणि सूर्य संतानाच्या सैगनिफिकेटर ग्रहांवर आणि भावांवर (2, 5, 11) केव्हा प्रभाव टाकत आहेत?
+
+विश्लेषण: गोचरद्वारे संतानप्राप्तीच्या संभाव्य महिने आणि दिवसांची पुष्टी.
+----------
+जर या कालावधीत संतानप्राप्ती झाली नाही तर आणखी कोणती संभाव्य कालावधी आहे आणि प्रत्येकी किती % संभावना आहे?
+----------
+भाग 5: निष्कर्ष आणि समग्र अवलोकन
+➤ सर्व प्रणालींच्या (पराशरी, जैमिनी, BNN, KP) मुख्य निष्कर्षांचा संक्षिप्त सारांश.
+➤ कोणत्या मुद्द्यांवर वेगवेगळ्या प्रणाली सहमत आहेत आणि कोणत्यावर थोडा भिन्न दृष्टिकोन आहे?
+➤ संभाव्य वेळ: संतानप्राप्तीसाठी सर्वात संभाव्य वर्षे कोणती आहेत?।
+➤ जर कोणता उपाय किंवा सूचना आवश्यक असेल.
+----------
+मारक ओळख: हा ग्रह द्वितीयेश (2nd lord) किंवा सप्तमेश (7th lord) होऊन मारकेशची भूमिका बजावत आहे का? जर होय, तर कोणता - द्वितीयेश (सामान्य मारक) किंवा सप्तमेश (प्रबळ मारक)?
+
+बाधक ओळख: हा ग्रह लग्नाच्या स्वभावानुसार (चर, स्थिर, द्विस्वभाव) बाधक भावाचा (11व्या, 9व्या, किंवा 7व्या) स्वामी आहे का?
+
+दुहेरी भूमिका: हा ग्रह मारक आणि बाधक दोन्ही भूमिका निभावत आहे का? (विशेषतः द्विस्वभाव लग्नासाठी सप्तमेश म्हणून).
+
+कार्यात्मक शुभता: याच्या उलट, हा ग्रह केंद्र/त्रिकोणाचा स्वामी होऊन शुभ 'योगकारक' ग्रह आहे का? किंवा केवळ त्रिकोणाचा स्वामी होऊन अत्यंत शुभ आहे का?
+
+2. नकारात्मकता/सकारात्मकतेच्या तीव्रतेचे मूल्यांकन (Assessing the Intensity):
+
+पापी ग्रहांचा प्रभाव: या ग्रहावर नैसर्गिक पाप ग्रहांची (शनि, मंगळ, राहू, केतू) दृष्टी आहे का किंवा तो त्यांच्यासोबत युतीत आहे का? जर होय, तर हे त्याची नकारात्मकता कशी वाढवत आहे?
+
+शुभ ग्रहांचा प्रभाव: या ग्रहावर नैसर्गिक शुभ ग्रहांची (गुरू, शुक्र, शुभ बुध) दृष्टी आहे का किंवा तो त्यांच्यासोबत आहे का? यामुळे मारक/बाधक प्रभावात काही कमी किंवा संरक्षण (Mitigation) मिळत आहे का?
+
+भाव स्थिती: हा ग्रह कुंडलीच्या कोणत्या भावात स्थित आहे? त्रिक भावांमध्ये (6, 8, 12) बसून तो आणखी अशुभ झाला आहे का, किंवा केंद्र/त्रिकोणात बसून त्याची स्थिती थोडी चांगली आहे का?
+
+राशी बळ: हा ग्रह आपल्या नीच राशीत होऊन अत्यंत पीडित आहे का किंवा आपल्या उच्च/स्वतःच्या राशीत होऊन त्याची नकारात्मकता कमी होत आहे का? अथवा अधिक शक्तिशाली आणि प्रभावी झाला आहे का?
+
+3. सक्रियकरण आणि संभावित फळ (Activation and Potential Results):
+
+दशा सक्रियकरण: या ग्रहाच्या महादशेत किंवा अंतर्दशेत कोणत्या प्रकारचे कष्ट, अडथळे किंवा त्रास (आरोग्य, नातेसंबंध, करिअर इत्यादींत) दिसू शकतात?
+
+गोचराचा प्रभाव: जेव्हा शनि किंवा राहूसारखे मोठे ग्रह गोचरात या मारक/बाधक ग्रहावरून जातात, तेव्हा ते त्याचे नकारात्मक फळ सक्रिय करू शकतात का?
+प्रभावित क्षेत्र: हा ग्रह आपल्या नैसर्गिक कारकत्वाच्या (जसे शुक्र - नातेसंबंध/वाहन, शनि - करिअर/रोग) आणि आपल्या भाव स्वामित्वाच्या आधारे आयुष्याच्या कोणत्या विशिष्ट क्षेत्रांना सर्वाधिक प्रभावित करेल?
+
+4. समग्र निष्कर्ष (Overall Conclusion):
+अंतिम मूल्यांकन: वरील सर्व मुद्द्यांचे विश्लेषण केल्यानंतर, या ग्रहाला कार्यात्मक अशुभ ग्रह म्हणून 1 ते 10 च्या प्रमाणावर किती रेटिंग द्याल? (जिथे 1 खूप सौम्य आणि 10 अत्यंत हानिकारक असेल).
+
+5: सल्ला आणि उपाय (Counseling and Remedies)
+(हा विभाग "आव्हाना"चे (Steps 1-4 मध्ये ओळखलेल्या) व्यवस्थापन कसे करायचे यावर केंद्रित आहे.)
+
+5.1. ज्योतिषीय शांती उपाय (Astrological Pacification):
+
+मंत्र/जाप: या ग्रहाच्या (किंवा त्याच्या अधिपती देवतेच्या) बीज मंत्र किंवा वैदिक मंत्राचा जप शांतीसाठी आवश्यक आहे का?
+
+स्तोत्र: दशा-अंतर्दशेदरम्यान एखाद्या विशिष्ट स्तोत्राचे (जसे, शनीसाठी 'शनि महात्म्य' किंवा बुधासाठी 'विष्णू सहस्रनाम') पठण करणे संरक्षणात्मक ठरेल का?
+
+दान: या ग्रहाचा नकारात्मक प्रभाव शांत करण्यासाठी कोणत्या वस्तूंचे (रंग, धान्य, धातू) दान आणि कधी (कोणत्या दिवशी) करायचे?
+
+5.2. रत्न आणि धारण (Gems and Wearing) - [सर्वात महत्त्वाची सावधानी]:
+
+रत्न निषेध: हा ग्रह (मारक/बाधक असल्यामुळे) त्या ग्रहांपैकी आहे का ज्यांचे रत्न कोणत्याही परिस्थितीत धारण करू नये? (स्पष्ट लिहा: कारण बलवान मारकेशचे रत्न घालणे "शक्तिशाली शत्रूला आणखी शक्ती देणे" आहे.)
+
+पर्यायी धारण: या ग्रहाला शांत करण्याऐवजी, कुंडलीच्या 'रक्षक' ग्रहाचे (जसे लग्नेश किंवा नवमेश) रत्न घालणे चांगला उपाय ठरेल का?
+
+5.3. वर्तनात्मक उपाय (Behavioral Remedies / The Counseling):
+
+जाणीव (Awareness): जातकाने या ग्रहाच्या नकारात्मक स्वभावाबद्दल कसे सावध राहावे? (जसे: "तुमची वाणी (बुध) हीच तुमचा मारकेश आहे, म्हणून बोलण्यापूर्वी विचार करण्याचा सराव करा.")
+
+बदल (Modification): जातकाला आपल्या कोणत्या सवयी बदलाव्या लागतील? (जसे: "तुमचा गुरू (बाधकेश) तुम्हाला 'आदर्शवादी' बनवून 'बाधा' देत आहे. तुमचा उपाय म्हणजे इतरांकडून 'परफेक्शन'ची अपेक्षा कमी करणे आणि लवचिक बनणे.")
+
+5.4. आध्यात्मिक/कर्मिक उपाय (Spiritual/Karmic Remedies):
+
+कर्माचा धडा (Karmic Lesson): हा ग्रह आयुष्यात कोणता 'कर्मिक धडा' शिकवायला आला आहे? (जसे: 'वैराग्य' किंवा 'अलगाव'चा धडा).
+
+ऊर्जेचे रूपांतरण (Energy Channeling): जातक या ग्रहाची नकारात्मक ऊर्जा एखाद्या उच्च उद्देशासाठी वापरू शकतो का? (जसे: 'मारक' शनीची ऊर्जा 'अध्यात्म' किंवा 'रुग्णालय सेवेत' लावणे).)
+----------
+वरील चॅट आणि PDF, आणि सुरुवातीपासून तुम्हाला दिलेल्या सर्व माहितीच्या आधारे खालील प्रश्नांचे सखोल आणि विस्ताराने विश्लेषण करून निष्कर्षासह द्यायचे आहे. लक्षात ठेवा, संदर्भाव्यतिरिक्त स्वतःच्या बुद्धीचा वापर करून आवश्यकतेनुसार ज्योतिष प्रणालीचा वापर करून विश्लेषण व्हायला हवे. 
+आणि ज्या निर्देशांचे तुम्हाला काटेकोरपणे पालन करायचे आहे ते तुम्हाला आठवतात का ?  कोणते ?
+तर पहिला प्रश्न देऊ का ?
+----------
+1] माझ्या कुंडलीनुसार एकूण किती संततीचा योग आहे? त्यांचा संभावित क्रम काय असेल (जसे पहिला मुलगा किंवा मुलगी, आणि त्यानंतर)?
+(स्रोत: पराशरी - पंचम, सप्तम, नवम भावांचे बळ; D7 कुंडलीचे विस्तृत विश्लेषण; BNN - गुरूचा पुरुष/स्त्री ग्रहांशी संबंध; जैमिनी - पुत्रकारकाची स्थिती. हे एक अंदाजे विश्लेषण आहे आणि अचूकता अनेक घटकांवर अवलंबून असते).
+----------
+2] माझ्या कुंडलीत संततीप्राप्तीचा स्पष्ट योग (Promise of Progeny) आहे का? जर होय, तर हे सहज होईल की काही अडथळ्यांनंतर?
+(स्रोत: KP - 5व्या CSL चे 2, 5, 11 भावांना सैगनिफाय करणे; पराशरी - पंचम भाव आणि पंचमेशावर शुभ/अशुभ प्रभाव; जैमिनी - PK आणि AK चा संबंध; D7 कुंडलीचे समग्र बळ).
+----------
+3] संततीप्राप्तीत कोणत्याही प्रकारच्या विलंबाची किंवा वैद्यकीय आव्हानांची (Medical Challenges) शक्यता आहे का?
+(स्रोत: पराशरी - पंचम भाव/पंचमेशावर शनि/राहू/केतू/मंगळाचा प्रभाव, त्रिक भावांमध्ये स्थिती; KP - 5व्या CSL चा 1, 4, 8, 12 भावांशी संबंध; बीज/क्षेत्र स्फुटचे विश्लेषण).
+----------
+4] संततीप्राप्तीसाठी सर्वात उपयुक्त आणि संभावित वेळ (Most Favorable Time Period) कोणता आहे?
+(स्रोत: KP - 2, 5, 11 सैगनिफाय करणाऱ्या ग्रहांची दशा/अंतर्दशा/प्रत्यंतर दशा; पराशरी - पंचमेश/गुरूची दशा; BNN - गुरू/शनीचे गोचर; जैमिनी - पुत्रकारकाशी संबंधित राशीची चर दशा).
+----------
+5] माझ्या संततीचा सामान्य स्वभाव, व्यक्तिमत्त्व आणि आरोग्य कसे असेल?
+(स्रोत: पराशरी - पंचम भावात स्थित ग्रह आणि राशी, पंचमेशाची प्रकृती; जैमिनी - पुत्रकारक (PK) ग्रहाचा स्वभाव; D7 लग्न आणि लग्नेशाचे विश्लेषण).
+----------
+6] माझी संतती माझ्यासाठी भाग्यवान (Lucky) ठरेल का? त्यांच्या जन्मानंतर माझ्या आयुष्यात सकारात्मक बदल (जसे करिअर किंवा धनात वाढ) येतील का?
+(स्रोत: पराशरी - पंचमेशाचा लग्न, नवम (भाग्य), दशम (कर्म) किंवा एकादश (लाभ) भावाशी शुभ संबंध; जैमिनी - PK चा AK शी शुभ संबंध; D7 मध्ये ग्रहांची बलवान स्थिती).
+----------
+7. माझा आणि माझ्या संततीचा परस्पर संबंध (Parent-Child Relationship) कसा असेल? हा प्रेमळ आणि सहकार्यशील असेल की तणावपूर्ण?
+(स्रोत: जैमिनी - आत्मकारक (AK) आणि पुत्रकारक (PK) चा परस्पर संबंध; पराशरी - लग्नेश आणि पंचमेशाचा परस्पर संबंध (मैत्री/शत्रुता); BNN - जातकाच्या गुरूचा संततीच्या ग्रहांशी संबंध).
+----------
+8] माझ्या संततीच्या शिक्षणाच्या आणि करिअरच्या शक्यता कशा असतील? ते आपल्या आयुष्यात यशस्वी होतील का?
+(स्रोत: पराशरी - पंचम भावापासून पंचम (नवम भाव) आणि दशम (द्वितीय भाव) चे विश्लेषण; D7 कुंडलीत दशम भाव आणि ग्रहांचे बळ).
+----------
+9] कुंडलीत IVF (कृत्रिम गर्भाधान) किंवा दत्तक ग्रहण (Adoption) यांसारख्या पर्यायी पद्धतींनी संततीप्राप्तीचा कोणताही संकेत आहे का?
+(स्रोत: KP - 5व्या CSL चा 4, 8, 12 भावांशी मजबूत संबंध; पराशरी - पंचम भाव/पंचमेश शनि आणि बुध यांसारख्या ग्रहांनी पीडित होणे आणि संबंध बनवणे).
+----------
+10] संततीबाबत कोणत्याही प्रकारच्या चिंतेचे, जसे त्यांच्या आरोग्य किंवा वर्तनाबाबत, योग आहेत का?
+(स्रोत: पराशरी - पंचम भाव किंवा पंचमेशाचा षष्ठम (रोग) किंवा अष्टम (कष्ट) भावाशी संबंध; D7 मध्ये पीडित ग्रह; जैमिनी - PK वर पाप ग्रहांची अर्गला किंवा दृष्टी).
+----------
+11] माझ्या पहिल्या आणि दुसऱ्या संततीमध्ये कोणताही विशेष फरक (स्वभाव, भाग्य इत्यादींत) दिसून येईल का?
+(स्रोत: पराशरी - पंचम भाव (पहिली संतती) आणि सप्तम भाव (दुसरी संतती) चे तुलनात्मक विश्लेषण; D7 कुंडलीत पंचम आणि सप्तम भावांचे विश्लेषण).
+----------
+12] संततीप्राप्तीसाठी कोणत्याही विशेष ठिकाणाचा (जसे जन्मस्थानापासून दूर) किंवा प्रवासाचा योग आहे का?
+(स्रोत: पराशरी - पंचमेशाचा द्वादश (दूरचे ठिकाण) किंवा नवम (लांब प्रवास) भावाशी संबंध; KP - 5व्या CSL चे 9 किंवा 12 भावांना सैगनिफाय करणे).
+----------
+13] सध्याच्या ग्रह दशा आणि गोचर संततीप्राप्तीच्या शक्यतांना कसे प्रभावित करत आहेत?
+(स्रोत: सर्व प्रणालींच्या वेळनिर्धारण तंत्रांचे संयुक्त विश्लेषण, विशेषतः सध्याच्या दशेचा आणि बृहस्पति/शनीच्या गोचराचा पंचम भाव/पंचमेश/PK वर परिणाम).
+----------
+14] माझ्या कुंडलीनुसार माझ्यात प्रजनन क्षमता किती आहे?
+----------
+15] जर संततीप्राप्तीत कोणताही अडथळा किंवा विलंब असेल, तर त्याच्या निवारणासाठी कोणतेही विशेष ज्योतिषीय उपाय, रत्न किंवा पूजा-पाठ सुचवता येतील का?
+(स्रोत: कुंडलीतील पीडित ग्रहांची (पंचमेश, गुरू, PK) आणि भावांची ओळख करणे आणि त्यांच्या शांतीसाठी उपाय सुचवणे).
+----------
+➤ जातकाने स्वतःबद्दल माहिती दिली आहे आणि जातकाचे काही प्रश्न आहेत; प्रथम दिलेली माहिती सूचीबद्ध करा, त्यानंतर सर्व प्रश्न सूचीबद्ध करा :
+----------
+आता दिलेल्या माहितीचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा; एकेका घटनेचे विस्ताराने विश्लेषण झाले पाहिजे; जर उपाय आवश्यक असतील तर उपायासह; सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+----------
+आता दिलेल्या प्रश्नांची उत्तरे सखोल संशोधन करून लिहा; विस्ताराने विश्लेषण आणि निष्कर्ष देऊन करा; एकेका प्रश्नाचे विस्ताराने विश्लेषण आणि निष्कर्ष देऊन करा; एकेका घटनेचे विस्ताराने विश्लेषण झाले पाहिजे; उपायासह; सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+----------
+सुरुवातीपासून विचारलेल्या जातकाच्या जीवनसंबंधी सर्व प्रश्नांच्या विश्लेषणाचा थोडक्यात निष्कर्ष द्या
+----------
+आतापर्यंत केलेल्या सर्व खालील घटना आणि प्रश्न पुन्हा लिहून त्यांची संक्षिप्त उत्तरे द्या, कारण ही सूची या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल; यामुळे जातक आधीच थोडक्यात उत्तरे वाचेल आणि त्याला ज्या बाबीचे संदर्भासह विश्लेषण वाचायचे आहे, तो विभाग शोधेल...
+
+1] माझ्या कुंडलीनुसार एकूण किती संततीचा योग आहे? त्यांचा संभावित क्रम काय असेल (जसे पहिला मुलगा किंवा मुलगी, आणि त्यानंतर)?
+
+2] माझ्या कुंडलीत संततीप्राप्तीचा स्पष्ट योग (Promise of Progeny) आहे का? जर होय, तर हे सहज होईल की काही अडथळ्यांनंतर?
+
+3] संततीप्राप्तीत कोणत्याही प्रकारच्या विलंबाची किंवा वैद्यकीय आव्हानांची (Medical Challenges) शक्यता आहे का?
+
+4] संततीप्राप्तीसाठी सर्वात उपयुक्त आणि संभावित वेळ (Most Favorable Time Period) कोणता आहे?
+
+5] माझ्या संततीचा सामान्य स्वभाव, व्यक्तिमत्त्व आणि आरोग्य कसे असेल?
+
+6] माझी संतती माझ्यासाठी भाग्यवान (Lucky) ठरेल का? त्यांच्या जन्मानंतर माझ्या आयुष्यात सकारात्मक बदल (जसे करिअर किंवा धनात वाढ) येतील का?
+
+7. माझा आणि माझ्या संततीचा परस्पर संबंध (Parent-Child Relationship) कसा असेल? हा प्रेमळ आणि सहकार्यशील असेल की तणावपूर्ण?
+
+8] माझ्या संततीच्या शिक्षणाच्या आणि करिअरच्या शक्यता कशा असतील? ते आपल्या आयुष्यात यशस्वी होतील का?
+
+9] कुंडलीत IVF (कृत्रिम गर्भाधान) किंवा दत्तक ग्रहण (Adoption) यांसारख्या पर्यायी पद्धतींनी संततीप्राप्तीचा कोणताही संकेत आहे का?
+
+10] संततीबाबत कोणत्याही प्रकारच्या चिंतेचे, जसे त्यांच्या आरोग्य किंवा वर्तनाबाबत, योग आहेत का?
+
+11] माझ्या पहिल्या आणि दुसऱ्या संततीमध्ये कोणताही विशेष फरक (स्वभाव, भाग्य इत्यादींत) दिसून येईल का?
+
+12] संततीप्राप्तीसाठी कोणत्याही विशेष ठिकाणाचा (जसे जन्मस्थानापासून दूर) किंवा प्रवासाचा योग आहे का?
+
+13] सध्याच्या ग्रह दशा आणि गोचर संततीप्राप्तीच्या शक्यतांना कसे प्रभावित करत आहेत?
+
+14] माझ्या कुंडलीनुसार माझ्यात प्रजनन क्षमता किती आहे? 
+
+15] जर संततीप्राप्तीत कोणताही अडथळा किंवा विलंब असेल, तर त्याच्या निवारणासाठी कोणतेही विशेष ज्योतिषीय उपाय, रत्न किंवा पूजा-पाठ सुचवता येतील का?
+
+जातकाचे प्रश्न :`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
 
         // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
         const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
@@ -1007,7 +2808,7 @@ B) सहायक राशि दशाएं : - संतान प्रा
         function processData() {
             const container = document.getElementById('prompt-container');
             // पहले डैश लाइन्स से तोडें
-            let parts = rawData.split(separatorRegex);
+            let parts = getRawData().split(separatorRegex);
 
             parts.forEach((part, index) => {
                 let cleanText = part.trim();
