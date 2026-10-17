@@ -392,7 +392,7 @@ F] D10 के 12 भाव के राशि-नक्षत्र (Bhava Cusp
             const btn = document.createElement('button');
             btn.className = 'btn';
             btn.innerText = 'Copy Prompt';
-            btn.onclick = () => copyText(text);
+            btn.onclick = () => copyText(text, btn);
 
             card.appendChild(header);
             card.appendChild(content);
@@ -400,16 +400,32 @@ F] D10 के 12 भाव के राशि-नक्षत्र (Bhava Cusp
             container.appendChild(card);
         }
 
-        function copyText(text) {
+        function showBtnFeedback(btn, success){
+            if(!btn) return;
+            var origText = btn.innerText;
+            var origBg = btn.style.backgroundColor;
+            btn.innerText = success ? "\u2713 Copied!" : "\u2717 Failed";
+            btn.style.backgroundColor = success ? "#2e7d32" : "#c62828";
+            btn.style.color = "#fff";
+            setTimeout(function(){ btn.innerText = origText; btn.style.backgroundColor = origBg; }, 2000);
+        }
+        function copyText(text, btn) {
             navigator.clipboard.writeText(text).then(() => {
                 showToast();
+                showBtnFeedback(btn, true);
             }).catch(err => {
                 // Fallback for older browsers
                 const textarea = document.createElement('textarea');
                 textarea.value = text;
                 document.body.appendChild(textarea);
                 textarea.select();
-                document.execCommand('copy');
+                try {
+                    var ok = document.execCommand('copy');
+                    showBtnFeedback(btn, ok);
+                } catch (e) {
+                    console.error('Fallback: Oops, unable to copy', e);
+                    showBtnFeedback(btn, false);
+                }
                 document.body.removeChild(textarea);
                 showToast();
             });
