@@ -1,1 +1,458 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🪐 ग्रह बल विश्लेषण v1</title>
+<script src="https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;padding:12px;color:#2c3e50}
+.container{max-width:950px;margin:0 auto}
+.header{background:linear-gradient(135deg,#2c3e50,#4a6741);color:#fff;text-align:center;padding:20px;border-radius:12px;margin-bottom:14px}
+.header h1{margin:0;font-size:22px}
+.header p{margin:4px 0 0;opacity:.8;font-size:13px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.card input[type=text]{width:100%;padding:12px;border:2px solid #2c3e50;border-radius:8px;font-size:15px;margin-bottom:10px}
+.btn{background:#2c3e50;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;width:100%}
+.btn:active{transform:scale(.98)}
+.btn.green{background:#27ae60}
+.planet-card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);border-left:6px solid #ccc}
+.planet-card.strong{border-left-color:#27ae60}
+.planet-card.medium{border-left-color:#f39c12}
+.planet-card.weak{border-left-color:#e74c3c}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.pname{font-size:20px;font-weight:bold}
+.ppct{font-size:32px;font-weight:bold}
+.strong .ppct{color:#27ae60}.medium .ppct{color:#f39c12}.weak .ppct{color:#e74c3c}
+.meter{height:14px;background:#ecf0f1;border-radius:7px;overflow:hidden;margin-bottom:10px}
+.mfill{height:100%;border-radius:7px;width:0;transition:width 1s ease}
+.strong .mfill{background:linear-gradient(90deg,#27ae60,#2ecc71)}
+.medium .mfill{background:linear-gradient(90deg,#f39c12,#f1c40f)}
+.weak .mfill{background:linear-gradient(90deg,#e74c3c,#c0392b)}
+.verdict{display:inline-block;padding:4px 14px;border-radius:20px;font-weight:bold;font-size:14px;cursor:pointer}
+.strong .verdict{background:#d5f5e3;color:#1e8449}
+.medium .verdict{background:#fef9e7;color:#7d6608}
+.weak .verdict{background:#fadbd8;color:#922b21}
+.details{display:none;margin-top:12px;font-size:13px;line-height:1.9;border-top:1px solid #eee;padding-top:10px}
+.details.show{display:block}
+.details b{color:#2c3e50}
+.drow{display:flex;flex-wrap:wrap;gap:4px 12px;margin-bottom:2px}
+.drow span{background:#f8f9fa;padding:2px 8px;border-radius:4px}
+.stable{width:100%;font-size:12px;border-collapse:collapse;margin-top:8px}
+.stable td{padding:5px 8px;border-bottom:1px solid #f0f0f0}
+.stable td:last-child{text-align:right;font-weight:bold}
+.stable tr.total td{border-top:2px solid #2c3e50;font-size:14px}
+.manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.manual-grid label{font-size:12px;font-weight:bold}
+.manual-grid input{width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px}
+.summary{background:linear-gradient(135deg,#2c3e50,#34495e);color:#fff;border-radius:12px;padding:16px;margin-top:12px}
+.summary h3{margin:0 0 10px}
+.rank{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{background:rgba(255,255,255,.15);padding:6px 12px;border-radius:20px;font-size:13px}
+.toolbar{display:flex;gap:8px;margin-bottom:12px}
+.toolbar .btn{width:auto;flex:1;font-size:14px;padding:10px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="container" id="mainContainer">
+<div class="header">
+<h1>🪐 ग्रह बल विश्लेषण</h1>
+<p>Planet Strength Analyzer v1 - muse scoring+A</p>
+</div>
+
+<div class="card">
+<input type="text" id="astroCode" placeholder="📥 Astro Code paste करें (AS1-...)">
+<button class="btn" onclick="analyze()">विश्लेषण करें</button>
+</div>
+
+<div id="manualCard" class="card hidden">
+<h3 style="margin-top:0">📝 Manual Inputs (षड्बल, BAV)</h3>
+<p style="font-size:12px;color:#666">Ephemeris से auto-calculate नहीं होने वाले values यहां भरें। खाली छोड़ने पर neutral score मिलेगा।</p>
+<div class="manual-grid" id="manualInputs"></div>
+<button class="btn green" onclick="analyze()" style="margin-top:10px">🔄 Recalculate</button>
+</div>
+
+<div class="toolbar hidden" id="toolbar">
+<button class="btn" onclick="takeScreenshot()">📸 Screenshot</button>
+<button class="btn" onclick="downloadTXT()">💾 TXT</button>
+</div>
+
+<div id="results"></div>
+<div id="summaryBox"></div>
+</div>
+
+<script>
+// ============ CONSTANTS ============
+const RASHIS=['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+const RASHIS_EN=['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha','Meena'];
+const NAKS=['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशीर्ष','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती'];
+const NAK_LORDS=['केतु','शुक्र','सूर्य','चंद्र','मंगल','राहु','गुरु','शनि','बुध','केतु','शुक्र','सूर्य','चंद्र','मंगल','राहु','गुरु','शनि','बुध','केतु','शुक्र','सूर्य','चंद्र','मंगल','राहु','गुरु','शनि','बुध'];
+const PLANETS=[
+ {n:'सूर्य',en:'Sun',sym:'☉',body:0},
+ {n:'चंद्र',en:'Moon',sym:'☽',body:1},
+ {n:'मंगल',en:'Mars',sym:'♂',body:4},
+ {n:'बुध',en:'Mercury',sym:'☿',body:2},
+ {n:'गुरु',en:'Jupiter',sym:'♃',body:5},
+ {n:'शुक्र',en:'Venus',sym:'♀',body:3},
+ {n:'शनि',en:'Saturn',sym:'♄',body:6},
+ {n:'राहु',en:'Rahu',sym:'☊',body:10},
+ {n:'केतु',en:'Ketu',sym:'☋',body:11}
+];
+// Rashi dignity: [uchcha, neecha, swarashi, moolatrikona]
+const DIGNITY={
+ 'सूर्य':{u:0,n:6,s:[4],mt:4},'चंद्र':{u:1,n:7,s:[3],mt:1},
+ 'मंगल':{u:9,n:3,s:[0,7],mt:0},'बुध':{u:5,n:11,s:[2,5],mt:5},
+ 'गुरु':{u:3,n:9,s:[8,11],mt:8},'शुक्र':{u:11,n:5,s:[1,6],mt:6},
+ 'शनि':{u:6,n:0,s:[9,10],mt:10}
+};
+const FRIEND={
+ 'सूर्य':['चंद्र','मंगल','गुरु'],'चंद्र':['सूर्य','बुध'],
+ 'मंगल':['सूर्य','चंद्र','गुरु'],'बुध':['सूर्य','शुक्र'],
+ 'गुरु':['सूर्य','चंद्र','मंगल'],'शुक्र':['बुध','शनि'],
+ 'शनि':['बुध','शुक्र']
+};
+const ENEMY={
+ 'सूर्य':['शुक्र','शनि'],'चंद्र':[],
+ 'मंगल':['बुध'],'बुध':['चंद्र'],
+ 'गुरु':['बुध','शुक्र'],'शुक्र':['चंद्र','मंगल','सूर्य'],
+ 'शनि':['सूर्य','चंद्र','मंगल']
+};
+const SHUBHA=['गुरु','शुक्र'];
+const PAPA=['शनि','मंगल','सूर्य','राहु','केतु'];
+const KARAKS=['AK','AmK','BK','MK','PK','GK','DK'];
+
+let planetData=[];let lagnaRashi=0;let moonNak=0;
+
+// ============ ASTRO CODE PARSE ============
+function parseAstroCode(code){
+ const p=code.trim().split('-');
+ if(p[0]!=='AS1')throw'Invalid code';
+ const dt=p[1],tm=p[2],tz=p[3],lat=p[4],lon=p[5];
+ const Y=+dt.slice(0,4),M=+dt.slice(4,6),D=+dt.slice(6,8);
+ const hh=+tm.slice(0,2),mm=+tm.slice(2,4),ss=+tm.slice(4,6);
+ const tzh=t=>{const s=t[0]==='-'?-1:1;return s*(+t.slice(1,3)+ +t.slice(3,5)/60)};
+ const tzs=tzh(tz);
+ const la=t=>{const d=+t.slice(0,t.length-3);const m=+t.slice(t.length-3,t.length-1);const s=t.endsWith('N')||t.endsWith('E')?1:-1;return s*(d+m/60)};
+ return{Y,M,D,hh,mm,ss,tzs,lat:la(lat),lon:la(lon)};
+}
+
+// ============ CALCULATIONS ============
+async function calcPositions(info){
+ await SwissEphemeris.initSwissEph();
+ const utcH=info.hh+info.mm/60+info.ss/3600-info.tzs;
+ let d=new Date(Date.UTC(info.Y,info.M-1,info.D));
+ d.setUTCHours(0,0,0,0);
+ let jd=SwissEphemeris.julday(info.Y,info.M,info.D,utcH,1);
+ const ayan=SwissEphemeris.getAyanamsa(jd);
+ const res=[];
+ for(const pl of PLANETS){
+  let lng,spd=0,retro=false;
+  if(pl.body<=6){
+   const r=await SwissEphemeris.calcUt(jd,pl.body,4);
+   lng=(r.longitude-ayan+360)%360;spd=r.speedLongitude;retro=spd<0;
+  }else{
+   const r=await SwissEphemeris.calcUt(jd,10,4);
+   let rl=(r.longitude-ayan+360)%360;
+   lng=pl.body===10?rl:(rl+180)%360;
+   retro=true;
+  }
+  res.push({...pl,lng,spd,retro});
+ }
+ // Lagna
+ const lst=((jd-2451545.0)*360.98564736629+280.46061837+info.lon)%360;
+ let asc=(lst+90-info.lat*0.0)%360;
+ // Simplified: use whole sign from MC approx - use Swiss for houses
+ try{
+  const hs=await SwissEphemeris.houses(jd,4,info.lat,info.lon);
+  asc=(hs.ascendant-ayan+360)%360;
+ }catch(e){}
+ return{planets:res,lagna:asc,jd};
+}
+
+function getRashi(lng){return Math.floor(lng/30)}
+function getDegInRashi(lng){return lng%30}
+function getNak(lng){const idx=Math.floor(lng/(360/27));return{idx,name:NAKS[idx],lord:NAK_LORDS[idx],pada:Math.floor((lng%(360/27))/(360/108))+1}}
+function getHouse(rashi,lagnaR){return((rashi-lagnaR+12)%12)+1}
+function dignityScore(pl,rashi){
+ if(!DIGNITY[pl])return{r:0,label:'-'};
+ const d=DIGNITY[pl];
+ if(rashi===d.u)return{r:20,label:'उच्च'};
+ if(rashi===d.mt)return{r:18,label:'मूलत्रिकोण'};
+ if(d.s.includes(rashi))return{r:16,label:'स्वराशि'};
+ // Friend/enemy
+ const fr=FRIEND[pl]||[],en=ENEMY[pl]||[];
+ // Need rashi lord - simplified mapping
+ const LORDS=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+ const lord=LORDS[rashi];
+ if(fr.includes(lord))return{r:12,label:'मित्र'};
+ if(en.includes(lord))return{r:6,label:'शत्रु'};
+ return{r:10,label:'सम'};
+}
+function avastha(deg){
+ if(deg<6)return{v:2,n:'बाल'};if(deg<12)return{v:4,n:'कुमार'};
+ if(deg<18)return{v:5,n:'युवा'};if(deg<24)return{v:3,n:'किशोर'};
+ if(deg<30)return{v:2,n:'वृद्ध'};return{v:1,n:'मृत'};
+}
+function navatara(pNak,mNak){
+ const d=((pNak-mNak+27)%27)%9;
+ const names=['जन्म','संपत','विपत','क्षेम','प्रत्यरि','साधक','वध','मित्र','अतिमित्र'];
+ const scores=[3,5,1,4,2,4,0,4,5];
+ return{n:names[d],s:scores[d]};
+}
+function isPushkarNavamsha(pl,lng){
+ // Simplified: known pushkar navamsha degrees
+ const deg=getDegInRashi(lng);
+ // Pushkar navamshas: specific padas - simplified check
+ return false; // Manual input for accuracy
+}
+
+// ============ SCORING (muse scoring+A) ============
+function scorePlanet(pd,manual){
+ const s={};
+ // 1. Rashi (18)
+ const dig=dignityScore(pd.n,pd.rashi);
+ let rashiPts=dig.r;
+ if(pd.n==='मंगल'&&pd.rashi===3){rashiPts=12;dig.label='नीचभंग';} // Neechabhanga
+ s.rashi={pts:Math.round(rashiPts*18/20),max:18,label:dig.label};
+ // 2. Bhava sthiti (12)
+ const h=pd.house;
+ let bhPts=h===1?12:(h===4||h===7||h===10||h===5||h===9)?11:(h===2||h===11)?10:(h===3||h===6)?8:h===12?6:h===8?5:4;
+ // Yogakaraka +3, Lagnesh +2
+ if(pd.isYogakaraka)bhPts=Math.min(12,bhPts+3);
+ if(pd.isLagnesh)bhPts=Math.min(12,bhPts+2);
+ s.bhava={pts:bhPts,max:12,label:'भाव '+h};
+ // 3. Bhava swamitva (8)
+ const owned=pd.owns;
+ let swPts=4;
+ for(const o of owned){
+  let p=o===1?7:(o===5||o===9)?7:(o===4||o===7||o===10)?6:(o===2||o===11)?5:o===3?4:o===12?3:o===8?2:1;
+  if(pd.isYogakaraka&&((o>=1&&o<=10)))p=8;
+  swPts=Math.max(swPts,p);
+ }
+ s.swamitva={pts:swPts,max:8,label:owned.join(',')};
+ // 4. Nakshatra (7)
+ const nl=pd.nak.lord;
+ let nakPts=nl===pd.n?7:(FRIEND[pd.n]||[]).includes(nl)?5:(ENEMY[pd.n]||[]).includes(nl)?2:4;
+ s.nak={pts:nakPts,max:7,label:pd.nak.name+' ('+nl+')'};
+ // 5. Shadbala (12)
+ const sh=manual['shadbala_'+pd.n];
+ let shPts=6;
+ if(sh){const r=+sh;shPts=r>=1.5?12:r>=1.3?10:r>=1.1?9:r>=1.0?7:r>=0.8?6:r>=0.6?4:2;}
+ s.shadbala={pts:shPts,max:12,label:sh||'N/A'};
+ // 6. BAV (8)
+ const bav=manual['bav_'+pd.n];
+ s.bav={pts:bav?Math.min(8,+bav):4,max:8,label:bav||'N/A'};
+ // 7. Navamsha (8)
+ const d9r=pd.d9rashi;
+ const d9dig=dignityScore(pd.n,d9r);
+ s.navamsha={pts:Math.round(d9dig.r*8/20),max:8,label:RASHIS[d9r]+' ('+d9dig.label+')'};
+ // 8. Drishti/Yuti (8)
+ let dy=5;
+ for(const y of pd.yuti){
+  if(SHUBHA.includes(y))dy=Math.min(8,dy+2);
+  else if(PAPA.includes(y))dy=Math.max(0,dy-2);
+ }
+ for(const dr of pd.drishtiFrom){
+  if(SHUBHA.includes(dr))dy=Math.min(8,dy+1);
+  else if(PAPA.includes(dr))dy=Math.max(0,dy-1);
+ }
+ s.drishti={pts:dy,max:8,label:pd.yuti.join('+')||'अकेला'};
+ // 9. Avastha (5)
+ const av=avastha(pd.degInRashi);
+ s.avastha={pts:av.v,max:5,label:av.n};
+ // 10. Vishesh (10)
+ let v=5;
+ if(pd.vargottama)v=10;
+ else if(pd.bhavaVargottama)v=7;
+ if(pd.isAsta)v-=6;
+ if(pd.n==='चंद्र'&&pd.isKrishna)v-=6;
+ if(pd.retro&&pd.n!=='राहु'&&pd.n!=='केतु')v-=8;
+ if(pd.grahanYoga)v-=8;
+ v=Math.max(0,Math.min(10,v));
+ s.vishesh={pts:v,max:10,label:pd.vargottama?'वर्गोत्तम':pd.retro?'वक्री':pd.isAsta?'अस्त':'सामान्य'};
+ // 11. Navatara (5)
+ const nt=navatara(pd.nak.idx,moonNak);
+ s.navatara={pts:nt.s,max:5,label:nt.n};
+ // 12. Pushkar (4)
+ const pk=manual['pushkar_'+pd.n];
+ let pkPts=3;
+ if(pk==='pn')pkPts=5;else if(pk==='pb')pkPts=4;else if(pk==='both')pkPts=5;else if(pk==='mrityu')pkPts=1;
+ pkPts=Math.min(4,pkPts);
+ // Actually max 4, so cap
+ s.pushkar={pts:Math.min(4,pkPts),max:4,label:pk||'नहीं'};
+
+ // A Bonuses
+ let bonus=0;let bonusLabel=[];
+ if((pd.rashi===DIGNITY[pd.n]?.s[0]||(DIGNITY[pd.n]?.s||[]).includes(pd.rashi))&&(pk==='pn'||pk==='pb'||pk==='both')){bonus+=5;bonusLabel.push('स्वराशि+पुष्कर');}
+ // Shadbala rank bonus - simplified: if shadbala rank 1-3
+ // Double penalty removal for 8th house lord in 8th
+ if(pd.house===8&&pd.owns.includes(8)&&pd.n==='चंद्र'){bonus+=4;bonusLabel.push('8th double penalty relief');}
+
+ let total=Object.values(s).reduce((a,c)=>a+c.pts,0)+bonus;
+ total=Math.min(100,total);
+ return{breakdown:s,bonus,bonusLabel,total,
+  verdict:total>=70?'बलवान 💪':total>=40?'मध्यम ⚖️':'पीड़ित ⚠️',
+  cls:total>=70?'strong':total>=40?'medium':'weak'};
+}
+
+// ============ MAIN ============
+async function analyze(){
+ const code=document.getElementById('astroCode').value.trim();
+ if(!code){alert('Astro Code डालें');return;}
+ try{
+  const info=parseAstroCode(code);
+  const{planets,lagna,jd}=await calcPositions(info);
+  lagnaRashi=getRashi(lagna);
+  // Moon nak for navatara
+  const moon=planets.find(p=>p.n==='चंद्र');
+  moonNak=getNak(moon.lng).idx;
+
+  // Build planet data
+  planetData=planets.map(p=>{
+   const rashi=getRashi(p.lng),degInRashi=getDegInRashi(p.lng);
+   const house=getHouse(rashi,lagnaRashi);
+   const nak=getNak(p.lng);
+   // D9
+   const pada=Math.floor(degInRashi/(30/9));
+   const d9rashi=(rashi+pada)%12;
+   // Yuti: same house
+   const yuti=planets.filter(q=>q.n!==p.n&&getHouse(getRashi(q.lng),lagnaRashi)===house).map(q=>q.n);
+   // Drishti: 7th + special
+   const drishtiFrom=[];
+   const LORDS=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+   const owns=LORDS.map((l,i)=>l===p.n?((i-lagnaRashi+12)%12)+1:null).filter(x=>x);
+   return{...p,rashi,degInRashi,house,nak,d9rashi,yuti,drishtiFrom,owns,
+    isLagnesh:LORDS[lagnaRashi]===p.n,
+    isYogakaraka:false, // TODO: calculate
+    isAsta:false,isKrishna:false,grahanYoga:false,
+    vargottama:rashi===d9rashi,bhavaVargottama:false};
+  });
+  // Drishti calculation
+  for(const pd of planetData){
+   for(const q of planetData){
+    if(q.n===pd.n)continue;
+    const diff=(pd.house-q.house+12)%12;
+    let asp=false;
+    if(diff===6)asp=true; // 7th
+    if(q.n==='मंगल'&&(diff===3||diff===7))asp=true;
+    if(q.n==='गुरु'&&(diff===4||diff===8))asp=true;
+    if(q.n==='शनि'&&(diff===2||diff===9))asp=true;
+    if(asp)pd.drishtiFrom.push(q.n);
+   }
+  }
+  // Jaimini karakas by degree
+  const byDeg=[...planetData].filter(p=>!['राहु','केतु'].includes(p.n)).sort((a,b)=>b.degInRashi-a.degInRashi);
+  byDeg.forEach((p,i)=>{const tgt=planetData.find(x=>x.n===p.n);if(tgt)tgt.karak=KARAKS[i]||'';});
+
+  buildManualInputs();
+  renderResults();
+ }catch(e){alert('Error: '+e);}
+}
+
+function buildManualInputs(){
+ const box=document.getElementById('manualInputs');
+ box.innerHTML='';
+ for(const pd of planetData){
+  box.innerHTML+=`<div><label>${pd.sym} ${pd.n} षड्बल</label><input type="number" step="0.01" id="shadbala_${pd.n}" placeholder="e.g. 6.58"></div>`;
+  box.innerHTML+=`<div><label>${pd.sym} ${pd.n} BAV</label><input type="number" min="0" max="8" id="bav_${pd.n}" placeholder="0-8"></div>`;
+ }
+ document.getElementById('manualCard').classList.remove('hidden');
+}
+
+function getManual(){
+ const m={};
+ for(const pd of planetData){
+  const s=document.getElementById('shadbala_'+pd.n);
+  const b=document.getElementById('bav_'+pd.n);
+  if(s&&s.value)m['shadbala_'+pd.n]=s.value;
+  if(b&&b.value)m['bav_'+pd.n]=b.value;
+  // Pushkar - default none for now
+ }
+ return m;
+}
+
+function renderResults(){
+ const manual=getManual();
+ const box=document.getElementById('results');
+ box.innerHTML='';
+ const scored=planetData.map(pd=>({...pd,score:scorePlanet(pd,manual)}));
+ scored.sort((a,b)=>b.score.total-a.score.total);
+
+ const catNames={rashi:'राशि स्थिति',bhava:'भाव स्थिति',swamitva:'भाव स्वामित्व',nak:'नक्षत्र',shadbala:'षड्बल',bav:'BAV',navamsha:'नवमांश',drishti:'दृष्टि/युति',avastha:'अवस्था',vishesh:'विशेष स्थिति',navatara:'नवतारा',pushkar:'पुष्कर/मृत्यु'};
+
+ for(const pd of scored){
+  const sc=pd.score;
+  let detailRows='';
+  for(const[k,v]of Object.entries(sc.breakdown)){
+   detailRows+=`<tr><td>${catNames[k]}</td><td style="color:#888">${v.label}</td><td>${v.pts}/${v.max}</td></tr>`;
+  }
+  if(sc.bonus>0)detailRows+=`<tr><td>🌟 Combination Bonus</td><td style="color:#888">${sc.bonusLabel.join(', ')}</td><td>+${sc.bonus}</td></tr>`;
+  detailRows+=`<tr class="total"><td><b>कुल</b></td><td></td><td><b>${sc.total}%</b></td></tr>`;
+
+  box.innerHTML+=`
+  <div class="planet-card ${sc.cls}">
+   <div class="ph"><span class="pname">${pd.sym} ${pd.n}</span><span class="ppct">${sc.total}%</span></div>
+   <div class="meter"><div class="mfill" style="width:${sc.total}%"></div></div>
+   <span class="verdict" onclick="toggleDetail('${pd.n}')">${sc.verdict} ▼</span>
+   <div class="details" id="det_${pd.n}">
+    <div class="drow">
+     <span><b>कारकत्व:</b> ${pd.karak||'-'}</span>
+     <span><b>भाव:</b> ${pd.house} (${RASHIS[pd.rashi]})</span>
+     <span><b>स्वामित्व:</b> ${pd.owns.join(', ')||'-'}</span>
+    </div>
+    <div class="drow">
+     <span><b>नक्षत्र:</b> ${pd.nak.name} पद ${pd.nak.pada}</span>
+     <span><b>डिग्री:</b> ${pd.degInRashi.toFixed(2)}°</span>
+     <span><b>अवस्था:</b> ${sc.breakdown.avastha.label}</span>
+    </div>
+    <div class="drow">
+     <span><b>युति:</b> ${pd.yuti.join(', ')||'अकेला'}</span>
+     <span><b>दृष्टि पा रहा:</b> ${pd.drishtiFrom.join(', ')||'-'}</span>
+    </div>
+    <div class="drow">
+     <span><b>नवमांश:</b> ${RASHIS[pd.d9rashi]}</span>
+     <span><b>वक्री:</b> ${pd.retro?'हां':'नहीं'}</span>
+     <span><b>वर्गोत्तम:</b> ${pd.vargottama?'हां':'नहीं'}</span>
+    </div>
+    <table class="stable">${detailRows}</table>
+   </div>
+  </div>`;
+ }
+ // Animate meters
+ setTimeout(()=>{document.querySelectorAll('.mfill').forEach(el=>{const w=el.style.width;el.style.width='0';setTimeout(()=>el.style.width=w,50);});},100);
+
+ // Summary
+ const sb=document.getElementById('summaryBox');
+ sb.innerHTML=`<div class="summary"><h3>📊 सारांश</h3>
+ <div><b>सबसे बलवान:</b> ${scored[0].n} (${scored[0].score.total}%) ${scored[0].score.verdict} | <b>सबसे कमजोर:</b> ${scored[scored.length-1].n} (${scored[scored.length-1].score.total}%)</div>
+ <div class="rank">${scored.map((p,i)=>`<span class="chip">${i+1}. ${p.n} ${p.score.total}%</span>`).join('')}</div></div>`;
+
+ document.getElementById('toolbar').classList.remove('hidden');
+ window._scored=scored;
+}
+
+function toggleDetail(n){
+ document.getElementById('det_'+n).classList.toggle('show');
+}
+
+function takeScreenshot(){
+ html2canvas(document.getElementById('mainContainer')).then(c=>{
+  const a=document.createElement('a');a.download='graha-bala.png';a.href=c.toDataURL();a.click();
+ });
+}
+
+function downloadTXT(){
+ const s=window._scored;if(!s)return;
+ let t='🪐 ग्रह बल विश्लेषण\n'+'='.repeat(40)+'\n\n';
+ for(const p of s){
+  t+=`${p.sym} ${p.n}: ${p.score.total}% ${p.score.verdict}\n`;
+ }
+ const b=new Blob([t],{type:'text/plain'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Graha_Bala.txt';a.click();
+}
+</script>
+</body>
+</html>
