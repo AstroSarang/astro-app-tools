@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🪐 ग्रह बल विश्लेषण v2</title>
+<title>🪐 ग्रह बल विश्लेषण v3</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -59,19 +59,12 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;p
 <div class="container" id="mainContainer">
 <div class="header">
 <h1>🪐 ग्रह बल विश्लेषण</h1>
-<p>Planet Strength Analyzer v2 - Auto Shadbala+BAV</p>
+<p>Planet Strength Analyzer v3 - Fully Auto</p>
 </div>
 
 <div class="card">
 <input type="text" id="astroCode" placeholder="📥 Astro Code paste करें (AS1-...)">
 <button class="btn" onclick="analyze()">विश्लेषण करें</button>
-</div>
-
-<div id="manualCard" class="card hidden">
-<h3 style="margin-top:0">📝 Manual Inputs (षड्बल, BAV)</h3>
-<p style="font-size:12px;color:#666">Ephemeris से auto-calculate नहीं होने वाले values यहां भरें। खाली छोड़ने पर neutral score मिलेगा।</p>
-<div class="manual-grid" id="manualInputs"></div>
-<button class="btn green" onclick="analyze()" style="margin-top:10px">🔄 Recalculate</button>
 </div>
 
 <div class="toolbar hidden" id="toolbar">
@@ -920,7 +913,7 @@ async function analyze(){
   // AUTO-CALC Shadbala + BAV
   await autoCalcShadbalaBAV(info, jd);
 
-  buildManualInputs();
+  buildAutoInfo();
   renderResults();
  }catch(e){alert('Error: '+e);}
 }
@@ -987,48 +980,47 @@ async function autoCalcShadbalaBAV(info, jd){
    if(pmap[pd.n])pos[pmap[pd.n]]=pd.rashi;
   }
   pos['Lagna']=lagnaRashi;
-  // calcBAV - need per planet BAV
   window._autoBAV={};
-  // SAV per bhava from lagna
   if(typeof calcSAV==='function'){
    const sav=calcSAV(pos);
-   // BAV for each planet = SAV contribution... simplified: use SAV of planet's bhava
+   window._autoSAV=sav;
    for(const pd of planetData){
     if(pmap[pd.n]){
-     const bhavaRashi=pd.rashi;
-     // BAV approx = planet's own ashtakavarga in its rashi
-     // Use calcBAV if available, else SAV/7 approx
-     window._autoBAV[pd.n]=Math.round(sav[bhavaRashi]/7);
+     window._autoBAV[pd.n]=Math.round(sav[pd.rashi]/7);
     }
    }
   }
  }catch(e){console.log('BAV auto failed:',e);}
+
+ // BAL auto (BPHS approximate: based on bhava lord shadbala + SAV)
+ try{
+  window._autoBAL={};
+  const order=['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'];
+  for(const pd of planetData){
+   // Approximate BAL: shadbala rupas * 60 + SAV factor
+   const shRupas=(window._autoShadbala&&window._autoShadbala[pd.n])?window._autoShadbala[pd.n]:6;
+   const savVal=(window._autoSAV)?window._autoSAV[pd.rashi]:28;
+   // BAL approx = (shadbala_virupas * 0.8 + sav * 10) - simplified
+   const bal=Math.round(shRupas*60*0.7 + savVal*8);
+   window._autoBAL[pd.n]=bal;
+  }
+ }catch(e){console.log('BAL auto failed:',e);}
 }
 
-function buildManualInputs(){
- const box=document.getElementById('manualInputs');
- box.innerHTML='';
- for(const pd of planetData){
-  const autoS=(window._autoShadbala&&window._autoShadbala[pd.n])?window._autoShadbala[pd.n].toFixed(2):'';
-  const autoB=(window._autoBAV&&window._autoBAV[pd.n])?window._autoBAV[pd.n]:'';
-  box.innerHTML+=`<div><label>${pd.sym} ${pd.n} षड्बल ${autoS?'(auto: '+autoS+')':''}</label><input type="number" step="0.01" id="shadbala_${pd.n}" placeholder="${autoS||'e.g. 6.58'}"></div>`;
-  box.innerHTML+=`<div><label>${pd.sym} ${pd.n} BAV ${autoB?'(auto: '+autoB+')':''}</label><input type="number" min="0" max="8" id="bav_${pd.n}" placeholder="${autoB||'0-8'}"></div>`;
- }
- // Update card title
- document.querySelector('#manualCard h3').textContent='📝 Manual Override (optional - auto values calculated)';
- document.getElementById('manualCard').classList.remove('hidden');
+function buildAutoInfo(){
+ // Auto values are calculated in autoCalcShadbalaBAV, show info
+ const box=document.getElementById('toolbar');
+ // Just show toolbar, no manual inputs needed
 }
 
 function getManual(){
  const m={};
  for(const pd of planetData){
-  const s=document.getElementById('shadbala_'+pd.n);
-  const b=document.getElementById('bav_'+pd.n);
-  // Manual override, else auto-calculated
-  if(s&&s.value)m['shadbala_'+pd.n]=s.value;
-  else if(window._autoShadbala&&window._autoShadbala[pd.n])m['shadbala_'+pd.n]=window._autoShadbala[pd.n].toFixed(2);
-  if(b&&b.value)m['bav_'+pd.n]=b.value;
-  else if(window._autoBAV&&window._autoBAV[pd.n])m['bav_'+pd.n]=window._autoBAV[pd.n];
+  // All auto-calculated now
+  if(window._autoShadbala&&window._autoShadbala[pd.n])m['shadbala_'+pd.n]=window._autoShadbala[pd.n].toFixed(2);
+  if(window._autoBAV&&window._autoBAV[pd.n])m['bav_'+pd.n]=window._autoBAV[pd.n];
+  // BAL auto (approximate)
+  if(window._autoBAL&&window._autoBAL[pd.n])m['bal_'+pd.n]=window._autoBAL[pd.n];
  }
  return m;
 }
