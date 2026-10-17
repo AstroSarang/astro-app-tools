@@ -98,6 +98,14 @@
 <body>
 
     <h1>Year Book Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
     <div class="container" id="prompt-container">
         <!-- Prompts will be loaded here -->
     </div>
@@ -106,7 +114,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+        const rawData_hi = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -121,7 +129,7 @@
 11] D9 ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
 
 कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
-------------------------------------------
+----------
 उपरोक्त चैट और  PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
 
 लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
@@ -135,7 +143,7 @@
 
 
 आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
-------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), और जैमिनी कारकत्व के आधार पर होना चाहिए।
 
 प्रत्येक ग्रह के लिए निम्नलिखित जानकारी प्रदान करें:
@@ -159,7 +167,7 @@
 ➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
-------------------------------------------
+----------
 कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर D1 के सभी 12 भावों का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल) आधार पर होना चाहिए।
 
 
@@ -175,7 +183,7 @@
 ➤ निष्कर्ष : समग्र रूप से भाव मजबूत है या पीड़ित है ? (प्रतिशत)
 
 ➤ अंत मे सभी भाव के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
------------------------------------------
+----------
 कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, चर दशा और गोचर) को अपनी मेमोरी में सुरक्षित कर लें।
 
 निर्देश:
@@ -189,7 +197,7 @@
 गोचर (गुरु/शनि - लग्न व चंद्र से):
 
 मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
------------------------------------------
+----------
 कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (सूर्य, मंगल, बुध, शुक्र, शनी, राहू, केतु गोचर) को अपनी मेमोरी में सुरक्षित कर लें।
 
 निर्देश:
@@ -207,7 +215,7 @@
 गोचर (केतु - लग्न व चंद्र से):
 
 मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
-------------------------------------------
+----------
 उपरोक्त चैट्स में दिए गए और एक्सट्रैक्ट किए गए ज्योतिषीय डेटा (Vimshottari, Yogini, Char और Gochar Analysis) के आधार पर, आगामी  2026 से  2027 तक की सभी सभी 13 महीनों एक विस्तृत 'मास्टर समय-सारणी' तैयार करें।
 
 ​तालिका का प्रारूप और कॉलम बिल्कुल निम्न प्रकार होने चाहिए:
@@ -217,7 +225,7 @@
 ​डेटा प्रोसेसिंग के लिए महत्वपूर्ण नियम:
 
 ​दशा परिवर्तन: यदि किसी एक वर्ष के भीतर अंतर्दशा (AD) बदलती है, तो उसे एक ही सेल में 'Slash' (/) के साथ दिखाएं (जैसे: बुध AD / केतु AD)।
-------------------------------------------
+----------
 यह PDF जातक xyz की ताजिक वर्षफल कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है:
 
 ➤ वर्ष प्रवेश की सटीक तिथि और समय
@@ -231,7 +239,7 @@
 ➤ मुद्दा दशा (Muddā Dasha) की पूरी तालिका (ग्रह, आरंभ तिथि, समाप्ति तिथि)
 
 कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
------------------------------------------
+----------
 txt फाइल में दी गयी जातक के निम्मलिखित गोचर (भाव सहित)  जानकारी निकालिए :-
 
 जातक का ताजिक वर्षफल लग्न :
@@ -298,9 +306,9 @@ txt फाइल में दी गयी जातक के निम्म�
 शुक्र से तक इस (राशी-भाव) में रहेगा
 शुक्र से तक इस (राशी-भाव) में रहेगा
 शुक्र से तक इस (राशी-भाव) में रहेगा
------------------------------------------
+----------
 उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
------------------------------------------
+----------
 यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
 
 1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
@@ -309,7 +317,7 @@ txt फाइल में दी गयी जातक के निम्म�
 4] System instructions में दिए गए आदेशों का भी पालन करे.
 
 क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
------------------------------------------
+----------
 अब आपको जातक के ताजिक कुंडली के आधार पर वर्षफल का विश्लेषण महीनों के अनुसार करना है, अभी विश्लेषण नही करना है, इस आउटपुट में बस समझिये.
 
 एक कुशल ज्योतिषी हमेशा इस क्रम का पालन करता है: मुझे उम्मीद है आप भी इसी का पालन करेंगे.
@@ -320,7 +328,7 @@ txt फाइल में दी गयी जातक के निम्म�
 
 ध्यान रहे अभी 2026 चल रहा है और जातिका/जातक xyz 00 साल की/का है. विश्लेषण करते समय आयु का ध्यान रखे.
 क्या आप तैयार है, वर्षफल विश्लेषण के लिए ? सिर्फ इतना बताईये.
------------------------------------------
+----------
 उपरोक्त चैट और वर्षफल के विश्लेषण के आधार पर निम्मलिखित जातक के ताजिक वर्षफल विवरण का विश्लेषण करें और आगामी वर्ष के लिए एक समग्र अवलोकन (Overall Overview) तैयार करें। यह अवलोकन हमारे मासिक भविष्यफल विश्लेषण के लिए एक स्थायी संदर्भ के रूप में काम करेगा।
 
 विश्लेषण के लिए निर्देश:
@@ -350,7 +358,7 @@ txt फाइल में दी गयी जातक के निम्म�
 ➤ इस वर्ष कौन से प्रमुख ताजिक योग (जैसे इत्थशाल, इक्कबाल) बन रहे हैं?
 
 ➤ प्रमुख सहम (जैसे विवाह, करियर, धन) क्या संकेत दे रहे हैं?
------------------------------------------
+----------
 कृपया हमारे स्थापित वार्षिक अवलोकन के संदर्भ में, निम्नलिखित कैलेंडर माह के लिए एक गहन और विस्तृत मासिक भविष्यफल तैयार करें।
 
 विश्लेषण की अवधि: [महीने का नाम] [वर्ष]
@@ -403,9 +411,9 @@ txt फाइल में दी गयी जातक के निम्म�
 [इस अवधि के दशा स्वामी या किसी पीड़ित ग्रह से संबंधित एक या दो सरल ज्योतिषीय और गैर धार्मिक उपाय बताएं]
 
 कृपया भविष्यफल कथन को सरल, सकारात्मक और मार्गदर्शन देने वाली भाषा में लिखें। ज्योतिषीय शब्दों का प्रयोग कम से-कम करें और यदि करें तो उनका सरल अर्थ भी समझाएं।
------------------------------------------
-अब अगले महीने का दीजिये 
------------------------------------------
+----------
+अब अगले महीने का दीजिये
+----------
 उपरोक्त चैट और वर्षफल के विश्लेषण के आधार पर जातक की निम्मलिखित 2 शॉर्ट तालिका बनाइये।
 
 आगामी 12 महीनों के लिए महत्वपूर्ण ज्योतिषीय बिन्दु :
@@ -435,14 +443,14 @@ txt फाइल में दी गयी जातक के निम्म�
 बचने योग्य रंग:
 
 दोनों तालिका को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
------------------------------------------
+----------
 उपरोक्त चैट और वर्षफल के विश्लेषण के आधार पर जातक के लिए अगले 12 महीनों के लिए विशिष्ट उपाय दीजिये, उपाय सिर्फ ज्योतिषीय होना चाहिए, कोई भी मन्त्रजाप अथवा पूजा पाठ नहीं होना चाहिए, दान वैगरे चलेगा, अगर कोई मंत्र पाठ आवश्यक हो तो, भगवद्गीता जो सनातन धर्म के सभी साम्प्रदाय के लिए है उसमेसे दे सकते है,
------------------------------------------
+----------
 उपरोक्त चैट और वर्षफल के विश्लेषण के आधार पर आने वाले 12 महीनों के लिए विशेष निष्कर्ष दीजिये :
 ➤ आने वाले 12 महीनों के लिए विशेष :
 ➤ क्या करें :
 ➤ क्या न करें
------------------------------------------
+----------
 अब जातक के लग्न कुंडली के ग्रह स्तिथि के आधार पर दशा और गोचर से पुरे वर्ष मार्च 2026-फरवरी 2027 का सभी महीनों का संयुक्त फलकथन कीजिये, ध्यान रहे फलकथन बहुत विस्तृत और गहन होना चाहिए :
 
 ► विशोंतरी दशा फलकथन (MD-AD-PD) :
@@ -457,6 +465,719 @@ txt फाइल में दी गयी जातक के निम्म�
 ➤ स्वास्थ्य:
 ➤ इस साल का समग्र निष्कर्ष:
 -----------------------------------------`;
+        const rawData_en = `This PDF is the kundali of native xyz; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write the PDF page reference, but do give the list of which page the following information is on - it will be easier for you to find later:
+
+1] Graha sthiti table -(planet, degree, rashi, nakshatra-pada, nakshatra lord, Jaimini chara karakatva)
+2] Sarvashtakavarga table
+3] Shadbala table (Sthana bala, Dig bala, Kala bala, Cheshta bala, Naisargika bala, Drik bala)
+4] Bhava bala table 
+5] Vimshopak bala table (Shodasha varga, Shad varga, Sapta varga and Dasha varga)
+6] Jaimini Arudha Pada (rashi-based)
+7] Vimshottari mahadasha-antardasha chart
+8] Yogini dasha-antardasha chart
+9] Chara dasha-antardasha chart
+10] D1 12-bhava rashi-nakshatra (Bhava Cusp)
+11] D9 graha sthiti table -(planet, degree, rashi, nakshatra-pada, nakshatra lord) (screenshot)
+
+Please present all tables in a simple and readable table format.
+----------
+From the above chat and  PDF, write the rashi and bhava lord placed in the twelve bhavas of the lagna kundali, as well as planet presence; also write which planet is exalted, debilitated, retrograde, neecha-bhanga, combust, vargottama. Also write the nakshatra placement (do not write exalted, debilitated, retrograde for Rahu-Ketu).
+
+The writing pattern will remain as follows, which is only for example, shown in  ""  here  :
+
+"First bhava (lagna):
+This bhava has Simha rashi, hence the lagnesh is Surya.
+Surya and Rahu planets are placed in this bhava.
+Surya: in Simha rashi, swagrihi (in its own house). Surya is placed in Magha nakshatra. Surya, being the lord of the first bhava (Simha), sits in lagna. Surya aspects the seventh bhava (Kumbha).
+Rahu: in Simha rashi (considered an enemy rashi for Rahu). Rahu is placed in Magha nakshatra. Rahu aspects the fifth bhava (Dhanu), seventh bhava (Kumbha) and ninth bhava (Mesha).
+This bhava has the full drishti of Ketu (from the seventh bhava)."
+
+
+For your convenience, a txt file is given: "D1_Analysis"
+----------
+Based on the birth details from all the above chats and PDF, provide a list of astrological facts/figures of all 9 planets (Surya, Chandra, Mangal, Budha, Guru, Shukra, Shani, Rahu, Ketu). The information should be brief and point-wise; no detailed explanation is needed. This list should be based on the kundali's phalita, shadbala, Vimshopak bala (shodasha varga), and Jaimini karakatva.
+
+Provide the following information for each planet:
+1. [Planet name]
+➤ Jaimini karakatva:
+➤ Bhava ownership: (which bhavas it owns)
+➤ Placement: (in which bhava and rashi)
+➤ Position in rashi: (friend, enemy, neutral, exalted, debilitated, moolatrikona, own sign)
+➤ Nakshatra and pada: (in which nakshatra and pada the planet is, and the effect of the nakshatra lord.)
+➤ Drishti: (which bhavas/planets it aspects) 
+➤ Drishti on [planet name]: (which planets aspect it)
+➤ Yuti: (with which planets it is conjunct)
+➤ Avastha (degree/latitude): (degree and avastha name, e.g. bal, kumar etc.)
+➤ Bhavanatmak/avastha strength: vakri/combust/debilitated/neecha-bhanga/vargottama status: (yes/no or name of status)
+➤ Navamsha position:  (in the navamsha kundali, in which rashi, nakshatra (lord) the planet is and its effect.)
+➤ Strength in navamsha: afflicted/strong
+➤ Bhavabala: (value only)
+➤ Shadbala (in rupas):  (value in rupas and how strong it is - better than average, rank etc.)
+➤ Vimshopak bala (shodasha varga): (value and its rank among planets, if applicable.)
+➤ Brief answer of probable result in gochar and dasha: (in general how the planet will give results in its dasha/antardasha and gochar - good, bad, or average.
+➤ Conclusion: overall is the planet strong or afflicted? (percentage)
+
+➤ Finally, a conclusion on all planets being strong or afflicted (based on percentage)
+----------
+Based on the birth details from all the above chats and PDF, provide a list of astrological facts/figures of all 12 bhavas of D1. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on karakatva, bhava bala).
+
+
+Provide the following information for each bhava:
+
+1. First bhava (lagna):  rashi name [Arudha Pada]
+➤ Karakatva: 
+➤ Bhava bala: rank  (weak or strong bhava in the kundali).
+➤ Bhava lord (lagnesh):
+➤ Placement of bhavesh: 
+➤ Planets placed: 
+➤ Drishti on bhava: 
+➤ Conclusion: overall is the bhava strong or afflicted? (percentage)
+
+➤ Finally, a conclusion on all bhavas being strong or afflicted (based on percentage)
+----------
+Please save the astrological data (Vimshottari, Yogini, Chara dasha and gochar) given in all attached text files into your memory.
+
+Instructions:
+
+1] There is no need to rewrite this data in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: write only the current 2026 status in the format below:
+Vimshottari (MD-AD-PD):
+Yogini (MD-AD-PD):
+Chara (MD-AD-PD):
+Gochar (Guru/Shani - from lagna and Chandra):
+
+After this I will directly ask specific questions related to analysis; then you must use this entire data.
+----------
+Please save the astrological data (Surya, Mangal, Budha, Shukra, Shani, Rahu, Ketu gochar) given in all attached text files into your memory.
+
+Instructions:
+
+1] There is no need to rewrite this data in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: write only the current 2026 status in the format below:
+
+Gochar (Surya - from lagna and Chandra):
+Gochar (Mangal - from lagna and Chandra):
+Gochar (Budha - from lagna and Chandra):
+Gochar (Shukra - from lagna and Chandra):
+Gochar (Shani - from lagna and Chandra):
+Gochar (Rahu - from lagna and Chandra):
+Gochar (Ketu - from lagna and Chandra):
+
+After this I will directly ask specific questions related to analysis; then you must use this entire data.
+----------
+Based on the astrological data (Vimshottari, Yogini, Char and Gochar Analysis) given and extracted in the above chats, prepare a detailed 'Master Timeline' of all 13 months from the upcoming  2026 to  2027.
+
+​The table format and columns must be exactly as follows:
+
+​| Time (year) | Vimshottari dasha (MD-AD) | Yogini dasha (MD-AD) | Chara dasha (MD-AD) | Guru gochar (bhava from lagna/Moon) | Shani gochar (bhava from lagna/Moon) |
+
+​Important rules for data processing:
+
+​Dasha change: if the antardasha (AD) changes within a single year, show it in the same cell with a 'Slash' (/) (e.g.: Budha AD / Ketu AD).
+----------
+This PDF is the Tajika varshfal kundali of native xyz; you must save all the information from it:
+
+➤ Exact date and time of varsha pravesh
+➤ Varshfal lagna kundali (Tajika Lagna Chart) - with rashi and bhava of all planets
+➤ Placement of Muntha (in which bhava and rashi)
+➤ Name of the Varshesh (Lord of the Year) (based on calculation)
+➤ Panchadhikari table (Five Office Bearers)
+➤ Pancha-Vargeeya bala table
+➤ List of Tajika yogas (with yes/no, e.g. Itthashal, Isharaf etc.)
+➤ Placement of major sahams (vivah, career, dhan, bhagya etc.)
+➤ Full table of Mudda Dasha (planet, start date, end date)
+
+Please present all tables in a simple and readable table format.
+----------
+Extract the following gochar (with bhava)  information of the native given in the txt file :-
+
+Tajika varshfal lagna of the native:
+
+Gochar (with bhava)  of all planets from this year's birth month to next year's birth month:
+
+Tajika - Guru gochar from varshfal lagna : 
+Tajika - Shani gochar from varshfal lagna : 
+Tajika - Rahu gochar from varshfal lagna : 
+Tajika - Ketu gochar from varshfal lagna : 
+
+Tajika - Surya gochar from varshfal lagna:
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+Surya will remain in this (rashi-bhava) from  to 
+
+Tajika - Mangal gochar from varshfal lagna:
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+Mangal will remain in this (rashi-bhava) from  to 
+
+Tajika - Budha gochar from varshfal lagna:
+Budha will remain in this (rashi-bhava) from  to 
+Budha will remain in this (rashi-bhava) from  to 
+Budha will remain in this (rashi-bhava) from  to 
+Budha will remain in this (rashi-bhava) from  to 
+Budha will remain in this (rashi-bhava) from  to 
+Budha will remain in this (rashi-bhava) from  to 
+Budha will remain in this (rashi-bhava) from  to 
+Budha will remain in this (rashi-bhava) from  to 
+Budha will remain in this (rashi-bhava) from  to 
+Budha will remain in this (rashi-bhava) from  to 
+Budha will remain in this (rashi-bhava) from  to
+Budha will remain in this (rashi-bhava) from  to
+
+Tajika - Shukra gochar from varshfal lagna:
+Shukra will remain in this (rashi-bhava) from  to 
+Shukra will remain in this (rashi-bhava) from  to
+Shukra will remain in this (rashi-bhava) from  to
+Shukra will remain in this (rashi-bhava) from  to
+Shukra will remain in this (rashi-bhava) from  to
+Shukra will remain in this (rashi-bhava) from  to
+Shukra will remain in this (rashi-bhava) from  to
+Shukra will remain in this (rashi-bhava) from  to
+Shukra will remain in this (rashi-bhava) from  to
+Shukra will remain in this (rashi-bhava) from  to
+Shukra will remain in this (rashi-bhava) from  to
+Shukra will remain in this (rashi-bhava) from  to
+----------
+List briefly which information for kundali analysis you have received so far.
+----------
+Make sure you strictly follow the following orders,
+
+1] Cross-check the data before giving the output.
+2] Do not do any kind of sugar-coating. If there is any dosha, conflict or negative yoga in the kundali, state it clearly and in bitter words. I don't have to please the client, I have to tell the truth. Note that it should not be entirely negative; tell what is true with a balance of positive and negative .
+3] Do not begin your answer with any greeting or conversational phrase (like 'certainly', 'surely', 'the following is' etc.). Your answer must begin directly with the asked information itself.
+4] Also follow the orders given in the System instructions.
+
+Are you ready - just tell me which orders you will follow.
+----------
+Now, based on the Tajika kundali of the native, you have to do the varshfal analysis month-wise; do not analyze yet, just understand in this output.
+
+A skilled astrologer always follows this sequence: I hope you will follow the same.
+
+First sequence: which Vimshottari/Yogini mahadasha/antardasha of the native is running? (What is the main theme and season of life?)
+Second sequence: within this mahadasha, what is the current Tajika varshfal promising? (What is this year's specific agenda?)
+Third sequence: within that year, when are the Mudda Dasha and gochar fulfilling those promises? (When will the event happen?)
+
+Note that 2026 is currently running and female native/male native xyz is 00 years old. Keep the age in mind while analyzing.
+Are you ready for the varshfal analysis? Just tell me that much.
+----------
+Based on the above chat and varshfal analysis, analyze the following Tajika varshfal details of the native and prepare an Overall Overview for the upcoming year. This overview will serve as a permanent reference for our monthly horoscope analysis.
+
+Instructions for analysis:
+
+1] The 'season' of life (main dasha):
+
+➤ During this entire year, which Vimshottari mahadasha (MD) and antardasha (AD) will mainly be effective?
+
+➤ Is the pratyantar dasha (PD) changing during the year? If yes, which major PDs will run from when to when?
+
+➤ What is the placement (strong/weak, shubh/ashubh) of these dasha lords in the birth kundali?
+
+2] The 'captain' of this year (Varshesh):
+
+➤ Who is the Varshesh of this Tajika year and what is its placement in the varshfal kundali?
+
+➤ Based on the Varshesh, what is the main theme and energy of this entire year?
+
+3. The 'main focus' of this year (Muntha):
+
+➤ In which bhava is the Muntha this year?
+
+➤ Based on the Muntha, which area of life will be most in the spotlight this year?
+
+4. The 'main promises' of this year (Tajika yogas and sahams):
+
+➤ Which major Tajika yogas (like Itthashal, Ikkabal) are forming this year?
+
+➤ What are the major sahams (like vivah, career, dhan) indicating?
+----------
+With reference to our established annual overview, please prepare an in-depth and detailed monthly horoscope for the following calendar month.
+
+Period of analysis: [month name] [year]
+
+Instructions for analysis:
+
+1] The 'manager' of this month (Mudda Dasha):
+
+➤ Which Mudda Dasha(s) are running in this month?
+
+➤ What is the original strength (shadbala, avastha, D9 placement) of these dasha lords in the birth kundali? And what are they promising ?
+
+➤ In which bhava of the varshfal kundali is this planet placed and what is its placement (strong/weak, shubh/ashubh)?
+
+2] The 'season' of this month (gochar):
+
+➤ Which bhava of the varshfal kundali is Surya's gochar activating this month?
+
+➤ During this period, over which important bhavas (like lagna, dasham, saptam) and planets (like dasha lord, Varshesh, Muntha) of the varshfal kundali is the gochar of fast planets like Surya and Mangal happening?
+
+➤ Is there any significant gochar or effect of Guru or Shani this month (in the context of Ashtakavarga)?
+
+➤ During this period, in which bhavas from the birth lagna and Chandra lagna is the gochar of major planets (Guru, Shani, Rahu/Ketu) happening?
+
+3] Combined horoscope and advice:
+
+(Please combine the above monthly data with our annual overview and write the horoscope for the following areas.)
+
+➤ General overview:
+
+➤ Economic life:
+
+➤ Career:
+
+➤ Family life:
+
+➤ Married and love life:
+
+➤ Health:
+
+➤ Overall conclusion of this month:
+
+4] Practical advice and remedies (what to do/what not to do, remedies).
+
+➤ Things to keep in mind during this:
+► What to do (Dos): [give 2-3 practical suggestions to take advantage of this period's positive energy]
+► What not to do (Don'ts): [mention 2-3 precautions to avoid this period's challenges]
+
+➤ Remedies:
+[mention one or two simple astrological and non-religious remedies related to this period's dasha lord or an afflicted planet]
+
+Please write the horoscope statement in simple, positive and guiding language. Use astrological terms minimally and if you do, also explain their simple meaning.
+----------
+Now give for the next month
+----------
+Based on the above chat and varshfal analysis, make the following 2 short tables of the native.
+
+Important astrological points for the coming 12 months:
+
+Favorable points :
+
+Lucky number:
+Auspicious number:
+Lucky day:
+Lucky tithi:
+Lucky month:
+Shubh planet:
+Friendly rashis:
+Shubh color:
+Lucky metal:
+Lucky gem:
+
+
+Unfavorable points :
+
+Numbers to avoid:
+Days to avoid:
+Tithis to avoid:
+Months to avoid:
+Planets to avoid:
+Rashis to avoid:
+Colors to avoid:
+
+Present both tables in a simple and readable table format.
+----------
+Based on the above chat and varshfal analysis, give specific remedies for the native for the next 12 months; remedies should be only astrological, there should be no mantra japa or puja path, daan etc. is fine, if any mantra path is necessary, you can give from the Bhagavad Gita which is for all sampradayas of Sanatan Dharma,
+----------
+Based on the above chat and varshfal analysis, give special conclusions for the coming 12 months:
+➤ Special for the coming 12 months:
+➤ What to do:
+➤ What not to do
+----------
+Now, based on the graha sthiti of the native's lagna kundali, give the combined phalkathan of all months of the full year March 2026-February 2027 from dasha and gochar; note the phalkathan should be very detailed and in-depth:
+
+► Vimshottari dasha phalkathan (MD-AD-PD):
+► Yogini dasha phalkathan (MD-AD-PD):
+► Gochar dasha phalkathan (Guru, Shani, Rahu, Ketu, Surya, Budha, Shukra, Mangal):
+
+➤ General overview:
+➤ Economic life:
+➤ Career:
+➤ Family life:
+➤ Married and love life:
+➤ Health:
+➤ Overall conclusion of this year:
+-----------------------------------------`;
+        const rawData_mr = `हे PDF जातक xyz ची कुंडली आहे, त्यातील सर्व माहिती तुम्ही सेव करून घेतली पाहिजे, जेणेकरून कुंडलीचे विश्लेषण होऊ शकेल. विश्लेषण करताना PDF च्या पानाचा संदर्भ लिहू नका, परंतु खालील माहिती कोणत्या पानावर आहे, याची सूची द्या - म्हणजे तुम्हालाही पुढे शोधायला सोपे जाईल:
+
+1] ग्रह स्थिती तालिका -(ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तालिका
+3] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टी बल)
+4] भाव बल तालिका 
+5] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+6] जैमिनी आरूढ पद (रास आधारित)
+7] विंशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] चर दशा अंतर्दशा चार्ट
+10] D1 च्या 12 भावांची रास-नक्षत्र (Bhava Cusp)
+11] D9 ग्रह स्थिती तालिका -(ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+
+कृपया सर्व तालिका सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा.
+----------
+वरील चॅट आणि  PDF मधील लग्न कुंडलीच्या बारा भावांमध्ये असलेली रास आणि भाव स्वामी तसेच ग्रह उपस्थिती लिहा; जो ग्रह उच्च, नीच, वक्री, नीचभंग, अस्त, वर्गोत्तम आहे तेही लिहा. नक्षत्रातील स्थितीही लिहा (राहू-केतूला उच्च, नीच, वक्री लिहू नका).
+
+लेखन पॅटर्न खालीलप्रमाणे राहील, जो फक्त उदाहरणासाठी आहे, जो  ""  यामध्ये दर्शवला आहे  :
+
+"पहिला भाव (लग्न):
+या भावात सिंह रास आहे, म्हणून लग्नेश सूर्य आहे.
+या भावात सूर्य आणि राहू ग्रह स्थित आहेत.
+सूर्य: सिंह राशीत स्वगृही (आपल्याच घरात) आहे. सूर्य मघा नक्षत्रात स्थित आहे. सूर्य प्रथम भावाचा (सिंह) स्वामी होऊन लग्नात बसला आहे. सूर्याची दृष्टी सातव्या भावावर (कुंभ) आहे.
+राहू: सिंह राशीत (राहूसाठी शत्रू रास मानली जाते). राहू मघा नक्षत्रात स्थित आहे. राहूची दृष्टी पाचव्या भावावर (धनु), सातव्या भावावर (कुंभ) आणि नवव्या भावावर (मेष) आहे.
+या भावावर केतूची (सातव्या भावातून) पूर्ण दृष्टी आहे."
+
+
+तुमच्या सोयीसाठी txt फाइल दिली आहे : "D1_Analysis"
+----------
+वरील सर्व चॅट आणि PDF च्या जन्म तपशीलांच्या आधारे सर्व ९ ग्रहांची (सूर्य, चंद्र, मंगळ, बुध, गुरु, शुक्र, शनि, राहू, केतू) ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असली पाहिजे, सविस्तर स्पष्टीकरणाची गरज नाही. ही सूची कुंडलीचे फलित, षड्बल, विमशोपक बल (षोडश वर्ग) आणि जैमिनी कारकत्व यांच्या आधारे असली पाहिजे.
+
+प्रत्येक ग्रहासाठी खालील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ जैमिनी कारकत्व:
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रू, सम, उच्च, नीच, मूलत्रिकोण, स्वरास)
+➤ नक्षत्र आणि पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी) 
+➤ [ग्रहाचे नाव] वर दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांसोबत युतीत आहे)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इ.)
+➤ भावनात्मक/अवस्था शक्ती: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (होय/नाही किंवा स्थितीचे नाव)
+➤ नवमांश स्थिती:  (नवमांश कुंडलीत ग्रह कोणत्या राशीत, नक्षत्रात (स्वामी) आहे आणि त्याचा प्रभाव.)
+➤ नवमांशातील शक्ती: पीडित/बलवान
+➤ भावबल: (फक्त मान)
+➤ षड्बल (रूपांमध्ये):  (रूपांमधील मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इ.)
+➤ विमशोपक बल (षोडश वर्ग): (मान आणि ग्रहांमध्ये त्याचा रँक, लागू असल्यास.)
+➤ गोचर आणि दशेतील संभाव्य फलाचे संक्षिप्त उत्तर: (सामान्यतः तो ग्रह आपल्या दशा/अंतर्दशेत आणि गोचरात कसे फल देईल - चांगले, वाईट किंवा मध्यम.
+➤ निष्कर्ष: एकूण ग्रह मजबूत आहे की पीडित आहे? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रहांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीच्या आधारे)
+----------
+वरील सर्व चॅट आणि PDF च्या जन्म तपशीलांच्या आधारे D1 च्या सर्व 12 भावांची ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असली पाहिजे, सविस्तर स्पष्टीकरणाची गरज नाही. ही सूची कारकत्व, भाव बल) आधारे असली पाहिजे.
+
+
+प्रत्येक भावासाठी खालील माहिती द्या:
+
+1. पहिला भाव (लग्न):  राशीचे नाव [आरूढ पद]
+➤ कारकत्व: 
+➤ भाव बल: रँक  (कुंडलीतील कमजोर किंवा मजबूत भाव).
+➤ भाव स्वामी (लग्नेश):
+➤ भावेशाची स्थिती: 
+➤ स्थित ग्रह: 
+➤ भावावर दृष्टी: 
+➤ निष्कर्ष: एकूण भाव मजबूत आहे की पीडित आहे? (टक्केवारी)
+
+➤ शेवटी सर्व भावांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीच्या आधारे)
+----------
+कृपया जोडलेल्या (Attached) सर्व टेक्स्ट फाइलांमध्ये दिलेला ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, चर दशा आणि गोचर) आपल्या मेमरीमध्ये सुरक्षित करा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला आहे याची पुष्टी करा.
+3] पुष्टी (Verification) साठी: फक्त 2026 ची सध्याची स्थिती खालील फॉर्मेटमध्ये लिहून द्या:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD-PD):
+चर (MD-AD-PD):
+गोचर (गुरु/शनि - लग्न व चंद्रावरून):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारीन, तेव्हा तुम्ही या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+कृपया जोडलेल्या (Attached) सर्व टेक्स्ट फाइलांमध्ये दिलेला ज्योतिषीय डेटा (सूर्य, मंगळ, बुध, शुक्र, शनि, राहू, केतू गोचर) आपल्या मेमरीमध्ये सुरक्षित करा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला आहे याची पुष्टी करा.
+3] पुष्टी (Verification) साठी: फक्त 2026 ची सध्याची स्थिती खालील फॉर्मेटमध्ये लिहून द्या:
+
+गोचर (सूर्य - लग्न व चंद्रावरून):
+गोचर (मंगळ - लग्न व चंद्रावरून):
+गोचर (बुध - लग्न व चंद्रावरून):
+गोचर (शुक्र - लग्न व चंद्रावरून):
+गोचर (शनि - लग्न व चंद्रावरून):
+गोचर (राहू - लग्न व चंद्रावरून):
+गोचर (केतू - लग्न व चंद्रावरून):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारीन, तेव्हा तुम्ही या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+वरील चॅटमध्ये दिलेल्या आणि एक्सट्रॅक्ट केलेल्या ज्योतिषीय डेटाच्या (Vimshottari, Yogini, Char आणि Gochar Analysis) आधारे, आगामी  2026 ते  2027 पर्यंतच्या सर्व 13 महिन्यांची एक सविस्तर 'मास्टर समय-सारणी' तयार करा.
+
+​तालिकेचे स्वरूप आणि कॉलम अगदी खालीलप्रमाणे असले पाहिजेत:
+
+​| समय (वर्ष) | विंशोत्तरी दशा (MD-AD) | योगिनी दशा (MD-AD) | चर दशा (MD-AD) | गुरु गोचर (लग्न/चंद्रापासून भाव) | शनि गोचर (लग्न/चंद्रापासून भाव) |
+
+​डेटा प्रोसेसिंगसाठी महत्त्वाचे नियम:
+
+​दशा परिवर्तन: एका वर्षाच्या आत अंतर्दशा (AD) बदलत असेल, तर ती एकाच सेलमध्ये 'Slash' (/) सोबत दाखवा (जसे: बुध AD / केतू AD).
+----------
+हे PDF जातक xyz ची ताजिक वर्षफल कुंडली आहे, त्यातील सर्व माहिती तुम्ही सेव करून घेतली पाहिजे:
+
+➤ वर्ष प्रवेशाची अचूक तारीख आणि वेळ
+➤ वर्षफल लग्न कुंडली (Tajika Lagna Chart) - सर्व ग्रहांच्या राशी आणि भावासह
+➤ मुंथची स्थिती (कोणत्या भावात आणि राशीत)
+➤ वर्षेशाचे नाव (Lord of the Year) (गणनेच्या आधारे)
+➤ पंचाधिकारी तालिका (Five Office Bearers)
+➤ पंच-वर्गीय बल तालिका (Pancha-Vargeeya Bala)
+➤ ताजिक योगांची सूची (होय/नाही सोबत, जसे इत्थशाल, ईशराफ इ.)
+➤ प्रमुख सहमांची स्थिती (विवाह, करियर, धन, भाग्य इ.)
+➤ मुद्दा दशेची संपूर्ण तालिका (ग्रह, आरंभ तारीख, समाप्ती तारीख)
+
+कृपया सर्व तालिका सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा.
+----------
+txt फाइलमध्ये दिलेली जातकाची खालील गोचर (भावासह)  माहिती काढा :-
+
+जातकाचे ताजिक वर्षफल लग्न:
+
+या वर्षाच्या जन्म महिन्यापासून पुढील वर्षाच्या जन्म महिन्यापर्यंत सर्व ग्रहांचे गोचर (भावासह)  :
+
+ताजिक - वर्षफल लग्नावरून गुरु गोचर : 
+ताजिक - वर्षफल लग्नावरून शनि गोचर : 
+ताजिक - वर्षफल लग्नावरून राहू गोचर : 
+ताजिक - वर्षफल लग्नावरून केतू गोचर : 
+
+ताजिक - वर्षफल लग्नावरून सूर्य गोचर:
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+सूर्य पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+
+ताजिक - वर्षफल लग्नावरून मंगळ गोचर:
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+मंगळ पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+
+ताजिक - वर्षफल लग्नावरून बुध गोचर:
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील
+बुध पासून पर्यंत या (राशी-भाव) मध्ये राहील
+
+ताजिक - वर्षफल लग्नावरून शुक्र गोचर:
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील 
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+शुक्र पासून पर्यंत या (राशी-भाव) मध्ये राहील
+----------
+आतापर्यंत कुंडली विश्लेषणासाठी तुम्हाला कोणती कोणती माहिती प्राप्त झाली, याची थोडक्यात सूची द्या.
+----------
+तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटाचे क्रॉसचेक करा.
+2] कोणत्याही प्रकारचे शुगर-कोटिंग (Sugar-coating) करू नका. कुंडलीत कोणताही दोष, संघर्ष किंवा नकारात्मक योग असेल, तर तो स्पष्ट आणि कडव्या शब्दांत सांगा. मला क्लायंटला खुश करायचे नाही, तर खरे सांगायचे आहे. लक्षात ठेवा पूर्णपणे नकारात्मक नसावे, सकारात्मक आणि नकारात्मक यांचा बॅलन्स ठेवून जे खरे आहे ते सांगा .
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'निश्चितपणे', 'जरूर', 'खालीलप्रमाणे' इ.) करू नका. तुमचे उत्तर थेट मागितलेल्या माहितीनेच सुरू झाले पाहिजे.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का - फक्त एवढे सांगा की कोणत्या आदेशांचे पालन कराल.
+----------
+आता तुम्हाला जातकाच्या ताजिक कुंडलीच्या आधारे वर्षफलाचे विश्लेषण महिन्यांनुसार करायचे आहे, सध्या विश्लेषण करायचे नाही, या आउटपुटमध्ये फक्त समजून घ्या.
+
+एक कुशल ज्योतिषी नेहमी या क्रमाचे पालन करतो: मला आशा आहे तुम्हीही याचेच पालन कराल.
+
+पहिला क्रम: जातकाची विंशोत्तरी/योगिनी महादशा/अंतर्दशा कोणती चालू आहे? (जीवनाचा मुख्य विषय आणि मौसम काय आहे?)
+दुसरा क्रम: या महादशेच्या आत, सध्याचे ताजिक वर्षफल काय वचन देत आहे? (या वर्षाचा विशिष्ट अजेंडा काय आहे?)
+तिसरा क्रम: त्या वर्षाच्या आत, मुद्दा दशा आणि गोचर ती वचने कधी पूर्ण करत आहेत? (घटना कधी होईल?)
+
+लक्षात ठेवा सध्या 2026 चालू आहे आणि जातिका/जातक xyz 00 वर्षांची/चा आहे. विश्लेषण करताना वयाचे भान ठेवा.
+तुम्ही तयार आहात का, वर्षफल विश्लेषणासाठी? फक्त एवढे सांगा.
+----------
+वरील चॅट आणि वर्षफलाच्या विश्लेषणाच्या आधारे जातकाच्या खालील ताजिक वर्षफल तपशीलाचे विश्लेषण करा आणि आगामी वर्षासाठी एक समग्र अवलोकन (Overall Overview) तयार करा. हे अवलोकन आमच्या मासिक भविष्यफल विश्लेषणासाठी एक स्थायी संदर्भ म्हणून काम करेल.
+
+विश्लेषणासाठी निर्देश:
+
+1] जीवनाचा 'मौसम' (मुख्य दशा):
+
+➤ या संपूर्ण वर्षादरम्यान मुख्यतः कोणती विंशोत्तरी महादशा (MD) आणि अंतर्दशा (AD) प्रभावी राहील?
+
+➤ वर्षादरम्यान प्रत्यंतर दशा (PD) बदलत आहे का? तसे असल्यास, कोणत्या प्रमुख PD कधीपासून कधीपर्यंत चालतील?
+
+➤ या दशा स्वामींची जन्म कुंडलीतील स्थिती (बलवान/कमजोर, शुभ/अशुभ) काय आहे?
+
+2] या वर्षाचा 'कप्तान' (वर्षेश):
+
+➤ या ताजिक वर्षाचा वर्षेश कोण आहे आणि त्याची वर्षफल कुंडलीत काय स्थिती आहे?
+
+➤ वर्षेशाच्या आधारे, या संपूर्ण वर्षाची मुख्य थीम आणि ऊर्जा काय आहे?
+
+3. या वर्षाचा 'मुख्य फोकस' (मुंथ):
+
+➤ या वर्षी मुंथ कोणत्या भावात आहे?
+
+➤ मुंथच्या आधारे, या वर्षी जीवनाचे कोणते क्षेत्र सर्वाधिक चर्चेत राहील?
+
+4. या वर्षाची 'मुख्य वचने' (ताजिक योग आणि सहम):
+
+➤ या वर्षी कोणते प्रमुख ताजिक योग (जसे इत्थशाल, इक्कबाल) बनत आहेत?
+
+➤ प्रमुख सहम (जसे विवाह, करियर, धन) काय संकेत देत आहेत?
+----------
+आमच्या स्थापित वार्षिक अवलोकनाच्या संदर्भात, कृपया खालील कॅलेंडर महिन्यासाठी एक सखोल आणि सविस्तर मासिक भविष्यफल तयार करा.
+
+विश्लेषणाचा कालावधी: [महिन्याचे नाव] [वर्ष]
+
+विश्लेषणासाठी निर्देश:
+
+1] या महिन्याचा 'मॅनेजर' (मुद्दा दशा):
+
+➤ या महिन्यात कोणती मुद्दा दशा(एं) चालू आहेत?
+
+➤ या दशा स्वामींचे जन्म कुंडलीतील मूळ बल (षड्बल, अवस्था, D9 स्थिती) काय आहे? आणि ते काय वचन देत आहेत ?
+
+➤ हा ग्रह वर्षफल कुंडलीच्या कोणत्या भावात स्थित आहे आणि त्याची स्थिती (बलवान/कमजोर, शुभ/अशुभ) काय आहे?
+
+2] या महिन्याचा 'मौसम' (गोचर):
+
+➤ या महिन्यात सूर्याचे गोचर वर्षफल कुंडलीच्या कोणत्या भावाला सक्रिय करत आहे?
+
+➤ या कालावधीत, सूर्य आणि मंगळ यांसारख्या तेज ग्रहांचे गोचर वर्षफल कुंडलीच्या कोणत्या महत्त्वाच्या भावांवर (जसे लग्न, दशम, सप्तम) आणि ग्रहांवर (जसे दशा स्वामी, वर्षेश, मुंथ) होत आहे?
+
+➤ या महिन्यात गुरु किंवा शनीचे कोणतेही महत्त्वपूर्ण गोचर किंवा प्रभाव आहे का (अष्टकवर्गाच्या संदर्भात)?
+
+➤ या कालावधीत, प्रमुख ग्रहांचे (गुरु, शनि, राहू/केतू) गोचर जन्म लग्न आणि चंद्र लग्नापासून कोणत्या भावांमध्ये होत आहे?
+
+3] संयुक्त भविष्यफल आणि सल्ला:
+
+(कृपया वरील मासिक डेटा आमच्या वार्षिक अवलोकनासोबत मिळवून खालील क्षेत्रांसाठी भविष्यफल लिहा.)
+
+➤ सामान्य अवलोकन:
+
+➤ आर्थिक जीवन:
+
+➤ करियर:
+
+➤ कौटुंबिक जीवन:
+
+➤ वैवाहिक आणि प्रेम जीवन:
+
+➤ आरोग्य:
+
+➤ या महिन्याचा एकूण निष्कर्ष:
+
+4] व्यावहारिक सल्ला आणि उपाय (काय करावे/काय करू नये, उपाय).
+
+➤ यादरम्यान लक्षात ठेवण्यासारख्या गोष्टी:
+► काय करावे (Dos): [या कालावधीच्या सकारात्मक ऊर्जेचा लाभ घेण्यासाठी 2-3 व्यावहारिक सूचना द्या]
+► काय करू नये (Don'ts): [या कालावधीच्या आव्हानांपासून बचावण्यासाठी 2-3 सावधगिरी सांगा]
+
+➤ उपाय (Remedies):
+[या कालावधीच्या दशा स्वामीशी किंवा कोणत्याही पीडित ग्रहाशी संबंधित एक किंवा दोन सोपे ज्योतिषीय आणि गैर धार्मिक उपाय सांगा]
+
+कृपया भविष्यफल कथन सोप्या, सकारात्मक आणि मार्गदर्शन देणाऱ्या भाषेत लिहा. ज्योतिषीय शब्दांचा वापर कमीत कमी करा आणि केलाच तर त्यांचा सोपा अर्थही समजावून सांगा.
+----------
+आता पुढच्या महिन्याचे द्या
+----------
+वरील चॅट आणि वर्षफलाच्या विश्लेषणाच्या आधारे जातकाची खालील 2 शॉर्ट तालिका बनवा.
+
+आगामी 12 महिन्यांसाठी महत्त्वाचे ज्योतिषीय बिंदू:
+
+अनुकूल बिंदू :
+
+भाग्यांक:
+शुभ अंकः
+भाग्यशाली दिवसः
+भाग्यशाली तिथीः
+भाग्यशाली महिना:
+शुभ ग्रहः
+मित्र राशी:
+शुभ रंग:
+भाग्यशाली धातूः
+भाग्यशाली रत्नः
+
+
+प्रतिकूल बिंदू :
+
+टाळावयाचे अंकः
+टाळावयाचे दिवस:
+टाळावयाची तिथीः
+टाळावयाचा महिना:
+टाळावयाचे ग्रहः
+टाळावयाची रासः
+टाळावयाचा रंग:
+
+दोन्ही तालिका सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा.
+----------
+वरील चॅट आणि वर्षफलाच्या विश्लेषणाच्या आधारे जातकासाठी पुढील 12 महिन्यांसाठी विशिष्ट उपाय द्या; उपाय फक्त ज्योतिषीय असले पाहिजेत, कोणताही मंत्रजप किंवा पूजा पाठ नसावा, दान वैगरे चालेल, जर कोणता मंत्र पाठ आवश्यक असेल तर, सनातन धर्माच्या सर्व संप्रदायांसाठी असलेल्या भगवद्गीतेतून देऊ शकता,
+----------
+वरील चॅट आणि वर्षफलाच्या विश्लेषणाच्या आधारे येत्या 12 महिन्यांसाठी विशेष निष्कर्ष द्या:
+➤ येत्या 12 महिन्यांसाठी विशेष:
+➤ काय करावे:
+➤ काय करू नये
+----------
+आता जातकाच्या लग्न कुंडलीच्या ग्रह स्थितीच्या आधारे दशा आणि गोचरावरून संपूर्ण वर्ष मार्च 2026-फेब्रुवारी 2027 च्या सर्व महिन्यांचे संयुक्त फलकथन करा; लक्षात ठेवा फलकथन खूप सविस्तर आणि सखोल असले पाहिजे:
+
+► विंशोत्तरी दशा फलकथन (MD-AD-PD):
+► योगिनी दशा फलकथन (MD-AD-PD):
+► गोचर दशा फलकथन (गुरु, शनि, राहू, केतू, सूर्य, बुध, शुक्र, मंगळ):
+
+➤ सामान्य अवलोकन:
+➤ आर्थिक जीवन:
+➤ करियर:
+➤ कौटुंबिक जीवन:
+➤ वैवाहिक आणि प्रेम जीवन:
+➤ आरोग्य:
+➤ या वर्षाचा एकूण निष्कर्ष:
+-----------------------------------------`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
 
         // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
         const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
@@ -464,7 +1185,7 @@ txt फाइल में दी गयी जातक के निम्म�
         function processData() {
             const container = document.getElementById('prompt-container');
             // पहले डैश लाइन्स से तोडें
-            let parts = rawData.split(separatorRegex);
+            let parts = getRawData().split(separatorRegex);
 
             parts.forEach((part, index) => {
                 let cleanText = part.trim();
