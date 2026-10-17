@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🪐 ग्रह बल विश्लेषण v6</title>
+<title>🪐 ग्रह बल विश्लेषण v7</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -59,7 +59,7 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;p
 <div class="container" id="mainContainer">
 <div class="header">
 <h1>🪐 ग्रह बल विश्लेषण</h1>
-<p>Planet Strength Analyzer v6 - Fully Auto</p>
+<p>Planet Strength Analyzer v7 - Fully Auto</p>
 </div>
 
 <div class="card">
@@ -878,7 +878,7 @@ function abdaLordFromYear(year) {
 }
 
 // ============ SCORING (muse scoring+A) ============
-function scorePlanet(pd,manual){
+function scorePlanet(pd,manual,shRank){
  const s={};
  // 1. Rashi (18)
  const dig=dignityScore(pd.n,pd.rashi);
@@ -954,8 +954,10 @@ function scorePlanet(pd,manual){
 
  // A Bonuses
  let bonus=0;let bonusLabel=[];
- if((pd.rashi===DIGNITY[pd.n]?.s[0]||(DIGNITY[pd.n]?.s||[]).includes(pd.rashi))&&(pk==='pn'||pk==='pb'||pk==='both')){bonus+=5;bonusLabel.push('स्वराशि+पुष्कर');}
- // Shadbala rank bonus - simplified: if shadbala rank 1-3
+ const isSwarashi=(pd.rashi===DIGNITY[pd.n]?.s[0]||(DIGNITY[pd.n]?.s||[]).includes(pd.rashi));
+ if(isSwarashi&&(pk==='pn'||pk==='pb'||pk==='both')){bonus+=5;bonusLabel.push('स्वराशि+पुष्कर');}
+ // Swarashi + Shadbala rank 1-3
+ if(isSwarashi&&shRank&&shRank[pd.n]&&shRank[pd.n]<=3){bonus+=5;bonusLabel.push('स्वराशि+षड्बल टॉप3');}
  // Double penalty removal for 8th house lord in 8th
  if(pd.house===8&&pd.owns.includes(8)&&pd.n==='चंद्र'){bonus+=4;bonusLabel.push('8th double penalty relief');}
 
@@ -1180,7 +1182,15 @@ function renderResults(){
  const manual=getManual();
  const box=document.getElementById('results');
  box.innerHTML='';
- const scored=planetData.map(pd=>({...pd,score:scorePlanet(pd,manual)}));
+ // Calculate Shadbala ranks (higher virupas = better rank)
+ const shVals=planetData.map(pd=>{
+  const sh=manual['shadbala_'+pd.n];
+  return{n:pd.n,v:sh?+sh:0};
+ }).filter(x=>['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'].includes(x.n));
+ shVals.sort((a,b)=>b.v-a.v);
+ const shRank={};
+ shVals.forEach((x,i)=>{shRank[x.n]=i+1;});
+ const scored=planetData.map(pd=>({...pd,score:scorePlanet(pd,manual,shRank)}));
  scored.sort((a,b)=>b.score.total-a.score.total);
 
  const catNames={rashi:'राशि स्थिति',bhava:'भाव स्थिति',swamitva:'भाव स्वामित्व',nak:'नक्षत्र',shadbala:'षड्बल',bav:'BAV',navamsha:'नवमांश',drishti:'दृष्टि/युति',avastha:'अवस्था',vishesh:'विशेष स्थिति',navatara:'नवतारा',pushkar:'पुष्कर/मृत्यु'};
