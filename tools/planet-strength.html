@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🪐 ग्रह बल विश्लेषण v5</title>
+<title>🪐 ग्रह बल विश्लेषण v6</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -59,7 +59,7 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;p
 <div class="container" id="mainContainer">
 <div class="header">
 <h1>🪐 ग्रह बल विश्लेषण</h1>
-<p>Planet Strength Analyzer v5 - Fully Auto</p>
+<p>Planet Strength Analyzer v6 - Fully Auto</p>
 </div>
 
 <div class="card">
@@ -185,6 +185,8 @@ function getDegInRashi(lng){return lng%30}
 function getNak(lng){const idx=Math.floor(lng/(360/27));return{idx,name:NAKS[idx],lord:NAK_LORDS[idx],pada:Math.floor((lng%(360/27))/(360/108))+1}}
 function getHouse(rashi,lagnaR){return((rashi-lagnaR+12)%12)+1}
 function dignityScore(pl,rashi){
+ // Rahu/Ketu: neutral (no standard dignities)
+ if(pl==='राहु'||pl==='केतु')return{r:10,label:'सम'};
  if(!DIGNITY[pl])return{r:0,label:'-'};
  const d=DIGNITY[pl];
  if(rashi===d.u)return{r:20,label:'उच्च'};
