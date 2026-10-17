@@ -98,6 +98,14 @@
 <body>
 
     <h1>Free Consultation Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
     <div class="container" id="prompt-container">
         <!-- Prompts will be loaded here -->
     </div>
@@ -106,16 +114,16 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData = `कृपया जातक के ज्योतिषीय डेटा का उपयोग करके विश्लेषण कीजिये, जैसे ग्रह स्तिथि के अनुसार, कंरट दशा-गोचर में परिस्थिति, रोग और बीमारियाँ वैगरे, तथा करियर-विवाह-धन.
+        const rawData_hi = `कृपया जातक के ज्योतिषीय डेटा का उपयोग करके विश्लेषण कीजिये, जैसे ग्रह स्तिथि के अनुसार, कंरट दशा-गोचर में परिस्थिति, रोग और बीमारियाँ वैगरे, तथा करियर-विवाह-धन.
 
 उसके पहले ध्यान रखने योग्य बातें :
 
-1] ध्यान रहे अभी 2026 चल रहा है और जातिका/जातक xyz 00 साल की/का है. 
-------------------------------------------
+1] ध्यान रहे अभी 2026 चल रहा है और जातिका/जातक xyz 00 साल की/का है.
+----------
 इस कुंडली के आधार पर जातक के करियर का विस्तृत विश्लेषण करें। बताएं कि नौकरी या व्यापार में से क्या बेहतर है, किस क्षेत्र में सफलता मिलेगी और करियर में बड़ा उछाल कब आ सकता है?
-------------------------------------------
-इस कुंडली के आधार पर जातक के वैवाहिक जीवन का विश्लेषण करें। विवाह का योग कब बन रहा है? 
-------------------------------------------
+----------
+इस कुंडली के आधार पर जातक के वैवाहिक जीवन का विश्लेषण करें। विवाह का योग कब बन रहा है?
+----------
 एक एक्सपर्ट ज्योतिषी की तरह बर्ताव करो जो इंस्टाग्राम DM पर अपने क्लाइंट से चैट कर रहा है। उपरोक्त analyis को सिर्फ 2-3 प्याराग्राफ का एक बहुत ही आकर्षक और ऊपरी (surface-level) ओवरव्यू तैयार करो।
 
 भाषा और टोन (Language & Tone): तुम्हारा जवाब 100% 'Hinglish' (हिंदी शब्द अंग्रेजी लिपि में, जैसे हम व्हाट्सएप या इंस्टाग्राम पर चैट करते हैं) में होना चाहिए। टोन बहुत ही फ्रेंडली, कैज़ुअल और क्लाइंट के मन में उत्सुकता (curiosity) जगाने वाली होनी चाहिए।
@@ -128,11 +136,11 @@
 Dhyan Rahe ise 100% na maane, Ek accurate aur final conclusion par aane ke liye Parashari, Jaimini, KP, aur BNN, in charo jyotish systems se in-depth analysis karna bahut zaroori hota hai. Agar aap properly apni life ki clarity aur remedies chahte ho, toh let's schedule a detailed paid consultation. Message me for the booking details!
 
 (Indepth Analysis Me Shamil : Asta, Vakri, Vargottam, Shatru/Mitra/Sama Rashi, Uchcha/Neech/Neechbhang, Shadbal, Bhavabal, Ashtakvarga, Bhinnashtakvarga, Shodashvarga, Vimposhak, Chalit, Navamsha, Svamsha-Karakamsha, Argala, Arudha Pada, Char Karaka, Pushkar Bhagya, Mrityu Bhagya, Navatara Chakra.[Vimshottari Dasha, Yogini Dasha, Tribhagi Dasha, Ashtottari Dasha, KP Dasha, Char Dasha, Double Transit])"
-------------------------------------------
-अब जातक जो भी सवाल करेगा उसको मैं यहाँ पेस्ट करुँगी आपको वैसा ही चैट टोन में जवाब देना है, क्या आप तैयार है ? 
-------------------------------------------
+----------
+अब जातक जो भी सवाल करेगा उसको मैं यहाँ पेस्ट करुँगी आपको वैसा ही चैट टोन में जवाब देना है, क्या आप तैयार है ?
+----------
 Remedies de dejiye, dharmik aur gairdharmik dono (short caution ke sath ki ye sadharan uapay hain, indepth analysis se prabhavi Remedies nikalkar aati hain)
-------------------------------------------
+----------
 यह PDF जातक की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
@@ -164,7 +172,7 @@ Remedies de dejiye, dharmik aur gairdharmik dono (short caution ke sath ki ye sa
 14] D1 के 12 भाव के राशी-नक्षत्र (Bhava Cusp)
 
 कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
-------------------------------------------
+----------
 आप एक बेहद अनुभवी और मिलनसार वैदिक ज्योतिषी हैं। मैं अभी ज्योतिष सीख रहा हूँ। मेरा एक मित्र/रिश्तेदार मेरे पास अपनी कुंडली लेकर आया है और मुझसे अपने भविष्य के बारे में पूछ रहा है।
 
 कृपया आप इस कुंडली को देखकर एक स्क्रिप्ट तैयार करें, जिसे मैं अपने मित्र/रिश्तेदार को सुना सकूँ। यह स्क्रिप्ट एक लेख या रिपोर्ट जैसी नहीं, बल्कि एक **जीवंत और व्यक्तिगत बातचीत** जैसी लगनी चाहिए। और मॉर्डन मराठी भाषा मे होनी चाहिए। 
@@ -186,13 +194,11 @@ Remedies de dejiye, dharmik aur gairdharmik dono (short caution ke sath ki ye sa
 * करियर, धन, विवाह और स्वास्थ्य से जुड़ी एक-एक महत्वपूर्ण और आश्चर्यजनक बात। 
 
 कृपया पूरी स्क्रिप्ट को एक सहज प्रवाह में लिखें, ताकि मैं इसे आसानी से पढ़कर सुना सकूँ।
-------------------------------------------
+----------
 इस कुंडली के आधार पर जातक के वैवाहिक जीवन का विश्लेषण करें। विवाह का योग कब बन रहा है? जीवनसाथी का स्वभाव और दिशा क्या हो सकती है? वैवाहिक जीवन में सुख के लिए क्या कोई उपाय आवश्यक है?
-------------------------------------------
+----------
 इस कुंडली के आधार पर जातक के करियर का विस्तृत विश्लेषण करें। बताएं कि नौकरी या व्यापार में से क्या बेहतर है, किस क्षेत्र में सफलता मिलेगी और करियर में बड़ा उछाल कब आ सकता है?
-------------------------------------------
- 
-------------------------------------------
+----------
 आप एक अत्यंत अनुभवी और ज्ञानी वैदिक ज्योतिषी हैं। मैं आपको एक जातक की लग्न कुंडली प्रदान कर रहा हूँ। आपका कार्य इस कुंडली का गहन और विस्तृत विश्लेषण करना है। आपको अपनी प्रतिक्रिया एक विशेषज्ञ ज्योतिषी की तरह प्रस्तुत करनी है, जो सीधे जातक से बात कर रहा हो।
 
 आपका विश्लेषण ऐसा होना चाहिए जो जातक को आश्चर्यचकित कर दे और उसके जीवन के उन छिपे हुए पहलुओं को उजागर करे जिनसे वह अनजान हो सकता है। साधारण बातें न बताएं, बल्कि ग्रहों की स्थिति के आधार पर विशेष और गुप्त रहस्यों पर ध्यान केंद्रित करें।
@@ -220,6 +226,241 @@ Remedies de dejiye, dharmik aur gairdharmik dono (short caution ke sath ki ye sa
     * जातक का भाग्यशाली ग्रह कौन सा है और उसे कैसे मजबूत किया जा सकता है?
 
 आपका उत्तर सरल हिंदी में होना चाहिए, लेकिन भाषा में ज्योतिषीय गंभीरता और ज्ञान झलकना चाहिए। विश्लेषण को अलग-अलग खंडों में व्यवस्थित करें ताकि उसे समझना आसान हो।`;
+        const rawData_en = `Please analyze using the native's astrological data - such as per planetary positions, the situation in current dasha-transit, diseases and ailments etc., as well as career-marriage-wealth.
+
+Before that, points to keep in mind:
+
+1] Note that the year is currently 2026 and the native (female/male) xyz is 00 years old (female/male).
+----------
+Analyze the native's career in detail based on this kundali. Tell whether a job or business is better, in which field success will come, and when a major career breakthrough may arrive?
+----------
+Analyze the native's married life based on this kundali. When is the yoga of marriage forming?
+----------
+Act like an expert astrologer who is chatting with their client on Instagram DM. Prepare a very attractive and surface-level overview of the above analysis in just 2-3 paragraphs.
+
+Language & Tone: Your response must be 100% in 'Hinglish' (Hindi words in English script, like we chat on WhatsApp or Instagram). The tone should be very friendly, casual, and should spark curiosity in the client's mind.
+
+Mandatory Ending (Mandatory Hook):
+Right after the 3-4 line overview, to convert the client to the paid service, copy-paste the text given below exactly as-is without any changes:
+
+"Par dekho, yeh bas ek quick surface-level reading hai. Asli situation tabhi clear hoti hai jab chart ka detailed analysis kiya jaye, jahan planets ki strength aur capacity check hoti hai ki wo sach mein results dene ke kabil hain ya nahi. Kabhi-kabhi malefic planets bhi bure results nahi dete agar unmein strength na ho, aur yahi same logic benefic planets par bhi apply hota hai agar wo enough strong nahi hain, toh wo achhe results nahi de paate.
+
+Dhyan Rahe ise 100% na maane, Ek accurate aur final conclusion par aane ke liye Parashari, Jaimini, KP, aur BNN, in charo jyotish systems se in-depth analysis karna bahut zaroori hota hai. Agar aap properly apni life ki clarity aur remedies chahte ho, toh let's schedule a detailed paid consultation. Message me for the booking details!
+
+(Indepth Analysis Me Shamil : Asta, Vakri, Vargottam, Shatru/Mitra/Sama Rashi, Uchcha/Neech/Neechbhang, Shadbal, Bhavabal, Ashtakvarga, Bhinnashtakvarga, Shodashvarga, Vimposhak, Chalit, Navamsha, Svamsha-Karakamsha, Argala, Arudha Pada, Char Karaka, Pushkar Bhagya, Mrityu Bhagya, Navatara Chakra.[Vimshottari Dasha, Yogini Dasha, Tribhagi Dasha, Ashtottari Dasha, KP Dasha, Char Dasha, Double Transit])"
+----------
+Now whatever question the native asks, I will paste it here; you have to answer in the same chat tone. Are you ready?
+----------
+Please give remedies - both religious and non-religious (with a short caution that these are general remedies; effective remedies emerge from in-depth analysis).
+----------
+This PDF is the native's kundali; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write the page reference, but please give a list of which of the following information is on which page - it will be easier for you to find later too:
+
+1] Planet position table - (planet, degree, sign, nakshatra-pada, nakshatra-lord, Jaimini chara karaka)
+
+2] Sarvashtakavarga table
+
+3] Shadbala table (Sthana bala, Dig bala, Kala bala, Cheshta bala, Naisargika bala, Drishti bala)
+
+4] Bhava bala table
+
+5] Vimshopaka bala table (Shodasha varga, Shad varga, Sapta varga and Dasha varga)
+
+6] Jaimini Arudha Pada (sign-based)
+
+7] Vimshottari Mahadasha Antardasha chart
+
+8] Yogini Dasha Antardasha chart
+
+9] Chara Dasha Antardasha chart
+
+10] Krishnamurti method (KP) bhava position table
+
+11] Krishnamurti method (KP) planet position table
+
+12] Krishnamurti method (KP) house significator planets position table
+
+13] Krishnamurti method (KP) planet significator position table
+
+14] Signs-nakshatras of the 12 bhavas of D1 (Bhava Cusp)
+
+Please present all tables in a simple and readable table format.
+----------
+You are a highly experienced and friendly Vedic astrologer. I am currently learning astrology. A friend/relative of mine has come to me with their kundali and is asking me about their future.
+
+Please look at this kundali and prepare a script that I can narrate to my friend/relative. This script should not feel like an article or report, but like a **lively and personal conversation**. And it should be in modern Marathi language.
+
+**Keep these things in mind while preparing the script:**
+
+1.  **Direct conversation:** Address the native directly with "you," "your," or "in your kundali." It should feel like I am talking to them directly.
+2.  **Flow of conversation:** Begin with something general and positive, like "Alright, so let's look at your kundali... the first special thing I can see is...".
+3.  **Simple language:** After using heavy astrological words, explain them in simple language. For example, "A 'Gajakesari Yoga' is forming in your kundali. Now what this means is that with your intelligence and knowledge you can earn great respect and wealth in life."
+4.  **Reveal hidden secrets:** Beyond ordinary matters, based on planetary positions, tell some deep or hidden thing about their nature, career or relationships, hearing which they will be amazed.
+5.  **Make it conversational:** Use interrogative sentences in between, like - "Are you understanding what I'm saying?" or "Does this happen with you?". So it doesn't feel like a one-sided speech.
+6.  **Balance of positive and negative:** Don't tell only good things; also tell about challenges and doshas, but the manner of telling should be empathetic and solution-oriented. For example - "Yes, a small challenge is visible at one place... but there's nothing to be afraid of, there is a remedy for it too."
+
+**Include these main topics in the conversation:**
+* The native's basic nature, their biggest strength and weakness.
+* The kundali's most powerful Rajayoga and its effect on life.
+* The kundali's most prominent dosha and related cautions.
+* The native's minor and major diseases and ailments as per the kundali.
+* One important and surprising thing each related to career, wealth, marriage and health.
+
+Please write the entire script in a natural flow, so that I can read it aloud easily.
+----------
+Analyze the native's married life based on this kundali. When is the yoga of marriage forming? What could be the nature and direction of the life partner? Is any remedy necessary for happiness in married life?
+----------
+Analyze the native's career in detail based on this kundali. Tell whether a job or business is better, in which field success will come, and when a major career breakthrough may arrive?
+----------
+You are an extremely experienced and knowledgeable Vedic astrologer. I am providing you with a native's lagna kundali. Your task is to do a deep and detailed analysis of this kundali. You must present your response like an expert astrologer who is talking directly to the native.
+
+Your analysis should be such that it amazes the native and reveals the hidden aspects of their life that they may be unaware of. Do not tell ordinary things; instead focus on special and secret matters based on planetary positions.
+
+**Include the following points in the analysis:**
+
+1.  **Deep analysis of personality and nature:**
+    * Based on the positions of lagna, lagnesh, and Moon, describe the native's basic nature, their thinking, and their behavior toward the outside world.
+    * What is the native's biggest strength and biggest weakness?
+    * Is there any hidden talent or desire that the native themselves does not fully understand?
+
+2.  **Special yogas and doshas of the kundali:**
+    * Identify all important **positive yogas** forming in the kundali (such as - Gajakesari Yoga, Pancha Mahapurusha Yoga, Raj Yoga, Dhan Yoga) and tell how and when they will affect the native's life.
+    * Analyze all important **negative doshas** present in the kundali (such as - Kaalsarp Dosha, Mangalik Dosha, Pitru Dosha, Grahan Dosha). In which area of life is this dosha giving problems and what is its intensity?
+
+3.  **Predictions on major areas of life:**
+    * **Career and business:** Which field will be best for the native? Job or business? When is success likely?
+    * **Wealth and financial condition:** How will the native's financial condition be? How is the capacity to earn and save money? Is there any yoga of unexpected wealth gain?
+    * **Marriage and relationships:** How will married life be? What could be the nature of the life partner? What could be the right time for marriage?
+    * **Health:** Which health problems should the native be cautious about?
+
+4.  **Hidden secrets and special indications of the kundali:**
+    * Any special conjunction, aspect or position of planets having an extraordinary effect on the native's life.
+    * Any such potential event in life (positive or negative) about which the native should be alert beforehand.
+    * Which is the native's lucky planet and how can it be strengthened?
+
+Your answer should be in simple Hindi, but the language should reflect astrological seriousness and knowledge. Organize the analysis into different sections so it is easy to understand.`;
+        const rawData_mr = `कृपया जातकाच्या ज्योतिषीय डेटाचा वापर करून विश्लेषण करा, जसे ग्रहस्थितीनुसार, करंट दशा-गोचरातील परिस्थिती, रोग आणि आजार वगैरे, तसेच करियर-विवाह-धन.
+
+त्याआधी लक्षात ठेवण्यासारख्या गोष्टी:
+
+1] लक्षात ठेवा सध्या 2026 सुरू आहे आणि जातिका/जातक xyz 00 वर्षांची/चा आहे.
+----------
+या कुंडलीच्या आधारे जातकाच्या करियरचे सविस्तर विश्लेषण करा. नोकरी की व्यवसाय यापैकी काय चांगले राहील, कोणत्या क्षेत्रात यश मिळेल आणि करियरमध्ये मोठी झेप कधी येऊ शकते ते सांगा?
+----------
+या कुंडलीच्या आधारे जातकाच्या वैवाहिक जीवनाचे विश्लेषण करा. विवाहाचा योग कधी जुळत आहे?
+----------
+एखाद्या एक्सपर्ट ज्योतिषीसारखे वागा जो इंस्टाग्राम DM वर आपल्या क्लायंटशी चॅट करत आहे. वरील analysis चा फक्त 2-3 परिच्छेदांचा एक अतिशय आकर्षक आणि वरवरचा (surface-level) ओव्हरव्ह्यू तयार करा.
+
+भाषा आणि टोन (Language & Tone): तुमचे उत्तर 100% 'Hinglish' (इंग्रजी लिपीतील हिंदी शब्द, जसे आपण व्हाट्सअ‍ॅप किंवा इंस्टाग्रामवर चॅट करतो) मध्ये असले पाहिजे. टोन अतिशय फ्रेंडली, कॅज्युअल आणि क्लायंटच्या मनात उत्सुकता (curiosity) निर्माण करणारा असावा.
+
+अनिवार्य शेवट (Mandatory Hook):
+3-4 ओळींच्या ओव्हरव्ह्यूच्या लगेच नंतर, क्लायंटला पेड सेव्हिससाठी कन्व्हर्ट करण्यासाठी खाली दिलेला मजकूर कोणताही बदल न करता जशाच्या तसा कॉपी-पेस्ट करा:
+
+"Par dekho, yeh bas ek quick surface-level reading hai. Asli situation tabhi clear hoti hai jab chart ka detailed analysis kiya jaye, jahan planets ki strength aur capacity check hoti hai ki wo sach mein results dene ke kabil hain ya nahi. Kabhi-kabhi malefic planets bhi bure results nahi dete agar unmein strength na ho, aur yahi same logic benefic planets par bhi apply hota hai agar wo enough strong nahi hain, toh wo achhe results nahi de paate.
+
+Dhyan Rahe ise 100% na maane, Ek accurate aur final conclusion par aane ke liye Parashari, Jaimini, KP, aur BNN, in charo jyotish systems se in-depth analysis karna bahut zaroori hota hai. Agar aap properly apni life ki clarity aur remedies chahte ho, toh let's schedule a detailed paid consultation. Message me for the booking details!
+
+(Indepth Analysis Me Shamil : Asta, Vakri, Vargottam, Shatru/Mitra/Sama Rashi, Uchcha/Neech/Neechbhang, Shadbal, Bhavabal, Ashtakvarga, Bhinnashtakvarga, Shodashvarga, Vimposhak, Chalit, Navamsha, Svamsha-Karakamsha, Argala, Arudha Pada, Char Karaka, Pushkar Bhagya, Mrityu Bhagya, Navatara Chakra.[Vimshottari Dasha, Yogini Dasha, Tribhagi Dasha, Ashtottari Dasha, KP Dasha, Char Dasha, Double Transit])"
+----------
+आता जातक जो काही प्रश्न विचारेल तो मी येथे पेस्ट करीन; तुम्हाला त्याच चॅट टोनमध्ये उत्तर द्यायचे आहे, तुम्ही तयार आहात का?
+----------
+उपाय द्या, धार्मिक आणि गैरधार्मिक दोन्ही (या छोट्या सूचनेसह की हे साधारण उपाय आहेत; सखोल विश्लेषणातून प्रभावी उपाय निघतात).
+----------
+ही PDF जातकाची कुंडली आहे, त्यातील सर्व माहिती तुम्ही सेव करून ठेवली पाहिजे, जेणेकरून कुंडलीचे विश्लेषण होऊ शकेल. विश्लेषण करताना PDF च्या पानाचा संदर्भ लिहू नका, परंतु खालीलपैकी कोणती माहिती कोणत्या पानावर आहे याची यादी द्या - म्हणजे तुम्हालाही पुढे शोधणे सोपे होईल:
+
+1] ग्रह स्थिती तक्ता - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+
+2] सर्वाष्टकवर्ग तक्ता
+
+3] षड्बल तक्ता (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टी बल)
+
+4] भाव बल तक्ता
+
+5] विमशोपक बल तक्ता (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+
+6] जैमिनी आरूढ पद (राशी आधारित)
+
+7] विशोंत्तरी महादशा अंतर्दशा चार्ट
+
+8] योगिनी दशा अंतर्दशा चार्ट
+
+9] चर दशा अंतर्दशा चार्ट
+
+10] कृष्णमूर्ती पद्धत (KP) भाव स्थिती तक्ता
+
+11] कृष्णमूर्ती पद्धत (KP) ग्रह स्थिती तक्ता
+
+12] कृष्णमूर्ती पद्धत (KP) घरांचे कारक ग्रह स्थिती तक्ता
+
+13] कृष्णमूर्ती पद्धत (KP) ग्रह कारकत्व स्थिती तक्ता
+
+14] D1 च्या 12 भावांचे राशी-नक्षत्र (Bhava Cusp)
+
+कृपया सर्व तक्ते सोप्या आणि वाचनीय टेबल फॉरमॅटमध्ये सादर करा.
+----------
+तुम्ही अत्यंत अनुभवी आणि मैत्रीपूर्ण वैदिक ज्योतिषी आहात. मी सध्या ज्योतिष शिकत आहे. माझा एक मित्र/नातेवाईक आपली कुंडली घेऊन माझ्याकडे आला आहे आणि मला आपल्या भविष्याबद्दल विचारत आहे.
+
+कृपया ही कुंडली पाहून एक स्क्रिप्ट तयार करा, जी मी माझ्या मित्राला/नातेवाईकाला ऐकवू शकेन. ही स्क्रिप्ट एखाद्या लेख किंवा अहवालासारखी नसावी, तर **जिवंत आणि वैयक्तिक संभाषणा**सारखी वाटली पाहिजे. आणि ती मॉर्डन मराठी भाषेत असली पाहिजे.
+
+**स्क्रिप्ट तयार करताना या गोष्टी लक्षात ठेवा:**
+
+1.  **थेट संवाद:** जातकाला थेट "तुम्ही," "तुमचे," किंवा "तुमच्या कुंडलीत" म्हणून संबोधित करा. असे वाटले पाहिजे की मी थेट त्यांच्याशी बोलत आहे.
+2.  **संभाषणाचा प्रवाह:** एखाद्या सामान्य आणि सकारात्मक गोष्टीने सुरुवात करा, जसे "बरं, तर चला तुमची कुंडली पाहूया... मला पहिली जी खास गोष्ट दिसत आहे ती म्हणजे...".
+3.  **सोप्या भाषेत:** ज्योतिषाच्या जड शब्दांचा वापर केल्यानंतर त्यांना सोप्या भाषेत समजावून सांगा. जसे, "तुमच्या कुंडलीत 'गजकेसरी योग' तयार होत आहे. आता याचा अर्थ असा की तुम्ही तुमच्या बुद्धी आणि ज्ञानाने आयुष्यात खूप सन्मान आणि धन कमवू शकता."
+4.  **लपलेली रहस्ये उघड करा:** सामान्य गोष्टींव्यतिरिक्त, ग्रहांच्या स्थितीच्या आधारे त्यांच्या स्वभाव, करियर किंवा नातेसंबंधांशी संबंधित एखादी खोल किंवा लपलेली गोष्ट सांगा, जी ऐकून ते आश्चर्यचकित होतील.
+5.  **संवादासारखे बनवा:** मध्ये-मध्ये प्रश्नार्थक वाक्ये वापरा, जसे - "तुम्हाला माझे म्हणणे समजत आहे का?" किंवा "तुमच्याबाबत असे घडते का?". यामुळे ते एकतर्फी भाषण वाटणार नाही.
+6.  **सकारात्मक आणि नकारात्मक संतुलन:** फक्त चांगल्या गोष्टीच नाहीत, तर आव्हाने आणि दोषांबद्दलही सांगा, परंतु सांगण्याची पद्धत सहानुभूतीपूर्ण आणि उपायाभिमुख असली पाहिजे. जसे - "होय, एका ठिकाणी थोडीशी आव्हान दिसत आहे... पण घाबरण्यासारखे काही नाही, त्यावर उपायही असतो."
+
+**या मुख्य विषयांचा संभाषणात समावेश करा:**
+* जातकाचा मूळ स्वभाव, त्याची सर्वात मोठी ताकद आणि कमजोरी.
+* कुंडलीचा सर्वात शक्तिशाली राजयोग आणि त्याचा आयुष्यावरील प्रभाव.
+* कुंडलीचा सर्वात प्रमुख दोष आणि त्याशी संबंधित काळजी.
+* कुंडलीनुसार जातकाचे छोटे आणि मोठे रोग आणि आजार.
+* करियर, धन, विवाह आणि आरोग्याशी संबंधित एक-एक महत्त्वाची आणि आश्चर्यकारक गोष्ट.
+
+कृपया संपूर्ण स्क्रिप्ट सहज प्रवाहात लिहा, जेणेकरून मी ती सहजपणे वाचून ऐकवू शकेन.
+----------
+या कुंडलीच्या आधारे जातकाच्या वैवाहिक जीवनाचे विश्लेषण करा. विवाहाचा योग कधी जुळत आहे? जीवनसाथीचा स्वभाव आणि दिशा काय असू शकते? वैवाहिक जीवनातील सुखासाठी काही उपाय आवश्यक आहे का?
+----------
+या कुंडलीच्या आधारे जातकाच्या करियरचे सविस्तर विश्लेषण करा. नोकरी की व्यवसाय यापैकी काय चांगले राहील, कोणत्या क्षेत्रात यश मिळेल आणि करियरमध्ये मोठी झेप कधी येऊ शकते ते सांगा?
+----------
+तुम्ही अत्यंत अनुभवी आणि ज्ञानी वैदिक ज्योतिषी आहात. मी तुम्हाला एका जातकाची लग्न कुंडली देत आहे. तुमचे कार्य या कुंडलीचे सखोल आणि सविस्तर विश्लेषण करणे आहे. तुम्हाला तुमची प्रतिक्रिया एखाद्या तज्ज्ञ ज्योतिषीसारखी सादर करायची आहे, जो थेट जातकाशी बोलत आहे.
+
+तुमचे विश्लेषण असे असले पाहिजे की ते जातकाला आश्चर्यचकित करेल आणि त्याच्या आयुष्यातील त्या लपलेल्या पैलूंचा उलगडा करेल ज्यांची त्याला माहिती नसेल. साधारण गोष्टी सांगू नका, तर ग्रहांच्या स्थितीच्या आधारे विशेष आणि गुप्त रहस्यांवर लक्ष केंद्रित करा.
+
+**विश्लेषणात खालील मुद्द्यांचा समावेश करा:**
+
+1.  **व्यक्तिमत्त्व आणि स्वभावाचे सखोल विश्लेषण:**
+    * लग्न, लग्नेश आणि चंद्राच्या स्थितीच्या आधारे जातकाचा मूळ स्वभाव, त्याची विचारसरणी आणि बाह्य जगासाठी त्याच्या वर्तनाचे वर्णन करा.
+    * जातकाची सर्वात मोठी ताकद आणि सर्वात मोठी कमजोरी काय आहे?
+    * अशी एखादी लपलेली प्रतिभा किंवा इच्छा आहे का जी जातक स्वतःही पूर्णपणे समजत नाही?
+
+2.  **कुंडलीतील विशेष योग आणि दोष:**
+    * कुंडलीत तयार होणारे सर्व महत्त्वाचे **सकारात्मक योग** (जसे - गजकेसरी योग, पंच महापुरुष योग, राज योग, धन योग) ओळखा आणि सांगा की ते जातकाच्या आयुष्यावर कसे आणि कधी परिणाम करतील.
+    * कुंडलीत असलेल्या सर्व महत्त्वाच्या **नकारात्मक दोषां**चे (जसे - कालसर्प दोष, मांगलिक दोष, पितृ दोष, ग्रहण दोष) विश्लेषण करा. हा दोष आयुष्याच्या कोणत्या क्षेत्रात समस्या देत आहे आणि त्याची तीव्रता किती आहे?
+
+3.  **आयुष्यातील प्रमुख क्षेत्रांवर भविष्यवाणी:**
+    * **करियर आणि व्यवसाय:** जातकासाठी कोणते क्षेत्र सर्वात चांगले राहील? नोकरी की व्यवसाय? यश कधी मिळण्याची शक्यता आहे?
+    * **धन आणि आर्थिक स्थिती:** जातकाची आर्थिक स्थिती कशी राहील? धन कमवण्याची आणि वाचवण्याची क्षमता कशी आहे? अनपेक्षित धनलाभाचा काही योग आहे का?
+    * **विवाह आणि नातेसंबंध:** वैवाहिक जीवन कसे राहील? जीवनसाथीचा स्वभाव कसा असू शकतो? विवाहाची योग्य वेळ काय असू शकते?
+    * **आरोग्य:** जातकाने कोणत्या आरोग्य समस्यांबाबत सावध राहिले पाहिजे?
+
+4.  **कुंडलीतील लपलेली रहस्ये आणि विशेष संकेत:**
+    * ग्रहांची एखादी विशेष युती, दृष्टी किंवा स्थिती जी जातकाच्या आयुष्यावर असाधारण प्रभाव टाकत आहे.
+    * आयुष्यातील एखादी अशी संभाव्य घटना (सकारात्मक किंवा नकारात्मक) जिच्याबद्दल जातकाने आधीपासून सावध राहिले पाहिजे.
+    * जातकाचा भाग्यवान ग्रह कोणता आहे आणि तो कसा बळकट करता येऊ शकतो?
+
+तुमचे उत्तर सोप्या हिंदीत असले पाहिजे, परंतु भाषेत ज्योतिषीय गांभीर्य आणि ज्ञान झळकले पाहिजे. विश्लेषण वेगवेगळ्या विभागांत मांडा जेणेकरून ते समजणे सोपे होईल.`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
 
         // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
         const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
@@ -227,7 +468,7 @@ Remedies de dejiye, dharmik aur gairdharmik dono (short caution ke sath ki ye sa
         function processData() {
             const container = document.getElementById('prompt-container');
             // पहले डैश लाइन्स से तोडें
-            let parts = rawData.split(separatorRegex);
+            let parts = getRawData().split(separatorRegex);
 
             parts.forEach((part, index) => {
                 let cleanText = part.trim();
