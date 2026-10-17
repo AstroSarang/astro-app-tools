@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🪐 ग्रह बल विश्लेषण v8</title>
+<title>🪐 ग्रह बल विश्लेषण v9</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -59,7 +59,7 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;p
 <div class="container" id="mainContainer">
 <div class="header">
 <h1>🪐 ग्रह बल विश्लेषण</h1>
-<p>Planet Strength Analyzer v8 - Fully Auto</p>
+<p>Planet Strength Analyzer v9 - Fully Auto</p>
 </div>
 
 <div class="card">
@@ -931,16 +931,16 @@ function scorePlanet(pd,manual,shRank){
  // 9. Avastha (5)
  const av=avastha(pd.degInRashi);
  s.avastha={pts:av.v,max:5,label:av.n};
- // 10. Vishesh (10)
- let v=5;
- if(pd.vargottama)v=10;
- else if(pd.bhavaVargottama)v=7;
- if(pd.isAsta)v-=6;
- if(pd.n==='चंद्र'&&pd.isKrishna)v-=6;
- if(pd.retro&&pd.n!=='राहु'&&pd.n!=='केतु')v-=8;
- if(pd.grahanYoga)v-=8;
- v=Math.max(0,Math.min(10,v));
- s.vishesh={pts:v,max:10,label:pd.vargottama?'वर्गोत्तम':pd.retro?'वक्री':pd.isAsta?'अस्त':'सामान्य'};
+ // 10. Vishesh (10) - per locked system
+ let v=5;let vLabel='सामान्य';
+ if(pd.vargottama){v=10;vLabel='वर्गोत्तम';}
+ else if(pd.bhavaVargottama){v=7;vLabel='भाव वर्गोत्तम';}
+ else if(pd.isAsta&&pd.retro){v=0;vLabel='अस्त+वक्री';}
+ else if(pd.isAsta){v=4;vLabel='अस्त';}
+ else if(pd.n==='चंद्र'&&pd.isKrishna){v=4;vLabel='कृष्ण चंद्र';}
+ else if(pd.retro&&pd.n!=='राहु'&&pd.n!=='केतु'){v=2;vLabel='वक्री';}
+ else if(pd.grahanYoga){v=2;vLabel='ग्रहण';}
+ s.vishesh={pts:v,max:10,label:vLabel};
  // 11. Navatara (5)
  const nt=navatara(pd.nak.idx,moonNak);
  s.navatara={pts:nt.s,max:5,label:nt.n};
