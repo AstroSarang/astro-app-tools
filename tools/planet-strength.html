@@ -217,6 +217,109 @@ function isPushkarNavamsha(pl,lng){
  return false; // Manual input for accuracy
 }
 
+
+// ============ H_TABLE for Shadbala ============
+const H_TABLE_DATA = [
+  [
+    15.0,
+    3.75,
+    7.5,
+    15.0,
+    30.0,
+    7.5,
+    3.75,
+    15.0,
+    15.0,
+    3.75,
+    3.75,
+    15.0
+  ],
+  [
+    7.5,
+    7.5,
+    15.0,
+    30.0,
+    15.0,
+    15.0,
+    7.5,
+    7.5,
+    7.5,
+    7.5,
+    7.5,
+    7.5
+  ],
+  [
+    30.0,
+    7.5,
+    3.75,
+    15.0,
+    15.0,
+    3.75,
+    7.5,
+    30.0,
+    15.0,
+    7.5,
+    7.5,
+    15.0
+  ],
+  [
+    7.5,
+    15.0,
+    30.0,
+    3.75,
+    15.0,
+    30.0,
+    15.0,
+    7.5,
+    7.5,
+    7.5,
+    7.5,
+    7.5
+  ],
+  [
+    15.0,
+    3.75,
+    3.75,
+    15.0,
+    15.0,
+    3.75,
+    3.75,
+    15.0,
+    30.0,
+    7.5,
+    7.5,
+    30.0
+  ],
+  [
+    7.5,
+    30.0,
+    15.0,
+    3.75,
+    3.75,
+    15.0,
+    30.0,
+    7.5,
+    7.5,
+    15.0,
+    15.0,
+    7.5
+  ],
+  [
+    3.75,
+    15.0,
+    15.0,
+    3.75,
+    3.75,
+    15.0,
+    15.0,
+    3.75,
+    7.5,
+    30.0,
+    30.0,
+    7.5
+  ]
+];
+
 // ============ SHADBALA (auto) ============
 /**
  * Shadbala Complete - INTEGRATED MODULE (v2 - APK-verified)
@@ -921,6 +1024,7 @@ async function analyze(){
 // Auto-calculate Shadbala and BAV
 async function autoCalcShadbalaBAV(info, jd){
  const swe=_swe;
+ try{setHTable(H_TABLE_DATA);}catch(e){}
  // Planet longitudes in Shadbala order: Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn
  const order=['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'];
  const lons=order.map(n=>{
