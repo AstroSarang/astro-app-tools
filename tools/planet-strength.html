@@ -1055,7 +1055,7 @@ function geminiD9Pts(pd){
 
 function geminiShadbalaPts(pd,shRank){
  // Max 20 - rank based
- if(pd.n==='राहु'||pd.n==='केतु')return{pts:12,label='N/A (राहु/केतु)'};
+ if(pd.n==='राहु'||pd.n==='केतु')return{pts:12,label:'N/A (राहु/केतु)'};
  const r=shRank?shRank[pd.n]:null;
  const map={1:20,2:17,3:14,4:11,5:8,6:5,7:2};
  const pts=r&&map[r]?map[r]:8;
