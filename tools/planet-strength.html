@@ -59,7 +59,7 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;p
 <div class="container" id="mainContainer">
 <div class="header">
 <h1>🪐 ग्रह बल विश्लेषण</h1>
-<p>Planet Strength Analyzer v13 - Fully Auto</p>
+<p>Planet Strength Analyzer v15 - Fully Auto</p>
 </div>
 
 <div class="card">
@@ -127,7 +127,7 @@ function getShubha(pd){
 }
 const KARAKS=['AK','AmK','BK','MK','PK','GK','DK'];
 
-let planetData=[];let lagnaRashi=0;let moonNak=0;
+let planetData=[];let lagnaRashi=0;let moonNak=0;let d9LagnaRashi=0;
 
 // ============ ASTRO CODE PARSE ============
 function parseAstroCode(code){
@@ -991,6 +991,20 @@ function geminiRashiPts(pd){
    label='नीच';
   }
  }
+ // Dispositor Support (v14): enemy/neecha but dispositor in same house in swarashi/uchcha => 8
+ if((pts===4||pts===0)&&pd.yuti.length>0){
+  const dispositor=RASHI_LORD_NAMES[r];
+  const dispDign=DIGNITY[dispositor];
+  for(const q of planetData){
+   if(q.n===dispositor&&pd.yuti.includes(dispositor)){
+    const dr=q.rashi;
+    if(dispDign&&(dispDign.s.includes(dr)||dr===dispDign.u||dr===dispDign.mt)){
+     pts=8;label='डिस्पोज़िटर सपोर्ट';
+     break;
+    }
+   }
+  }
+ }
  return{pts,label};
 }
 
@@ -1014,7 +1028,9 @@ function geminiBhavaPts(pd){
   const d=DIGNITY[pd.n];
   const isOwn=d&&d.s.includes(pd.rashi);
   const isRKGood=(pd.n==='राहु'&&[1,2,5,6,10].includes(pd.rashi))||(pd.n==='केतु'&&[0,7,8,11].includes(pd.rashi));
-  if(isOwn||isRKGood){pts=8;label='त्रिक में स्वराशि';}
+  // Lagnesh Exemption (v14): lagnesh in 8/12 gets 8, not 0
+  if(pd.isLagnesh){pts=8;label='त्रिक में लग्नेश (छूट)';}
+  else if(isOwn||isRKGood){pts=8;label='त्रिक में स्वराशि';}
   else{pts=0;label='त्रिक भाव';}
  }
  else{pts=8;label='भाव '+h;}
@@ -1176,9 +1192,65 @@ function scorePlanet(pd,manual,shRank){
  m.drishti={pts:dy.pts,label:dy.label};
  const d9pen=d9.isNeecha?{pts:-10,label:'D9 नीच पेनल्टी'}:{pts:0,label:'नहीं'};
  m.d9penalty=d9pen;
- const modTotal=m.navatara.pts+m.pushkar.pts+m.chalit.pts+m.drishti.pts+m.d9penalty.pts;
+ // D9 Special Bonus (v14): D9 lagna or 9th house => +5
+ let d9bonus={pts:0,label:'नहीं'};
+ // D9 house = (planet's D9 rashi - D9 lagna + 12) % 12 + 1
+ const d9house=((pd.d9rashi-d9LagnaRashi+12)%12)+1;
+ if(d9house===1||d9house===9){
+  d9bonus={pts:5,label:'D9 '+(d9house===1?'लग्न':'9वां')+' (+5)'};
+ }
+ m.d9bonus=d9bonus;
+ // Yoga Bonus (v14): Rajyoga/Dhana Yoga +10
+ let yogaBonus={pts:0,label:'नहीं'};
+ // If planet is lord of 9/10/11 AND placed in 1,2,4,5,7,9,10,11
+ const LORDS=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+ const houses911=[];
+ for(let i=0;i<12;i++){
+  const h=((i-lagnaRashi+12)%12)+1;
+  if([9,10,11].includes(h)&&LORDS[i]===pd.n)houses911.push(h);
+ }
+ if(houses911.length>0&&[1,2,4,5,7,9,10,11].includes(pd.house)){
+  yogaBonus={pts:10,label:'राजयोग/धन योग (+10)'};
+ }
+ m.yoga=yogaBonus;
+ // 🌟 Special Bonus Logic (v15 Patch - Gemini Final)
+ let specialBonus={pts:0,label:'नहीं'};
+ let specialLabels=[];
+ // Rule 1: एकादश राहु (Rahu in 11th) - सर्व दोष नाशक
+ if(pd.n==='राहु'&&pd.house===11){
+  specialBonus.pts+=10;
+  specialLabels.push('11वें भाव का राहु (+10)');
+ }
+ // Rule 2: धन भाव में शुभ ग्रह (Benefic in 2nd or 11th)
+ const SHUBHA_PLANETS=['चंद्र','बुध','गुरु','शुक्र'];
+ if(SHUBHA_PLANETS.includes(pd.n)&&(pd.house===2||pd.house===11)){
+  specialBonus.pts+=10;
+  specialLabels.push('धन भाव में शुभ ग्रह (+10)');
+ }
+ if(specialBonus.pts>0){
+  specialBonus.label=specialLabels.join(', ');
+ }
+ m.specialBonus=specialBonus;
+ const modTotal=m.navatara.pts+m.pushkar.pts+m.chalit.pts+m.drishti.pts+m.d9penalty.pts+m.d9bonus.pts+m.yoga.pts+m.specialBonus.pts;
  // ---- FINAL ----
  let total=baseScore+modTotal;
+ // Floor Logic (v14 Final): Krura in 3/6/11 with own dispositor => min 30%
+ const KRURA_PLANETS=['सूर्य','मंगल','शनि','राहु','केतु'];
+ if(KRURA_PLANETS.includes(pd.n)&&[3,6,11].includes(pd.house)){
+  const disp=RASHI_LORD_NAMES[pd.rashi];
+  if(pd.yuti.includes(disp)){
+   const dispDign=DIGNITY[disp];
+   for(const q of planetData){
+    if(q.n===disp){
+     const dr=q.rashi;
+     if(dispDign&&(dispDign.s.includes(dr)||dr===dispDign.u||dr===dispDign.mt)){
+      if(total<30){m.floorCap={pts:30-total,label:'Floor Cap (30%)'};total=30;}
+      break;
+     }
+    }
+   }
+  }
+ }
  total=Math.max(0,Math.min(100,total));
  return{breakdown:b,modifiers:m,baseScore,modTotal,total,
   verdict:total>=70?'बलवान 💪':total>=40?'मध्यम ⚖️':'पीड़ित ⚠️',
@@ -1195,6 +1267,10 @@ async function analyze(){
   const{planets,lagna,jd}=await calcPositions(info);
   lagnaRashi=getRashi(lagna);
   window._lagnaLng=lagna; // for Chalit auto-calc
+  // D9 Lagna for v14 D9 bonus
+  const lagnaDegInRashi=lagna%30;
+  const lagnaPada=Math.floor(lagnaDegInRashi/(30/9));
+  d9LagnaRashi=(lagnaRashi+lagnaPada)%12;
   // Moon nak for navatara
   const moon=planets.find(p=>p.n==='चंद्र');
   moonNak=getNak(moon.lng).idx;
