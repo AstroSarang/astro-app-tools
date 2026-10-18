@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🪐 ग्रह बल विश्लेषण Auto v4.1</title>
+<title>🪐 ग्रह बल विश्लेषण Auto v6.5</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -63,7 +63,7 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;p
 <div class="container" id="mainContainer">
 <div class="header">
 <h1>🪐 ग्रह बल विश्लेषण</h1>
-<p>Planet Strength Analyzer Auto v4.1 - Fully Automatic, Classical Rules</p>
+<p>Planet Strength Analyzer Auto v6.5 - Fully Automatic, Classical Rules</p>
 </div>
 
 <div class="card">
@@ -742,6 +742,737 @@ function calculateChestaBala(planets, seeghrocha, pakshaBala) {
   return result;
 }
 
+
+// ============================================================================
+// v13 SHADBALA ENGINE (gochar-type, APK-verified) - v6
+// ============================================================================
+// ===== v13 test bundle - extracted verbatim from gochar-v20.html =====
+window.ShadbalaV13 = (function() {
+/**
+ * Shadbala Complete - INTEGRATED MODULE (v2 - APK-verified)
+ * 
+ * Integrates all 6 Shadbala components decoded from JyotishApp APK.
+ * Replaces the old approximate shadbala_complete.js.
+ * 
+ * Components:
+ * 1. Sthana Bala (स्थान बल) - Uchcha + Saptavargaja(35/35) + OjaYugma + Kendradi + Drekkana
+ * 2. Dig Bala (दिग् बल) - Directional strength (method_g, 7/7 verified)
+ * 3. Kala Bala (काल बल) - 9 sub-components (method_f + method_b, 42/42 verified)
+ * 4. Chesta Bala (चेष्टा बल) - Motional strength (method_B decoded)
+ * 5. Naisargika Bala (नैसर्गिक बल) - Natural strength (constants)
+ * 6. Drik Bala (दृग् बल) - Aspect strength (method_i, 28/28 verified)
+ * 
+ * Total Shadbala = Sthana + Dig + Kala + Chesta + Naisargika + Drik
+ * 
+ * Date: 2026-10-12
+ */
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const SUN = 0, MOON = 1, MARS = 2, MERCURY = 3, JUPITER = 4, VENUS = 5, SATURN = 6;
+const PLANET_NAMES = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+
+const NAISARGIKA_BALA = [60.00, 51.43, 17.14, 25.71, 34.29, 42.86, 8.57];
+const UCHCHA_POINTS = [10, 33, 298, 165, 95, 357, 200];
+
+const MT_RANGES = [
+  [120, 140], [34, 60], [0, 12], [166, 170], [240, 250], [180, 195], [300, 320],
+];
+
+const OWN_SIGNS = [[4], [3], [0, 7], [2, 5], [8, 11], [1, 6], [9, 10]];
+const RASHI_LORDS = [2, 5, 3, 1, 0, 3, 5, 2, 4, 6, 6, 4];
+
+let H_TABLE = null;
+function setHTable(h) { H_TABLE = h; }
+
+// ============================================================================
+// STHANA BALA
+// ============================================================================
+
+function isMoolatrikona(p, lon) {
+  const [mn, mx] = MT_RANGES[p];
+  return lon >= mn && lon <= mx;
+}
+function isTemporalFriend(r1, r2) {
+  const d = ((r2 - r1 + 12) % 12) + 1;
+  return [2, 3, 4, 10, 11, 12].includes(d);
+}
+function panchadha(nat, isFriend) {
+  if (nat === 15) return isFriend ? 22.5 : 7.5;
+  if (nat === 7.5) return isFriend ? 15 : 3.75;
+  if (nat === 3.75) return isFriend ? 7.5 : 1.875;
+  return nat;
+}
+function vD1(lon) { return Math.floor(lon / 30); }
+function vD2(lon) {
+  const r = Math.floor(lon / 30), d = lon % 30;
+  return (r % 2 === 0) ? (d < 15 ? 4 : 3) : (d < 15 ? 3 : 4);
+}
+function vD3(lon) {
+  const r = Math.floor(lon / 30), d = lon % 30;
+  return (r + Math.floor(d / 10) * 4) % 12;
+}
+function vD7(lon) {
+  const r = Math.floor(lon / 30), d = lon % 30;
+  const k = Math.floor(d / (30 / 7));
+  return (r % 2 === 0) ? (r + k) % 12 : (r + 6 + k) % 12;
+}
+function vD9(lon) {
+  const r = Math.floor(lon / 30), d = lon % 30;
+  return ([0, 9, 6, 3][r % 4] + Math.floor(d / (30 / 9))) % 12;
+}
+function vD12(lon) {
+  const r = Math.floor(lon / 30), d = lon % 30;
+  return (r + Math.floor(d / 2.5)) % 12;
+}
+function vD30(lon) {
+  const r = Math.floor(lon / 30), d = lon % 30;
+  if (r % 2 === 0) {
+    if (d < 5) return 0;
+    if (d < 10) return 9;
+    if (d < 18) return 8;
+    if (d < 25) return 2;
+    return 6;
+  } else {
+    if (d < 12) return 5;
+    if (d < 20) return 11;
+    if (d < 25) return 10;
+    return 7;
+  }
+}
+
+function calculateSaptavargaja(p, lon, allLons) {
+  if (!H_TABLE) throw new Error('H_TABLE not set. Call setHTable() first.');
+  const pRashi = Math.floor(lon / 30);
+  const vargas = [vD1(lon), vD2(lon), vD3(lon), vD7(lon), vD9(lon), vD12(lon), vD30(lon)];
+  const names = ['D1', 'D2', 'D3', 'D7', 'D9', 'D12', 'D30'];
+  let total = 0;
+  for (let i = 0; i < 7; i++) {
+    const r = vargas[i];
+    let score;
+    if (names[i] === 'D1' && isMoolatrikona(p, lon)) score = 45;
+    else if (OWN_SIGNS[p].includes(r)) score = 30;
+    else {
+      const nat = H_TABLE[p][r];
+      const lord = RASHI_LORDS[r];
+      const lordRashi = Math.floor(allLons[lord] / 30);
+      score = panchadha(nat, isTemporalFriend(pRashi, lordRashi));
+    }
+    total += score;
+  }
+  return total;
+}
+
+function calculateSthanaBala(planets, lagnaLon) {
+  const result = [];
+  for (let p = 0; p < 7; p++) {
+    const lon = planets[p];
+    let dist = Math.abs(lon - ((UCHCHA_POINTS[p] + 180) % 360));
+    if (dist > 180) dist = 360 - dist;
+    const uchcha = dist / 3.0;
+    const saptavargaja = calculateSaptavargaja(p, lon, planets);
+    const isFemale = (p === MOON || p === VENUS);
+    let ojaYugma = 0;
+    for (const v of [vD1(lon), vD9(lon)]) {
+      const isEven = (v % 2 !== 0);
+      if ((isFemale && isEven) || (!isFemale && !isEven)) ojaYugma += 15;
+    }
+    const pRashi = Math.floor(lon / 30);
+    const lagnaRashi = Math.floor(lagnaLon / 30);
+    const house = ((pRashi - lagnaRashi + 12) % 12) + 1;
+    const kendradi = [1, 4, 7, 10].includes(house) ? 60 : ([2, 5, 8, 11].includes(house) ? 30 : 15);
+    const dk = Math.floor((lon % 30) / 10) + 1;
+    let drekkana = 0;
+    if (dk === 1 && [SUN, MARS, JUPITER].includes(p)) drekkana = 15;
+    if (dk === 2 && [MERCURY, SATURN].includes(p)) drekkana = 15;
+    if (dk === 3 && [MOON, VENUS].includes(p)) drekkana = 15;
+    const total = uchcha + saptavargaja + ojaYugma + kendradi + drekkana;
+    result.push({ uchcha, saptavargaja, ojaYugma, kendradi, drekkana, total });
+  }
+  return result;
+}
+
+// ============================================================================
+// DIG BALA (7/7 verified)
+// ============================================================================
+
+function calculateDigBala(planets, ascendant, mc) {
+  const cusp1 = ascendant;
+  const cusp10 = mc;
+  const cusp7 = (ascendant + 180) % 360;
+  const cusp4 = (mc + 180) % 360;
+  const pp = [cusp4, cusp10, cusp4, cusp7, cusp7, cusp10, cusp1];
+  const result = [];
+  for (let i = 0; i < 7; i++) {
+    let d = Math.abs(planets[i] - pp[i]);
+    if (d > 180) d = 360 - d;
+    result.push(d / 3.0);
+  }
+  return result;
+}
+
+// ============================================================================
+// KALA BALA (42/42 verified)
+// ============================================================================
+
+const KHANDA1 = [362, 341, 299, 236, 150, 52];
+const KHANDA2 = [362, 703, 1002, 1238, 1388, 1440];
+
+function kalaAyana(planets, ayanamsa) {
+  const res = [];
+  for (let p = 0; p < 7; p++) {
+    let sayana = planets[p] + ayanamsa;
+    if (sayana >= 360) sayana -= 360;
+    const isSouth = (sayana > 0 && sayana < 180) ? 0 : 3;
+    let x = sayana;
+    if (sayana > 90 && sayana < 270) x = Math.abs(180 - sayana);
+    else if (sayana >= 270) x = Math.abs(360 - sayana);
+    const idx = Math.floor(x / 15);
+    const rem = x % 15;
+    let kranti = (rem * KHANDA1[idx]) / 15.0;
+    if (idx > 0) kranti += KHANDA2[idx - 1];
+    let v = kranti;
+    if (p === MOON || p === SATURN) { if (isSouth === 0) v = -v; }
+    else if (p === MERCURY) { /* absolute */ }
+    else { if (isSouth !== 0) v = -v; }
+    v = (1440.0 + v) / 48.0;
+    if (p === SUN) v *= 2.0;
+    res.push(Math.round(v * 100) / 100);
+  }
+  return res;
+}
+
+function calculateKalaBala(planets, ctx) {
+  const nat = (function() {
+    const noon = (ctx.sunriseHrs + ctx.sunsetHrs) / 2;
+    let midnight = (ctx.sunsetHrs + ctx.sunriseNextHrs + 24) / 2;
+    if (midnight >= 24) midnight -= 24;
+    let dNoon = Math.abs(ctx.birthHrs - noon);
+    if (dNoon > 12) dNoon = 24 - dNoon;
+    let dMid = Math.abs(ctx.birthHrs - midnight);
+    if (dMid > 12) dMid = 24 - dMid;
+    return [(12-dNoon)*5, (12-dMid)*5, (12-dMid)*5, 60.0, (12-dNoon)*5, (12-dNoon)*5, (12-dMid)*5];
+  })();
+  const pak = (function() {
+    let elong = planets[SUN] - planets[MOON];
+    // paksha uses moon-sun elongation
+    elong = planets[MOON] - planets[SUN];
+    if (elong < 0) elong += 360;
+    if (elong > 180) elong = 360 - elong;
+    const val = elong / 3.0;
+    // Mercury benefic/malefic by D-1 association (app method note):
+    // malefic if Sun/Mars/Saturn in same sign, else benefic.
+    const mercSign = Math.floor(planets[MERCURY] / 30);
+    let mercMalefic = false;
+    for (const qi of [SUN, MARS, SATURN]) {
+      if (Math.floor(planets[qi] / 30) === mercSign) { mercMalefic = true; break; }
+    }
+    const mercPak = mercMalefic ? 60 - val : val;
+    return [60-val, 2*val, 60-val, mercPak, val, val, 60-val];
+  })();
+  const tri = (function() {
+    const r = [0,0,0,0,60,0,0];
+    const isNight = ctx.birthHrs >= ctx.sunsetHrs || ctx.birthHrs < ctx.sunriseHrs;
+    if (!isNight) {
+      const part = Math.floor((ctx.birthHrs - ctx.sunriseHrs) / ((ctx.sunsetHrs - ctx.sunriseHrs) / 3));
+      if (part === 0) r[MERCURY] = 60; else if (part === 1) r[SUN] = 60; else r[SATURN] = 60;
+    } else {
+      const nightDur = (ctx.sunriseNextHrs + 24) - ctx.sunsetHrs;
+      const tss = ctx.birthHrs >= ctx.sunsetHrs ? ctx.birthHrs - ctx.sunsetHrs : (ctx.birthHrs + 24) - ctx.sunsetHrs;
+      const part = Math.floor(tss / (nightDur / 3));
+      if (part === 0) r[MOON] = 60; else if (part === 1) r[VENUS] = 60; else r[MARS] = 60;
+    }
+    return r;
+  })();
+  const lords = [0,0,0,0,0,0,0];
+  lords[ctx.abdaLord] += 15; lords[ctx.masaLord] += 30;
+  lords[ctx.varaLord] += 45; lords[ctx.horaLord] += 60;
+  const aya = kalaAyana(planets, ctx.ayanamsa);
+  const yud = [0,0,0,0,0,0,0];
+  const total = [];
+  for (let p = 0; p < 7; p++)
+    total.push(Math.round((nat[p]+pak[p]+tri[p]+lords[p]+aya[p]+yud[p])*100)/100);
+  return { natonnata: nat, paksha: pak, tribhaga: tri, lords, ayana: aya, yuddha: yud, total };
+}
+
+// ============================================================================
+// CHESTA BALA (method_B decoded)
+// ============================================================================
+
+function calculateChestaBala(planets, seeghrocha, pakshaBala) {
+  const result = [];
+  for (let i = 0; i < 7; i++) {
+    if (i === MOON) {
+      result.push(pakshaBala ? pakshaBala[MOON] / 2.0 : 0);
+      continue;
+    }
+    if (!seeghrocha) { result.push(0); continue; }
+    let d = Math.abs(seeghrocha[i] - planets[i]);
+    if (d > 180) d = 360 - d;
+    result.push(d / 3.0);
+  }
+  return result;
+}
+
+// ============================================================================
+// NAISARGIKA BALA
+// ============================================================================
+
+function calculateNaisargikaBala() { return [...NAISARGIKA_BALA]; }
+
+// ============================================================================
+// DRIK BALA (28/28 verified)
+// ============================================================================
+
+function sGraha(d) {
+  d = ((d % 360) + 360) % 360;
+  if (d <= 30) return 0;
+  if (d <= 60) return (d - 30) / 2;
+  if (d <= 90) return d - 45;
+  if (d <= 120) return (120 - d) / 2 + 30;
+  if (d <= 150) return 150 - d;
+  if (d <= 180) return 2 * (d - 150);
+  if (d < 300) return (300 - d) / 2;
+  return 0;
+}
+function rashiDrishti(q, d) {
+  d = ((d % 360) + 360) % 360;
+  if (q === MARS) {
+    if (d > 90 && d <= 120) return -15.0;
+    if (d > 210 && d <= 240) return -15.0;
+  } else if (q === JUPITER) {
+    if (d > 120 && d <= 150) return 30.0;
+    if (d > 240 && d <= 270) return 30.0;
+  } else if (q === SATURN) {
+    if (d > 60 && d <= 90) return -45.0;
+    if (d > 270 && d <= 300) return -45.0;
+  }
+  return 0;
+}
+const NAT_BENEFIC = new Set([MOON, JUPITER, VENUS]);
+const NAT_MALEFIC = new Set([SUN, MARS, SATURN]);
+function moonIsBenefic(sunLon, moonLon) {
+  const elong = (((moonLon - sunLon) % 360) + 360) % 360;
+  return elong >= 96 && elong <= 264;
+}
+function mercurySign(lons) {
+  const merRashi = Math.floor(lons[MERCURY] / 30);
+  let nBen = 0, nMal = 0;
+  for (let i = 0; i < 7; i++) {
+    if (i === MERCURY) continue;
+    if (Math.floor(lons[i] / 30) === merRashi) {
+      if (NAT_BENEFIC.has(i)) nBen++;
+      if (NAT_MALEFIC.has(i)) nMal++;
+    }
+  }
+  if (nMal === 0) return +1;
+  return nBen > nMal ? +1 : -1;
+}
+function calculateDrikBala(lons) {
+  const signs = [-1, moonIsBenefic(lons[SUN], lons[MOON]) ? +1 : -1, -1,
+                 mercurySign(lons), +1, +1, -1];
+  const res = [];
+  for (let p = 0; p < 7; p++) {
+    let acc = 0;
+    for (let q = 0; q < 7; q++) {
+      if (q === p) continue;
+      const d = (((lons[p] - lons[q]) % 360) + 360) % 360;
+      acc += signs[q] * sGraha(d) + rashiDrishti(q, d);
+    }
+    res.push(acc / 4.0);
+  }
+  return res;
+}
+
+// ============================================================================
+// INTEGRATED TOTAL
+// ============================================================================
+
+function calculateShadbala(input) {
+  const { planets, lagna, ascendant, mc, kalaCtx, seeghrocha } = input;
+  const sthana = calculateSthanaBala(planets, lagna);
+  const sthanaTotals = sthana.map(s => s.total);
+  const dig = calculateDigBala(planets, ascendant, mc);
+  const kala = calculateKalaBala(planets, kalaCtx);
+  const chesta = calculateChestaBala(planets, seeghrocha, kala.paksha);
+  const naisargika = calculateNaisargikaBala();
+  const drik = calculateDrikBala(planets);
+  const total = [];
+  for (let p = 0; p < 7; p++)
+    total.push(Math.round((sthanaTotals[p]+dig[p]+kala.total[p]+chesta[p]+naisargika[p]+drik[p])*100)/100);
+  return { sthana, dig, kala, chesta, naisargika, drik, total };
+}
+
+
+  return {
+    setHTable: setHTable,
+    calculateSthanaBala: calculateSthanaBala,
+    calculateDigBala: calculateDigBala,
+    calculateKalaBala: calculateKalaBala,
+    calculateNaisargikaBala: calculateNaisargikaBala,
+    calculateDrikBala: calculateDrikBala
+    // NOTE: calculateChestaBala NOT exposed - Gochar uses empirical Seeghrocha
+    // (APK's exact sighra-phala formula was not decoded). See v13_chestaEmpirical.
+    // NOTE: calculateShadbala NOT exposed - Gochar assembles components manually.
+  };
+})();
+
+window.ShadbalaV13.setHTable([[15.0, 3.75, 7.5, 15.0, 30.0, 7.5, 3.75, 15.0, 15.0, 3.75, 3.75, 15.0], [7.5, 7.5, 15.0, 30.0, 15.0, 15.0, 7.5, 7.5, 7.5, 7.5, 7.5, 7.5], [30.0, 7.5, 3.75, 15.0, 15.0, 3.75, 7.5, 30.0, 15.0, 7.5, 7.5, 15.0], [7.5, 15.0, 30.0, 3.75, 15.0, 30.0, 15.0, 7.5, 7.5, 7.5, 7.5, 7.5], [15.0, 3.75, 3.75, 15.0, 15.0, 3.75, 3.75, 15.0, 30.0, 7.5, 7.5, 30.0], [7.5, 30.0, 15.0, 3.75, 3.75, 15.0, 30.0, 7.5, 7.5, 15.0, 15.0, 7.5], [3.75, 15.0, 15.0, 3.75, 3.75, 15.0, 15.0, 3.75, 7.5, 30.0, 30.0, 7.5]]);
+
+const F_PLANETS=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+const F_RLORD=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+
+function f_bdig(cusps,i){
+  const c=cusps[i],r=Math.floor(c/30),d=c%30;let typ;
+  if(r===8)typ=d<15?'Nara':'Chatush';
+  else if(r===9)typ=d<15?'Chatush':'Jala';
+  else if([2,5,6,10].includes(r))typ='Nara';
+  else if([3,11].includes(r))typ='Jala';
+  else if([0,1,4].includes(r))typ='Chatush';
+  else if(r===7)typ='Keeta';else typ='Nara';
+  const ref={Keeta:1,Chatush:4,Nara:7,Jala:10}[typ];
+  let v=Math.abs(ref-(i+1));if(v>6)v=12-v;
+  return v*10;
+}
+// v13: VERIFIED Bhava Drishti Bala (kept from v12) from APK bytecode (48/48 on 4 charts via Gemini decode)
+
+function f_bdris_verified(plon, cusps) {
+  const planetLongs = [plon.Sun, plon.Moon, plon.Mars, plon.Mercury, plon.Jupiter, plon.Venus, plon.Saturn];
+  const drigBala = new Array(12).fill(0.0);
+  const sunLong = planetLongs[0], moonLong = planetLongs[1];
+  let diffMoonSun = moonLong - sunLong;
+  if (diffMoonSun < 0) diffMoonSun += 360.0;
+  const isMoonBenefic = (diffMoonSun >= 84.0 && diffMoonSun <= 276.0);
+  for (let p = 0; p < 7; p++) {
+    const pLong = planetLongs[p], pIndex = p + 1;
+    for (let b = 0; b < 12; b++) {
+      let diff = cusps[b] - pLong;
+      if (diff < 0) diff += 360.0;
+      let v = 0.0;
+      if (diff > 0 && diff <= 30) v = 0.0;
+      else if (diff > 30 && diff <= 60) v = (diff - 30.0) / 2.0;
+      else if (diff > 60 && diff <= 90) v = (diff - 60.0) + 15.0;
+      else if (diff > 90 && diff <= 120) v = (120.0 - diff) / 2.0 + 30.0;
+      else if (diff > 120 && diff <= 150) v = 150.0 - diff;
+      else if (diff > 150 && diff <= 180) v = (diff - 150.0) * 2.0;
+      else if (diff > 180 && diff <= 300) v = (300.0 - diff) / 2.0;
+      else if (diff > 300 && diff <= 360) v = 0.0;
+      if (v !== 0.0) {
+        let isNeg = false;
+        if (pIndex === 1 || pIndex === 3 || pIndex === 7) isNeg = true;
+        else if (pIndex === 2) { if (!isMoonBenefic) isNeg = true; }
+        if (isNeg) v = -v;
+        if (pIndex === 3) { if ((diff > 90 && diff <= 120) || (diff > 210 && diff <= 240)) v -= 15.0; }
+        else if (pIndex === 5) { if ((diff > 120 && diff <= 150) || (diff > 240 && diff <= 270)) v += 30.0; }
+        else if (pIndex === 7) { if ((diff > 60 && diff <= 90) || (diff > 270 && diff <= 300)) v -= 45.0; }
+        if (pIndex !== 4 && pIndex !== 5) v = v / 4.0;
+        drigBala[b] += v;
+      }
+    }
+  }
+  return drigBala;
+}
+
+function f_bdris(plon,cusps,i){
+  // v13: use verified array version, return single bhava
+  if (!plon._dris) plon._dris = f_bdris_verified(plon, cusps);
+  return plon._dris[i];
+}
+
+// Convert v4_sunCtx (JD-based) output to kalaCtx for the APK-verified Kala Bala.
+function v13_computeKalaCtx(natal, sunCtx, ayanamsa, sunLon) {
+  const jdToHrs = (jd) => {
+    const d = jd + 0.5;
+    return (d - Math.floor(d)) * 24;
+  };
+  const birthHrs = jdToHrs(natal.jd);
+  const sunriseHrs = jdToHrs(sunCtx.jd_rise);
+  const sunsetHrs = jdToHrs(sunCtx.jd_set);
+  const sunriseNextHrs = jdToHrs(sunCtx.jd_rise_next);
+  // Lords as indices 0-6 (Sun..Saturn)
+  // Abda (year) lord: weekday of the first day of the 360-day Kali year
+  // (shristiyadi). Verified: 1995->Mars, 2009->Venus; formula cross-checked
+  // against the actual weekday of that day. (Fix 2026-10-12)
+  const KALI_JD = 588465.5;
+  const abdaLord = (Math.floor((natal.jd - KALI_JD)/360)*3 + 4) % 7;
+  // Masa (month) lord: weekday of 1st day of 30-day month (B.V. Raman).
+  // 30 mod 7 = 2. Verified on all 5 charts 2026-10-12:
+  // Arvind->Sun, Haripal->Saturn, Sanjivani->Jupiter, Sakshi->Venus, Khushi->Mercury.
+  // (Fix 2026-10-12, replaces solar-sign rule)
+  const masaLord = (Math.floor((natal.jd - KALI_JD)/30)*2 + 2) % 7;
+  // Vaara: Vedic weekday (sunrise to sunrise) from jd_day_rise
+  const varaLord = Math.floor((sunCtx.jd_day_rise || sunCtx.jd_rise) + 1.5) % 7;
+  // Hora: Chaldean planetary hour lord (same logic as v12 f_kala)
+  const WD_LORD = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+  const HORA_SEQ = ['Sun','Venus','Mercury','Moon','Saturn','Jupiter','Mars'];
+  const srDow = Math.floor((sunCtx.jd_day_rise || sunCtx.jd_rise) + 1.5) % 7;
+  const wdLord = WD_LORD[srDow];
+  const startIdx = HORA_SEQ.indexOf(wdLord);
+  let horaIdx;
+  if (sunCtx.isDay) {
+    const dDur = (sunCtx.jd_set - sunCtx.jd_rise) * 24;
+    horaIdx = Math.min(11, Math.max(0, Math.floor((natal.jd - sunCtx.jd_rise) * 24 / (dDur/12))));
+  } else {
+    const nDur = (sunCtx.jd_rise_next - sunCtx.jd_set) * 24;
+    const nIdx = Math.min(11, Math.max(0, Math.floor((natal.jd - sunCtx.jd_set) * 24 / (nDur/12))));
+    horaIdx = 12 + nIdx;
+  }
+  const horaLordName = HORA_SEQ[(startIdx + horaIdx) % 7];
+  const horaLord = WD_LORD.indexOf(horaLordName);
+  return {
+    sunriseHrs: sunriseHrs, sunsetHrs: sunsetHrs, sunriseNextHrs: sunriseNextHrs,
+    birthHrs: birthHrs,
+    abdaLord: abdaLord, masaLord: masaLord, varaLord: varaLord, horaLord: horaLord,
+    ayanamsa: ayanamsa
+  };
+}
+
+
+// (mercurySeeghrocha/venusSeeghrocha/sunSeeghrocha already exist in v4.6 base - not duplicated)
+
+
+function v13_chestaEmpirical(planets, pakshaBala, jd) {
+  const result = [];
+  const sunLon = planets[0];
+  // Mercury Seeghrocha (B.V. Raman apogee-based, not Sun-based)
+  const mercSeegh = jd ? mercurySeeghrocha(jd) : sunLon;
+  // Venus Seeghrocha (B.V. Raman apogee-based, 328.51° epoch, not Sun-based)
+  const venSeegh = jd ? venusSeeghrocha(jd) : sunLon;
+  // Sun Seeghrocha (constant ~246.09°, from 5-chart calibration)
+  const sunSeegh = sunSeeghrocha();
+  for (let i = 0; i < 7; i++) {
+    if (i === 1) { // Moon: EXACT
+      result.push(pakshaBala[1] / 2.0);
+      continue;
+    }
+    let seegh, lon;
+    if (i === 0) { // Sun: use constant Seeghrocha (~246.09°)
+      seegh = sunSeegh;
+      lon = planets[i];
+    } else if (i === 3) { // Mercury: use apogee-based Seeghrocha
+      seegh = mercSeegh;
+      lon = planets[i];
+    } else if (i === 5) { // Venus: use apogee-based Seeghrocha
+      seegh = venSeegh;
+      lon = planets[i];
+    } else {
+      seegh = sunLon;
+      lon = planets[i];
+    }
+    let kendra = Math.abs(seegh - lon) % 360;
+    if (kendra > 180) kendra = 360 - kendra;
+    const kr = kendra * Math.PI / 180;
+    let corr = 0;
+    if (i === 2) corr = 8.23 * Math.sin(kr);              // Mars
+    else if (i === 4) corr = 1.25 * Math.sin(kr);         // Jupiter
+    else if (i === 6) corr = 2.59 * Math.sin(kr) + 1.15 * Math.sin(2*kr); // Saturn
+    // Mercury, Venus, Sun: no empirical corr (Seeghrocha is exact from calibration)
+    result.push((kendra + corr) / 3.0);
+  }
+  return result;
+}
+
+function v13_exactShadbalaTotals(plon, natal, sunCtx, ayanamsa) {
+  const M = window.ShadbalaV13;
+  const planets = [plon.Sun, plon.Moon, plon.Mars, plon.Mercury, plon.Jupiter, plon.Venus, plon.Saturn];
+  const lagnaLon = natal.cusps[0];   // 1st cusp = lagna longitude (sidereal)
+  const ascendant = natal.cusps[0];
+  const mc = natal.cusps[9];          // 10th cusp = MC (Placidus)
+  const kalaCtx = v13_computeKalaCtx(natal, sunCtx, ayanamsa, plon.Sun);
+  const sthana = M.calculateSthanaBala(planets, lagnaLon);
+  const dig = M.calculateDigBala(planets, ascendant, mc);
+  const kala = M.calculateKalaBala(planets, kalaCtx);
+  // Yuddha Bala (B.V. Raman p.66; app: higher longitude = loser).
+  // Planets (excl Sun/Moon) within 1° are at war. Lower longitude wins.
+  // YuddhaBala = |agg1-agg2| / |bimba1-bimba2|, added to winner's Kala,
+  // subtracted from loser's. agg = Sthana + Dig + Kala(up to Hora).
+  // Bimba Parimana from B.V. Raman p.66 (corrected OCR: Mars 9.4 not 11.4).
+  const BIMBA = [0, 0, 9.4, 6.6, 18.4, 16.6, 15.8]; // Sun,Moon,Mars,Mer,Jup,Ven,Sat
+  const yuddha = [0,0,0,0,0,0,0];
+  const kalaUpToHora = [];
+  for (let p = 0; p < 7; p++) {
+    kalaUpToHora.push(kala.natonnata[p] + kala.paksha[p] + kala.tribhaga[p] + kala.lords[p]);
+  }
+  for (let i = 2; i <= 6; i++) {
+    for (let j = i+1; j <= 6; j++) {
+      let d = Math.abs(planets[i] - planets[j]);
+      if (d > 180) d = 360 - d;
+      if (d < 1.0 && Math.abs(BIMBA[i] - BIMBA[j]) > 0.01) {
+        const aggI = sthana[i].total + dig[i] + kalaUpToHora[i];
+        const aggJ = sthana[j].total + dig[j] + kalaUpToHora[j];
+        const yb = Math.abs(aggI - aggJ) / Math.abs(BIMBA[i] - BIMBA[j]);
+        // Winner = lower longitude (handle 0° wrap)
+        let winner, loser;
+        const di = planets[i], dj = planets[j];
+        if (di > 350 && dj < 10) { winner = j; loser = i; }
+        else if (dj > 350 && di < 10) { winner = i; loser = j; }
+        else if (di < dj) { winner = i; loser = j; }
+        else { winner = j; loser = i; }
+        yuddha[winner] += yb;
+        yuddha[loser] -= yb;
+      }
+    }
+  }
+  // Recompute kala totals with yuddha
+  for (let p = 0; p < 7; p++) {
+    kala.total[p] = Math.round((kalaUpToHora[p] + kala.ayana[p] + yuddha[p]) * 100) / 100;
+  }
+  kala.yuddha = yuddha;
+  const chesta = v13_chestaEmpirical(planets, kala.paksha, natal.jd);
+  const naisargika = M.calculateNaisargikaBala();
+  const drik = M.calculateDrikBala(planets);
+  const total = [];
+  for (let p = 0; p < 7; p++) {
+    total.push(Math.round((sthana[p].total + dig[p] + kala.total[p] + chesta[p] + naisargika[p] + drik[p]) * 100) / 100);
+  }
+  // Expose breakdown for debugging/testing
+  v13_exactShadbalaTotals._last = {sthana: sthana.map(s=>s.total), dig, kala: kala.total, chesta, naisargika, drik, total};
+  return total;
+}
+
+function v4_sunCtx(natal) {
+    const lat = natal.lat, lon = natal.lon;
+    const jd_ut = natal.jd;
+
+    // Convert UT JD to IST calendar date
+    const jd_ist = jd_ut + 5.5/24;
+    const z = Math.floor(jd_ist + 0.5);
+    const f = (jd_ist + 0.5) - z;
+    let A = z;
+    if (z >= 2299161) {
+        const alpha = Math.floor((z - 1867216.25) / 36524.25);
+        A = z + 1 + alpha - Math.floor(alpha / 4);
+    }
+    const B = A + 1524, C = Math.floor((B - 122.1) / 365.25);
+    const D = Math.floor(365.25 * C), E = Math.floor((B - D) / 30.6001);
+    const day = B - D - Math.floor(30.6001 * E) + f;
+    const month = (E < 14) ? E - 1 : E - 13;
+    const year = (month > 2) ? C - 4716 : C - 4715;
+    const istDay = Math.floor(day);
+
+    function sunPos(jd) {
+        const d = jd - 2451545.0;
+        const w = 282.9404 + 4.70935E-5 * d;
+        const e = 0.016709 - 1.151E-9 * d;
+        const M = ((356.0470 + 0.9856002585 * d) % 360 + 360) % 360;
+        const Ms = M * Math.PI/180;
+        const E2 = Ms + e * Math.sin(Ms) * (1 + e * Math.cos(Ms));
+        const x = Math.cos(E2) - e, y = Math.sin(E2) * Math.sqrt(1 - e*e);
+        const v = Math.atan2(y, x) * 180/Math.PI;
+        const trueLon = (((v + w) % 360) + 360) % 360;
+        const decl = Math.asin(Math.sin(trueLon*Math.PI/180) * Math.sin(23.439*Math.PI/180)) * 180/Math.PI;
+        const eqtime = 4 * (0.000075 + 0.001868*Math.cos(Ms) - 0.032077*Math.sin(Ms)
+            - 0.014615*Math.cos(2*Ms) - 0.040849*Math.sin(2*Ms)) * 180/Math.PI;
+        return {decl: decl, eqtime: eqtime};
+    }
+    function jd0_ut(y, m, d) {
+        let yy = y, mm = m;
+        if (mm <= 2) { yy -= 1; mm += 12; }
+        const A2 = Math.floor(yy/100);
+        const B2 = 2 - A2 + Math.floor(A2/4);
+        return Math.floor(365.25*(yy+4716)) + Math.floor(30.6001*(mm+1)) + d + B2 - 1524.5;
+    }
+    // Vedic sunrise/sunset in IST hours for a given IST date (90 deg zenith)
+    function vedicSunTimes(y, m, d) {
+        const sp = sunPos(jd0_ut(y, m, d) + 0.5);
+        const latR = lat * Math.PI/180;
+        const declR = sp.decl * Math.PI/180;
+        const cosH = (Math.cos(90*Math.PI/180) - Math.sin(latR)*Math.sin(declR)) / (Math.cos(latR)*Math.cos(declR));
+        const H = Math.acos(Math.max(-1, Math.min(1, cosH))) * 180/Math.PI / 15;
+        const solarNoonIST = 12 - (lon - 82.5)*4/60 - sp.eqtime/60;
+        return {sunrise: solarNoonIST - H, sunset: solarNoonIST + H};
+    }
+
+    const y = year, m = month, d = istDay;
+    const jd_ist_midnight_ut = jd0_ut(y, m, d) - 5.5/24;
+    const istToJdUt = (istH) => jd_ist_midnight_ut + istH/24;
+
+    const today = vedicSunTimes(y, m, d);
+    const sr_today_jd = istToJdUt(today.sunrise);
+    const ss_today_jd = istToJdUt(today.sunset);
+    const tomorrow = vedicSunTimes(y, m, d+1);
+    const sr_next_jd = istToJdUt(tomorrow.sunrise) + 1;
+    const yesterday = vedicSunTimes(y, m, d-1);
+    const ss_prev_jd = istToJdUt(yesterday.sunset) - 1;
+    const sr_prev_jd = istToJdUt(yesterday.sunrise) - 1;
+
+    let jd_rise, jd_set, jd_rise_next, jd_day_rise, isDay;
+    if (jd_ut >= sr_today_jd && jd_ut < ss_today_jd) {
+        isDay = true;
+        jd_rise = sr_today_jd; jd_set = ss_today_jd; jd_rise_next = sr_next_jd;
+        jd_day_rise = sr_today_jd;
+    } else if (jd_ut >= ss_today_jd) {
+        isDay = false;
+        jd_rise = sr_today_jd; jd_set = ss_today_jd; jd_rise_next = sr_next_jd;
+        jd_day_rise = sr_today_jd;
+    } else {
+        // Night birth before sunrise (e.g. 3 AM) - Vedic day started yesterday
+        isDay = false;
+        jd_rise = sr_today_jd; jd_set = ss_prev_jd; jd_rise_next = sr_today_jd;
+        jd_day_rise = sr_prev_jd;
+    }
+    const midnight = (jd_set + jd_rise_next) / 2;
+    const bd = natal.birthDate;
+    const epochMs = Date.UTC(1827, 4, 2);
+    const aha = 714404096641 + Math.round((bd.getTime() - epochMs) / 86400000);
+    return {jd_ut: jd_ut, midnight: midnight, jd_rise: jd_rise, jd_set: jd_set,
+            jd_rise_next: jd_rise_next, jd_day_rise: jd_day_rise, aha: aha, isDay: isDay};
+}
+
+// ===== v6: v13 (gochar-type) Bhava Bala integration =====
+// Sripathi cusps + APK-verified Shadbala engine (same as gochar v13/v20).
+// Pure JS except SWE calculateHouses for ASC/MC (same call as existing code).
+function calcV13BhavaBala(info, jd){
+  try{
+    if(!window.ShadbalaV13||!info||jd==null) return null;
+    const swe=_swe;
+    if(!swe) return null;
+    const ayan=swe.getAyanamsa(jd);
+    const n360=d=>((d%360)+360)%360;
+    // Sripathi cusps (gochar v13 method - verified vs app cusps on Sanjivani 12/12)
+    const hs=swe.calculateHouses(jd,info.lat,info.lon,'P');
+    const ascSid=n360(hs.ascendant-ayan);
+    const mcSid=n360(((hs.mc!==undefined?hs.mc:hs.ascendant+90))-ayan);
+    const dscSid=n360(ascSid+180), icSid=n360(mcSid+180);
+    const _tri=(s,e)=>{const sp=(e-s+360)%360,th=sp/3;return[n360(s+th),n360(s+2*th)];};
+    const cusps=new Array(12);
+    cusps[0]=ascSid;cusps[3]=icSid;cusps[6]=dscSid;cusps[9]=mcSid;
+    let _t;_t=_tri(ascSid,icSid);cusps[1]=_t[0];cusps[2]=_t[1];
+    _t=_tri(icSid,dscSid);cusps[4]=_t[0];cusps[5]=_t[1];
+    _t=_tri(dscSid,mcSid);cusps[7]=_t[0];cusps[8]=_t[1];
+    _t=_tri(mcSid,ascSid);cusps[10]=_t[0];cusps[11]=_t[1];
+    window._v13cusps=cusps;
+    // Sidereal longitudes from planetData
+    const order7=['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'];
+    const enMap={'सूर्य':'Sun','चंद्र':'Moon','मंगल':'Mars','बुध':'Mercury','गुरु':'Jupiter','शुक्र':'Venus','शनि':'Saturn'};
+    const plon={};
+    for(const n of order7){
+      const p=planetData.find(x=>x.n===n);
+      if(!p||p.lng==null) return null;
+      plon[enMap[n]]=p.lng;
+    }
+    const natal={cusps:cusps,jd:jd,lat:info.lat,lon:info.lon,birthDate:new Date(info.Y,info.M-1,info.D)};
+    const ctx=v4_sunCtx(natal);
+    const totals=v13_exactShadbalaTotals(plon,natal,ctx,ayan);
+    window._v13shadbala={};
+    order7.forEach((n,i)=>{window._v13shadbala[n]=totals[i];});
+    const RLORD=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+    const lidx={Sun:0,Moon:1,Mars:2,Mercury:3,Jupiter:4,Venus:5,Saturn:6};
+    const plon2=Object.assign({},plon); // fresh object (f_bdris caches _dris on it)
+    const res=[];
+    for(let i=0;i<12;i++){
+      const lord=RLORD[Math.floor(cusps[i]/30)];
+      const sh=totals[lidx[lord]];
+      const dg=f_bdig(cusps,i);
+      const dr=f_bdris(plon2,cusps,i);
+      res.push({bhava:i+1,lord:lord,total:sh+dg+dr,shadbala:sh,dig:dg,drishti:dr});
+    }
+    return res;
+  }catch(e){console.log('v13 bhava failed:',e);return null;}
+}
+
 // ============================================================================
 // NAISARGIKA BALA
 // ============================================================================
@@ -987,6 +1718,38 @@ function housesAspectedBy(q){
  if(q.n==='राहु'||q.n==='केतु'){add(q.house+4);add(q.house+8);}
  return set;
 }
+
+// Classical Bhava Bala: Shadbala(lord) + Dig Bala + Drishti Bala (simple, old engine)
+function calcClassicalBhavaBala(){
+  try{
+    if(!window._cusps||!window._autoShadbala) return null;
+    const cusps=window._cusps, shadbala=window._autoShadbala;
+    const RL=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+    const E2H={'Sun':'सूर्य','Moon':'चंद्र','Mars':'मंगल','Mercury':'बुध','Jupiter':'गुरु','Venus':'शुक्र','Saturn':'शनि'};
+    // Dig Bala: kendra=60, trikona=30, else 15 (simplified)
+    function digBala(bhava){
+      if([1,4,7,10].includes(bhava)) return 60;
+      if([5,9].includes(bhava)) return 30;
+      return 15;
+    }
+    const res=[];
+    for(let i=0;i<12;i++){
+      const bhava=i+1;
+      const rashi=Math.floor(cusps[i]/30);
+      const lordEn=RL[rashi];
+      const lordHi=E2H[lordEn];
+      const shadbalaRupas=shadbala[lordHi]||0;
+      const shadbalaVirupas=shadbalaRupas*60;
+      const dig=digBala(bhava);
+      const dri=(window._bhavaDrigBala&&window._bhavaDrigBala[i])?window._bhavaDrigBala[i]:0;
+      const total=shadbalaVirupas+dig+dri;
+      res.push({bhava:bhava, lord:lordHi, shadbala:Math.round(shadbalaVirupas*100)/100, digBala:dig, drishtiBala:Math.round(dri*100)/100, total:Math.round(total*100)/100});
+    }
+    return res;
+  }catch(e){ return null; }
+}
+
+
 function isExaltedOrOwn(pd){
  const d=DIGNITY[pd.n];
  if(!d){
@@ -1092,7 +1855,7 @@ function dignityPts25(pl, rashi){
   return{pts:10,label:'सम राशि'};
 }
 
-// Dignity points for 20-scale (Auto v4.1 Base 1 Rashi)
+// Dignity points for 20-scale (Auto v4.6 Base 1 Rashi)
 function dignityPts20(pl, rashi){
   if(pl==='राहु'||pl==='केतु')return{pts:10,label:'तटस्थ (राहु/केतु)'};
   const d=DIGNITY[pl];
@@ -1459,25 +2222,25 @@ function scoreHouseAuto(h){
   }else{lp=8;lpLabel='भाव '+lordHouse;}
   b.lordPlace={pts:lp,max:15,label:lpLabel};
 
-  // 3. Occupants [15]
+  // 3. Occupants [10]
   let ocPts,ocLabel;
-  if(occupants.length===0){ocPts=7;ocLabel='खाली';}
+  if(occupants.length===0){ocPts=5;ocLabel='खाली';}
   else{
     let pts=0;const labels=[];
     for(const o of occupants){
       const d=dignityPts25(o.n,o.rashi);
-      if(d.pts>=20){pts=15;labels.push(o.n+' उच्च/स्व');break;}
+      if(d.pts>=20){pts=10;labels.push(o.n+' उच्च/स्व');break;}
     }
-    if(pts<15){
+    if(pts<10){
       for(const o of occupants){
-        if(isShubhaAuto(o.n)){pts=Math.min(15,pts+8);labels.push(o.n+' शुभ');}
-        else if(isKruraAuto(o.n)&&[3,6,10,11].includes(h)){pts=Math.min(15,pts+8);labels.push(o.n+' क्रूर-उपचय');}
+        if(isShubhaAuto(o.n)){pts=Math.min(10,pts+5);labels.push(o.n+' शुभ');}
+        else if(isKruraAuto(o.n)&&[3,6,10,11].includes(h)){pts=Math.min(10,pts+5);labels.push(o.n+' क्रूर-उपचय');}
         else{labels.push(o.n+' क्रूर');}
       }
     }
     ocPts=pts;ocLabel=labels.join(', ')||'क्रूर ग्रह';
   }
-  b.occupants={pts:ocPts,max:15,label:ocLabel};
+  b.occupants={pts:ocPts,max:10,label:ocLabel};
 
   // 4. Drishti [10]
   let drPts,drLabel;
@@ -1496,12 +2259,13 @@ function scoreHouseAuto(h){
   if(sav>=35)savPts=20;else if(sav>=30)savPts=15;else if(sav>=25)savPts=10;else if(sav>=20)savPts=5;else savPts=0;
   b.sav={pts:savPts,max:20,label:'SAV '+sav};
 
-  // 6. Bhava rank [15]
+  // 6. Bhava rank [20]
   const rank=(window._bhavaRank&&window._bhavaRank[h])?window._bhavaRank[h]:6;
   let rkPts;
-  if(rank<=2)rkPts=15;else if(rank<=4)rkPts=12;else if(rank<=6)rkPts=9;
-  else if(rank<=8)rkPts=6;else if(rank<=10)rkPts=3;else rkPts=0;
-  b.bhavaRank={pts:rkPts,max:15,label:'रैंक '+rank};
+  if(rank<=2)rkPts=20;else if(rank<=4)rkPts=16;else if(rank<=6)rkPts=12;
+  else if(rank<=8)rkPts=8;else if(rank<=10)rkPts=4;else rkPts=0;
+  const bv=(window._classicalBhavaBala&&window._classicalBhavaBala[h-1])?window._classicalBhavaBala[h-1].total.toFixed(0):'';
+  b.bhavaRank={pts:rkPts,max:20,label:'रैंक '+rank+(bv?' ('+bv+')':'')};
 
   const baseScore=b.lordScore.pts+b.lordPlace.pts+b.occupants.pts+b.aspects.pts+b.sav.pts+b.bhavaRank.pts;
 
@@ -1523,15 +2287,15 @@ function scoreHouseAuto(h){
   }
   m.vry=vry;
 
-  // Cusp Pushkar/Mrityu (bhava madhya)
+  // Cusp Pushkar (bhava madhya) - PN/PB only; MB is graha-only concept
+  // Uses Sripati cusps (same as Chalit tool) so results match
   let cuspPk={pts:0,label:'नहीं'};
-  if(window._cusps&&window._cusps.length===12){
-    const cuspLng=window._cusps[h-1];
+  const sriC=(window._v13cusps&&window._v13cusps.length===12)?window._v13cusps:window._cusps;
+  if(sriC&&sriC.length===12){
+    const cuspLng=sriC[h-1];
     const cPN=isPushkarNavamsha('सूर्य',cuspLng);
     const cPB=isPushkarBhaga('सूर्य',cuspLng);
-    const cMB=isMrityuBhaga('सूर्य',cuspLng);
-    if(cMB){cuspPk={pts:-15,label:'भाव मध्य मृत्यु भाग (-15)'};}
-    else if(cPN&&cPB){cuspPk={pts:20,label:'भाव मध्य डबल पुष्कर (+20)'};}
+    if(cPN&&cPB){cuspPk={pts:20,label:'भाव मध्य डबल पुष्कर (+20)'};}
     else if(cPN){cuspPk={pts:10,label:'भाव मध्य PN (+10)'};}
     else if(cPB){cuspPk={pts:10,label:'भाव मध्य PB (+10)'};}
   }
@@ -1579,7 +2343,7 @@ async function analyze(){
    const swe2=_swe;
    const ayan2=swe2.getAyanamsa(jd);
    const hc=swe2.calculateHouses(jd,info.lat,info.lon,'P');
-   const cusps=(hc.cusps||[]).slice(0,12).map(c=>norm360(c-ayan2));
+   const cusps=(hc.cusps||[]).slice(1,13).map(c=>norm360(c-ayan2)); // Swiss: index 0 unused, houses are 1-12
    window._cusps=cusps; // for pushkar check in scoreHouse
    const order7=['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'];
    const lons7=order7.map(n=>{const p=planets.find(x=>x.n===n);return p?p.lng:0;});
@@ -1589,6 +2353,7 @@ async function analyze(){
    window._bhavaRank={};
    idx.forEach((bi,rp)=>{window._bhavaRank[bi+1]=rp+1;});
   }catch(e){console.log('Bhava cusps failed:',e);window._bhavaRank=null;}
+
   // Moon nak for navatara
   const moon=planets.find(p=>p.n==='चंद्र');
   moonNak=getNak(moon.lng).idx;
@@ -1697,6 +2462,26 @@ async function autoCalcShadbalaBAV(info, jd){
    window._autoShadbala[n]=res.total[i]/60; // rupas
   });
  }catch(e){console.log('Shadbala auto failed:',e);}
+ // v13 Bhava Bala (gochar-type, v6) - AFTER _autoShadbala is set
+ try{
+   const v13=calcV13BhavaBala(info, jd);
+   if(v13&&v13.length===12){
+     window._classicalBhavaBala=v13;
+     window._v13BhavaBala=v13;
+     const idx2=[...Array(12).keys()].sort((a,b)=>v13[b].total-v13[a].total);
+     window._bhavaRank={};
+     idx2.forEach((bi,rp)=>{window._bhavaRank[bi+1]=rp+1;});
+   }else{
+     // Fallback: old simple classical
+     const cb=calcClassicalBhavaBala();
+     if(cb&&cb.length===12){
+       window._classicalBhavaBala=cb;
+       const idx2=[...Array(12).keys()].sort((a,b)=>cb[b].total-cb[a].total);
+       window._bhavaRank={};
+       idx2.forEach((bi,rp)=>{window._bhavaRank[bi+1]=rp+1;});
+     }
+   }
+ }catch(e){}
 
  // BAV via Ashtakavarga
  try{
@@ -1798,7 +2583,7 @@ function renderResults(){
           <span><b>वक्री:</b> ${pd.retro?'हां':'नहीं'}</span>
           <span><b>युति:</b> ${pd.yuti.join(', ')||'अकेला'}</span>
         </div>
-        <table class="stable">${detailRows}</table>
+        <div style="overflow-x:auto"><table class="stable">${detailRows}</table></div>
       </div>
     </div>`;
   }
@@ -1829,7 +2614,7 @@ function renderResults2(){
 
   for(const hs of scored){
     const h=hs.h,sc=hs.score;
-    let detailRows='<tr style="background:#e8f5e9"><td colspan="3"><b>BASE SCORE</b></td></tr>';
+    let detailRows='<tr style="background:#e8f5e9"><td colspan="3"><b>BASE SCORE [100]</b></td></tr>';
     for(const[k,v]of Object.entries(sc.breakdown)){
       detailRows+=`<tr><td>${catNames[k]||k}</td><td style="color:#888">${v.label}</td><td>${v.pts}/${v.max}</td></tr>`;
     }
@@ -1851,7 +2636,7 @@ function renderResults2(){
           <span><b>स्थित:</b> ${sc.occupants.join(', ')||'खाली'}</span>
           <span><b>दृष्टि:</b> ${sc.aspecting.join(', ')||'-'}</span>
         </div>
-        <table class="stable">${detailRows}</table>
+        <div style="overflow-x:auto"><table class="stable">${detailRows}</table></div>
       </div>
     </div>`;
   }
@@ -1874,21 +2659,35 @@ function downloadTXT(){
   const tab=activeTab;
   let txt='';
   if(tab===1&&window._scoredAuto){
-    txt='ग्रह बल विश्लेषण Auto v4.1\n========================\n\n';
+    txt='ग्रह बल विश्लेषण Auto v6.5\n========================\n\n';
+    const d1k=['shadbala','rashi','bhava','swamitva','nakshatra','bav'];
+    const d9k=['d9rashi','d9bhava','d9nakshatra'];
     window._scoredAuto.forEach((p,i)=>{
       txt+=(i+1)+'. '+p.n+': '+p.score.total+'% ('+p.score.verdict+')\n';
-      for(const[k,v]of Object.entries(p.score.breakdown))txt+='   - '+v.label+': '+v.pts+'/'+v.max+'\n';
+      txt+='   [BASE 1 (D1) - 70]\n';
+      for(const k of d1k){const v=p.score.breakdown[k];if(v)txt+='   - '+v.label+': '+v.pts+'/'+v.max+'\n';}
+      txt+='   [BASE 2 (D9) - 30]\n';
+      for(const k of d9k){const v=p.score.breakdown[k];if(v)txt+='   - '+v.label+': '+v.pts+'/'+v.max+'\n';}
+      txt+='   [MODIFIERS]\n';
       for(const[k,v]of Object.entries(p.score.modifiers))if(v.pts!==0)txt+='   * '+v.label+': '+(v.pts>0?'+':'')+v.pts+'\n';
       txt+='\n';
     });
   }else if(tab===2){
-    txt='भाव बल विश्लेषण Auto v1\n========================\n\n';
+    txt='भाव बल विश्लेषण Auto v6.5\n========================\n\n';
     // re-score to get order
     const scored=[];
     for(let h=1;h<=12;h++)scored.push({h,score:scoreHouseAuto(h)});
     scored.sort((a,b)=>b.score.total-a.score.total);
+    const bcat={lordScore:'भावेश शक्ति',lordPlace:'भावेश स्थिति',occupants:'स्थित ग्रह',aspects:'दृष्टि',sav:'SAV',bhavaRank:'भाव रैंक'};
+    const bmod={swaDrishti:'स्व-दृष्टि',lagneshOcc:'लग्नेश उपस्थिति',vry:'विपरीत राजयोग',cuspPushkar:'भाव मध्य पुष्कर'};
     scored.forEach((hs,i)=>{
-      txt+=(i+1)+'. भाव '+hs.h+' ('+RASHIS[hs.score.rashi]+'): '+hs.score.total+'%\n';
+      const sc=hs.score;
+      txt+=(i+1)+'. भाव '+hs.h+' ('+RASHIS[sc.rashi]+', '+sc.lord+'): '+sc.total+'% ('+sc.verdict+')\n';
+      txt+='   [BASE SCORE - 100]\n';
+      for(const[k,v]of Object.entries(sc.breakdown))txt+='   - '+(bcat[k]||k)+': '+v.label+': '+v.pts+'/'+v.max+'\n';
+      txt+='   [MODIFIERS]\n';
+      for(const[k,v]of Object.entries(sc.modifiers))if(v.pts!==0)txt+='   * '+(bmod[k]||k)+': '+v.label+': '+(v.pts>0?'+':'')+v.pts+'\n';
+      txt+='\n';
     });
   }
   const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
