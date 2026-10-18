@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🪐 ग्रह + भाव बल विश्लेषण v20</title>
+<title>🪐 ग्रह बल विश्लेषण Auto v4.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -62,8 +62,8 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;p
 <body>
 <div class="container" id="mainContainer">
 <div class="header">
-<h1>🪐 ग्रह + 🏠 भाव बल विश्लेषण</h1>
-<p>Planet Strength Analyzer v20 - Two Tabs (Fully Auto)</p>
+<h1>🪐 ग्रह बल विश्लेषण</h1>
+<p>Planet Strength Analyzer Auto v4.1 - Fully Automatic, Classical Rules</p>
 </div>
 
 <div class="card">
@@ -95,7 +95,9 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:#f0f2f5;margin:0;p
 </div>
 
 <script>
-// ============ CONSTANTS ============
+// ============ AUTO V1 - FRESH START ============
+// Fully automatic. Classical Parashara rules. No manual inputs.
+
 const RASHIS=['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
 const RASHIS_EN=['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha','Meena'];
 const NAKS=['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशीर्ष','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती'];
@@ -147,7 +149,6 @@ const KARAKS=['AK','AmK','BK','MK','PK','GK','DK'];
 
 let planetData=[];let lagnaRashi=0;let moonNak=0;let d9LagnaRashi=0;
 
-// ============ ASTRO CODE PARSE ============
 function parseAstroCode(code){
  // v17 fix: regex-based parser handles negative timezones (e.g. --0500 for Chicago)
  const m=code.trim().match(/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/i);
@@ -164,9 +165,8 @@ function parseAstroCode(code){
  return{Y,M,D,hh,mm,ss,tzs,lat:latLa(latS,latD),lon:lonLa(lonS,lonD)};
 }
 
-// ============ CALCULATIONS ============
 const EPHEM_CDN='https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
-let _swe=null,_sweLoading=null,_SEP=null;
+let _swe=null,_sweLoading=null,_SEP=null,_SEF=null;
 async function ensureSwe(){
  if(_swe)return _swe;
  if(_sweLoading)return _sweLoading;
@@ -174,7 +174,7 @@ async function ensureSwe(){
   const m=await import(/* @vite-ignore */EPHEM_CDN);
   const swe=new m.SwissEphemeris();await swe.init();
   swe.setSiderealMode(m.SiderealMode.Lahiri);
-  _swe=swe;_SEP=m.Planet;return swe;
+  _swe=swe;_SEP=m.Planet;_SEF=m.CalculationFlag;return swe;
  })();
  return _sweLoading;
 }
@@ -195,20 +195,23 @@ async function calcPositions(info){
  for(const pl of PLANETS){
   let lng,retro=false;
   if(pl.body<=6){
-   const r=swe.calculatePosition(jd,_SEP[SEPBODY[pl.body]],0);
+   const FL=_SEF.MoshierEphemeris|_SEF.Speed;
+   const r=swe.calculatePosition(jd,_SEP[SEPBODY[pl.body]],FL);
    lng=norm360(r.longitude-ayan);
    // retro via speed: check position diff
-   const r2=swe.calculatePosition(jd+0.5,_SEP[SEPBODY[pl.body]],0);
+   const r2=swe.calculatePosition(jd+0.5,_SEP[SEPBODY[pl.body]],FL);
    let sp=r2.longitude-r.longitude;if(sp>180)sp-=360;if(sp<-180)sp+=360;
    retro=sp<0;
   }else if(pl.body===10){
    // Rahu: use body number 10 directly (never MeanNode)
-   const r=swe.calculatePosition(jd,10,0);
+   const FL=_SEF.MoshierEphemeris|_SEF.Speed;
+   const r=swe.calculatePosition(jd,10,FL);
    lng=norm360(r.longitude-ayan);
    retro=true;
   }else{
    // Ketu: Rahu + 180
-   const r=swe.calculatePosition(jd,10,0);
+   const FL=_SEF.MoshierEphemeris|_SEF.Speed;
+   const r=swe.calculatePosition(jd,10,FL);
    let rl=norm360(r.longitude-ayan);
    lng=norm360(rl+180);
    retro=true;
@@ -264,25 +267,20 @@ function isPushkarNavamsha(pl,lng){
  return pada===1||pada===3; // water
 }
 function isPushkarBhaga(pl,lng){
- // Fully auto: Pushkar Bhaga by degree (entire degree)
- // Fire: 21°, Earth: 14°, Air: 24°, Water: 7°
+ // Chalit v10 PB_POINTS (rashi-specific, ±1° tolerance)
+ const PB_POINTS=[21,14,18,8,19,9,24,11,23,14,19,9]; // Mesha..Meena
  const rashi=getRashi(lng),deg=getDegInRashi(lng);
- const d=Math.floor(deg); // 0-29
- const el=rashi%4;
- if(el===0)return d===21;
- if(el===1)return d===14;
- if(el===2)return d===24;
- return d===7; // water
+ return Math.abs(deg-PB_POINTS[rashi])<=1.0;
 }
 // Mrityu Bhaga degrees (1-indexed degree within rashi) per planet per rashi (Mesha..Meena)
 const MRITYU_BHAGA={
- 'सूर्य':[20,10,14,25,6,1,13,20,10,14,12,6],
- 'चंद्र':[8,20,10,14,25,6,1,13,20,10,14,25],
- 'मंगल':[19,8,20,10,14,25,6,1,13,20,10,14],
- 'बुध':[14,19,8,20,10,14,25,6,1,13,20,10],
- 'गुरु':[10,14,19,8,20,10,14,25,6,1,13,20],
- 'शुक्र':[24,10,14,19,8,20,10,14,25,6,1,13],
- 'शनि':[13,24,10,14,19,8,20,10,14,25,6,1]
+ 'सूर्य':[20,9,12,6,8,24,16,17,22,2,3,23],
+ 'चंद्र':[8,25,22,22,21,1,4,23,18,20,20,10],
+ 'मंगल':[19,28,25,23,29,28,14,21,2,15,11,6],
+ 'बुध':[15,14,13,12,8,18,20,10,21,22,7,5],
+ 'गुरु':[19,29,12,27,6,4,13,10,17,11,15,28],
+ 'शुक्र':[28,15,11,17,10,13,4,6,27,12,29,19],
+ 'शनि':[10,4,7,9,12,16,3,18,28,14,13,15]
 };
 function isMrityuBhaga(pl,lng){
  // Fully auto: check if planet's degree matches its Mrityu Bhaga
@@ -968,322 +966,8 @@ function abdaLordFromYear(year) {
 // Rashi lords by rashi index (0=Mesha...11=Meena): Mars,Venus,Mercury,Moon,Sun,Mercury,Venus,Mars,Jupiter,Saturn,Saturn,Jupiter
 const RASHI_LORD_NAMES=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
 const KRURA=['सूर्य','मंगल','शनि','राहु','केतु'];
-const SHUBHA4=['गुरु','शुक्र']; // base shubha; Chandra/Budha added dynamically via getShubha()
+const SHUBHA4=['गुरु','शुक्र']; // base shubha
 
-// Bhava Karaka (Natural Significators) for houses 1-12 (v19)
-const BHAVA_KARAKA={1:['सूर्य'],2:['गुरु'],3:['मंगल'],4:['चंद्र'],5:['गुरु'],6:['मंगल','शनि'],7:['शुक्र'],8:['शनि'],9:['गुरु','सूर्य'],10:['बुध','सूर्य','गुरु','शनि'],11:['गुरु'],12:['शनि']};
-
-// Navatara modifier scores: [जन्म,संपत,विपत,क्षेम,प्रत्यरि,साधक,वध,मित्र,अतिमित्र]
-const NAVATARA_MOD=[5,10,-5,8,-5,10,-10,8,10];
-const NAVATARA_NAMES=['जन्म','संपत','विपत','क्षेम','प्रत्यरि','साधक','वध','मित्र','अतिमित्र'];
-
-function geminiRashiPts(pd){
- // Returns {pts, label} - Max 20
- const n=pd.n, r=pd.rashi;
- // Rahu/Ketu special dignity
- if(n==='राहु'){
-  if([1,2,5,6,10].includes(r))return{pts:16,label:'मित्र/स्व (राहु)'};
-  return{pts:8,label:'सम (राहु)'};
- }
- if(n==='केतु'){
-  if([0,7,8,11].includes(r))return{pts:16,label:'मित्र/स्व (केतु)'};
-  return{pts:8,label:'सम (केतु)'};
- }
- const d=DIGNITY[n];
- if(!d)return{pts:8,label:'सम'};
- let pts,label;
- if(r===d.u){pts=20;label='उच्च';}
- else if(r===d.mt){pts=18;label='मूलत्रिकोण';}
- else if(d.s.includes(r)){pts=16;label='स्वराशि';}
- else{
-  const lord=RASHI_LORD_NAMES[r];
-  const fr=FRIEND[n]||[],en=ENEMY[n]||[];
-  if(fr.includes(lord)){pts=12;label='मित्र राशि';}
-  else if(en.includes(lord)){pts=4;label='शत्रु राशि';}
-  else{pts=8;label='सम राशि';}
- }
- // Dynamic Neechbhanga: neecha (0 pts) + conjunct dispositor OR dispositor uchcha => 12
- if(pts===0&&r===d.n){
-  const dispositor=RASHI_LORD_NAMES[r];
-  const dispUchcha=DIGNITY[dispositor]?DIGNITY[dispositor].u:-1;
-  let dispIsUchcha=false;
-  for(const q of planetData){
-   if(q.n===dispositor&&q.rashi===dispUchcha){dispIsUchcha=true;break;}
-  }
-  if(pd.yuti.includes(dispositor)||dispIsUchcha){
-   pts=12;label='नीचभंग';
-  }else{
-   label='नीच';
-  }
- }
- // Dispositor Support (v14): enemy/neecha but dispositor in same house in swarashi/uchcha => 8
- if((pts===4||pts===0)&&pd.yuti.length>0){
-  const dispositor=RASHI_LORD_NAMES[r];
-  const dispDign=DIGNITY[dispositor];
-  for(const q of planetData){
-   if(q.n===dispositor&&pd.yuti.includes(dispositor)){
-    const dr=q.rashi;
-    if(dispDign&&(dispDign.s.includes(dr)||dr===dispDign.u||dr===dispDign.mt)){
-     pts=8;label='डिस्पोज़िटर सपोर्ट';
-     break;
-    }
-   }
-  }
- }
- return{pts,label};
-}
-
-function geminiBhavaPts(pd){
- // Max 15. Shubha: Chandra,Budha,Guru,Shukra. Krura: Surya,Mangal,Shani,Rahu,Ketu
- const h=pd.house;
- const isKrura=KRURA.includes(pd.n);
- let pts,label;
- if(h===5||h===9){pts=15;label='त्रिकोण';}
- else if(h===11){pts=15;label='11वां (लाभ)';}
- else if(h===3||h===6){
-  if(isKrura){pts=15;label='उपचय (क्रूर)';}else{pts=8;label='3/6 भाव';}
- }
- else if(h===10){
-  if(isKrura){pts=15;label='उपचय केंद्र (क्रूर)';}else{pts=12;label='केंद्र';}
- }
- else if(h===1||h===4||h===7){pts=12;label='केंद्र';}
- else if(h===2){pts=10;label='2रा भाव';}
- else if(h===8||h===12){
-  // Exception: own sign in trik => 8
-  const d=DIGNITY[pd.n];
-  const isOwn=d&&d.s.includes(pd.rashi);
-  const isRKGood=(pd.n==='राहु'&&[1,2,5,6,10].includes(pd.rashi))||(pd.n==='केतु'&&[0,7,8,11].includes(pd.rashi));
-  // Lagnesh Exemption (v14): lagnesh in 8/12 gets 8, not 0
-  if(pd.isLagnesh){pts=8;label='त्रिक में लग्नेश (छूट)';}
-  else if(isOwn||isRKGood){pts=8;label='त्रिक में स्वराशि';}
-  else{pts=0;label='त्रिक भाव';}
- }
- else{pts=8;label='भाव '+h;}
- return{pts,label:'भाव '+h+' ('+label+')'};
-}
-
-function geminiD9Pts(pd){
- // Max 15
- const d9r=pd.d9rashi;
- if(pd.vargottama){
-  // Vargottama check already in pd; but verify D9 dignity too
- }
- let pts,label;
- // Rahu/Ketu D9 dignity
- if(pd.n==='राहु'||pd.n==='केतु'){
-  const good=pd.n==='राहु'?[1,2,5,6,10].includes(d9r):[0,7,8,11].includes(d9r);
-  if(pd.vargottama){pts=15;label='वर्गोत्तम';}
-  else if(good){pts=12;label='D9 स्व/मित्र';}
-  else{pts=5;label='D9 सम';}
-  return{pts,label:RASHIS[d9r]+' ('+label+')',isNeecha:false};
- }
- const d=DIGNITY[pd.n];
- if(!d)return{pts:5,label:RASHIS[d9r]+' (सम)',isNeecha:false};
- let isNeecha=false;
- if(pd.vargottama){pts=15;label='वर्गोत्तम';}
- else if(d9r===d.u){pts=15;label='D9 उच्च';}
- else if(d.s.includes(d9r)){pts=12;label='D9 स्वराशि';}
- else{
-  const lord=RASHI_LORD_NAMES[d9r];
-  const fr=FRIEND[pd.n]||[],en=ENEMY[pd.n]||[];
-  if(d9r===d.n){pts=0;label='D9 नीच';isNeecha=true;}
-  else if(fr.includes(lord)){pts=8;label='D9 मित्र';}
-  else if(en.includes(lord)){pts=2;label='D9 शत्रु';}
-  else{pts=5;label='D9 सम';}
- }
- return{pts,label:RASHIS[d9r]+' ('+label+')',isNeecha};
-}
-
-function geminiShadbalaPts(pd,shRank){
- // Max 20 - rank based
- if(pd.n==='राहु'||pd.n==='केतु')return{pts:12,label:'N/A (राहु/केतु)'};
- const r=shRank?shRank[pd.n]:null;
- const map={1:20,2:17,3:14,4:11,5:8,6:5,7:2};
- const pts=r&&map[r]?map[r]:8;
- return{pts,label:'रैंक '+(r||'?')};
-}
-
-function geminiBAVPts(pd,manual){
- // Max 10
- if(pd.n==='राहु'||pd.n==='केतु')return{pts:6,label:'N/A (डिफ़ॉल्ट)'};
- const bav=manual['bav_'+pd.n];
- const v=bav?+bav:0;
- return{pts:Math.round((v/8)*10),label:(bav||'0')+' बिंदु'};
-}
-
-function geminiNakshatraPts(pd){
- // Max 10
- const nl=pd.nak.lord;
- let pts,label;
- if(nl===pd.n){pts=10;label='स्वनक्षत्र';}
- else if((FRIEND[pd.n]||[]).includes(nl)){pts=7;label='मित्र नक्षत्र';}
- else if((ENEMY[pd.n]||[]).includes(nl)){pts=2;label='शत्रु नक्षत्र';}
- else{pts=5;label='सम नक्षत्र';}
- return{pts,label:pd.nak.name+' ('+nl+', '+label+')'};
-}
-
-function geminiAvasthaPts(pd){
- // Max 10
- if(pd.isAsta&&pd.n!=='सूर्य')return{pts:0,label:'अस्त'};
- if(pd.retro&&pd.n!=='राहु'&&pd.n!=='केतु')return{pts:10,label:'वक्री'};
- if(pd.n==='राहु'||pd.n==='केतु')return{pts:6,label:'सामान्य (राहु/केतु)'};
- const av=avastha(pd.degInRashi);
- // av.n: बाल,कुमार,युवा,किशोर,वृद्ध
- let pts;
- if(av.n==='युवा')pts=10;
- else if(av.n==='कुमार'||av.n==='वृद्ध'||av.n==='किशोर')pts=6;
- else pts=2; // बाल, मृत
- return{pts,label:av.n+(pd.retro?' (वक्री)':'')};
-}
-
-function geminiNavataraMod(pd){
- // Returns modifier points
- const d=((pd.nak.idx-moonNak+27)%27)%9;
- return{pts:NAVATARA_MOD[d],label:NAVATARA_NAMES[d]};
-}
-
-function geminiPushkarMod(pd,manual){
- // FULLY AUTO: detect PN, PB, MB from longitude
- const pn=isPushkarNavamsha(pd.n,pd.lng);
- const pb=isPushkarBhaga(pd.n,pd.lng);
- const mb=isMrityuBhaga(pd.n,pd.lng);
- if(mb)return{pts:-15,label:'मृत्यु भाग'};
- if(pn&&pb)return{pts:20,label:'डबल पुष्कर (PN+PB)'};
- if(pn)return{pts:10,label:'पुष्कर नवांश (auto)'};
- if(pb)return{pts:10,label:'पुष्कर भाग (auto)'};
- return{pts:0,label:'नहीं'};
-}
-
-function geminiChalitMod(pd,manual){
- // FULLY AUTO: compare D1 house vs Chalit house
- const h1=pd.house,h2=pd.chalitHouse;
- if(!h2||h1===h2)return{pts:0,label:'स्थिर'};
- const good=[1,4,5,7,9,10,11];
- const bad=[6,8,12];
- if(good.includes(h2)&&!good.includes(h1))return{pts:10,label:'चलित '+h1+'→'+h2+' शुभ'};
- if(bad.includes(h2)&&!bad.includes(h1))return{pts:-10,label:'चलित '+h1+'→'+h2+' अशुभ'};
- if(good.includes(h2))return{pts:10,label:'चलित '+h1+'→'+h2+' शुभ'};
- return{pts:0,label:'चलित '+h1+'→'+h2};
-}
-
-function geminiDrishtiYutiMod(pd){
- // +5 per shubha, -5 per papa; Chandra-Mangal yuti special +10 both
- const shubhaList=getShubha(pd);
- let mod=0;let labels=[];
- // Special yoga: Chandra-Mangal yuti
- const hasCMYuti=(pd.n==='चंद्र'&&pd.yuti.includes('मंगल'))||(pd.n==='मंगल'&&pd.yuti.includes('चंद्र'));
- if(hasCMYuti){
-  return{pts:10,label:'चंद्र-मंगल धन योग +10'};
- }
- for(const y of pd.yuti){
-  if(shubhaList.includes(y)){mod+=5;labels.push(y+'+5');}
-  else if(PAPA.includes(y)){mod-=5;labels.push(y+'-5');}
- }
- for(const dr of pd.drishtiFrom){
-  if(getShubha({n:dr,yuti:[],isKrishna:false}).includes(dr)||SHUBHA_BASE.includes(dr)){mod+=5;labels.push(dr+' दृष्टि+5');}
-  else if(PAPA.includes(dr)){mod-=5;labels.push(dr+' दृष्टि-5');}
- }
- return{pts:mod,label:labels.join(', ')||'कोई प्रभाव नहीं'};
-}
-
-function scorePlanet(pd,manual,shRank){
- const b={}; // base breakdown
- const m={}; // modifiers breakdown
- // ---- PART 1: BASE SCORE (Max 100) ----
- const rashi=geminiRashiPts(pd);
- b.rashi={pts:rashi.pts,max:20,label:rashi.label};
- const bhava=geminiBhavaPts(pd);
- b.bhava={pts:bhava.pts,max:15,label:bhava.label};
- const d9=geminiD9Pts(pd);
- b.d9={pts:d9.pts,max:15,label:d9.label};
- const sh=geminiShadbalaPts(pd,shRank);
- const shRaw=manual['shadbala_'+pd.n];
- b.shadbala={pts:sh.pts,max:20,label:sh.label+(shRaw?' ('+Math.round(shRaw*60)+' विरूप)':'')};
- const bav=geminiBAVPts(pd,manual);
- b.bav={pts:bav.pts,max:10,label:bav.label};
- const nak=geminiNakshatraPts(pd);
- b.nakshatra={pts:nak.pts,max:10,label:nak.label};
- const avs=geminiAvasthaPts(pd);
- b.avastha={pts:avs.pts,max:10,label:avs.label};
- const baseScore=b.rashi.pts+b.bhava.pts+b.d9.pts+b.shadbala.pts+b.bav.pts+b.nakshatra.pts+b.avastha.pts;
- // ---- PART 2: MODIFIERS ----
- const nt=geminiNavataraMod(pd);
- m.navatara={pts:nt.pts,label:nt.label};
- const pk=geminiPushkarMod(pd,manual);
- m.pushkar={pts:pk.pts,label:pk.label};
- const ch=geminiChalitMod(pd,manual);
- m.chalit={pts:ch.pts,label:ch.label};
- const dy=geminiDrishtiYutiMod(pd);
- m.drishti={pts:dy.pts,label:dy.label};
- const d9pen=d9.isNeecha?{pts:-10,label:'D9 नीच पेनल्टी'}:{pts:0,label:'नहीं'};
- m.d9penalty=d9pen;
- // D9 Special Bonus (v14): D9 lagna or 9th house => +5
- let d9bonus={pts:0,label:'नहीं'};
- // D9 house = (planet's D9 rashi - D9 lagna + 12) % 12 + 1
- const d9house=((pd.d9rashi-d9LagnaRashi+12)%12)+1;
- if(d9house===1||d9house===9){
-  d9bonus={pts:5,label:'D9 '+(d9house===1?'लग्न':'9वां')+' (+5)'};
- }
- m.d9bonus=d9bonus;
- // Yoga Bonus (v14): Rajyoga/Dhana Yoga +10
- let yogaBonus={pts:0,label:'नहीं'};
- // If planet is lord of 9/10/11 AND placed in 1,2,4,5,7,9,10,11
- const LORDS=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
- const houses911=[];
- for(let i=0;i<12;i++){
-  const h=((i-lagnaRashi+12)%12)+1;
-  if([9,10,11].includes(h)&&LORDS[i]===pd.n)houses911.push(h);
- }
- if(houses911.length>0&&[1,2,4,5,7,9,10,11].includes(pd.house)){
-  yogaBonus={pts:10,label:'राजयोग/धन योग (+10)'};
- }
- m.yoga=yogaBonus;
- // 🌟 Special Bonus Logic (v15 Patch - Gemini Final)
- let specialBonus={pts:0,label:'नहीं'};
- let specialLabels=[];
- // Rule 1: एकादश राहु (Rahu in 11th) - सर्व दोष नाशक
- if(pd.n==='राहु'&&pd.house===11){
-  specialBonus.pts+=10;
-  specialLabels.push('11वें भाव का राहु (+10)');
- }
- // Rule 2: धन भाव में शुभ ग्रह (Benefic in 2nd or 11th)
- const SHUBHA_PLANETS=['चंद्र','बुध','गुरु','शुक्र'];
- if(SHUBHA_PLANETS.includes(pd.n)&&(pd.house===2||pd.house===11)){
-  specialBonus.pts+=10;
-  specialLabels.push('धन भाव में शुभ ग्रह (+10)');
- }
- if(specialBonus.pts>0){
-  specialBonus.label=specialLabels.join(', ');
- }
- m.specialBonus=specialBonus;
- const modTotal=m.navatara.pts+m.pushkar.pts+m.chalit.pts+m.drishti.pts+m.d9penalty.pts+m.d9bonus.pts+m.yoga.pts+m.specialBonus.pts;
- // ---- FINAL ----
- let total=baseScore+modTotal;
- // Floor Logic (v14 Final): Krura in 3/6/11 with own dispositor => min 30%
- const KRURA_PLANETS=['सूर्य','मंगल','शनि','राहु','केतु'];
- if(KRURA_PLANETS.includes(pd.n)&&[3,6,11].includes(pd.house)){
-  const disp=RASHI_LORD_NAMES[pd.rashi];
-  if(pd.yuti.includes(disp)){
-   const dispDign=DIGNITY[disp];
-   for(const q of planetData){
-    if(q.n===disp){
-     const dr=q.rashi;
-     if(dispDign&&(dispDign.s.includes(dr)||dr===dispDign.u||dr===dispDign.mt)){
-      if(total<30){m.floorCap={pts:30-total,label:'Floor Cap (30%)'};total=30;}
-      break;
-     }
-    }
-   }
-  }
- }
- total=Math.max(0,Math.min(100,total));
- return{breakdown:b,modifiers:m,baseScore,modTotal,total,
-  verdict:total>=70?'बलवान 💪':total>=40?'मध्यम ⚖️':'पीड़ित ⚠️',
-  cls:total>=70?'strong':total>=40?'medium':'weak'};
-}
-
-
-// ============ TAB 2: BHAVA (HOUSE) STRENGTH - Gemini Master Algorithm ============
 const BH_SHUBHA=['चंद्र','बुध','गुरु','शुक्र'];
 const BH_KRURA=['सूर्य','मंगल','शनि','राहु','केतु'];
 const BH_RK_GOOD={'राहु':[1,2,5,6,10],'केतु':[0,7,8,11]};
@@ -1300,6 +984,7 @@ function housesAspectedBy(q){
  if(q.n==='मंगल'){add(q.house+3);add(q.house+7);}
  if(q.n==='गुरु'){add(q.house+4);add(q.house+8);}
  if(q.n==='शनि'){add(q.house+2);add(q.house+9);}
+ if(q.n==='राहु'||q.n==='केतु'){add(q.house+4);add(q.house+8);}
  return set;
 }
 function isExaltedOrOwn(pd){
@@ -1326,187 +1011,6 @@ function savForHouse(h,manual){
  if(!sav)return 28;
  return sav[(lagnaRashi+h-1)%12];
 }
-function scoreHouse(h,manual){
- const b={},m={};
- const lord=getHouseLord(h);
- const lordPd=planetData.find(p=>p.n===lord);
- const lordHouse=lordPd?lordPd.house:0;
- const rashi=(lagnaRashi+h-1)%12;
- const occupants=planetData.filter(p=>p.house===h);
- const aspecting=[];
- for(const q of planetData){if(housesAspectedBy(q).has(h))aspecting.push(q.n);}
- const shubhaOcc=occupants.filter(p=>BH_SHUBHA.includes(p.n));
- const kruraOcc=occupants.filter(p=>BH_KRURA.includes(p.n));
- const shubhaAsp=aspecting.filter(n=>BH_SHUBHA.includes(n));
- const kruraAsp=aspecting.filter(n=>BH_KRURA.includes(n));
- const isLagnesh=RASHI_LORD_NAMES[lagnaRashi]===lord;
- const upachaya=[3,6,10,11].includes(h);
-
- // 1. Lord's Tab1 score [20]
- const pct=getTab1Pct(lord);
- const lordScore=Math.round((pct/100)*20);
- b.lordScore={pts:lordScore,max:20,label:lord+' ('+pct+'% Tab1)'};
-
- // 2. Lord's placement [15]
- let lp,lpLabel;
- if(lordHouse===h){lp=15;lpLabel='स्वगृही (अपने भाव में)';}
- else if([1,4,7,10,5,9,11].includes(lordHouse)){lp=12;lpLabel='केंद्र/त्रिकोण/लाभ ('+lordHouse+')';}
- else if([2,3].includes(lordHouse)){lp=8;lpLabel='2/3 भाव ('+lordHouse+')';}
- else if([6,8,12].includes(lordHouse)){
-  if(isLagnesh&&lordHouse===12){lp=8;lpLabel='त्रिक में लग्नेश छूट (12)';}
-  else{lp=0;lpLabel='त्रिक भाव ('+lordHouse+')';}
- }else{lp=8;lpLabel='भाव '+lordHouse;}
- b.lordPlace={pts:lp,max:15,label:lord+' → '+lpLabel};
-
- // 3. Occupants [15]
- let oc,ocLabel;
- if(occupants.length===0){oc=8;ocLabel='खाली भाव';}
- else if(occupants.some(isExaltedOrOwn)){oc=15;ocLabel='उच्च/स्वराशि ग्रह: '+occupants.filter(isExaltedOrOwn).map(p=>p.n).join(',');}
- else{
-  let pts=Math.min(15,shubhaOcc.length*8);
-  if(upachaya)pts=Math.min(15,pts+kruraOcc.length*10);
-  oc=pts;
-  ocLabel='शुभ '+shubhaOcc.length+', क्रूर '+kruraOcc.length+(upachaya?' (उपचय)':'');
- }
- b.occupants={pts:oc,max:15,label:ocLabel};
-
- // 4. Aspects [10]
- let asp,aspLabel;
- if(aspecting.includes(lord)){asp=10;aspLabel='स्वामी की दृष्टि';}
- else if(aspecting.length===0){asp=5;aspLabel='कोई दृष्टि नहीं';}
- else{asp=Math.min(10,shubhaAsp.length*5);aspLabel='शुभ दृष्टि '+shubhaAsp.length+', क्रूर '+kruraAsp.length;}
- b.aspects={pts:asp,max:10,label:aspLabel};
-
- // 5. SAV [20]
- const sav=savForHouse(h,manual);
- let savPts,savLabel;
- if(sav>=35){savPts=20;savLabel='SAV '+sav+' (उत्तम)';}
- else if(sav>=30){savPts=16;savLabel='SAV '+sav+' (अच्छा)';}
- else if(sav>=25){savPts=10;savLabel='SAV '+sav+' (मध्यम)';}
- else if(sav>=20){savPts=5;savLabel='SAV '+sav+' (कम)';}
- else{savPts=0;savLabel='SAV '+sav+' (बहुत कम)';}
- b.sav={pts:savPts,max:20,label:savLabel};
-
- // 6. Bhava Bala rank [20]
- const br=bhavaRankPts(h);
- b.bhavaBala={pts:br.pts,max:20,label:br.label};
-
- const baseScore=b.lordScore.pts+b.lordPlace.pts+b.occupants.pts+b.aspects.pts+b.sav.pts+b.bhavaBala.pts;
-
- // ---- MODIFIERS ----
- // 7. Pushkar
- const cuspLng=rashi*30+15, sandhiLng=rashi*30;
- const cuspP=isPushkarNavamsha('सूर्य',cuspLng)||isPushkarBhaga('सूर्य',cuspLng);
- const sandhiP=isPushkarNavamsha('सूर्य',sandhiLng)||isPushkarBhaga('सूर्य',sandhiLng);
- let pk={pts:0,label:'नहीं'};
- if(cuspP&&sandhiP)pk={pts:20,label:'Cusp+Sandhi पुष्कर'};
- else if(cuspP||sandhiP)pk={pts:10,label:'पुष्कर (एक)'};
- m.pushkar=pk;
-
- // 8. Kartari
- const prevH=h===1?12:h-1, nextH=h===12?1:h+1;
- const prevOcc=planetData.filter(p=>p.house===prevH).map(p=>p.n);
- const nextOcc=planetData.filter(p=>p.house===nextH).map(p=>p.n);
- let kar={pts:0,label:'नहीं'};
- const onlyShubha=a=>a.length>0&&a.every(n=>BH_SHUBHA.includes(n));
- const onlyKrura=a=>a.length>0&&a.every(n=>BH_KRURA.includes(n));
- if(onlyShubha(prevOcc)&&onlyShubha(nextOcc))kar={pts:10,label:'शुभकर्तरी'};
- else if(onlyKrura(prevOcc)&&onlyKrura(nextOcc))kar={pts:-10,label:'पापकर्तरी'};
- m.kartari=kar;
-
- // 9. Heavy affliction
- let aff={pts:0,label:'नहीं'};
- const kruraCount=kruraOcc.length+kruraAsp.length;
- if(!upachaya&&shubhaOcc.length===0&&shubhaAsp.length===0&&kruraCount>=2)
-  aff={pts:-15,label:'भारी पीड़ा ('+kruraCount+' क्रूर)'};
- m.affliction=aff;
-
- // 10. Trik shield
- let shield={pts:0,label:'नहीं'};
- if([6,8,12].includes(h)&&occupants.length===0&&shubhaAsp.length>0&&sav>=30)
-  shield={pts:20,label:'त्रिक शील्ड (खाली+शुभ दृष्टि+SAV)'};
- m.trikShield=shield;
-
- // 11. Yoga bonus
- let yoga={pts:0,label:'नहीं'};
- const hasCM=occupants.some(p=>p.n==='चंद्र')&&occupants.some(p=>p.n==='मंगल');
- if(hasCM)yoga={pts:10,label:'चंद्र-मंगल योग'};
- else if(lordPd){
-  try{
-   const rs=geminiRashiPts(lordPd);
-   if(rs.label==='नीचभंग')yoga={pts:10,label:'भावेश का नीचभंग'};
-  }catch(e){}
- }
- m.yoga=yoga;
-
- // 12. Swa-Drishti (v18): lord aspects own house => +20
- let swaDrishti={pts:0,label:'नहीं'};
- if(aspecting.includes(lord))
-  swaDrishti={pts:20,label:'स्व-दृष्टि (मालिक की नज़र) (+20)'};
- m.swaDrishti=swaDrishti;
-
- // 13. Lagnesh Blessing (v18): lagnesh placed in this house => +15
- let lagneshBlessing={pts:0,label:'नहीं'};
- const lagneshName=RASHI_LORD_NAMES[lagnaRashi];
- if(occupants.some(p=>p.n===lagneshName))
-  lagneshBlessing={pts:15,label:'लग्नेश का आशीर्वाद (+15)'};
- m.lagneshBlessing=lagneshBlessing;
-
- // 14. Vipareeta Raja Yoga (v18): trik house + lord in different trik => +10
- let vry={pts:0,label:'नहीं'};
- if([6,8,12].includes(h)&&[6,8,12].includes(lordHouse)&&h!==lordHouse)
-  vry={pts:10,label:'विपरीत राजयोग (+10)'};
- m.vry=vry;
-
- // 15. Node Magic (v18): Rahu in 11th, or Ketu in 5/9/12 => +15
- let nodeMagic={pts:0,label:'नहीं'};
- if(occupants.some(p=>p.n==='राहु')&&h===11)
-  nodeMagic={pts:15,label:'11वें भाव का राहु (+15)'};
- else if(occupants.some(p=>p.n==='केतु')&&[5,9,12].includes(h))
-  nodeMagic={pts:15,label:'5/9/12 भाव का केतु (+15)'};
- m.nodeMagic=nodeMagic;
-
- // 17. Karaka Blessing (v20 refined): trik houses excluded; no double-dipping when karaka==lord
- let karakaBonus={pts:0,label:'नहीं'};
- const karakas=BHAVA_KARAKA[h]||[];
- const occNames=occupants.map(p=>p.n);
- // Rule A: trik houses (6,8,12) get no karaka blessing
- if(![6,8,12].includes(h)){
-  // Rule B: exclude karaka if it's also the house lord (Swa-Drishti already covers)
-  const activeKarakas=karakas.filter(k=>k!==lord);
-  if(activeKarakas.some(k=>occNames.includes(k)||aspecting.includes(k)))
-   karakaBonus={pts:13,label:'कारक आशीर्वाद (+13)'};
- }
- m.karakaBonus=karakaBonus;
-
- // 18. Swagruhi Lord Bonus (v19): lord itself placed in own house => +10
- let swagruhiBonus={pts:0,label:'नहीं'};
- if(occNames.includes(lord))
-  swagruhiBonus={pts:10,label:'स्वगृही भावेश (+10)'};
- m.swagruhiBonus=swagruhiBonus;
-
- // 19. Enemy Occupant Penalty (v20 refined): only if enemy is also KRURA
- let enemyOcc={pts:0,label:'नहीं'};
- const lordEnemies=ENEMY[lord]||[];
- if(occNames.some(occ=>lordEnemies.includes(occ)&&BH_KRURA.includes(occ)))
-  enemyOcc={pts:-10,label:'क्रूर शत्रु ग्रह (-10)'};
- m.enemyOcc=enemyOcc;
-
- const modTotal=m.pushkar.pts+m.kartari.pts+m.affliction.pts+m.trikShield.pts+m.yoga.pts+m.swaDrishti.pts+m.lagneshBlessing.pts+m.vry.pts+m.nodeMagic.pts+m.karakaBonus.pts+m.swagruhiBonus.pts+m.enemyOcc.pts;
- let total=baseScore+modTotal;
- // 16. Trik House Soft Cap (v18): cap 6/8/12 houses
- if([6,8,12].includes(h)){
-  if(m.vry.pts===0&&m.trikShield.pts===0)total=Math.min(total,75);
-  else total=Math.min(total,85);
- }
- total=Math.max(0,Math.min(100,total));
- return{breakdown:b,modifiers:m,baseScore,modTotal,total,
-  verdict:total>=70?'बलवान 💪':total>=40?'मध्यम ⚖️':'पीड़ित ⚠️',
-  cls:total>=70?'strong':total>=40?'medium':'weak',
-  lord,rashi,occupants:occupants.map(p=>p.n),aspecting};
-}
-
-// ============ VERIFIED BHAVA DRISHTI BALA (Gemini v2, 48/48 verified 2026-10-11) ============
 function calculateBhavaDrishtiBala(planetLongs, bhavaCusps) {
     let drigBala = new Array(12).fill(0.0);
     let sunLong = planetLongs[0];
@@ -1563,6 +1067,489 @@ function switchTab(n){
  document.getElementById('tabbtn1').classList.toggle('active',n===1);
  document.getElementById('tabbtn2').classList.toggle('active',n===2);
 }
+
+// ============================================================
+// AUTO V1 SCORING - Fresh, simple, classical
+// ============================================================
+
+// SH_MIN for Shadbala strength ratio
+const SH_MIN_AUTO={'सूर्य':5.0,'चंद्र':6.0,'मंगल':5.0,'बुध':7.0,'गुरु':6.5,'शुक्र':5.5,'शनि':5.0};
+
+// Dignity points for 25-scale (Tab 1 Rashi)
+function dignityPts25(pl, rashi){
+  if(pl==='राहु'||pl==='केतु')return{pts:12,label:'तटस्थ (राहु/केतु)'};
+  const d=DIGNITY[pl];
+  if(!d)return{pts:10,label:'-'};
+  if(rashi===d.u)return{pts:25,label:'उच्च'};
+  if(rashi===d.n)return{pts:0,label:'नीच'};
+  if(rashi===d.mt)return{pts:22,label:'मूलत्रिकोण'};
+  if(d.s.includes(rashi))return{pts:20,label:'स्वराशि'};
+  const LORDS=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+  const lord=LORDS[rashi];
+  const fr=FRIEND[pl]||[],en=ENEMY[pl]||[];
+  if(fr.includes(lord))return{pts:15,label:'मित्र राशि'};
+  if(en.includes(lord))return{pts:5,label:'शत्रु राशि'};
+  return{pts:10,label:'सम राशि'};
+}
+
+// Dignity points for 20-scale (Auto v4.1 Base 1 Rashi)
+function dignityPts20(pl, rashi){
+  if(pl==='राहु'||pl==='केतु')return{pts:10,label:'तटस्थ (राहु/केतु)'};
+  const d=DIGNITY[pl];
+  if(!d)return{pts:8,label:'-'};
+  if(rashi===d.u)return{pts:20,label:'उच्च'};
+  if(rashi===d.n)return{pts:0,label:'नीच'};
+  if(rashi===d.mt)return{pts:18,label:'मूलत्रिकोण'};
+  if(d.s.includes(rashi))return{pts:16,label:'स्वराशि'};
+  const LORDS=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+  const lord=LORDS[rashi];
+  const fr=FRIEND[pl]||[],en=ENEMY[pl]||[];
+  if(fr.includes(lord))return{pts:12,label:'मित्र राशि'};
+  if(en.includes(lord))return{pts:4,label:'शत्रु राशि'};
+  return{pts:8,label:'सम राशि'};
+}
+
+// Check simple Neechbhanga: classical Parashara rules
+function hasSimpleNeechbhanga(pd){
+  if(!DIGNITY[pd.n])return false;
+  const d=DIGNITY[pd.n];
+  if(pd.rashi!==d.n)return false; // not neecha
+  const LORDS=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+  const disp=LORDS[pd.rashi];
+  const dispPd=planetData.find(p=>p.n===disp);
+  if(!dispPd)return false;
+  const moonPd=planetData.find(p=>p.n==='चंद्र');
+  const moonHouse=moonPd?moonPd.house:0;
+  // Helper: kendra houses from a given house
+  const kendraFrom=(h)=>[h,(h+3)%12||12,(h+6)%12||12,(h+9)%12||12].map(x=>x===0?12:x);
+  // 1. Dispositor in kendra from lagna
+  if([1,4,7,10].includes(dispPd.house))return true;
+  // 2. Dispositor exalted
+  const dd=DIGNITY[disp];
+  if(dd&&dispPd.rashi===dd.u)return true;
+  // 3. Neecha planet in kendra from lagna
+  if([1,4,7,10].includes(pd.house))return true;
+  // 4. Dispositor in kendra from Moon
+  if(moonHouse&&kendraFrom(moonHouse).includes(dispPd.house))return true;
+  // 5. Neecha planet in kendra from Moon
+  if(moonHouse&&kendraFrom(moonHouse).includes(pd.house))return true;
+  // 6. Mutual kendra / yuti between neecha planet and dispositor
+  if(dispPd.house===pd.house)return true; // yuti
+  return false;
+}
+
+// D9 Neechbhanga: 4 rules (no Moon-based) + uchcha nath yuti
+function hasD9Neechbhanga(pd){
+  if(!DIGNITY[pd.n])return false;
+  const d=DIGNITY[pd.n];
+  if(pd.d9rashi!==d.n)return false; // not neecha in D9
+  const LORDS=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+  const disp=LORDS[pd.d9rashi];
+  const dispPd=planetData.find(p=>p.n===disp);
+  if(!dispPd)return false;
+  const d9house=getHouse(pd.d9rashi,d9LagnaRashi);
+  const dispD9house=getHouse(dispPd.d9rashi,d9LagnaRashi);
+  // 1. Dispositor in kendra from D9 Lagna
+  if([1,4,7,10].includes(dispD9house))return true;
+  // 2. Dispositor exalted in D9
+  const dd=DIGNITY[disp];
+  if(dd&&dispPd.d9rashi===dd.u)return true;
+  // 3. Neecha planet in kendra from D9 Lagna
+  if([1,4,7,10].includes(d9house))return true;
+  // 4. Yuti in D9 (same D9 rashi)
+  if(dispPd.d9rashi===pd.d9rashi)return true;
+  // Extra: Uchcha nath yuti (exaltation lord in same D9 rashi)
+  const uchchaLord=LORDS[d.u]; // lord of exaltation rashi? Actually need uchcha planet
+  // Find planet exalted in this rashi
+  for(const pl of planetData){
+    const pd2=DIGNITY[pl.n];
+    if(pd2&&pd2.u===pd.d9rashi&&pl.d9rashi===pd.d9rashi)return true;
+  }
+  return false;
+}
+
+// Dignity points for 15-scale (Tab 1 Navamsha, Tab 1 Avastha base)
+function dignityPts15(pl, rashi){
+  if(pl==='राहु'||pl==='केतु')return{pts:8,label:'तटस्थ'};
+  const d=DIGNITY[pl];
+  if(!d)return{pts:8,label:'-'};
+  if(rashi===d.u)return{pts:15,label:'उच्च'};
+  if(rashi===d.n)return{pts:0,label:'नीच'};
+  if(rashi===d.mt)return{pts:13,label:'मूलत्रिकोण'};
+  if(d.s.includes(rashi))return{pts:12,label:'स्वराशि'};
+  const LORDS=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+  const lord=LORDS[rashi];
+  const fr=FRIEND[pl]||[],en=ENEMY[pl]||[];
+  if(fr.includes(lord))return{pts:8,label:'मित्र'};
+  if(en.includes(lord))return{pts:2,label:'शत्रु'};
+  return{pts:5,label:'सम'};
+}
+
+function isKruraAuto(n){return KRURA.includes(n);}
+function isShubhaAuto(n){return['गुरु','शुक्र','बुध','चंद्र'].includes(n);}
+
+// ============ TAB 1: scorePlanetAuto ============
+function scorePlanetAuto(pd, shRank){
+  const b={},m={};
+  const n=pd.n;
+
+  // ============ BASE 1 (D1) [70] - Gemini order ============
+  // 1. Shadbala [20] - raw power first
+  let shPts,shLabel;
+  if(n==='राहु'||n==='केतु'){shPts=10;shLabel='छाया ग्रह (स्थिर)';}
+  else{
+    const r=shRank[n]||4;
+    const map={1:20,2:18,3:16,4:13,5:10,6:7,7:4};
+    shPts=map[r]||13;shLabel='रैंक '+r;
+  }
+  b.shadbala={pts:shPts,max:20,label:shLabel};
+
+  // 2. Rashi dignity [20]
+  let rashiPts;
+  if(hasSimpleNeechbhanga(pd)){
+    rashiPts={pts:10,max:20,label:'नीचभंग'};
+  }else{
+    const d=dignityPts20(n,pd.rashi);
+    rashiPts={pts:d.pts,max:20,label:d.label+' ('+RASHIS[pd.rashi]+')'};
+  }
+  b.rashi=rashiPts;
+
+  // 3. Bhava Sthiti [12] - placement
+  let bhPts,bhLabel;
+  const h=pd.house;
+  // VRY check: dusthana lord in dusthana (same or different) - Harsha/Sarala/Vimala Yoga
+  const ownsDusthana=pd.owns?pd.owns.filter(x=>[6,8,12].includes(x)):[];
+  const hasVRY=ownsDusthana.length>0&&[6,8,12].includes(h);
+  if(hasVRY){bhPts=8;bhLabel='विपरीत राजयोग (त्रिक छूट)';}
+  else if([1,5,9].includes(h)){bhPts=12;bhLabel='त्रिकोण';}
+  else if([4,7,10].includes(h)){bhPts=10;bhLabel='केंद्र';}
+  else if([2,3,6,11].includes(h)){bhPts=8;bhLabel='शुभ';}
+  else{bhPts=2;bhLabel='त्रिक (6/8/12)';}
+  b.bhava={pts:bhPts,max:12,label:bhLabel+' (भाव '+h+')'};
+
+  // 4. Bhav Swamitva [8] - lordship (NEW)
+  let swPts,swLabel;
+  if(pd.owns&&pd.owns.length>0){
+    // Take best ownership; trik+VRY gets 6
+    let best=0;let bestLbl='';
+    for(const ow of pd.owns){
+      let pts,lbl;
+      const isTrik=[6,8,12].includes(ow);
+      const owVRY=isTrik&&hasVRY;
+      if([1,5,9].includes(ow)){pts=8;lbl='त्रिकोण';}
+      else if([4,7,10].includes(ow)){pts=6;lbl='केंद्र';}
+      else if([2,3,11].includes(ow)){pts=4;lbl='उपचय/धन';}
+      else if(owVRY){pts=6;lbl='त्रिक+VRY';}
+      else{pts=2;lbl='त्रिक';}
+      if(pts>best){best=pts;bestLbl=lbl+' ('+ow+' भाव)';}
+    }
+    swPts=best;swLabel=bestLbl;
+  }else{swPts=4;swLabel='कोई स्वामित्व नहीं';}
+  b.swamitva={pts:swPts,max:8,label:swLabel};
+
+  // 5. Nakshatra [5] - D1 nakshatra strength
+  let nakPts,nakLabel;
+  const nakLord=pd.nak?pd.nak.lord:null;
+  const nakName=pd.nak?pd.nak.name:'';
+  if(nakLord){
+    if(nakLord===n){nakPts=5;nakLabel='स्व-नक्षत्र ('+nakName+')';}
+    else if(FRIEND[n]&&FRIEND[n].includes(nakLord)){nakPts=4;nakLabel='मित्र नक्षत्र ('+nakName+')';}
+    else if(ENEMY[n]&&ENEMY[n].includes(nakLord)){nakPts=1;nakLabel='शत्रु नक्षत्र ('+nakName+')';}
+    else{nakPts=3;nakLabel=nakName+' (सम)';}
+  }else{nakPts=3;nakLabel='-';}
+  b.nakshatra={pts:nakPts,max:5,label:nakLabel};
+
+  // 6. BAV [5]
+  let bavPts,bavLabel;
+  if(n==='राहु'||n==='केतु'){bavPts=3;bavLabel='छाया ग्रह (स्थिर)';}
+  else{
+    const bav=(window._autoBAV&&window._autoBAV[n])?window._autoBAV[n]:4;
+    bavPts=Math.round((bav/8)*5);bavLabel='BAV '+bav;
+  }
+  b.bav={pts:bavPts,max:5,label:bavLabel};
+
+  // Avastha removed (dignity double-count) - vakri moved to modifiers as cheshta bala
+
+  const base1Score=b.shadbala.pts+b.rashi.pts+b.bhava.pts+b.swamitva.pts+b.nakshatra.pts+b.bav.pts;
+
+  // (Old BAV and Avastha sections removed - restructured above)
+
+  // ============ BASE 2 (D9) [30] ============
+  // 1. D9 Rashi dignity [15] - with D9 Neechbhanga
+  let d9;
+  if(hasD9Neechbhanga(pd)){
+    d9={pts:8,max:15,label:'नीचभंग (D9)'};
+  }else{
+    d9=dignityPts15(n,pd.d9rashi);
+  }
+  b.d9rashi={pts:d9.pts,max:15,label:d9.label+' ('+RASHIS[pd.d9rashi]+')'};
+
+  // 2. D9 Bhava [10] - from D9 Lagna
+  const d9house=getHouse(pd.d9rashi,d9LagnaRashi);
+  let d9bPts,d9bLabel;
+  if([1,5,9].includes(d9house)){d9bPts=10;d9bLabel='त्रिकोण';}
+  else if([4,7,10].includes(d9house)){d9bPts=8;d9bLabel='केंद्र';}
+  else if([2,3,6,11].includes(d9house)){d9bPts=7;d9bLabel='शुभ';}
+  else{d9bPts=2;d9bLabel='त्रिक';}
+  b.d9bhava={pts:d9bPts,max:10,label:d9bLabel+' (D9 भाव '+d9house+')'};
+
+  // 3. D9 Nakshatra [5]
+  let d9nak={pts:0,max:5,label:'-'};
+  {
+    // D9 nakshatra: calculate degree within D9 rashi, then get nakshatra
+    const degInRashi=pd.degInRashi||0;
+    const pada=Math.floor(degInRashi/(30/9)); // 0-8
+    const posInPada=degInRashi-(pada*(30/9)); // 0-3.33
+    const d9deg=(posInPada/(30/9))*30; // 0-30 within D9 rashi
+    const d9lng=pd.d9rashi*30+d9deg;
+    const d9nakIdx=Math.floor(d9lng/(360/27))%27;
+    const d9nakLord=NAK_LORDS[d9nakIdx];
+    const d9nakName=NAKS[d9nakIdx];
+    if(d9nakLord===n){d9nak={pts:5,max:5,label:'स्व-नक्षत्र ('+d9nakName+')'};}
+    else if(FRIEND[n]&&FRIEND[n].includes(d9nakLord)){d9nak={pts:4,max:5,label:'मित्र नक्षत्र ('+d9nakName+')'};}
+    else if(ENEMY[n]&&ENEMY[n].includes(d9nakLord)){d9nak={pts:1,max:5,label:'शत्रु नक्षत्र ('+d9nakName+')'};}
+    else{d9nak={pts:3,max:5,label:d9nakName+' (सम)'};}
+    // Store for display
+    pd._d9nakName=d9nakName;
+  }
+  b.d9nakshatra=d9nak;
+
+  const base2Score=b.d9rashi.pts+b.d9bhava.pts+b.d9nakshatra.pts;
+  const baseScore=base1Score+base2Score;
+
+  // Modifiers
+  // Asta (combust): -10
+  let asta={pts:0,label:'नहीं'};
+  const sunPd=planetData.find(p=>p.n==='सूर्य');
+  if(sunPd&&!['सूर्य','राहु','केतु'].includes(n)){
+    let diff=Math.abs(pd.lng-sunPd.lng);if(diff>180)diff=360-diff;
+    const limit=(n==='चंद्र')?12:8;
+    if(diff<limit)asta={pts:-10,label:'अस्त ('+diff.toFixed(1)+'° सूर्य से)'};
+  }
+  m.asta=asta;
+
+  // Pushkar separate: PN +5, PB +5, both +10, Mrityu -10
+  let pk={pts:0,label:'नहीं'};
+  const isPN=isPushkarNavamsha(n,pd.lng);
+  const isPB=isPushkarBhaga(n,pd.lng);
+  const isMB=isMrityuBhaga(n,pd.lng);
+  if(isMB){pk={pts:-10,label:'मृत्यु भाग (-10)'};}
+  else if(isPN&&isPB){pk={pts:10,label:'पुष्कर नवमांश+भाग (+10)'};}
+  else if(isPN){pk={pts:5,label:'पुष्कर नवमांश (+5)'};}
+  else if(isPB){pk={pts:5,label:'पुष्कर भाग (+5)'};}
+  m.pushkar=pk;
+
+  // Yoga bonus: +10 if lord of 9/10/11 placed in 1,2,4,5,7,9,10,11
+  let yoga={pts:0,label:'नहीं'};
+  const h9lord=getHouseLord(9),h10lord=getHouseLord(10),h11lord=getHouseLord(11);
+  if([h9lord,h10lord,h11lord].includes(n)&&[1,2,4,5,7,9,10,11].includes(h)){
+    yoga={pts:10,label:'योगकारक स्थिति'};
+  }
+  m.yoga=yoga;
+
+  // Nakshatra moved to Base 1 (#3) - removed from modifiers
+
+  // Vakri (cheshta bala): +5 for retrograde planets (except Sun/Moon/Rahu/Ketu)
+  let vakri={pts:0,label:'नहीं'};
+  if(pd.retro&&!['राहु','केतु','सूर्य','चंद्र'].includes(n)){
+    vakri={pts:5,label:'वक्री (चेष्टा बल) (+5)'};
+  }
+  m.vakri=vakri;
+
+  // House lordship moved to Base 1 (#4) - removed from modifiers
+
+  // 3. Vargottama both types (all planets including Rahu/Ketu - user's decision)
+  let varg={pts:0,label:'नहीं'};
+  const rashiVarg=pd.vargottama?5:0;
+  // Bhava vargottama: same whole-sign house in D1 and D9
+  const d9house2=getHouse(pd.d9rashi,d9LagnaRashi);
+  const bhavaVarg=(d9house2===h)?5:0;
+  const vargTotal=rashiVarg+bhavaVarg;
+  if(vargTotal>0){
+    const parts=[];
+    if(rashiVarg)parts.push('राशि');
+    if(bhavaVarg)parts.push('भाव');
+    varg={pts:vargTotal,label:parts.join('+')+' वर्गोत्तम (+'+vargTotal+')'};
+  }
+  m.vargottama=varg;
+
+  // 4. Navatara
+  let navt={pts:0,label:'नहीं'};
+  if(pd.nak&&typeof moonNak!=='undefined'){
+    const nt=navatara(pd.nak.idx,moonNak);
+    // scores: जन्म3,संपत5,विपत1,क्षेम4,प्रत्यरि2,साधक4,वध0,मित्र4,अतिमित्र5
+    // Map to: good +5/+3, neutral 0, bad -3/-5
+    const taraPts={'संपत':5,'साधक':5,'अतिमित्र':5,'क्षेम':3,'मित्र':3,'जन्म':0,'विपत':-3,'प्रत्यरि':-3,'वध':-5};
+    const tp=taraPts[nt.n]||0;
+    if(tp!==0)navt={pts:tp,label:nt.n+' ('+(tp>0?'+':'')+tp+')'};
+  }
+  m.navatara=navt;
+
+  // 5. Yuti with benefic/malefic
+  let yutiM={pts:0,label:'नहीं'};
+  if(pd.yuti&&pd.yuti.length>0){
+    let yp=0;const yl=[];
+    for(const yn of pd.yuti){
+      if(isShubhaAuto(yn)){yp+=5;yl.push(yn+' शुभ');}
+      else if(isKruraAuto(yn)){yp-=3;yl.push(yn+' क्रूर');}
+    }
+    if(yp!==0)yutiM={pts:yp,label:yl.join(', ')};
+  }
+  m.yutiGraha=yutiM;
+
+  // 6. Drishti ON planet (which planets aspect this planet)
+  let drishtiP={pts:0,label:'नहीं'};
+  {
+    let dp=0;const dl=[];
+    for(const q of planetData){
+      if(q.n===n)continue;
+      if(housesAspectedBy(q).has(h)){
+        if(q.n===getHouseLord(h)){dp+=5;dl.push(q.n+' स्वामी');}
+        else if(isShubhaAuto(q.n)){dp+=3;dl.push(q.n+' शुभ');}
+        else if(isKruraAuto(q.n)){dp-=3;dl.push(q.n+' क्रूर');}
+      }
+    }
+    dp=Math.max(-6,Math.min(6,dp));
+    if(dp!==0)drishtiP={pts:dp,label:dl.join(', ')||'दृष्टि'};
+  }
+  m.drishtiGraha=drishtiP;
+
+  const modTotal=m.asta.pts+m.pushkar.pts+m.yoga.pts+m.vakri.pts+m.vargottama.pts+m.navatara.pts+m.yutiGraha.pts+m.drishtiGraha.pts;
+  let total=baseScore+modTotal;
+  total=Math.max(0,Math.min(100,total));
+
+  const cls=total>=70?'strong':total>=40?'medium':'weak';
+  const verdict=total>=70?'बलवान 💪':total>=40?'मध्यम':'कमजोर ⚠️';
+  return{breakdown:b,modifiers:m,base1Score,base2Score,baseScore,modTotal,total,cls,verdict};
+}
+
+// ============ TAB 2: scoreHouseAuto ============
+function scoreHouseAuto(h){
+  const b={},m={};
+  const lord=getHouseLord(h);
+  const lordPd=planetData.find(p=>p.n===lord);
+  const lordHouse=lordPd?lordPd.house:0;
+  const rashi=(lagnaRashi+h-1)%12;
+  const occupants=planetData.filter(p=>p.house===h);
+  const occNames=occupants.map(p=>p.n);
+  const aspecting=[];
+  for(const q of planetData){if(housesAspectedBy(q).has(h))aspecting.push(q.n);}
+  const isLagnesh=RASHI_LORD_NAMES[lagnaRashi]===lord;
+  const lagneshName=RASHI_LORD_NAMES[lagnaRashi];
+
+  // 1. Bhavesh strength [25]
+  const pct=getTab1PctAuto(lord);
+  const lordScore=Math.round((pct/100)*25);
+  b.lordScore={pts:lordScore,max:25,label:lord+' (Tab1 '+pct+'%)'};
+
+  // 2. Bhavesh placement [15]
+  let lp,lpLabel;
+  if(lordHouse===h){lp=15;lpLabel='स्वगृही';}
+  else if([1,4,7,10,5,9,11].includes(lordHouse)){lp=12;lpLabel='केंद्र/त्रिकोण/लाभ ('+lordHouse+')';}
+  else if([2,3].includes(lordHouse)){lp=8;lpLabel='भाव '+lordHouse;}
+  else if([6,8,12].includes(lordHouse)){
+    if(isLagnesh&&lordHouse===12){lp=8;lpLabel='लग्नेश 12वें में';}
+    else{lp=3;lpLabel='त्रिक ('+lordHouse+')';}
+  }else{lp=8;lpLabel='भाव '+lordHouse;}
+  b.lordPlace={pts:lp,max:15,label:lpLabel};
+
+  // 3. Occupants [15]
+  let ocPts,ocLabel;
+  if(occupants.length===0){ocPts=7;ocLabel='खाली';}
+  else{
+    let pts=0;const labels=[];
+    for(const o of occupants){
+      const d=dignityPts25(o.n,o.rashi);
+      if(d.pts>=20){pts=15;labels.push(o.n+' उच्च/स्व');break;}
+    }
+    if(pts<15){
+      for(const o of occupants){
+        if(isShubhaAuto(o.n)){pts=Math.min(15,pts+8);labels.push(o.n+' शुभ');}
+        else if(isKruraAuto(o.n)&&[3,6,10,11].includes(h)){pts=Math.min(15,pts+8);labels.push(o.n+' क्रूर-उपचय');}
+        else{labels.push(o.n+' क्रूर');}
+      }
+    }
+    ocPts=pts;ocLabel=labels.join(', ')||'क्रूर ग्रह';
+  }
+  b.occupants={pts:ocPts,max:15,label:ocLabel};
+
+  // 4. Drishti [10]
+  let drPts,drLabel;
+  if(aspecting.includes(lord)){drPts=10;drLabel='स्वामी की दृष्टि';}
+  else{
+    const shubhAsp=aspecting.filter(x=>isShubhaAuto(x));
+    if(shubhAsp.length===0&&aspecting.length===0){drPts=3;drLabel='कोई दृष्टि नहीं';}
+    else if(shubhAsp.length===0){drPts=0;drLabel='केवल क्रूर दृष्टि';}
+    else{drPts=Math.min(10,shubhAsp.length*5);drLabel=shubhAsp.join(', ')+' की दृष्टि';}
+  }
+  b.aspects={pts:drPts,max:10,label:drLabel};
+
+  // 5. SAV [20]
+  const sav=(window._autoSAV&&window._autoSAV[rashi]!==undefined)?window._autoSAV[rashi]:25;
+  let savPts;
+  if(sav>=35)savPts=20;else if(sav>=30)savPts=15;else if(sav>=25)savPts=10;else if(sav>=20)savPts=5;else savPts=0;
+  b.sav={pts:savPts,max:20,label:'SAV '+sav};
+
+  // 6. Bhava rank [15]
+  const rank=(window._bhavaRank&&window._bhavaRank[h])?window._bhavaRank[h]:6;
+  let rkPts;
+  if(rank<=2)rkPts=15;else if(rank<=4)rkPts=12;else if(rank<=6)rkPts=9;
+  else if(rank<=8)rkPts=6;else if(rank<=10)rkPts=3;else rkPts=0;
+  b.bhavaRank={pts:rkPts,max:15,label:'रैंक '+rank};
+
+  const baseScore=b.lordScore.pts+b.lordPlace.pts+b.occupants.pts+b.aspects.pts+b.sav.pts+b.bhavaRank.pts;
+
+  // Modifiers
+  // Swa-drishti: +10
+  let swa={pts:0,label:'नहीं'};
+  if(aspecting.includes(lord))swa={pts:10,label:'स्व-दृष्टि'};
+  m.swaDrishti=swa;
+
+  // Lagnesh in house: +8
+  let lagOcc={pts:0,label:'नहीं'};
+  if(occNames.includes(lagneshName))lagOcc={pts:8,label:'लग्नेश उपस्थित'};
+  m.lagneshOcc=lagOcc;
+
+  // Vipareeta Raja Yoga: +10
+  let vry={pts:0,label:'नहीं'};
+  if([6,8,12].includes(h)&&[6,8,12].includes(lordHouse)&&h!==lordHouse){
+    vry={pts:10,label:'विपरीत राजयोग'};
+  }
+  m.vry=vry;
+
+  // Cusp Pushkar/Mrityu (bhava madhya)
+  let cuspPk={pts:0,label:'नहीं'};
+  if(window._cusps&&window._cusps.length===12){
+    const cuspLng=window._cusps[h-1];
+    const cPN=isPushkarNavamsha('सूर्य',cuspLng);
+    const cPB=isPushkarBhaga('सूर्य',cuspLng);
+    const cMB=isMrityuBhaga('सूर्य',cuspLng);
+    if(cMB){cuspPk={pts:-15,label:'भाव मध्य मृत्यु भाग (-15)'};}
+    else if(cPN&&cPB){cuspPk={pts:20,label:'भाव मध्य डबल पुष्कर (+20)'};}
+    else if(cPN){cuspPk={pts:10,label:'भाव मध्य PN (+10)'};}
+    else if(cPB){cuspPk={pts:10,label:'भाव मध्य PB (+10)'};}
+  }
+  m.cuspPushkar=cuspPk;
+
+  const modTotal=m.swaDrishti.pts+m.lagneshOcc.pts+m.vry.pts+m.cuspPushkar.pts;
+  let total=baseScore+modTotal;
+  total=Math.max(0,Math.min(100,total));
+
+  const cls=total>=70?'strong':total>=40?'medium':'weak';
+  const verdict=total>=70?'बलवान 💪':total>=40?'मध्यम':'कमजोर ⚠️';
+  return{breakdown:b,modifiers:m,baseScore,modTotal,total,cls,verdict,
+    rashi,lord,occupants:occNames,aspecting};
+}
+
+// Tab1 pct lookup for Tab 2 (uses window._scoredAuto)
+function getTab1PctAuto(planetName){
+  if(window._scoredAuto){
+    const f=window._scoredAuto.find(p=>p.n===planetName);
+    if(f)return f.score.total;
+  }
+  return 50;
+}
+
 async function analyze(){
  const code=document.getElementById('astroCode').value.trim();
  hideError();
@@ -1572,16 +1559,22 @@ async function analyze(){
   const{planets,lagna,jd}=await calcPositions(info);
   lagnaRashi=getRashi(lagna);
   window._lagnaLng=lagna; // for Chalit auto-calc
-  // D9 Lagna for v14 D9 bonus
+  // D9 Lagna: Parashara rules (Chara/Sthira/Dvisvabhava)
   const lagnaDegInRashi=lagna%30;
   const lagnaPada=Math.floor(lagnaDegInRashi/(30/9));
-  d9LagnaRashi=(lagnaRashi+lagnaPada)%12;
+  const lr=lagnaRashi%3; // 0=Chara, 1=Sthira, 2=Dvisvabhava
+  let d9Start;
+  if(lr===0)d9Start=lagnaRashi; // Chara: same
+  else if(lr===1)d9Start=(lagnaRashi+8)%12; // Sthira: 9th from
+  else d9Start=(lagnaRashi+4)%12; // Dvisvabhava: 5th from
+  d9LagnaRashi=(d9Start+lagnaPada)%12;
   // Bhava cusps (Placidus, sidereal) for Tab 2 Bhava Bala rank (verified formula)
   try{
    const swe2=_swe;
    const ayan2=swe2.getAyanamsa(jd);
    const hc=swe2.calculateHouses(jd,info.lat,info.lon,'P');
    const cusps=(hc.cusps||[]).slice(0,12).map(c=>norm360(c-ayan2));
+   window._cusps=cusps; // for pushkar check in scoreHouse
    const order7=['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'];
    const lons7=order7.map(n=>{const p=planets.find(x=>x.n===n);return p?p.lng:0;});
    const drig=calculateBhavaDrishtiBala(lons7,cusps);
@@ -1639,7 +1632,6 @@ async function analyze(){
   // AUTO-CALC Shadbala + BAV
   await autoCalcShadbalaBAV(info, jd);
 
-  buildAutoInfo();
   renderResults();
   renderResults2();
  }catch(e){showError('Error: '+e);}
@@ -1735,264 +1727,169 @@ async function autoCalcShadbalaBAV(info, jd){
  }catch(e){console.log('BAL auto failed:',e);}
 }
 
-function buildAutoInfo(){
- // Editable inputs pre-filled with auto values (user can edit)
- buildEditableInputs();
- buildEditableInputs2();
-}
-
-function buildEditableInputs(){
- let box=document.getElementById('editCard');
- if(!box){
-  // Create edit card at top of Tab 1
-  const tab1=document.getElementById('tab1');
-  box=document.createElement('div');
-  box.id='editCard';
-  box.className='card';
-  box.style.marginTop='10px';
-  tab1.insertBefore(box, tab1.firstChild);
- }
- let html=`<h3 style="margin-top:0">✏️ मान संपादित करें <small style="font-weight:normal;color:#666">(auto भरे हैं, बदल सकते हैं)</small></h3>
- <table style="width:100%;border-collapse:collapse;font-size:14px">
- <tr style="background:#e3f2fd">
-  <th style="padding:8px;border:1px solid #ddd">ग्रह</th>
-  <th style="padding:8px;border:1px solid #ddd">षड्बल<br><small>(virupas)</small></th>
-  <th style="padding:8px;border:1px solid #ddd">BAV</th>
- </tr>`;
- for(const pd of planetData){
-  const shV=(window._autoShadbala&&window._autoShadbala[pd.n])?Math.round(window._autoShadbala[pd.n]*60):'';
-  const bavV=(window._autoBAV&&window._autoBAV[pd.n])?window._autoBAV[pd.n]:'';
-  html+=`<tr>
-   <td style="padding:6px;border:1px solid #ddd;font-weight:bold">${pd.sym} ${pd.n}</td>
-   <td style="padding:6px;border:1px solid #ddd"><input type="number" step="1" id="edit_shadbala_${pd.n}" value="${shV}" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:6px;font-size:14px"></td>
-   <td style="padding:6px;border:1px solid #ddd"><input type="number" min="0" max="8" id="edit_bav_${pd.n}" value="${bavV}" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:6px;font-size:14px"></td>
-  </tr>`;
- }
- html+=`</table><button class="btn green" onclick="recalcFromEdits()" style="margin-top:8px">🔄 पुनः गणना करें</button>`;
- box.innerHTML=html;
-}
-
-function recalcFromEdits(){
- // Read edited values and re-render both tabs
- renderResults();
- renderResults2();
-}
-
-function getManual(){
- const m={};
- for(const pd of planetData){
-  // Read from editable inputs if they exist, else auto
-  const shEl=document.getElementById('edit_shadbala_'+pd.n);
-  const bavEl=document.getElementById('edit_bav_'+pd.n);
-  if(shEl&&shEl.value){
-   // Convert virupas to rupas
-   m['shadbala_'+pd.n]=(+shEl.value)/60;
-  }else if(window._autoShadbala&&window._autoShadbala[pd.n]){
-   m['shadbala_'+pd.n]=window._autoShadbala[pd.n];
-  }
-  if(bavEl&&bavEl.value){
-   m['bav_'+pd.n]=bavEl.value;
-  }else if(window._autoBAV&&window._autoBAV[pd.n]){
-   m['bav_'+pd.n]=window._autoBAV[pd.n];
-  }
-  if(window._autoBAL&&window._autoBAL[pd.n])m['bal_'+pd.n]=window._autoBAL[pd.n];
- }
- return m;
-}
 
 function renderResults(){
- const manual=getManual();
- const box=document.getElementById('results');
- box.innerHTML='';
- // Calculate Shadbala ranks by Strength (rupas/minimum), like the app
- const SH_MIN={'सूर्य':5.0,'चंद्र':6.0,'मंगल':5.0,'बुध':7.0,'गुरु':6.5,'शुक्र':5.5,'शनि':5.0};
- const shVals=planetData.map(pd=>{
-  const sh=manual['shadbala_'+pd.n];
-  const rupas=sh?+sh:0;
-  const min=SH_MIN[pd.n]||5;
-  return{n:pd.n,v:rupas/min};
- }).filter(x=>['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'].includes(x.n));
- shVals.sort((a,b)=>b.v-a.v);
- const shRank={};
- shVals.forEach((x,i)=>{shRank[x.n]=i+1;});
- const scored=planetData.map(pd=>({...pd,score:scorePlanet(pd,manual,shRank)}));
- scored.sort((a,b)=>b.score.total-a.score.total);
+  const box=document.getElementById('results');
+  box.innerHTML='';
+  // Shadbala ranks by Strength ratio
+  const shVals=planetData.map(pd=>{
+    const sh=(window._autoShadbala&&window._autoShadbala[pd.n])?window._autoShadbala[pd.n]:6;
+    const min=SH_MIN_AUTO[pd.n]||5;
+    return{n:pd.n,v:sh/min};
+  }).filter(x=>['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'].includes(x.n));
+  shVals.sort((a,b)=>b.v-a.v);
+  const shRank={};
+  shVals.forEach((x,i)=>{shRank[x.n]=i+1;});
+  const scored=planetData.map(pd=>({...pd,score:scorePlanetAuto(pd,shRank)}));
+  scored.sort((a,b)=>b.score.total-a.score.total);
+  window._scoredAuto=scored;
 
- const catNames={rashi:'राशि स्थिति',bhava:'भाव स्थिति',d9:'नवमांश (D9)',shadbala:'षड्बल रैंक',bav:'BAV',nakshatra:'नक्षत्र स्वामी',avastha:'अवस्था'};
- const modNames={navatara:'नवतारा',pushkar:'पुष्कर/मृत्यु',chalit:'चलित',drishti:'दृष्टि/युति',d9penalty:'D9 नीच पेनल्टी'};
+  const catNames={shadbala:'षड्बल',rashi:'राशि',bhava:'भाव स्थिति',swamitva:'भाव स्वामित्व',nakshatra:'नक्षत्र',bav:'BAV',d9rashi:'D9 राशि',d9bhava:'D9 भाव',d9nakshatra:'D9 नक्षत्र'};
+  const d1keys=['shadbala','rashi','bhava','swamitva','nakshatra','bav'];
+  const d9keys=['d9rashi','d9bhava','d9nakshatra'];
+  const modNames={asta:'अस्त',pushkar:'पुष्कर/मृत्यु',yoga:'योग बोनस',vakri:'वक्री (चेष्टा बल)',vargottama:'वर्गोत्तम',navatara:'नवतारा',yutiGraha:'युति',drishtiGraha:'ग्रह दृष्टि'};
 
- for(const pd of scored){
-  const sc=pd.score;
-  let detailRows='<tr style="background:#e8f5e9"><td colspan="3"><b>📊 BASE SCORE (अधिकतम 100)</b></td></tr>';
-  for(const[k,v]of Object.entries(sc.breakdown)){
-   detailRows+=`<tr><td>${catNames[k]||k}</td><td style="color:#888">${v.label}</td><td>${v.pts}/${v.max}</td></tr>`;
+  for(const pd of scored){
+    const sc=pd.score;
+    let detailRows='<tr style="background:#e8f5e9"><td colspan="3"><b>BASE 1 (D1) [70]</b></td></tr>';
+    for(const k of d1keys){
+      const v=sc.breakdown[k];
+      if(!v)continue;
+      detailRows+=`<tr><td>${catNames[k]||k}</td><td style="color:#888">${v.label}</td><td>${v.pts}/${v.max}</td></tr>`;
+    }
+    detailRows+=`<tr style="background:#e8f5e9"><td><b>Base 1 कुल</b></td><td></td><td><b>${sc.base1Score||''}</b></td></tr>`;
+    detailRows+='<tr style="background:#e3f2fd"><td colspan="3"><b>BASE 2 (D9) [30]</b></td></tr>';
+    for(const k of d9keys){
+      const v=sc.breakdown[k];
+      if(!v)continue;
+      detailRows+=`<tr><td>${catNames[k]||k}</td><td style="color:#888">${v.label}</td><td>${v.pts}/${v.max}</td></tr>`;
+    }
+    detailRows+=`<tr style="background:#e3f2fd"><td><b>Base 2 कुल</b></td><td></td><td><b>${sc.base2Score||''}</b></td></tr>`;
+    detailRows+=`<tr style="background:#e8f5e9"><td><b>Base कुल</b></td><td></td><td><b>${sc.baseScore}</b></td></tr>`;
+    detailRows+=`<tr style="background:#fff3e0"><td colspan="3"><b>MODIFIERS</b></td></tr>`;
+    for(const[k,v]of Object.entries(sc.modifiers)){
+      const color=v.pts>0?'#2e7d32':v.pts<0?'#c62828':'#888';
+      detailRows+=`<tr><td>${modNames[k]||k}</td><td style="color:#888">${v.label}</td><td style="color:${color};font-weight:bold">${v.pts>0?'+':''}${v.pts}</td></tr>`;
+    }
+    detailRows+=`<tr class="total"><td><b>कुल</b></td><td></td><td><b>${sc.total}%</b></td></tr>`;
+    box.innerHTML+=`
+    <div class="planet-card ${sc.cls}">
+      <div class="ph"><span class="pname">${pd.sym} ${pd.n}</span><span class="ppct">${sc.total}%</span></div>
+      <div class="meter"><div class="mfill" style="width:${sc.total}%"></div></div>
+      <span class="verdict" onclick="toggleDetail('${pd.n}')">${sc.verdict} ▼</span>
+      <div class="details" id="det_${pd.n}">
+        <div class="drow">
+          <span><b>भाव:</b> ${pd.house} (${RASHIS[pd.rashi]})</span>
+          <span><b>डिग्री:</b> ${pd.degInRashi.toFixed(2)}°</span>
+          <span><b>नक्षत्र:</b> ${pd.nak.name} (D1)</span>
+        </div>
+        <div class="drow">
+          <span><b>स्वामी:</b> ${(pd.owns||[]).join(', ')||'-'}</span>
+          <span><b>D9:</b> ${RASHIS[pd.d9rashi]} | ${pd._d9nakName||''} | भाव ${getHouse(pd.d9rashi,d9LagnaRashi)}</span>
+        </div>
+        <div class="drow">
+          <span><b>नवमांश:</b> ${RASHIS[pd.d9rashi]}</span>
+          <span><b>वक्री:</b> ${pd.retro?'हां':'नहीं'}</span>
+          <span><b>युति:</b> ${pd.yuti.join(', ')||'अकेला'}</span>
+        </div>
+        <table class="stable">${detailRows}</table>
+      </div>
+    </div>`;
   }
-  detailRows+=`<tr style="background:#e8f5e9"><td><b>Base कुल</b></td><td></td><td><b>${sc.baseScore}</b></td></tr>`;
-  detailRows+=`<tr style="background:#fff3e0"><td colspan="3"><b>⚡ MODIFIERS (+/-)</b></td></tr>`;
-  for(const[k,v]of Object.entries(sc.modifiers)){
-   const color=v.pts>0?'#2e7d32':v.pts<0?'#c62828':'#888';
-   detailRows+=`<tr><td>${modNames[k]||k}</td><td style="color:#888">${v.label}</td><td style="color:${color};font-weight:bold">${v.pts>0?'+':''}${v.pts}</td></tr>`;
-  }
-  detailRows+=`<tr style="background:#fff3e0"><td><b>Modifiers कुल</b></td><td></td><td><b>${sc.modTotal>0?'+':''}${sc.modTotal}</b></td></tr>`;
-  detailRows+=`<tr class="total"><td><b>कुल</b></td><td></td><td><b>${sc.total}%</b></td></tr>`;
-
-  box.innerHTML+=`
-  <div class="planet-card ${sc.cls}">
-   <div class="ph"><span class="pname">${pd.sym} ${pd.n}</span><span class="ppct">${sc.total}%</span></div>
-   <div class="meter"><div class="mfill" style="width:${sc.total}%"></div></div>
-   <span class="verdict" onclick="toggleDetail('${pd.n}')">${sc.verdict} ▼</span>
-   <div class="details" id="det_${pd.n}">
-    <div class="drow">
-     <span><b>कारकत्व:</b> ${pd.karak||'-'}</span>
-     <span><b>भाव:</b> ${pd.house} (${RASHIS[pd.rashi]})</span>
-     <span><b>स्वामित्व:</b> ${pd.owns.join(', ')||'-'}</span>
-    </div>
-    <div class="drow">
-     <span><b>नक्षत्र:</b> ${pd.nak.name} पद ${pd.nak.pada}</span>
-     <span><b>डिग्री:</b> ${pd.degInRashi.toFixed(2)}°</span>
-     <span><b>अवस्था:</b> ${sc.breakdown.avastha.label}</span>
-    </div>
-    <div class="drow">
-     <span><b>युति:</b> ${pd.yuti.join(', ')||'अकेला'}</span>
-     <span><b>दृष्टि पा रहा:</b> ${pd.drishtiFrom.join(', ')||'-'}</span>
-    </div>
-    <div class="drow">
-     <span><b>नवमांश:</b> ${RASHIS[pd.d9rashi]}</span>
-     <span><b>वक्री:</b> ${pd.retro?'हां':'नहीं'}</span>
-     <span><b>वर्गोत्तम:</b> ${pd.vargottama?'हां':'नहीं'}</span>
-    </div>
-    <table class="stable">${detailRows}</table>
-   </div>
-  </div>`;
- }
- // Animate meters
- setTimeout(()=>{document.querySelectorAll('.mfill').forEach(el=>{const w=el.style.width;el.style.width='0';setTimeout(()=>el.style.width=w,50);});},100);
-
- // Summary
- const sb=document.getElementById('summaryBox');
- sb.innerHTML=`<div class="summary"><h3>📊 सारांश</h3>
- <div><b>सबसे बलवान:</b> ${scored[0].n} (${scored[0].score.total}%) ${scored[0].score.verdict} | <b>सबसे कमजोर:</b> ${scored[scored.length-1].n} (${scored[scored.length-1].score.total}%)</div>
- <div class="rank">${scored.map((p,i)=>`<span class="chip">${i+1}. ${p.n} ${p.score.total}%</span>`).join('')}</div></div>`;
-
- document.getElementById('toolbar').classList.remove('hidden');
- window._scored=scored;
+  setTimeout(()=>{document.querySelectorAll('#results .mfill').forEach(el=>{const w=el.style.width;el.style.width='0';setTimeout(()=>el.style.width=w,50);});},100);
+  const sb=document.getElementById('summaryBox');
+  sb.innerHTML=`<div class="summary"><h3>📊 सारांश</h3>
+  <div><b>सबसे बलवान:</b> ${scored[0].n} (${scored[0].score.total}%) | <b>सबसे कमजोर:</b> ${scored[scored.length-1].n} (${scored[scored.length-1].score.total}%)</div>
+  <div class="rank">${scored.map((p,i)=>`<span class="chip">${i+1}. ${p.n} ${p.score.total}%</span>`).join('')}</div></div>`;
+  document.getElementById('toolbar').classList.remove('hidden');
 }
 
 function toggleDetail(n){
- document.getElementById('det_'+n).classList.toggle('show');
+  document.getElementById('det_'+n).classList.toggle('show');
 }
 
-// ============ TAB 2: RENDER ============
-function buildEditableInputs2(){
- let box=document.getElementById('editCard2');
- box.innerHTML='';
- let html=`<div class="card" style="margin-top:0"><h3 style="margin-top:0">✏️ SAV संपादित करें <small style="font-weight:normal;color:#666">(auto भरे हैं, बदल सकते हैं)</small></h3>
- <table style="width:100%;border-collapse:collapse;font-size:14px">
- <tr style="background:#e3f2fd">`;
- for(let h=1;h<=12;h++)html+=`<th style="padding:6px;border:1px solid #ddd">भा${h}</th>`;
- html+='</tr><tr>';
- for(let h=1;h<=12;h++){
-  const sav=window._autoSAV?window._autoSAV[(lagnaRashi+h-1)%12]:'';
-  html+=`<td style="padding:4px;border:1px solid #ddd"><input type="number" min="0" max="56" id="edit_sav_${h}" value="${sav}" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:6px;font-size:14px"></td>`;
- }
- html+=`</tr></table><button class="btn green" onclick="recalcFromEdits()" style="margin-top:8px">🔄 पुनः गणना करें</button></div>`;
- box.innerHTML=html;
-}
-function getManual2(){
- const m={};
- for(let h=1;h<=12;h++){
-  const el=document.getElementById('edit_sav_'+h);
-  if(el&&el.value!=='')m['sav_'+h]=el.value;
- }
- return m;
-}
+// ============ TAB 2 RENDER ============
 function renderResults2(){
- const box=document.getElementById('results2');
- const sb=document.getElementById('summaryBox2');
- if(!box)return;
- box.innerHTML='';sb.innerHTML='';
- if(!planetData.length||!window._scored)return;
- const manual2=getManual2();
- const scored=[];
- for(let h=1;h<=12;h++){
-  scored.push({h,score:scoreHouse(h,manual2)});
- }
- scored.sort((a,b)=>b.score.total-a.score.total);
- window._scoredHouses=scored;
+  const box=document.getElementById('results2');
+  const sb=document.getElementById('summaryBox2');
+  if(!box||!window._scoredAuto)return;
+  box.innerHTML='';sb.innerHTML='';
+  const scored=[];
+  for(let h=1;h<=12;h++)scored.push({h,score:scoreHouseAuto(h)});
+  scored.sort((a,b)=>b.score.total-a.score.total);
 
- const catNames={lordScore:'भावेश शक्ति',lordPlace:'भावेश स्थिति',occupants:'स्थित ग्रह',aspects:'दृष्टि',sav:'SAV',bhavaBala:'भाव बल रैंक'};
- const modNames={pushkar:'पुष्कर',kartari:'कर्तरी',affliction:'भारी पीड़ा',trikShield:'त्रिक शील्ड',yoga:'योग बोनस',swaDrishti:'स्व-दृष्टि',lagneshBlessing:'लग्नेश आशीर्वाद',vry:'विपरीत राजयोग',nodeMagic:'राहु/केतु विशेष',karakaBonus:'कारक आशीर्वाद',swagruhiBonus:'स्वगृही भावेश',enemyOcc:'क्रूर शत्रु ग्रह'};
+  const catNames={lordScore:'भावेश शक्ति',lordPlace:'भावेश स्थिति',occupants:'स्थित ग्रह',aspects:'दृष्टि',sav:'SAV',bhavaRank:'भाव रैंक'};
+  const modNames={swaDrishti:'स्व-दृष्टि',lagneshOcc:'लग्नेश उपस्थिति',vry:'विपरीत राजयोग',cuspPushkar:'भाव मध्य पुष्कर'};
 
- for(const hs of scored){
-  const h=hs.h,sc=hs.score;
-  const rashiName=RASHIS[sc.rashi];
-  let detailRows='<tr style="background:#e8f5e9"><td colspan="3"><b>📊 BASE SCORE (अधिकतम 100)</b></td></tr>';
-  for(const[k,v]of Object.entries(sc.breakdown)){
-   detailRows+=`<tr><td>${catNames[k]||k}</td><td style="color:#888">${v.label}</td><td>${v.pts}/${v.max}</td></tr>`;
+  for(const hs of scored){
+    const h=hs.h,sc=hs.score;
+    let detailRows='<tr style="background:#e8f5e9"><td colspan="3"><b>BASE SCORE</b></td></tr>';
+    for(const[k,v]of Object.entries(sc.breakdown)){
+      detailRows+=`<tr><td>${catNames[k]||k}</td><td style="color:#888">${v.label}</td><td>${v.pts}/${v.max}</td></tr>`;
+    }
+    detailRows+=`<tr style="background:#e8f5e9"><td><b>Base कुल</b></td><td></td><td><b>${sc.baseScore}</b></td></tr>`;
+    detailRows+=`<tr style="background:#fff3e0"><td colspan="3"><b>MODIFIERS</b></td></tr>`;
+    for(const[k,v]of Object.entries(sc.modifiers)){
+      const color=v.pts>0?'#2e7d32':v.pts<0?'#c62828':'#888';
+      detailRows+=`<tr><td>${modNames[k]||k}</td><td style="color:#888">${v.label}</td><td style="color:${color};font-weight:bold">${v.pts>0?'+':''}${v.pts}</td></tr>`;
+    }
+    detailRows+=`<tr class="total"><td><b>कुल</b></td><td></td><td><b>${sc.total}%</b></td></tr>`;
+    box.innerHTML+=`
+    <div class="planet-card ${sc.cls}">
+      <div class="ph"><span class="pname">🏠 भाव ${h} <small style="font-weight:normal">(${RASHIS[sc.rashi]}, ${sc.lord})</small></span><span class="ppct">${sc.total}%</span></div>
+      <div class="meter"><div class="mfill" style="width:${sc.total}%"></div></div>
+      <span class="verdict" onclick="toggleDetail2(${h})">${sc.verdict} ▼</span>
+      <div class="details" id="det2_${h}">
+        <div class="drow">
+          <span><b>स्वामी:</b> ${sc.lord}</span>
+          <span><b>स्थित:</b> ${sc.occupants.join(', ')||'खाली'}</span>
+          <span><b>दृष्टि:</b> ${sc.aspecting.join(', ')||'-'}</span>
+        </div>
+        <table class="stable">${detailRows}</table>
+      </div>
+    </div>`;
   }
-  detailRows+=`<tr style="background:#e8f5e9"><td><b>Base कुल</b></td><td></td><td><b>${sc.baseScore}</b></td></tr>`;
-  detailRows+=`<tr style="background:#fff3e0"><td colspan="3"><b>⚡ MODIFIERS (+/-)</b></td></tr>`;
-  for(const[k,v]of Object.entries(sc.modifiers)){
-   const color=v.pts>0?'#2e7d32':v.pts<0?'#c62828':'#888';
-   detailRows+=`<tr><td>${modNames[k]||k}</td><td style="color:#888">${v.label}</td><td style="color:${color};font-weight:bold">${v.pts>0?'+':''}${v.pts}</td></tr>`;
-  }
-  detailRows+=`<tr style="background:#fff3e0"><td><b>Modifiers कुल</b></td><td></td><td><b>${sc.modTotal>0?'+':''}${sc.modTotal}</b></td></tr>`;
-  detailRows+=`<tr class="total"><td><b>कुल</b></td><td></td><td><b>${sc.total}%</b></td></tr>`;
-
-  box.innerHTML+=`
-  <div class="planet-card ${sc.cls}">
-   <div class="ph"><span class="pname">🏠 भाव ${h} <small style="font-weight:normal">(${rashiName}, स्वामी ${sc.lord})</small></span><span class="ppct">${sc.total}%</span></div>
-   <div class="meter"><div class="mfill" style="width:${sc.total}%"></div></div>
-   <span class="verdict" onclick="toggleDetail2(${h})">${sc.verdict} ▼</span>
-   <div class="details" id="det2_${h}">
-    <div class="drow">
-     <span><b>राशि:</b> ${rashiName}</span>
-     <span><b>स्वामी:</b> ${sc.lord}</span>
-     <span><b>स्थित ग्रह:</b> ${sc.occupants.join(', ')||'खाली'}</span>
-    </div>
-    <div class="drow">
-     <span><b>दृष्टि:</b> ${sc.aspecting.join(', ')||'-'}</span>
-    </div>
-    <table class="stable">${detailRows}</table>
-   </div>
-  </div>`;
- }
- setTimeout(()=>{document.querySelectorAll('#results2 .mfill').forEach(el=>{const w=el.style.width;el.style.width='0';setTimeout(()=>el.style.width=w,50);});},100);
-
- sb.innerHTML=`<div class="summary"><h3>📊 सारांश (भाव बल)</h3>
- <div><b>सबसे बलवान भाव:</b> ${scored[0].h} (${scored[0].score.total}%) ${scored[0].score.verdict} | <b>सबसे कमजोर:</b> ${scored[scored.length-1].h} (${scored[scored.length-1].score.total}%)</div>
- <div class="rank">${scored.map((p,i)=>`<span class="chip">${i+1}. भाव ${p.h} ${p.score.total}%</span>`).join('')}</div></div>`;
+  setTimeout(()=>{document.querySelectorAll('#results2 .mfill').forEach(el=>{const w=el.style.width;el.style.width='0';setTimeout(()=>el.style.width=w,50);});},100);
+  sb.innerHTML=`<div class="summary"><h3>📊 सारांश (भाव बल)</h3>
+  <div><b>सबसे बलवान भाव:</b> ${scored[0].h} (${scored[0].score.total}%) | <b>सबसे कमजोर:</b> ${scored[scored.length-1].h} (${scored[scored.length-1].score.total}%)</div>
+  <div class="rank">${scored.map((p,i)=>`<span class="chip">${i+1}. भाव ${p.h} ${p.score.total}%</span>`).join('')}</div></div>`;
 }
 function toggleDetail2(h){
- document.getElementById('det2_'+h).classList.toggle('show');
+  document.getElementById('det2_'+h).classList.toggle('show');
 }
 
 function takeScreenshot(){
- html2canvas(document.getElementById('mainContainer')).then(c=>{
-  const a=document.createElement('a');a.download='graha-bala.png';a.href=c.toDataURL();a.click();
- });
+  html2canvas(document.getElementById('mainContainer')).then(c=>{
+    const a=document.createElement('a');a.download='graha-bala-auto.png';a.href=c.toDataURL();a.click();
+  });
 }
 
 function downloadTXT(){
- if(activeTab===2){
-  const s=window._scoredHouses;if(!s)return;
-  let t='🏠 भाव बल विश्लेषण v20 (Gemini Logic)\n'+'='.repeat(45)+'\n\n';
-  for(const p of s){
-   const sc=p.score;
-   t+=`भाव ${p.h} (${RASHIS[sc.rashi]}, स्वामी ${sc.lord}): ${sc.total}% ${sc.verdict} (Base ${sc.baseScore}, Mod ${sc.modTotal>=0?'+':''}${sc.modTotal})\n`;
+  const tab=activeTab;
+  let txt='';
+  if(tab===1&&window._scoredAuto){
+    txt='ग्रह बल विश्लेषण Auto v4.1\n========================\n\n';
+    window._scoredAuto.forEach((p,i)=>{
+      txt+=(i+1)+'. '+p.n+': '+p.score.total+'% ('+p.score.verdict+')\n';
+      for(const[k,v]of Object.entries(p.score.breakdown))txt+='   - '+v.label+': '+v.pts+'/'+v.max+'\n';
+      for(const[k,v]of Object.entries(p.score.modifiers))if(v.pts!==0)txt+='   * '+v.label+': '+(v.pts>0?'+':'')+v.pts+'\n';
+      txt+='\n';
+    });
+  }else if(tab===2){
+    txt='भाव बल विश्लेषण Auto v1\n========================\n\n';
+    // re-score to get order
+    const scored=[];
+    for(let h=1;h<=12;h++)scored.push({h,score:scoreHouseAuto(h)});
+    scored.sort((a,b)=>b.score.total-a.score.total);
+    scored.forEach((hs,i)=>{
+      txt+=(i+1)+'. भाव '+hs.h+' ('+RASHIS[hs.score.rashi]+'): '+hs.score.total+'%\n';
+    });
   }
-  const b=new Blob([t],{type:'text/plain'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Bhava_Bala_v20.txt';a.click();
-  return;
- }
- const s=window._scored;if(!s)return;
- let t='🪐 ग्रह बल विश्लेषण v20 (Gemini Logic)\n'+'='.repeat(45)+'\n\n';
- for(const p of s){
-  const sc=p.score;
-  t+=`${p.sym} ${p.n}: ${sc.total}% ${sc.verdict} (Base ${sc.baseScore}, Mod ${sc.modTotal>=0?'+':''}${sc.modTotal})\n`;
- }
- const b=new Blob([t],{type:'text/plain'});
- const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Graha_Bala_v20.txt';a.click();
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=(tab===1?'Graha_Bala_Auto_v1':'Bhava_Bala_Auto_v1')+'.txt';
+  a.click();
 }
 </script>
 </body>
