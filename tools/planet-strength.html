@@ -1318,13 +1318,19 @@ function scorePlanetAuto(pd, shRank){
   const baseScore=base1Score+base2Score;
 
   // Modifiers
-  // Asta (combust): -10
+  // Asta (combust): Deep -10, Medium -7, Light -4
   let asta={pts:0,label:'नहीं'};
   const sunPd=planetData.find(p=>p.n==='सूर्य');
   if(sunPd&&!['सूर्य','राहु','केतु'].includes(n)){
     let diff=Math.abs(pd.lng-sunPd.lng);if(diff>180)diff=360-diff;
-    const limit=(n==='चंद्र')?12:8;
-    if(diff<limit)asta={pts:-10,label:'अस्त ('+diff.toFixed(1)+'° सूर्य से)'};
+    const ASTA_ORB={'चंद्र':12,'मंगल':17,'बुध':14,'गुरु':11,'शुक्र':10,'शनि':15};
+    const limit=ASTA_ORB[n]||8;
+    if(diff<limit){
+      const third=limit/3;
+      if(diff<third)asta={pts:-10,label:'गहरा अस्त ('+diff.toFixed(1)+'° सूर्य से)'};
+      else if(diff<third*2)asta={pts:-7,label:'मध्यम अस्त ('+diff.toFixed(1)+'° सूर्य से)'};
+      else asta={pts:-4,label:'हल्का अस्त ('+diff.toFixed(1)+'° सूर्य से)'};
+    }
   }
   m.asta=asta;
 
