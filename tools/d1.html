@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>वैदिक ज्योतिष कैलकुलेटर (v14.0 - फाइनल)</title>
+    <title>वैदिक ज्योतिष कैलकुलेटर (v14.1 - फाइनल)</title>
     <style>
         /* --- Styles --- */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; line-height: 1.6; padding: 20px; background-color: #f0f2f5; color: #1d2129; margin: 0; }
@@ -164,8 +164,34 @@
 
     <button onclick="calculateAstrology()">गणना करें</button>
 
+    <style>
+    .d1-tabs { display:flex; gap:8px; margin:18px 0 0; }
+    .d1-tab { flex:1; padding:11px 8px; border:2px solid #6d28d9; background:#fff; color:#6d28d9; border-radius:10px; font-size:16px; font-weight:bold; cursor:pointer; }
+    .d1-tab.active { background:#6d28d9; color:#fff; }
+    .toggle-switch { position:relative; display:inline-block; width:44px; height:24px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.3s; border-radius:24px; }
+    .toggle-slider:before { position:absolute; content:""; height:18px; width:18px; left:3px; bottom:3px; background-color:white; transition:.3s; border-radius:50%; }
+    .toggle-switch input:checked + .toggle-slider { background-color:#28a745; }
+    .toggle-switch input:checked + .toggle-slider:before { transform:translateX(20px); }
+    </style>
+    <div class="d1-tabs">
+        <button type="button" id="d1-tab-btn-1" class="d1-tab active" onclick="switchD1Tab(1)">D1 भाव विश्लेषण</button>
+        <button type="button" id="d1-tab-btn-2" class="d1-tab" onclick="switchD1Tab(2)">विस्तृत D1 विश्लेषण</button>
+    </div>
+
     <div id="output">
         <div id="house-analysis-output"></div>
+    </div>
+
+    <div id="d1-panel-detail" style="display:none;">
+        <div class="output-section">
+            <div class="button-group">
+                <button class="copy-button" onclick="copyDetailText(this)">विश्लेषण कॉपी करें</button>
+                <button class="download-button" onclick="screenshotDetail(this)">📸 Screenshot</button>
+            </div>
+            <div id="detailed-bhava-display" style="margin-top:15px;white-space:pre-wrap;font-size:0.95em;line-height:1.7;background:#f8f9fa;padding:15px;border-radius:6px;border:1px solid #e0e0e0;">पहले गणना करें - विस्तृत D1 विश्लेषण यहां आएगा।</div>
+        </div>
     </div>
 </div>
 
@@ -522,40 +548,57 @@
                                     <div class="button-group">
                                         <button class="copy-button" onclick="copyToClipboard(htmlToPlainText('house-analysis-content'), this)">विश्लेषण कॉपी करें</button>
                                         <button class="download-button" onclick="downloadDetailedTxt()">TXT डाउनलोड करें</button>
-                                    </div>
-                                    <div style="text-align:center;margin-top:10px;">
-                                        <label style="font-size:0.9em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">
-                                            <span class="toggle-switch">
-                                                <input type="checkbox" id="detailed-bhava-toggle" onchange="toggleDetailedDisplay()">
-                                                <span class="toggle-slider"></span>
-                                            </span>
-                                            विस्तृत भाव विश्लेषण (12 भाव) दिखाएं + TXT में जोड़ें
-                                        </label>
-                                    </div>
-                                    <style>
-                                    .toggle-switch { position:relative; display:inline-block; width:44px; height:24px; flex-shrink:0; }
-                                    .toggle-switch input { opacity:0; width:0; height:0; }
-                                    .toggle-slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.3s; border-radius:24px; }
-                                    .toggle-slider:before { position:absolute; content:""; height:18px; width:18px; left:3px; bottom:3px; background-color:white; transition:.3s; border-radius:50%; }
-                                    .toggle-switch input:checked + .toggle-slider { background-color:#28a745; }
-                                    .toggle-switch input:checked + .toggle-slider:before { transform:translateX(20px); }
-                                    </style>
+                                        <button class="download-button" onclick="screenshotMain(this)">📸 Screenshot</button>
                                     </div>
                                     <div id="house-analysis-content" style="margin-top:15px;">${html}</div>
-                                    <div id="detailed-bhava-display" style="margin-top:15px;display:none;white-space:pre-wrap;font-size:0.95em;line-height:1.7;background:#f8f9fa;padding:15px;border-radius:6px;border:1px solid #e0e0e0;"></div>
                                </div>`;
+        // v14.1: विस्तृत विश्लेषण अपने tab में भरें
+        const disp141 = document.getElementById('detailed-bhava-display');
+        if (disp141) disp141.textContent = generateDetailedBhavaAnalysis();
     }
 
-    // v8: Toggle detailed bhava display on screen
-    function toggleDetailedDisplay() {
-        const toggle = document.getElementById('detailed-bhava-toggle');
-        const disp = document.getElementById('detailed-bhava-display');
-        if (toggle && toggle.checked && window._d1DetailData) {
-            disp.textContent = generateDetailedBhavaAnalysis();
-            disp.style.display = 'block';
-        } else if (disp) {
-            disp.style.display = 'none';
-        }
+    // v14.1: पुराना toggle-display अब tab layout में उपयोग नहीं होता (सुरक्षा हेतु रखा है)
+    function toggleDetailedDisplay() { }
+
+    // v14.1: Tab switching
+    function switchD1Tab(n) {
+        const b1 = document.getElementById('d1-tab-btn-1');
+        const b2 = document.getElementById('d1-tab-btn-2');
+        if (b1) b1.classList.toggle('active', n === 1);
+        if (b2) b2.classList.toggle('active', n === 2);
+        document.getElementById('output').style.display = n === 1 ? '' : 'none';
+        document.getElementById('d1-panel-detail').style.display = n === 2 ? '' : 'none';
+    }
+    // v14.1: विस्तृत tab - कॉपी
+    function copyDetailText(btn) {
+        if (!window._d1DetailData) return;
+        copyToClipboard(document.getElementById('detailed-bhava-display').innerText, btn);
+    }
+    // v14.1: Screenshot सहायक (html2canvas जरूरत पर load होता है)
+    async function _shotEl(el, filename, btn) {
+        const orig = btn.textContent;
+        btn.textContent = 'बन रहा है...';
+        try {
+            if (typeof html2canvas === 'undefined') {
+                await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+            }
+            const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#ffffff' });
+            const a = document.createElement('a');
+            a.download = filename;
+            a.href = canvas.toDataURL('image/png');
+            a.click();
+        } catch (e) { }
+        btn.textContent = orig;
+    }
+    // v14.1: मुख्य tab - Screenshot
+    function screenshotMain(btn) {
+        const el = document.getElementById('house-analysis-content');
+        if (el) _shotEl(el, 'D1_Bhava_Vishleshan.png', btn);
+    }
+    // v14.1: विस्तृत tab - Screenshot
+    function screenshotDetail(btn) {
+        if (!window._d1DetailData) return;
+        _shotEl(document.getElementById('detailed-bhava-display'), 'D1_Vistrit_Vishleshan.png', btn);
     }
 
     // --- Utilities ---
@@ -574,11 +617,10 @@
         element.click();
         document.body.removeChild(element);
     }
-    // v8: Detailed bhava analysis download with toggle
+    // v14.1: एक ही TXT - मुख्य विश्लेषण + विस्तृत विश्लेषण एक के बाद एक (हमेशा साथ)
     function downloadDetailedTxt() {
         let text = htmlToPlainText('house-analysis-content');
-        const toggle = document.getElementById('detailed-bhava-toggle');
-        if (toggle && toggle.checked && window._d1DetailData) {
+        if (window._d1DetailData) {
             text += '\n\n' + '='.repeat(60) + '\nविस्तृत भाव विश्लेषण (12 भाव)\n' + '='.repeat(60) + '\n\n';
             text += generateDetailedBhavaAnalysis();
         }
