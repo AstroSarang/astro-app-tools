@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>एडवांस जैमिनी कैलकुलेटर (D1 विश्लेषण + कारकांश + स्वांश)</title>
+    <title>एडवांस जैमिनी कैलकुलेटर v4.2 (D1 विश्लेषण + कारकांश + स्वांश)</title>
     <style>
         /* --- Styles --- */
         body { font-family: 'Segoe UI', Roboto, sans-serif; line-height: 1.6; padding: 20px; background-color: #f4f6f8; color: #1d2129; margin: 0; }
@@ -21,15 +21,6 @@
         label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; }
         input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-family: monospace; font-size: 1rem; }
         .instruction { font-size: 0.85em; color: #6c757d; margin-top: 6px; display: block; }
-
-        /* Karaka Matrix Table */
-        .matrix-container { overflow-x: auto; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
-        table.karaka-table { width: 100%; border-collapse: collapse; text-align: center; background: #fff; min-width: 600px; }
-        .karaka-table th { background-color: #34495e; color: #fff; padding: 12px; font-size: 0.9em; font-weight: 600; }
-        .karaka-table td { border: 1px solid #e9ecef; padding: 10px; }
-        .planet-row-label { font-weight: 600; background-color: #f8f9fa; color: #2c3e50; text-align: left !important; padding-left: 20px !important; }
-        .karaka-cb { transform: scale(1.4); cursor: pointer; }
-        .karaka-cb:disabled { cursor: not-allowed; opacity: 0.4; filter: grayscale(1); }
 
         /* Buttons */
         .main-actions-container { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
@@ -85,7 +76,7 @@
 <body>
 
 <div class="container">
-    <h1>जैमिनी महा-कैलकुलेटर</h1>
+    <h1>जैमिनी महा-कैलकुलेटर v4.2</h1>
 
     <!-- Astro Code Section (Astro-Code-only) -->
     <div class="input-group ephem-section">
@@ -96,7 +87,7 @@
         </div>
         <div id="code-error" class="error-msg"></div>
         <div id="ephem-status">⏳ Engine लोड हो रहा है…</div>
-        <div class="instruction">📥 भरो दबाते ही D1 + D9 राशि नंबर auto-fill होंगे, 7 चर कारक अपने आप tick होंगे, फिर गणना अपने आप बनेगी। Manual entry भी पहले जैसी चलती रहेगी। किसी भी देश का सही calculate होगा।</div>
+        <div class="instruction">📥 भरो दबाते ही D1 + D9 राशि नंबर auto-fill होंगे, 7 चर कारक ग्रहों के अंशों से अपने आप तय होंगे, फिर गणना अपने आप बनेगी। D1 + D9 राशि नंबर हाथ से बदले जा सकते हैं। किसी भी देश का सही calculate होगा।</div>
         <div id="ephem-error" class="error-msg"></div>
     </div>
     
@@ -125,10 +116,6 @@
         <input type="text" id="rashi-input-d9" placeholder="उदा. 1,7,7,12,1,9,5,12,11,5">
         <span class="instruction">क्रम: D9 लग्न, सूर्य, चंद्र... (कारकांश और स्वांश के लिए अनिवार्य)</span>
     </div>
-
-    <!-- Karaka Checkbox Matrix -->
-    <h2>3. जैमिनी चर कारकत्व चुनें:</h2>
-    <div class="matrix-container" id="karaka-matrix-container"></div>
 
     <!-- Buttons -->
     <div class="main-actions-container">
@@ -161,6 +148,8 @@
     const JaiminiAspectedByRashisMap = {};
     
     let finalDownloadText = "";
+    let autoKarakaMap = null; // Astro Code से अंशों के आधार पर अपने आप तय हुए चर कारक {AK: ग्रह, ...}
+    window.setCharaKarakas = function(map) { autoKarakaMap = map; };
 
     // Build Aspect Maps on Load
     for (let i = 0; i < 12; i++) {
@@ -187,33 +176,6 @@
         d9Section.style.display = document.getElementById('chk-d9').checked ? 'block' : 'none';
     }
 
-    function renderKarakaMatrix() {
-        let html = '<table class="karaka-table"><tr><th>ग्रह \\ कारक</th>';
-        CHARA_KARAKAS.forEach(k => html += `<th>${k}</th>`);
-        html += '</tr>';
-        
-        KARAKA_PLANETS.forEach(p => {
-            html += `<tr><td class="planet-row-label">${PLANETS[p]}</td>`;
-            CHARA_KARAKAS.forEach(k => {
-                html += `<td><input type="checkbox" class="karaka-cb" data-p="${p}" data-k="${k}"></td>`;
-            });
-            html += `</tr>`;
-        });
-        html += '</table>';
-        document.getElementById('karaka-matrix-container').innerHTML = html;
-        document.querySelectorAll('.karaka-cb').forEach(cb => cb.addEventListener('change', updateMatrixLocks));
-    }
-
-    function updateMatrixLocks() {
-        const checkedBoxes = Array.from(document.querySelectorAll('.karaka-cb:checked'));
-        const usedPlanets = checkedBoxes.map(c => c.dataset.p);
-        const usedKarakas = checkedBoxes.map(c => c.dataset.k);
-
-        document.querySelectorAll('.karaka-cb').forEach(cb => {
-            if (!cb.checked) cb.disabled = usedPlanets.includes(cb.dataset.p) || usedKarakas.includes(cb.dataset.k);
-            else cb.disabled = false;
-        });
-    }
 
     function parseInput(val) {
         if (!val) return null;
@@ -262,9 +224,8 @@
 
         if (!chkD1 && !chkD9) { errDiv.innerHTML = "कृपया कम से कम एक विश्लेषण चुनें।"; errDiv.style.display = 'block'; return; }
 
-        const karakaMap = {};
-        document.querySelectorAll('.karaka-cb:checked').forEach(cb => karakaMap[cb.dataset.k] = cb.dataset.p);
-        if(Object.keys(karakaMap).length !== 7) { errDiv.innerHTML = "कृपया ग्रिड में सभी 7 चर कारकत्व चुनें।"; errDiv.style.display = 'block'; return; }
+        const karakaMap = autoKarakaMap ? Object.assign({}, autoKarakaMap) : {};
+        if(Object.keys(karakaMap).length !== 7) { errDiv.innerHTML = "चर कारक के लिए पहले ऊपर Astro Code डालकर 📥 भरो दबाएं - चर कारक ग्रहों के अंशों से अपने आप तय होते हैं।"; errDiv.style.display = 'block'; return; }
 
         const planetToKaraka = {};
         for(let k in karakaMap) planetToKaraka[karakaMap[k]] = k;
@@ -489,8 +450,6 @@
         downloadBtn.style.display = 'inline-block';
     }
 
-    // Initialize Matrix on Load
-    window.onload = function() { renderKarakaMatrix(); };
 </script>
 
 <script>
@@ -514,7 +473,6 @@ try {
   swe.setSiderealMode(m.SiderealMode.Lahiri);
   window._swe = swe;
   setStatus('\u2705 Engine \u0924\u0948\u092f\u093e\u0930 \u2014 Astro Code \u0921\u093e\u0932\u0915\u0930 "\uD83D\uDCE5 \u092d\u0930\u094b" \u0926\u092c\u093e\u090f\u0902', true);
-  btnEphem.disabled = false;
 } catch(e) {
   setStatus('\u26a0\ufe0f Engine \u0932\u094b\u0921 \u0928\u0939\u0940\u0902 \u0939\u0941\u0906 \u2014 \u0907\u0902\u091f\u0930\u0928\u0947\u091f \u091a\u093e\u0932\u0942 \u0915\u0930\u0915\u0947 \u092a\u0947\u091c reload \u0915\u0930\u0947\u0902', false);
 
@@ -562,12 +520,9 @@ async function calcFromAstroCode(){
   const kPlanets=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani'];
   const kNames=['AK','AmK','BK','MK','PK','GK','DK'];
   const ranked=kPlanets.slice().sort((a,b)=>((norm360(L[b])%30)-(norm360(L[a])%30)));
-  document.querySelectorAll('.karaka-cb').forEach(cb=>{cb.checked=false;});
-  ranked.forEach((pk,i)=>{
-    const cb=document.querySelector('.karaka-cb[data-p="'+pk+'"][data-k="'+kNames[i]+'"]');
-    if(cb) cb.checked=true;
-  });
-  if(typeof updateMatrixLocks==='function') updateMatrixLocks();
+  const km={};
+  ranked.forEach((pk,i)=>{ km[kNames[i]]=pk; });
+  if(typeof window.setCharaKarakas==='function') window.setCharaKarakas(km);
   document.getElementById('chk-d1').checked=true;
   const chkD9=document.getElementById('chk-d9');
   if(!chkD9.checked){ chkD9.checked=true; if(typeof toggleD9Input==='function') toggleD9Input(); }
