@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="hi"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KP प्रश्न कैलकुलेटर v2 - Astro Sarang</title>
+<title>KP प्रश्न कैलकुलेटर v2.1 - Astro Sarang</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Noto Sans Devanagari','Mangal',sans-serif}
@@ -45,6 +45,11 @@ tr.hl td{background:#e8f5e9;font-weight:700}
 .chartbox{text-align:center}
 small.dim{color:#777}
 .numwrap{display:flex;gap:8px}.numwrap input{flex:1}
+.place-wrap{position:relative}
+.pbox{position:absolute;left:0;right:0;top:100%;background:#fff;border:1.6px solid #b39ddb;border-radius:8px;z-index:60;max-height:230px;overflow:auto;box-shadow:0 6px 16px rgba(0,0,0,.18);display:none;margin-top:3px}
+.pr-item{padding:9px 12px;cursor:pointer;font-size:14.5px;border-bottom:1px solid #f0eaf8}
+.pr-item:hover,.pr-item:active{background:#f3e5f5}
+.pr-none{padding:9px 12px;color:#888;font-size:14px}
 .boxes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .box{border-radius:10px;padding:13px 15px;font-size:14.5px;line-height:1.55}
 .box b.t{display:block;font-size:15.5px;margin-bottom:4px}
@@ -58,7 +63,7 @@ small.dim{color:#777}
 .tabpage{display:none}.tabpage.active{display:block}
 </style></head><body><div class="wrap">
 <header>
-<h1>🔮 KP प्रश्न कैलकुलेटर <small style="font-size:14px">v2</small></h1>
+<h1>🔮 KP प्रश्न कैलकुलेटर <small style="font-size:14px">v2.1</small></h1>
 <p>प्रश्न कुंडली के 4 रूप - नंबर प्रश्न (KP), खोई वस्तु, हां/ना Quick, समय प्रश्न (पराशरी) - Astro Sarang</p>
 </header>
 
@@ -85,7 +90,7 @@ small.dim{color:#777}
 </select></div>
 </div>
 <div class="row3 mt">
-<div><label>स्थान (English में टाइप करें)</label><input type="text" id="place" list="cityList" value="Bhandara"><datalist id="cityList"></datalist></div>
+<div><label>स्थान (English में टाइप करें - Global City Search)</label><div class="place-wrap"><input type="text" id="place" value="Bhandara" autocomplete="off"><div class="pbox" id="placeBox"></div></div></div>
 <div><label>Latitude</label><input type="number" id="lat" step="0.0001" value="21.1667"></div>
 <div><label>Longitude</label><input type="number" id="lon" step="0.0001" value="79.65"></div>
 </div>
@@ -220,14 +225,69 @@ const QUESTIONS4=[
  {id:'samanya',name:'सामान्य - इच्छा पूर्ति',bhava:11,karaka:'Ju',pos:'इच्छा पूर्ति का योग प्रबल है',neg:'इच्छा पूर्ति का योग कमजोर है',mid:'इच्छा पूर्ति संभव - देरी के साथ'}
 ];
 const CITIES=[['Bhandara',21.1667,79.65],['Gondia',21.4624,80.2210],['Nagpur',21.1458,79.0882],['Mumbai',19.0760,72.8777],['Pune',18.5204,73.8567],['Nashik',19.9975,73.7898],['Chhatrapati Sambhajinagar',19.8762,75.3433],['Solapur',17.6599,75.9064],['Kolhapur',16.7050,74.2433],['Amravati',20.9374,77.7796],['Akola',20.7002,77.0082],['Chandrapur',19.9615,79.2961],['Wardha',20.7453,78.6022],['Delhi',28.6139,77.2090],['Jaipur',26.9124,75.7873],['Lucknow',26.8467,80.9462],['Indore',22.7196,75.8577],['Bhopal',23.2599,77.4126],['Ahmedabad',23.0225,72.5714],['Surat',21.1702,72.8311],['Kolkata',22.5726,88.3639],['Chennai',13.0827,80.2707],['Bengaluru',12.9716,77.5946],['Hyderabad',17.3850,78.4867],['Patna',25.5941,85.1376],['Varanasi',25.3176,82.9739],['Raipur',21.2514,81.6296],['Jabalpur',23.1815,79.9864],['Gwalior',26.2183,78.1828],['Kanpur',26.4499,80.3319],['Prayagraj',25.4358,81.8463],['Ranchi',23.3441,85.3096],['Bhubaneswar',20.2961,85.8245],['Kochi',9.9312,76.2673],['Madurai',9.9252,78.1198],['Mysuru',12.2958,76.6394]];
-const cityList=document.getElementById('cityList');
-CITIES.forEach(c=>{const o=document.createElement('option');o.value=c[0];cityList.appendChild(o);});
 function fillQ(selId,list){const s=document.getElementById(selId);list.forEach(q=>{const o=document.createElement('option');o.value=q.id;o.textContent=q.name;s.appendChild(o);});}
 fillQ('qType1',QUESTIONS); fillQ('qType3',QUESTIONS); fillQ('qType4',QUESTIONS4);
-document.getElementById('place').addEventListener('change',e=>{
-  const c=CITIES.find(x=>x[0].toLowerCase()===e.target.value.trim().toLowerCase());
-  if(c){document.getElementById('lat').value=c[1];document.getElementById('lon').value=c[2];}
-});
+// ---------- Global City Search (Open-Meteo -> Photon -> Nominatim) ----------
+(function(){
+  const place=document.getElementById('place'), box=document.getElementById('placeBox');
+  let timer=null, ctrl=null;
+  function closeBox(){ box.style.display='none'; }
+  function pick(label, la, lo){ clearTimeout(timer); place.value=label; document.getElementById('lat').value=la; document.getElementById('lon').value=lo; closeBox(); }
+  function render(items, note){
+    if(!items.length){ box.innerHTML='<div class="pr-none">'+(note||'कोई शहर नहीं मिला - इंटरनेट जांचें या lat/lon हाथ से भरें')+'</div>'; }
+    else{
+      box.innerHTML=items.map(function(it,i){ return '<div class="pr-item" data-i="'+i+'">'+it.label+'</div>'; }).join('');
+      Array.prototype.forEach.call(box.querySelectorAll('.pr-item'), function(el){
+        el.addEventListener('mousedown', function(e){ e.preventDefault(); var it=items[+el.getAttribute('data-i')]; pick(it.label, it.lat, it.lon); });
+      });
+    }
+    box.style.display='block';
+  }
+  async function apiSearch(q){
+    var providers=[
+      { url:'https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=8&language=en&format=json',
+        parse:function(j){ return (j.results||[]).map(function(g){
+          var parts=[g.name]; if(g.admin1) parts.push(g.admin1); if(g.country) parts.push(g.country);
+          return {label:parts.join(', '), lat:+g.latitude.toFixed(4), lon:+g.longitude.toFixed(4)}; }); } },
+      { url:'https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=8&lang=en',
+        parse:function(j){ return (j.features||[]).map(function(f){
+          var p=f.properties||{}, parts=[p.name]; if(p.state) parts.push(p.state); if(p.country) parts.push(p.country);
+          var c=f.geometry&&f.geometry.coordinates;
+          return c?{label:parts.join(', '), lat:+c[1].toFixed(4), lon:+c[0].toFixed(4)}:null; }).filter(Boolean); } },
+      { url:'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=8',
+        parse:function(j){ return (Array.isArray(j)?j:[]).map(function(n){
+          return {label:String(n.display_name).split(',').slice(0,3).join(','), lat:+parseFloat(n.lat).toFixed(4), lon:+parseFloat(n.lon).toFixed(4)}; }); } }
+    ];
+    for(var i=0;i<providers.length;i++){
+      try{
+        if(ctrl) ctrl.abort();
+        ctrl=new AbortController();
+        var r=await fetch(providers[i].url,{signal:ctrl.signal});
+        if(!r.ok) continue;
+        var out=providers[i].parse(await r.json());
+        if(out.length) return out;
+      }catch(e){}
+    }
+    return [];
+  }
+  place.addEventListener('input', function(){
+    var qAtSchedule=place.value;
+    clearTimeout(timer);
+    if(qAtSchedule.trim().length<2){ closeBox(); return; }
+    var ql=qAtSchedule.trim().toLowerCase();
+    var local=CITIES.filter(c=>c[0].toLowerCase().includes(ql)).map(c=>({label:c[0]+' (सूची से)', lat:c[1], lon:c[2]}));
+    if(local.length) render(local); else { box.innerHTML='<div class="pr-none">खोजा जा रहा है…</div>'; box.style.display='block'; }
+    timer=setTimeout(async function(){
+      if(place.value!==qAtSchedule || place.value.trim().length<2) return;
+      var remote=await apiSearch(place.value);
+      if(place.value===qAtSchedule && remote.length) render(remote);
+      else if(place.value===qAtSchedule && !local.length) render([]);
+    }, 350);
+  });
+  place.addEventListener('blur', function(){ setTimeout(closeBox, 150); });
+  place.addEventListener('focus', function(){ if(box.innerHTML) box.style.display='block'; });
+  document.addEventListener('click', function(e){ if(!e.target.closest('.place-wrap')) closeBox(); });
+})();
 function setNow(){const n=new Date();document.getElementById('qdate').value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');document.getElementById('qtime').value=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');}
 setNow();
 document.getElementById('btnNow').addEventListener('click',setNow);
@@ -596,6 +656,8 @@ document.getElementById('btnCalc4').addEventListener('click',()=>{
   const vc=document.getElementById('verdictCard4'); vc.className='verdict '+cls;
   vc.innerHTML='<div class="q">❓ सवाल: '+q.name+'</div><div class="v">'+label+'</div><div class="why"><b>आधार:</b> '+B+'वां भाव ('+SIGNS[bSign]+'), भावेश '+HINP[bLord]+' '+blH+'वें भाव में; कारक '+HINP[K]+' '+kH+'वें भाव में। ऊपर की मुख्य बातों के आधार पर यह निष्कर्ष है (कुल योग स्कोर: '+score+')।</div>';
   let pt='<tr><th>ग्रह</th><th>राशि - अंश</th><th>भाव</th><th>नक्षत्र</th></tr>';
+  const ascPada=Math.floor((ascS%(40/3))/(10/3))+1;
+  pt+='<tr class="hl"><td>लग्न</td><td>'+fmtDMS(ascS)+'</td><td>1</td><td>'+NAK[ascNak]+' (पाद '+ascPada+')</td></tr>';
   ORDER.forEach(c=>{ pt+='<tr><td>'+HINP[c]+(P[c].retro?' (वक्री)':'')+'</td><td>'+fmtDMS(P[c].lon)+'</td><td>'+P[c].house+'</td><td>'+NAK[P[c].nak]+'</td></tr>'; });
   document.getElementById('planetTable4').innerHTML=pt;
   document.getElementById('out4').style.display='block';
@@ -607,7 +669,7 @@ document.getElementById('btnTxt').addEventListener('click',()=>{
   const t=tabText[activeTab];
   if(!t){ showErr('पहले खुले हुए Tab में गणना करें, फिर TXT बनेगा।'); return; }
   hideErr();
-  const blob=new Blob(['\ufeffKP प्रश्न कैलकुलेटर v2 - Astro Sarang\n'+'='.repeat(45)+'\n'+t],{type:'text/plain;charset=utf-8'});
+  const blob=new Blob(['\ufeffKP प्रश्न कैलकुलेटर v2.1 - Astro Sarang\n'+'='.repeat(45)+'\n'+t],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
   a.download='KP_Prashna_Tab'+activeTab+'.txt'; a.click(); URL.revokeObjectURL(a.href);
 });
