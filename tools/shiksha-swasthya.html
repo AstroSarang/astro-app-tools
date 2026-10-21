@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>शिक्षा व स्वास्थ्य Timing v1 - Astro Sarang</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+body{font-family:'Noto Sans Devanagari','Mangal',sans-serif;margin:0;background:#f7f3ea;color:#222}
+.wrap{max-width:460px;margin:0 auto;padding:10px}
+.hdr{background:linear-gradient(135deg,#7b1e1e,#b8860b);color:#fff;border-radius:12px;padding:14px;text-align:center}
+.hdr h1{margin:0;font-size:20px}
+.hdr p{margin:4px 0 0;font-size:12.5px;opacity:.9}
+.codebox{background:#fff;border:1.5px solid #b8860b;border-radius:10px;padding:9px;margin-top:10px;display:flex;gap:8px;align-items:center}
+.codebox input{flex:1;border:none;outline:none;font-size:12.5px;font-family:monospace;min-width:0}
+.btn{background:#2e7d32;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;white-space:nowrap;font-family:inherit}
+#ephem-status{font-size:12.5px;text-align:center;margin-top:8px;color:#8a6d00}
+#ephem-status.ok{color:#2e7d32}
+#code-error{font-size:12.5px;text-align:center;color:#b71c1c;margin-top:4px;min-height:16px}
+.d1line{text-align:center;font-size:13.5px;margin:9px 0;color:#555;min-height:18px}
+.card{background:#fff;border:1px solid #e3d9c2;border-radius:12px;padding:12px;margin-top:12px}
+.card h2{margin:0 0 10px;font-size:16.5px;color:#7b1e1e;text-align:center}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.row label{font-size:14px;width:110px;color:#444}
+.row select{flex:1;border:1.6px solid #cbb26a;border-radius:8px;padding:8px;font-size:14.5px;font-family:inherit;background:#fff}
+.tabs{display:flex;gap:8px;margin-top:12px}
+.tabbtn{flex:1;text-align:center;padding:11px;border-radius:10px;font-size:15.5px;font-weight:700;border:1.6px solid #cbb26a;background:#fff;color:#7b1e1e;cursor:pointer;font-family:inherit}
+.tabbtn.on{background:#7b1e1e;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid #eee3c8;padding:6px 7px;text-align:left;vertical-align:top}
+th{background:#fdf6e0;color:#7b1e1e;font-size:12.5px}
+tr.now td{background:#fff8e1}
+.chip{display:inline-block;border-radius:11px;padding:1.5px 9px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap}
+.g{background:#43a047}.g2{background:#7cb342}.y{background:#fb8c00}.r{background:#d32f2f}.n{background:#78909c}
+.box{border-radius:12px;padding:12px;margin-top:12px;font-size:14px;line-height:1.6}
+.box .big{font-size:16px;font-weight:800;margin-bottom:4px}
+.box-green{background:#e8f5e9;border:1.6px solid #43a047}.box-green .big{color:#2e7d32}
+.box-amber{background:#fff3e0;border:1.6px solid #fb8c00}.box-amber .big{color:#e65100}
+.box-blue{background:#e8eaf6;border:1.6px solid #3949ab}.box-blue .big{color:#283593}
+.dl{display:flex;gap:8px;margin-top:12px}
+.dl button{flex:1;padding:11px;border-radius:9px;border:none;font-size:14.5px;color:#fff;cursor:pointer;font-family:inherit}
+.empty-note{text-align:center;color:#999;font-size:14px;padding:26px 10px}
+.foot{text-align:center;font-size:11.5px;color:#aaa;margin:14px 0 6px;line-height:1.6}
+@media (min-width:900px){ .wrap{max-width:1060px} .codebox{max-width:660px;margin-left:auto;margin-right:auto} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr"><h1>📅 शिक्षा व स्वास्थ्य Timing v1</h1><p>दशा + गोचर से आगामी काल - शिक्षा सारिणी और स्वास्थ्य सावधानी</p></div>
+  <div class="codebox"><input id="astro-code-in" type="text" placeholder="Astro Code यहां डालें (AS1-...)"><button class="btn" id="btn-applycode">📥 भरो</button></div>
+  <div id="ephem-status">⏳ Engine लोड हो रहा है...</div>
+  <div id="code-error"></div>
+  <div class="d1line" id="d1-summary"></div>
+  <div class="card"><h2>साझा सेटिंग</h2>
+    <div class="row"><label>समय सीमा</label><select id="limit-sel">
+      <option value="1">1 वर्ष</option><option value="3">3 वर्ष</option><option value="5" selected>5 वर्ष</option><option value="7">7 वर्ष</option><option value="10">10 वर्ष</option>
+    </select></div>
+    <div style="font-size:12.5px;color:#888">आगे के कितने वर्षों की रिपोर्ट बने - यह सीमा दोनों tabs पर लागू होगी।</div>
+  </div>
+  <div class="tabs">
+    <button class="tabbtn on" id="tabbtn-edu">📚 शिक्षा Timing</button>
+    <button class="tabbtn" id="tabbtn-health">🏥 स्वास्थ्य चेतावनी</button>
+  </div>
+  <div id="panel-edu">
+    <div class="card"><h2>🎯 परीक्षा लक्ष्य (वैकल्पिक)</h2>
+      <div class="row"><label>परीक्षा वर्ष</label><select id="exam-year"><option value="">- चुनें -</option></select></div>
+      <div class="row"><label>परीक्षा महीना</label><select id="exam-month">
+        <option value="">- चुनें -</option><option value="1">जनवरी</option><option value="2">फरवरी</option><option value="3">मार्च</option><option value="4">अप्रैल</option><option value="5">मई</option><option value="6">जून</option><option value="7">जुलाई</option><option value="8">अगस्त</option><option value="9">सितंबर</option><option value="10">अक्टूबर</option><option value="11">नवंबर</option><option value="12">दिसंबर</option>
+      </select></div>
+      <div style="font-size:12.5px;color:#888">वर्ष-महीना भरने पर उस परीक्षा समय का अलग verdict नीचे बनेगा। खाली छोड़ने पर सिर्फ सामान्य शिक्षा सारिणी बनेगी।</div>
+    </div>
+    <div id="edu-out"><div class="empty-note">पहले ऊपर Astro Code डालकर "📥 भरो" दबाएं</div></div>
+  </div>
+  <div id="panel-health" style="display:none">
+    <div id="health-out"><div class="empty-note">पहले ऊपर Astro Code डालकर "📥 भरो" दबाएं</div></div>
+  </div>
+  <div class="dl"><button style="background:#1565c0" id="btn-txt">💾 TXT डाउनलोड (चालू Tab)</button><button style="background:#6a1b9a" id="btn-shot">📸 Screenshot</button></div>
+  <div class="foot">शिक्षा व स्वास्थ्य Timing v1 - Astro Sarang<br>स्वास्थ्य भाग ज्योतिषीय संकेत मात्र है, चिकित्सा सलाह नहीं।</div>
+</div>
+
+<script>
+/* ================= स्थिरांक ================= */
+const SIGNS = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+const LORDS = ['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+const LORDKEY = SIGNS.map((_,i)=>({ 'मंगल':'Mangal','शुक्र':'Shukra','बुध':'Budh','चंद्र':'Chandra','सूर्य':'Surya','गुरु':'Guru','शनि':'Shani' })[LORDS[i]]);
+const PN = {Surya:'सूर्य',Chandra:'चंद्र',Mangal:'मंगल',Budh:'बुध',Guru:'गुरु',Shukra:'शुक्र',Shani:'शनि',Rahu:'राहु',Ketu:'केतु'};
+const PKEYS = ['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
+const GRAHAS = ['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani'];
+const EXALT = {Surya:0,Chandra:1,Mangal:9,Budh:5,Guru:3,Shukra:11,Shani:6};
+const DEBIL = {Surya:6,Chandra:7,Mangal:3,Budh:11,Guru:9,Shukra:5,Shani:0};
+const MTSIGN = {Surya:4,Chandra:1,Mangal:0,Budh:5,Guru:8,Shukra:6,Shani:10};
+const OWN = {Surya:[4],Chandra:[3],Mangal:[0,7],Budh:[2,5],Guru:[8,11],Shukra:[1,6],Shani:[9,10]};
+const MAITRI = {
+  Surya:{mitra:['Chandra','Mangal','Guru'],shatru:['Shukra','Shani']},
+  Chandra:{mitra:['Surya','Budh'],shatru:[]},
+  Mangal:{mitra:['Surya','Chandra','Guru'],shatru:['Budh']},
+  Budh:{mitra:['Surya','Shukra'],shatru:['Chandra']},
+  Guru:{mitra:['Surya','Chandra','Mangal'],shatru:['Budh','Shukra']},
+  Shukra:{mitra:['Budh','Shani'],shatru:['Surya','Chandra']},
+  Shani:{mitra:['Budh','Shukra'],shatru:['Surya','Chandra','Mangal']}
+};
+const COMB_ORB = {Chandra:12,Mangal:17,Budh:14,Guru:11,Shukra:10,Shani:15};
+const NAKS = ['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्वा फाल्गुनी','उत्तरा फाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वा भाद्रपद','उत्तरा भाद्रपद','रेवती'];
+const MONTHS = ['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+const DSEQ = ['Ketu','Shukra','Surya','Chandra','Mangal','Rahu','Guru','Shani','Budh'];
+const DYRS = {Ketu:7,Shukra:20,Surya:6,Chandra:10,Mangal:7,Rahu:18,Guru:16,Shani:19,Budh:17};
+const DPY = 365.256364, DAYMS = 86400000;
+
+const state = {ready:false, lons:null, lagSign:0, moonSign:0, house:{}, sign:{}, combust:new Set(), karakas:null, birthMs:0, tzMin:330, codeStr:'', periods:[], tab:'edu'};
+
+function dignityOf(pk, sign){
+  if(sign===EXALT[pk]) return 'उच्च';
+  if(sign===DEBIL[pk]) return 'नीच';
+  if(sign===MTSIGN[pk]) return 'मूलत्रिकोण';
+  if(OWN[pk] && OWN[pk].includes(sign)) return 'स्वराशि';
+  const lk = LORDKEY[sign]; if(lk===pk) return 'स्वराशि';
+  const rel = MAITRI[pk]; if(!rel) return 'सम';
+  if(rel.mitra.includes(lk)) return 'मित्र';
+  if(rel.shatru.includes(lk)) return 'शत्रु';
+  return 'सम';
+}
+function lordOfHouse(h){ return LORDKEY[(state.lagSign + h - 1) % 12]; }
+function fmtMY(ms){
+  const d = new Date(ms + state.tzMin*60000);
+  return MONTHS[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
+}
+/* ---------- विंशोत्तरी दशा (dasha-merged नियम: DAYS_PER_YEAR = 365.256364) ---------- */
+function buildDasha(){
+  const moonLon = state.lons.Chandra;
+  const nak = Math.floor(moonLon / (360/27));
+  const lord = DSEQ[nak % 9];
+  const frac = (moonLon - nak*(360/27)) / (360/27);
+  const balDays = DYRS[lord] * (1 - frac) * DPY;
+  let mdStart = state.birthMs - (DYRS[lord]*DPY - balDays) * DAYMS;
+  const out = [];
+  let li = DSEQ.indexOf(lord), cur = mdStart;
+  for(let i=0;i<12;i++){
+    const md = DSEQ[(li+i)%9];
+    const mdEnd = cur + DYRS[md]*DPY*DAYMS;
+    let adCur = cur; const ai = DSEQ.indexOf(md);
+    for(let j=0;j<9;j++){
+      const ad = DSEQ[(ai+j)%9];
+      const adEnd = adCur + DYRS[md]*DYRS[ad]/120*DPY*DAYMS;
+      out.push({md, ad, start:adCur, end:adEnd});
+      adCur = adEnd;
+    }
+    cur = mdEnd;
+  }
+  state.periods = out;
+}
+/* ---------- गोचर सहायक (module script window._transitSign देगा) ---------- */
+function houseFrom(baseSign, sign){ return ((sign - baseSign + 12) % 12) + 1; }
+
+/* ================= शिक्षा विश्लेषण ================= */
+function eduGocharSub(ms){
+  const tr = window._transitSign ? window._transitSign(ms) : null;
+  if(!tr) return 0;
+  let s = 0;
+  if([2,5,7,9,11].includes(houseFrom(state.moonSign, tr.Guru))) s += 1;
+  if([5,9,11].includes(houseFrom(state.lagSign, tr.Guru))) s += 1;
+  if([12,1,2,4,8].includes(houseFrom(state.moonSign, tr.Shani))) s -= 1;
+  return s;
+}
+function eduScoreFor(per){
+  const L = per.ad, M = per.md;
+  const eduLords = [lordOfHouse(4), lordOfHouse(5), lordOfHouse(9)];
+  const triLords = [lordOfHouse(5), lordOfHouse(9)];
+  const dusLords = [lordOfHouse(6), lordOfHouse(8), lordOfHouse(12)];
+  let sc = 0; const why = [];
+  if(eduLords.includes(L)){ sc += 3; why.push(`${PN[L]} शिक्षा भावों (4/5/9) का स्वामी है`); }
+  if(L==='Budh' || L==='Guru'){ sc += 2; why.push(`${PN[L]} शिक्षा का कारक है`); }
+  if([4,5,9].includes(state.house[L])){ sc += 1; why.push(`${PN[L]} जन्म में शिक्षा भाव में स्थित है`); }
+  if(dusLords.includes(L) && !eduLords.includes(L)){ sc -= 2; why.push(`${PN[L]} त्रिक भाव (6/8/12) का स्वामी है`); }
+  else if(dusLords.includes(L) && !triLords.includes(L)){ sc -= 1; why.push(`${PN[L]} का स्वामित्व मिश्रित है`); }
+  if([6,8,12].includes(state.house[L])){ sc -= 1; why.push(`${PN[L]} जन्म में त्रिक भाव में है`); }
+  const dig = dignityOf(L, state.sign[L]);
+  if(dig==='उच्च' || dig==='स्वराशि' || dig==='मूलत्रिकोण'){ sc += 1; why.push(`${PN[L]} ${dig} का है`); }
+  if(dig==='नीच'){ sc -= 1; why.push(`${PN[L]} नीच राशि में है`); }
+  if(L!=='Rahu' && L!=='Ketu' && state.house[L]===state.house[M] && (eduLords.includes(M) || M==='Budh' || M==='Guru')){ sc += 1; why.push(`${PN[L]} महादशा स्वामी के साथ युति में है`); }
+  else if(L!=='Rahu' && L!=='Ketu' && (state.house[L]===state.house.Budh || state.house[L]===state.house.Guru) && L!=='Budh' && L!=='Guru'){ sc += 1; why.push(`${PN[L]} शिक्षा कारक के साथ युति में है`); }
+  if(eduLords.includes(M) || M==='Budh' || M==='Guru') sc += 1; else if(dusLords.includes(M) && !eduLords.includes(M)) sc -= 1;
+  const gAvg = Math.round((eduGocharSub(per.start) + eduGocharSub((per.start+per.end)/2) + eduGocharSub(per.end - DAYMS)) / 3);
+  if(gAvg > 0){ sc += gAvg; why.push('गुरु का गोचर इस काल में सहायक रहेगा'); }
+  if(gAvg < 0){ sc += gAvg; why.push('शनि का गोचर इस काल में दबाव रखेगा - मेहनत अधिक लगेगी'); }
+  return {sc, why};
+}
+function eduBand(sc){
+  if(sc>=4) return ['🟢 उत्तम','g'];
+  if(sc>=2) return ['🟢 अच्छा','g2'];
+  if(sc>=0) return ['🟡 मध्यम','y'];
+  return ['🔴 कठिन','r'];
+}
+function eduPeriods(){
+  const now = Date.now(), lim = now + (+document.getElementById('limit-sel').value)*DPY*DAYMS;
+  return state.periods.filter(p=>p.end>now && p.start<lim).map(p=>{
+    const {sc, why} = eduScoreFor(p);
+    return {...p, sc, why, band: eduBand(sc), now: p.start<=now && p.end>now};
+  });
+}
+function renderEdu(){
+  const out = document.getElementById('edu-out');
+  if(!state.ready){ out.innerHTML = '<div class="empty-note">पहले ऊपर Astro Code डालकर "📥 भरो" दबाएं</div>'; return; }
+  const rows = eduPeriods();
+  let html = `<div class="card"><h2>📚 आगामी शिक्षा काल - अंतर्दशा अनुसार</h2><table>
+  <tr><th style="width:24%">अवधि</th><th style="width:15%">दशा</th><th style="width:15%">स्थिति</th><th>कारण</th></tr>`;
+  rows.forEach(p=>{
+    html += `<tr${p.now?' class="now"':''}><td>${fmtMY(p.start)} - ${fmtMY(p.end)}${p.now?'<br><b>(चल रहा है)</b>':''}</td><td>${PN[p.md]}-${PN[p.ad]}</td><td><span class="chip ${p.band[1]}">${p.band[0]}</span></td><td>${p.why.slice(0,3).join('; ')||'सामान्य प्रभाव'}</td></tr>`;
+  });
+  html += '</table></div>';
+  /* परीक्षा verdict */
+  const ey = document.getElementById('exam-year').value, em = document.getElementById('exam-month').value;
+  if(ey && em){
+    const examMs = Date.UTC(+ey, +em-1, 15) - state.tzMin*60000;
+    const per = state.periods.find(p=>examMs>=p.start && examMs<p.end);
+    if(per){
+      const {sc, why} = eduScoreFor(per); const [bt, bc] = eduBand(sc);
+      let nearChange = '';
+      [per.start, per.end].forEach(b=>{ if(Math.abs(examMs-b) < 45*DAYMS) nearChange = 'परीक्षा के आसपास ही अंतर्दशा बदल रही है - तैयारी का असली बल पिछले काल में बना लेना होगा, आखिरी दिनों में दोहराव (revision) पर जोर रखें।'; });
+      const advice = sc>=2 ? 'समय अनुकूल है - नियमित अभ्यास से अच्छे परिणाम की पूरी संभावना है।' : (sc>=0 ? 'समय मध्यम है - योजना बनाकर पढ़ने से सफलता मिलेगी, लापरवाही भारी पड़ेगी।' : 'समय कठिन है - अतिरिक्त मेहनत, शिक्षक का मार्गदर्शन और स्वास्थ्य का ध्यान विशेष जरूरी है।');
+      html += `<div class="box ${sc>=2?'box-green':'box-amber'}"><div class="big">🎯 परीक्षा लक्ष्य जांच - ${MONTHS[+em-1]} ${ey}</div>
+      उस समय दशा: <b>${PN[per.md]}-${PN[per.ad]}</b> (${fmtMY(per.start)} - ${fmtMY(per.end)}) - स्थिति: <b>${bt}</b><br>${why.slice(0,3).join('; ')}। ${nearChange} ${advice}</div>`;
+    }
+  }
+  const best = rows.slice().sort((a,b)=>b.sc-a.sc)[0];
+  if(best) html += `<div class="box box-green"><div class="big">⭐ सबसे अच्छा शिक्षा काल: ${fmtMY(best.start)} - ${fmtMY(best.end)} (${PN[best.md]}-${PN[best.ad]})</div>${best.why.slice(0,2).join('; ')} - बड़ी परीक्षा, प्रवेश और करियर-निर्धारण वाली पढ़ाई के लिए यही खिड़की सबसे मजबूत है।</div>`;
+  out.innerHTML = html;
+  state.eduText = buildEduText(rows);
+}
+function buildEduText(rows){
+  const L = [];
+  L.push('शिक्षा / परीक्षा Timing - Astro Sarang');
+  L.push(`Astro Code: ${state.codeStr}`);
+  L.push(`जन्म कुंडली: ${document.getElementById('d1-summary').innerText}`);
+  L.push('='.repeat(46));
+  rows.forEach(p=>{ L.push(`${fmtMY(p.start)} - ${fmtMY(p.end)} | ${PN[p.md]}-${PN[p.ad]} | ${p.band[0]}${p.now?' (चल रहा है)':''}`); L.push(`   ${p.why.slice(0,3).join('; ')}`); });
+  return L.join('\n');
+}
+
+/* ================= स्वास्थ्य विश्लेषण ================= */
+const HEALTH_SIGNAL = {
+  Surya:'पित्त, आंखों पर जोर, हड्डी/ब्लड प्रेशर', Chandra:'कफ, नींद-तनाव, छाती, मानसिक अशांति',
+  Mangal:'चोट, बुखार, ऑपरेशन-पक्ष, रक्त', Budh:'त्वचा, एलर्जी, नसों की कमजोरी',
+  Guru:'कफ, लिवर, वजन बढ़ना', Shukra:'शुगर, मूत्र/प्रजनन पक्ष, कफ',
+  Shani:'वात, जोड़ों-हड्डी का दर्द, पुरानी तकलीफ', Rahu:'अचानक, अज्ञात कारण, नशा/विष पक्ष', Ketu:'अचानक, रहस्यमय तकलीफ, ऑपरेशन'
+};
+function healthScoreFor(per){
+  const L = per.ad, M = per.md;
+  const lag = state.lagSign, moon = state.moonSign;
+  const l6 = lordOfHouse(6), l8 = lordOfHouse(8), l12 = lordOfHouse(12), l2 = lordOfHouse(2), l7 = lordOfHouse(7);
+  let sc = 0; const why = [];
+  if(L===l6){ sc += 2; why.push(`${PN[L]} षष्ठेश (रोग भाव स्वामी) है`); }
+  if(L===l8){ sc += 3; why.push(`${PN[L]} अष्टमेश है`); }
+  if(L===l12){ sc += 1; why.push(`${PN[L]} द्वादशेश है`); }
+  if(L===l2 || L===l7){ sc += 2; why.push(`${PN[L]} मारकेश है`); }
+  if([6,8,12].includes(state.house[L])){ sc += 2; why.push(`${PN[L]} जन्म में भाव ${state.house[L]} (त्रिक) में स्थित है`); }
+  if(dignityOf(L, state.sign[L])==='नीच'){ sc += 1; why.push(`${PN[L]} नीच राशि में है`); }
+  if(['Shani','Mangal','Rahu','Ketu'].includes(L)){ sc += 1; why.push(`${PN[L]} का स्वभाव स्वास्थ्य में भारी पड़ता है`); }
+  if(M===l6) { sc += 2; why.push(`महादशा भी षष्ठेश ${PN[M]} की चल रही है`); }
+  if(M===l8) { sc += 2; why.push(`महादशा अष्टमेश ${PN[M]} की चल रही है`); }
+  if(M===l2 || M===l7) { sc += 1; why.push(`महादशा मारकेश ${PN[M]} की है`); }
+  if(M===L && (L===l6 || L===l8)) why.push('महादशा-अंतर्दशा एक ही स्वामी की है - प्रभाव गहरा रहेगा');
+  if(L!=='Shani' && L!=='Mangal' && L!=='Rahu' && L!=='Ketu' && (state.house[L]===state.house.Shani || state.house[L]===state.house.Mangal)){ sc += 1; why.push(`${PN[L]} जन्म में शनि/मंगल के साथ स्थित है`); }
+  const tr = window._transitSign ? window._transitSign(per.start) : null;
+  if(tr){
+    const shMoon = houseFrom(moon, tr.Shani), shLag = houseFrom(lag, tr.Shani);
+    if([12,1,2].includes(shMoon)){ sc += 3; why.push('शनि का साढ़ेसाती चरण गोचर में'); }
+    else if([4,8].includes(shMoon)){ sc += 2; why.push('शनि का ढैय्या गोचर चंद्र से'); }
+    if([6,8,12].includes(shLag)){ sc += 1; why.push('शनि लग्न से त्रिक भाव में गोचर करेगा'); }
+    if([1,5,9,11].includes(houseFrom(lag, tr.Guru)) || [1,5,9,11].includes(houseFrom(moon, tr.Guru))){ sc -= 1; why.push('गुरु का गोचर संरक्षण दे रहा है'); }
+  }
+  return {sc, why};
+}
+function healthBand(sc){
+  if(sc>=5) return ['🔴 अधिक सावधानी','r'];
+  if(sc>=2) return ['🟡 सामान्य सावधानी','y'];
+  return ['✅ सामान्य','g'];
+}
+function healthPeriods(){
+  const now = Date.now(), lim = now + (+document.getElementById('limit-sel').value)*DPY*DAYMS;
+  return state.periods.filter(p=>p.end>now && p.start<lim).map(p=>{
+    const {sc, why} = healthScoreFor(p);
+    return {...p, sc, why, band: healthBand(sc), now: p.start<=now && p.end>now, signal: HEALTH_SIGNAL[p.ad]};
+  });
+}
+function renderHealth(){
+  const out = document.getElementById('health-out');
+  if(!state.ready){ out.innerHTML = '<div class="empty-note">पहले ऊपर Astro Code डालकर "📥 भरो" दबाएं</div>'; return; }
+  const rows = healthPeriods();
+  let status = '';
+  const tr = window._transitSign ? window._transitSign(Date.now()) : null;
+  if(tr){
+    const shMoon = houseFrom(state.moonSign, tr.Shani), shLag = houseFrom(state.lagSign, tr.Shani);
+    let s = '';
+    if([12,1,2].includes(shMoon)) s = `शनि चंद्र से भाव ${shMoon} में है - <b>साढ़ेसाती चल रही है</b>।`;
+    else if([4,8].includes(shMoon)) s = `शनि चंद्र से भाव ${shMoon} में है - <b>ढैय्या का गोचर</b> चल रहा है।`;
+    else s = `साढ़ेसाती अभी नहीं है - शनि चंद्र से भाव ${shMoon} में है।`;
+    if(shLag===4) s += ' शनि लग्न से 4थे भाव में (कंटक शनि) भी है - घर-परिवार और छाती पक्ष की सामान्य सावधानी रखें।';
+    const cur = rows.find(r=>r.now);
+    if(cur) s += ` चल रही दशा ${PN[cur.md]}-${PN[cur.ad]} का स्तर: <b>${cur.band[0]}</b>।`;
+    status = `<div class="box box-green"><div class="big">📌 वर्तमान स्थिति</div>${s}</div>`;
+  }
+  let html = status + `<div class="card"><h2>🏥 आगामी सावधानी काल - अंतर्दशा अनुसार</h2><table>
+  <tr><th style="width:24%">अवधि</th><th style="width:17%">स्तर</th><th>कारण और संकेत</th></tr>`;
+  rows.forEach(p=>{
+    html += `<tr${p.now?' class="now"':''}><td>${fmtMY(p.start)} - ${fmtMY(p.end)}<br>(${PN[p.md]}-${PN[p.ad]})${p.now?'<br><b>(चल रहा है)</b>':''}</td><td><span class="chip ${p.band[1]}">${p.band[0]}</span></td><td>${p.why.slice(0,3).join('; ')||'कोई विशेष दबाव नहीं'}<br><b>संकेत:</b> ${p.signal}</td></tr>`;
+  });
+  html += `</table></div>
+  <div class="box box-amber"><div class="big">⚠️ जरूरी नोट</div>यह ज्योतिषीय संकेत मात्र है - किसी रोग की भविष्यवाणी नहीं। तबियत में कोई भी तकलीफ हो तो डॉक्टर की सलाह ही अंतिम है; ज्योतिष यहां सिर्फ पहले से सतर्क रहने का इशारा देता है।</div>`;
+  out.innerHTML = html;
+  state.healthText = buildHealthText(rows);
+}
+function buildHealthText(rows){
+  const L = [];
+  L.push('स्वास्थ्य चेतावनी काल - Astro Sarang');
+  L.push(`Astro Code: ${state.codeStr}`);
+  L.push(`जन्म कुंडली: ${document.getElementById('d1-summary').innerText}`);
+  L.push('='.repeat(46));
+  rows.forEach(p=>{ L.push(`${fmtMY(p.start)} - ${fmtMY(p.end)} | ${PN[p.md]}-${PN[p.ad]} | ${p.band[0]}${p.now?' (चल रहा है)':''}`); L.push(`   ${p.why.slice(0,3).join('; ')}`); L.push(`   संकेत: ${p.signal}`); });
+  L.push('-'.repeat(46));
+  L.push('नोट: यह ज्योतिषीय संकेत मात्र है, चिकित्सा सलाह नहीं।');
+  return L.join('\n');
+}
+
+/* ================= Tabs / Buttons ================= */
+function switchTab(t){
+  state.tab = t;
+  document.getElementById('tabbtn-edu').classList.toggle('on', t==='edu');
+  document.getElementById('tabbtn-health').classList.toggle('on', t==='health');
+  document.getElementById('panel-edu').style.display = t==='edu' ? '' : 'none';
+  document.getElementById('panel-health').style.display = t==='health' ? '' : 'none';
+}
+document.getElementById('tabbtn-edu').addEventListener('click', ()=>switchTab('edu'));
+document.getElementById('tabbtn-health').addEventListener('click', ()=>switchTab('health'));
+document.getElementById('limit-sel').addEventListener('change', ()=>{ renderEdu(); renderHealth(); });
+document.getElementById('exam-year').addEventListener('change', renderEdu);
+document.getElementById('exam-month').addEventListener('change', renderEdu);
+(function(){
+  const sel = document.getElementById('exam-year');
+  const y0 = new Date().getFullYear();
+  for(let y=y0-1; y<=y0+15; y++){ const o=document.createElement('option'); o.value=y; o.textContent=y; sel.appendChild(o); }
+})();
+function downloadText(name, text){
+  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+}
+document.getElementById('btn-txt').addEventListener('click', ()=>{
+  const err = document.getElementById('code-error');
+  if(!state.ready){ err.innerText = 'पहले Astro Code भरें'; return; }
+  err.innerText = '';
+  if(state.tab==='edu') downloadText('Shiksha_Timing.txt', state.eduText || '');
+  else downloadText('Swasthya_Chetavani.txt', state.healthText || '');
+});
+document.getElementById('btn-shot').addEventListener('click', ()=>{
+  const err = document.getElementById('code-error');
+  if(!state.ready){ err.innerText = 'पहले Astro Code भरें'; return; }
+  if(typeof html2canvas === 'undefined'){ err.innerText = 'Screenshot library लोड नहीं हुई - इंटरनेट check करके पेज reload करें'; return; }
+  err.innerText = '';
+  const area = state.tab==='edu' ? document.getElementById('panel-edu') : document.getElementById('panel-health');
+  html2canvas(area, {backgroundColor:'#f7f3ea', scale:2}).then(cv=>{
+    const a = document.createElement('a');
+    a.href = cv.toDataURL('image/png');
+    a.download = state.tab==='edu' ? 'Shiksha_Timing.png' : 'Swasthya_Chetavani.png';
+    document.body.appendChild(a); a.click(); a.remove();
+  }).catch(()=>{ err.innerText = 'Screenshot नहीं बन पाया - फिर से कोशिश करें'; });
+});
+</script>
+<script type="module">
+/* ============ Swiss Ephemeris (वर्ग विशेष pattern) ============ */
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+const ephemStatus = document.getElementById('ephem-status');
+let SE=null, SEP=null, SEF=null, SEH=null, SEL=null;
+function setStatus(t, ok){ ephemStatus.textContent=t; ephemStatus.className=ok?'ok':''; }
+try {
+  const m = await import(/* @vite-ignore */EPHEM_CDN);
+  SE = m.SwissEphemeris; SEP = m.Planet; SEF = m.CalculationFlag; SEH = m.HouseSystem; SEL = m.LunarPoint;
+  const swe = new SE();
+  await swe.init();
+  swe.setSiderealMode(m.SiderealMode.Lahiri);
+  window._swe = swe;
+  setStatus('✅ Engine तैयार - Astro Code डालकर "📥 भरो" दबाएं', true);
+} catch(e) {
+  setStatus('⚠️ Engine लोड नहीं हुआ - इंटरनेट चालू करके पेज reload करें', false);
+}
+const FLAGS = () => SEF.MoshierEphemeris | SEF.Speed;
+const norm360 = d => ((d % 360) + 360) % 360;
+window._transitSign = function(ms){
+  if(!window._swe) return null;
+  const swe = window._swe;
+  const d = new Date(ms);
+  const jd = swe.julianDay(d.getUTCFullYear(), d.getUTCMonth()+1, d.getUTCDate(), d.getUTCHours() + d.getUTCMinutes()/60);
+  const ayan = swe.getAyanamsa(jd), F = FLAGS();
+  const sgn = (body)=>{ const p = swe.calculatePosition(jd, body, F); return Math.floor(norm360(p.longitude - ayan)/30); };
+  return { Guru: sgn(SEP.Jupiter), Shani: sgn(SEP.Saturn), Budh: sgn(SEP.Mercury), Mangal: sgn(SEP.Mars), Surya: sgn(SEP.Sun), Chandra: sgn(SEP.Moon) };
+};
+function parseAstroCodeDirect(code){
+  const m=/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/.exec((code||'').trim());
+  if(!m) return null;
+  const d8=m[1], t6=m[2], tz=m[3], lat4=m[4], latDir=m[5], lon5=m[6], lonDir=m[7];
+  const Y=+d8.slice(0,4), mo=+d8.slice(4,6), dy=+d8.slice(6,8);
+  const h24=+t6.slice(0,2), mi=+t6.slice(2,4), se=+t6.slice(4,6);
+  const tzMin=(tz[0]==='-'?-1:1)*(+tz.slice(1,3)*60 + +tz.slice(3,5));
+  let lat=+lat4.slice(0,2)+(+lat4.slice(2,4))/60; if(latDir==='S') lat=-lat;
+  let lon=+lon5.slice(0,3)+(+lon5.slice(3,5))/60; if(lonDir==='W') lon=-lon;
+  return {Y, mo, dy, h24, mi, se, tzMin, lat, lon};
+}
+async function calcFromAstroCode(){
+  if(!window._swe) throw new Error('Ephemeris लोड नहीं हुआ - पेज refresh करें');
+  const codeVal = document.getElementById('astro-code-in').value;
+  const bc = parseAstroCodeDirect(codeVal);
+  if(!bc) throw new Error('सही Astro Code डालें (AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W)');
+  const swe = window._swe;
+  let utc = new Date(Date.UTC(bc.Y, bc.mo-1, bc.dy, bc.h24, bc.mi, bc.se));
+  utc = new Date(utc.getTime() - bc.tzMin*60000);
+  state.birthMs = utc.getTime();
+  state.tzMin = bc.tzMin;
+  const jd = swe.julianDay(utc.getUTCFullYear(), utc.getUTCMonth()+1, utc.getUTCDate(),
+                         utc.getUTCHours()+utc.getUTCMinutes()/60+utc.getUTCSeconds()/3600);
+  const ayan = swe.getAyanamsa(jd), F = FLAGS();
+  const calc = (body)=>{ const p = swe.calculatePosition(jd, body, F); return {lon: norm360(p.longitude - ayan), speed: (typeof p.longitudeSpeed === 'number' ? p.longitudeSpeed : null)}; };
+  const bodyMap = {Surya:SEP.Sun, Chandra:SEP.Moon, Mangal:SEP.Mars, Budh:SEP.Mercury, Guru:SEP.Jupiter, Shukra:SEP.Venus, Shani:SEP.Saturn, Rahu:SEL.MeanNode};
+  const L = {};
+  Object.keys(bodyMap).forEach(k=>{ L[k] = calc(bodyMap[k]).lon; });
+  L.Ketu = norm360(L.Rahu + 180);
+  const hs = swe.calculateHouses(jd, bc.lat, bc.lon, SEH.Placidus);
+  const lagna = norm360(hs.ascendant - ayan);
+  state.lons = {...L};
+  state.lagSign = Math.floor(lagna/30);
+  state.moonSign = Math.floor(L.Chandra/30);
+  PKEYS.forEach(k=>{ state.sign[k] = Math.floor(L[k]/30); state.house[k] = houseFrom(state.lagSign, state.sign[k]); });
+  const combust = new Set();
+  Object.keys(COMB_ORB).forEach(k=>{
+    let d = Math.abs(L[k] - L.Surya); d = Math.min(d, 360-d);
+    if(d <= COMB_ORB[k]) combust.add(k);
+  });
+  state.combust = combust;
+  state.codeStr = codeVal.trim();
+  buildDasha();
+  state.ready = true;
+  const nakIdx = Math.floor(L.Chandra / (360/27));
+  const cur = state.periods.find(p=>Date.now()>=p.start && Date.now()<p.end);
+  document.getElementById('d1-summary').innerText = `जन्म कुंडली - लग्न ${SIGNS[state.lagSign]} | चंद्र राशि ${SIGNS[state.moonSign]} | नक्षत्र ${NAKS[nakIdx]}${cur?` | ${PN[cur.md]} महादशा, ${PN[cur.ad]} अंतर्दशा`:''}`;
+  renderEdu(); renderHealth();
+  setStatus('✅ गणना तैयार है - दोनों tabs की रिपोर्ट बन गई', true);
+}
+document.getElementById('btn-applycode').addEventListener('click', async function(){
+  const err = document.getElementById('code-error');
+  err.innerText = '';
+  try { await calcFromAstroCode(); }
+  catch(e){ err.innerText = e.message || String(e); }
+});
+</script>
+</body>
+</html>
