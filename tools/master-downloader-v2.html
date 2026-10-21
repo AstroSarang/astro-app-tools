@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>मास्टर डेटा डाउनलोडर v2.2 - Astro Sarang</title>
+<title>मास्टर डेटा डाउनलोडर v2.4 - Astro Sarang</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -56,7 +56,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <body>
 <div class="con">
 <div class="head">
-<h1>📦 मास्टर डेटा डाउनलोडर v2.2</h1>
+<h1>📦 मास्टर डेटा डाउनलोडर v2.4</h1>
 <div class="sub">13 टूल्स का डेटा एक साथ - PDF, एक TXT या ZIP में</div>
 </div>
 
@@ -141,8 +141,10 @@ const TOOLS = [
   {id:'d1', name:'D1 विश्लेषण', en:'D1 Analysis', file:'d1.html', input:'astro-code-text',
    prep:[{fill:1},{clickId:'btn-fillcode'},{wait:700},{clickText:'ग्रह स्थिति निकालें'},{wait:2500},{fn:'calculateAstrology'},{waitFor:{sel:'#output',min:400}}],
    sections:[
-     {key:'chart', name:'कुंडली चार्ट', en:'Kundli Chart', cap:['#kundli-chart-box']},
-     {key:'bhava', name:'भाव विश्लेषण (12 भाव)', en:'Bhava Analysis', cap:['#output']}
+     {key:'bhava', name:'D1 विश्लेषण (दोनों Tab - मुख्य + विस्तृत)', en:'D1 Analysis (Both Tabs)',
+       steps:[{js:"var p=document.getElementById('d1-panel-detail'); if(p) p.style.display='block'; var o=document.getElementById('output'); if(o) o.style.display='block';"},{waitFor:{sel:'#detailed-bhava-display',min:1500}}],
+       cap:['#output','#detailed-bhava-display'],
+       mergeHead:'========================================================\nविस्तृत D1 विश्लेषण (12 भाव)\n========================================================'}
    ]},
   {id:'vshot', name:'D7/D9/D10/D60 स्क्रीनशॉट', en:'Varga Screenshots', file:'d9d7d10d60.html', input:'astro-code',
    prep:[{fill:1},{clickText:'भरो व गणना करें'},{waitFor:{sel:'#varga-tables',min:300}}],
@@ -497,7 +499,7 @@ async function captureSection(win, doc, tool, sec) {
     const t = extractText(win, el);
     if (t) txtParts.push(t);
   }
-  return {pngParts, txt: txtParts.join('\n\n')};
+  return {pngParts, txt: txtParts.join(sec.mergeHead ? ('\n\n' + sec.mergeHead + '\n\n') : '\n\n')};
 }
 
 async function generateAll() {
@@ -703,7 +705,7 @@ async function downloadZIP() {
           zip.file(fname + suffix + '.png', part.data.split(',')[1], {base64: true});
         });
       }
-      if (d.txt) zip.file(fname + '.txt', 'Astro Sarang - मास्टर डेटा डाउनलोडर v2.2\nTool: ' + d.toolName + '\nभाग: ' + d.secName + '\nAstro Code: ' + code + '\n' + '='.repeat(50) + '\n\n' + d.txt);
+      if (d.txt) zip.file(fname + '.txt', 'Astro Sarang - मास्टर डेटा डाउनलोडर v2.4\nTool: ' + d.toolName + '\nभाग: ' + d.secName + '\nAstro Code: ' + code + '\n' + '='.repeat(50) + '\n\n' + d.txt);
     });
     const blob = await zip.generateAsync({type: 'blob'});
     const a = document.createElement('a');
