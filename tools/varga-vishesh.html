@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>वर्ग विशेष विश्लेषण v1.2</title>
+<title>वर्ग विशेष विश्लेषण v1.3</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 body{font-family:'Noto Sans Devanagari','Mangal',sans-serif;margin:0;background:#f7f3ea;color:#222}
@@ -38,6 +38,9 @@ td:first-child{color:#555;width:44%}
 .dl button{flex:1;padding:11px;border-radius:9px;border:none;font-size:14.5px;color:#fff;cursor:pointer}
 .empty-note{text-align:center;color:#999;font-size:14px;padding:26px 10px}
 .foot{text-align:center;font-size:11.5px;color:#aaa;margin:14px 0 6px}
+.grow{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:12px}
+.gbtn{border:1.5px solid #b8860b;background:#fff;border-radius:20px;padding:6px 20px;font-size:14.5px;cursor:pointer;font-family:inherit}
+.gbtn.on{background:#7b1e1e;color:#fff;font-weight:bold;border-color:#7b1e1e}
 /* Desktop / Website चौड़ा view - mobile/app पर कोई बदलाव नहीं */
 @media (min-width:900px){
   .wrap{max-width:1060px}
@@ -53,7 +56,7 @@ td:first-child{color:#555;width:44%}
 </head>
 <body>
 <div class="wrap">
-  <div class="hdr"><h1>🪐 वर्ग विशेष विश्लेषण v1.2</h1><p>20 वर्ग कुंडलियां - Score + विस्तृत विश्लेषण</p></div>
+  <div class="hdr"><h1>🪐 वर्ग विशेष विश्लेषण v1.3</h1><p>20 वर्ग कुंडलियां - Score + विस्तृत विश्लेषण</p></div>
   <div class="codebox"><input id="astro-code-in" type="text" placeholder="Astro Code यहां डालें (AS1-...)"><button class="btn" id="btn-applycode">📥 भरो</button></div>
   <div id="ephem-status">⏳ Engine लोड हो रहा है...</div>
   <div id="ephem-error"></div><div id="code-error"></div>
@@ -62,12 +65,14 @@ td:first-child{color:#555;width:44%}
   <div class="tabs" id="tabs-main"></div>
   <div class="grouplabel">🔍 सूक्ष्म वर्ग</div>
   <div class="tabs" id="tabs-sub"></div>
+  <div class="grouplabel">💑 विशेष Detailed</div>
+  <div class="tabs" id="tabs-special"></div>
   <div id="shot-area">
     <div id="tab-content"><div class="empty-note">पहले ऊपर Astro Code डालकर "📥 भरो" दबाएं,<br>फिर कोई वर्ग चुनें</div></div>
   </div>
   <div class="dl"><button style="background:#1565c0" id="btn-txt">💾 TXT डाउनलोड</button><button style="background:#6a1b9a" id="btn-shot">📸 Screenshot</button></div>
   <div class="dl"><button style="background:#00695c" id="btn-alltxt">📚 सभी 20 वर्ग - एक TXT में</button></div>
-  <div class="foot">वर्ग विशेष विश्लेषण v1.2 - Astro Sarang</div>
+  <div class="foot">वर्ग विशेष विश्लेषण v1.3 - Astro Sarang</div>
 </div>
 
 <script>
@@ -493,8 +498,264 @@ function buildSummary(cfg, score){
   return `${cfg.name} Score ${score.total}/100 - ${gname}। सबसे मजबूत पक्ष ${best.label} है (${best.score}/${best.max}), जबकि ${worst.label} सबसे कमजोर है (${worst.score}/${worst.max})। ${best.desc}। कुल मिलाकर ${cfg.name} का आधार ${score.total>=60?'मजबूत है और अनुकूल दशाओं में अच्छे फल देगा':(score.total>=45?'मध्यम है - सही दशा और प्रयास से फल सुधरेंगे':'कमजोर है - संबंधित उपाय और धैर्य से काम लेना उचित रहेगा')}।`;
 }
 
+
+/* ================= विशेष Detailed Tabs (v1.3 में नया) ================= */
+const SPECIALS = {
+  VIVAH:{code:'VIVAH', varga:'D9', emoji:'💑', name:'विवाह Detailed', short:'विवाह विशेष', vname:'नवांश'},
+  SANTAN:{code:'SANTAN', varga:'D7', emoji:'👶', name:'संतान Detailed', short:'संतान विशेष', vname:'सप्तमांश'},
+  CAREER:{code:'CAREER', varga:'D10', emoji:'💼', name:'करियर Detailed', short:'करियर विशेष', vname:'दशमांश'}
+};
+const ELEM_SPOUSE = ['तेज, आत्मविश्वासी और स्वतंत्र स्वभाव वाला','व्यावहारिक, स्थिर और जिम्मेदारी निभाने वाला','मिलनसार, बुद्धिमान और संवाद में कुशल','भावुक, संवेदनशील और देखभाल करने वाला'];
+const ELEM_FIELD = ['प्रबंधन, तकनीक, इंजीनियरिंग, ऊर्जा क्षेत्र','व्यापार, वित्त, भूमि-निर्माण, व्यावहारिक सेवाएं','मीडिया, संचार, IT, व्यापार-विस्तार','चिकित्सा, सेवा, परामर्श, जल/रसायन क्षेत्र'];
+const P_TRAIT = {Surya:'आत्मसम्मान और प्रभाव',Chandra:'कोमलता और भावनात्मक जुड़ाव',Mangal:'ऊर्जा और स्पष्टवादिता',Budh:'समझदारी और संवाद-कुशलता',Guru:'संस्कार, ज्ञान और मार्गदर्शन',Shukra:'प्रेम, आकर्षण और सौंदर्य-बोध',Shani:'गंभीरता और जिम्मेदारी',Rahu:'आधुनिक, असामान्य सोच',Ketu:'विरक्ति और आध्यात्मिक झुकाव'};
+function arudhaOf(houseSign, d1vd){
+  const lord = LORDKEY[houseSign];
+  const ls = d1vd.signs[lord];
+  const cnt = ((ls - houseSign + 12) % 12) + 1;
+  let pada = (ls + cnt - 1) % 12;
+  if(pada === houseSign || pada === (houseSign + 6) % 12) pada = (pada + 9) % 12;
+  return pada;
+}
+function qBand(pk, vd, max){ const r = placementScore(pk, vd, max||20)/(max||20); return r>=0.60?'good':(r>=0.38?'mid':'bad'); }
+
+/* ---------- विवाह (D9) ---------- */
+function computeVivah(vd, d1vd){
+  const lagnesh = LORDKEY[vd.lag];
+  const saptamesh = LORDKEY[(vd.lag + 6) % 12];
+  const d1saptamesh = LORDKEY[(d1vd.lag + 6) % 12];
+  const male = state.gender !== 'स्त्री';
+  const mainK = male ? 'Shukra' : 'Guru';
+  const secondK = male ? 'Guru' : 'Shukra';
+  const ul = arudhaOf((d1vd.lag + 11) % 12, d1vd);
+  const ulLord = LORDKEY[ul];
+  const o7 = occupantsScore({main:7}, vd);
+  const rows = [
+    {label:'D9 सप्तमेश + सप्तम भाव', desc:`${placementDesc(saptamesh, vd)}; सप्तम भाव में ${o7.desc}`, score: placementScore(saptamesh, vd, 15) + Math.round(o7.score*10/15), max:25},
+    {label:`मुख्य कारक (${PN[mainK]}${male?' - पुरुष जातक':' - स्त्री जातक'})`, desc:placementDesc(mainK, vd), score: placementScore(mainK, vd, 20), max:20},
+    {label:'D1 सप्तमेश की D9 स्थिति', desc:placementDesc(d1saptamesh, vd), score: placementScore(d1saptamesh, vd, 20), max:20},
+    {label:'उपपद लग्न (UL) स्वामी की D1 स्थिति', desc:`UL ${SIGNS[ul]} - स्वामी ${placementDesc(ulLord, d1vd)}`, score: placementScore(ulLord, d1vd, 15), max:15},
+    {label:'D9 लग्नेश', desc:placementDesc(lagnesh, vd), score: placementScore(lagnesh, vd, 10), max:10},
+    {label:`दूसरा कारक (${PN[secondK]})`, desc:placementDesc(secondK, vd), score: placementScore(secondK, vd, 10), max:10}
+  ];
+  return {rows, total: rows.reduce((s,r)=>s+r.score,0), lagnesh, saptamesh, d1saptamesh, mainK, secondK, ul, ulLord, o7};
+}
+function vivahFactors(R, vd, d1vd){
+  const F = [];
+  let q = qBand(R.saptamesh, vd);
+  F.push({i:ICON[q], t:`सप्तमेश ${PN[R.saptamesh]} ${descShort(R.saptamesh, vd)} - ${q==='good'?'विवाह सुख का आधार मजबूत है':(q==='mid'?'विवाह में मध्यम सुख, समझौते से संतुलन बनेगा':'विवाह सुख में बाधा या असंतोष संभव - धैर्य आवश्यक है')}`});
+  const occ7 = vd.occ[7];
+  if(!occ7.length) F.push({i:'⚠️', t:'सप्तम भाव खाली है - विवाह का फल सप्तमेश और कारक की दशा से बनेगा'});
+  else F.push({i: occ7.some(k=>SHUBH.includes(k))?'✅':'⚠️', t:`सप्तम भाव में ${occ7.map(k=>PN[k]).join(', ')} - जीवनसाथी का स्वभाव इन्हीं ग्रहों के रंग में रंगेगा`});
+  q = qBand(R.mainK, vd);
+  F.push({i:ICON[q], t:`मुख्य कारक ${PN[R.mainK]} ${descShort(R.mainK, vd)} - ${q==='good'?'विवाह का कारक बलवान है, सुख और आकर्षण अच्छा रहेगा':(q==='mid'?'कारक मध्यम है - विवाह सुख प्रयास से सुधरेगा':'कारक कमजोर है - विवाह सुख में कमी या विलंब संभव है')}`});
+  if(state.combust.has(R.mainK)) F.push({i:'❌', t:`कारक ${PN[R.mainK]} जन्म कुंडली में अस्त है - विवाह में विलंब या प्रारंभिक कमजोरी का यह एक कारण बन सकता है`});
+  if(state.combust.has(R.saptamesh)) F.push({i:'❌', t:`सप्तमेश ${PN[R.saptamesh]} जन्म कुंडली में अस्त है - विवाह के निर्णयों में धैर्य रखना उचित रहेगा`});
+  q = qBand(R.d1saptamesh, vd);
+  F.push({i:ICON[q], t:`D1 का सप्तमेश ${PN[R.d1saptamesh]} D9 में ${descShort(R.d1saptamesh, vd)} - ${q==='good'?'जन्म कुंडली और नवांश दोनों स्तरों पर विवाह बंधन मजबूत है':(q==='mid'?'बंध की नींव मध्यम है - संबंध निभाने में सक्रिय प्रयास लगेगा':'दोनों स्तरों पर विवाह पक्ष कमजोर है - मिलान और समय का विशेष ध्यान रखें')}`});
+  const ulHouseD1 = ((R.ul - d1vd.lag + 12) % 12) + 1;
+  const ulOcc = d1vd.occ[ulHouseD1];
+  q = qBand(R.ulLord, d1vd);
+  F.push({i:ICON[q], t:`उपपद लग्न (UL) ${SIGNS[R.ul]}${ulOcc.length?` - इसमें ${ulOcc.map(k=>PN[k]).join(', ')} स्थित`:''}; UL स्वामी ${PN[R.ulLord]} D1 में ${descShort(R.ulLord, d1vd)} - विवाह की स्थिरता ${q==='good'?'अच्छी रहेगी':(q==='mid'?'मध्यम रहेगी, समझौते से टिकेगी':'के लिए विशेष प्रयास और धैर्य चाहिए')}`});
+  const s7sign = (vd.lag + 6) % 12;
+  const traits = occ7.slice(0,2).map(k=>P_TRAIT[k]).filter(Boolean);
+  F.push({i:'💞', t:`जीवनसाथी स्वभाव संकेत: सप्तम राशि ${SIGNS[s7sign]} (${['अग्नि','पृथ्वी','वायु','जल'][s7sign%4]} तत्व) - साथी ${ELEM_SPOUSE[s7sign%4]} होगा${traits.length?`; उसमें ${traits.join(' और ')} विशेष दिखेगा`:''}`});
+  const rel = mutualRelation(vd, R.lagnesh, R.saptamesh);
+  if(R.lagnesh===R.saptamesh) F.push({i:'✅', t:'D9 में लग्नेश ही सप्तमेश भी है - विवाह स्वयं के प्रयास और पसंद से आगे बढ़ेगा'});
+  else if(rel) F.push({i:'✅', t:`D9 लग्नेश और सप्तमेश में ${rel} - विवाह बंधन में आपसी खिंचाव और जुड़ाव मजबूत रहेगा`});
+  else F.push({i:'⚠️', t:'D9 लग्नेश और सप्तमेश का प्रत्यक्ष संबंध नहीं - विवाह में तालमेल बनाने का प्रयास दोनों ओर से लगेगा'});
+  if([6,8,12].includes(vd.house[R.saptamesh])) F.push({i:'⚠️', t:'सप्तमेश दुस्थान (6/8/12) में है - विवाह में रुकावट, दूरी या स्वास्थ्य-पक्ष की सावधानी रखनी होगी'});
+  return F;
+}
+
+/* ---------- संतान (D7) ---------- */
+function computeSantan(vd, d1vd){
+  const lagnesh = LORDKEY[vd.lag];
+  const panchamesh = LORDKEY[(vd.lag + 4) % 12];
+  const d1panchamesh = LORDKEY[(d1vd.lag + 4) % 12];
+  const o5 = occupantsScore({main:5}, vd);
+  let c6 = 5;
+  const asp5 = aspectorsOnHouse(vd, 5).filter(k=>vd.house[k]!==5);
+  let aspNet = 0;
+  asp5.forEach(k=>{ aspNet += SHUBH.includes(k) ? 2 : -2; });
+  c6 += Math.max(-4, Math.min(4, aspNet));
+  vd.occ[vd.house[panchamesh]].filter(k=>k!==panchamesh).forEach(k=>{ c6 += SHUBH.includes(k) ? 2 : -2; });
+  c6 = Math.max(1, Math.min(10, c6));
+  const rows = [
+    {label:'D7 पंचमेश + पंचम भाव', desc:`${placementDesc(panchamesh, vd)}; पंचम भाव में ${o5.desc}`, score: placementScore(panchamesh, vd, 15) + Math.round(o5.score*10/15), max:25},
+    {label:'संतान कारक (गुरु)', desc:placementDesc('Guru', vd), score: placementScore('Guru', vd, 20), max:20},
+    {label:'D1 पंचमेश की D7 स्थिति', desc:placementDesc(d1panchamesh, vd), score: placementScore(d1panchamesh, vd, 20), max:20},
+    {label:'D7 लग्नेश', desc:placementDesc(lagnesh, vd), score: placementScore(lagnesh, vd, 15), max:15},
+    {label:'चंद्र + शुक्र की स्थिति', desc:`${placementDesc('Chandra', vd)}; ${placementDesc('Shukra', vd)}`, score: Math.round((placementScore('Chandra', vd, 10)+placementScore('Shukra', vd, 10))/2), max:10},
+    {label:'पंचम भाव पर दृष्टि / पंचमेश की युति', desc:`दृष्टि: ${asp5.length?asp5.map(k=>PN[k]).join(', '):'कोई विशेष नहीं'}; युति ${vd.occ[vd.house[panchamesh]].filter(k=>k!==panchamesh).map(k=>PN[k]).join(', ')||'नहीं'}`, score: c6, max:10}
+  ];
+  return {rows, total: rows.reduce((s,r)=>s+r.score,0), lagnesh, panchamesh, d1panchamesh, o5, asp5};
+}
+function santanFactors(R, vd, d1vd){
+  const F = [];
+  let q = qBand(R.panchamesh, vd);
+  const deri = [6,8,12].includes(vd.house[R.panchamesh]) || vd.occ[vd.house[R.panchamesh]].some(k=>['Rahu','Ketu','Shani'].includes(k));
+  F.push({i:ICON[q], t:`पंचमेश ${PN[R.panchamesh]} ${descShort(R.panchamesh, vd)} - ${deri?'संतान प्राप्ति में देरी या प्रारंभिक बाधा का संकेत है, धैर्य से योग पूरा होगा':(q==='good'?'संतान योग का मुख्य आधार मजबूत है':'संतान योग मध्यम है - समय और प्रयास दोनों लगेंगे')}`});
+  const occ5 = vd.occ[5];
+  if(!occ5.length) F.push({i:'⚠️', t:'पंचम भाव खाली है - संतान का फल पंचमेश और गुरु की दशा पर निर्भर रहेगा'});
+  else F.push({i: occ5.some(k=>SHUBH.includes(k))?'✅':'⚠️', t:`पंचम भाव में ${occ5.map(k=>PN[k]).join(', ')} - संतान सुख का रंग इन्हीं ग्रहों से बनेगा`});
+  q = qBand('Guru', vd);
+  F.push({i:ICON[q], t:`संतान कारक गुरु ${descShort('Guru', vd)} - ${q==='good'?'कारक बलवान है, संतान योग को पूरा सहारा मिलेगा':(q==='mid'?'कारक मध्यम है - संतान योग है, पर सहारा सीमित':'कारक कमजोर है - संतान पक्ष में चिंता या विलंब संभव है')}`});
+  q = qBand(R.d1panchamesh, vd);
+  F.push({i:ICON[q], t:`D1 का पंचमेश ${PN[R.d1panchamesh]} D7 में ${descShort(R.d1panchamesh, vd)} - जन्म कुंडली से संतान संबंध ${q==='good'?'मजबूत':'मध्यम या कमजोर'} है`});
+  if(dignityOf('Shukra', vd.signs.Shukra)==='उच्च') F.push({i:'✅', t:'शुक्र D7 में उच्च का है - संतान से भावनात्मक सुख और जुड़ाव गहरा मिलेगा'});
+  q = qBand('Chandra', vd, 10);
+  F.push({i:ICON[q], t:`चंद्र ${descShort('Chandra', vd)} - संतान के प्रति भावनात्मक जुड़ाव ${q==='good'?'गहरा रहेगा':'सामान्य रहेगा'}`});
+  if(R.asp5.length){
+    const sb = R.asp5.filter(k=>SHUBH.includes(k));
+    F.push({i: sb.length?'✅':'⚠️', t:`पंचम भाव पर ${R.asp5.map(k=>PN[k]).join(', ')} की दृष्टि - ${sb.length?'शुभ दृष्टि से संतान योग को संरक्षण मिलेगा':'क्रूर दृष्टि से सावधानी आवश्यक है'}`});
+  }
+  const occCnt = vd.occ[5].length;
+  const guruQ = qBand('Guru', vd);
+  if(occCnt>=2 || (occCnt>=1 && guruQ==='good')) F.push({i:'🔢', t:'संख्या संकेत (मोटा अनुमान): पंचम भाव सक्रिय और कारक मजबूत - एक से अधिक संतान का योग बन सकता है'});
+  else if(occCnt===0 && qBand(R.panchamesh, vd)==='bad') F.push({i:'🔢', t:'संख्या संकेत (मोटा अनुमान): पंचम पक्ष शांत और पंचमेश कमजोर - सीमित संतान योग की ओर संकेत है'});
+  else F.push({i:'🔢', t:'संख्या संकेत (मोटा अनुमान): संतान संख्या का योग सामान्य है - निश्चित संख्या कुंडली से नहीं, परिस्थितियों से तय होगी'});
+  return F;
+}
+
+/* ---------- करियर (D10) ---------- */
+function computeCareer(vd, d1vd, karakas){
+  const lagnesh = LORDKEY[vd.lag];
+  const dashamesh = LORDKEY[(vd.lag + 9) % 12];
+  const d1dashamesh = LORDKEY[(d1vd.lag + 9) % 12];
+  const amk = karakas.AmK;
+  const o10 = occupantsScore({main:10}, vd);
+  const rows = [
+    {label:'D10 दशमेश + दशम भाव', desc:`${placementDesc(dashamesh, vd)}; दशम भाव में ${o10.desc}`, score: placementScore(dashamesh, vd, 15) + Math.round(o10.score*10/15), max:25},
+    {label:`अमात्यकारक (AmK - ${PN[amk]})`, desc:placementDesc(amk, vd), score: placementScore(amk, vd, 20), max:20},
+    {label:'D1 दशमेश की D10 स्थिति', desc:placementDesc(d1dashamesh, vd), score: placementScore(d1dashamesh, vd, 20), max:20},
+    {label:'D10 लग्नेश', desc:placementDesc(lagnesh, vd), score: placementScore(lagnesh, vd, 15), max:15},
+    {label:'सूर्य (पद-प्रतिष्ठा कारक)', desc:placementDesc('Surya', vd), score: placementScore('Surya', vd, 10), max:10},
+    {label:'शनि (कर्म कारक)', desc:placementDesc('Shani', vd), score: placementScore('Shani', vd, 10), max:10}
+  ];
+  return {rows, total: rows.reduce((s,r)=>s+r.score,0), lagnesh, dashamesh, d1dashamesh, amk, o10};
+}
+function careerFactors(R, vd, d1vd){
+  const F = [];
+  let q = qBand(R.dashamesh, vd);
+  F.push({i:ICON[q], t:`दशमेश ${PN[R.dashamesh]} ${descShort(R.dashamesh, vd)} - ${q==='good'?'करियर की मुख्य धुरी मजबूत है':(q==='mid'?'करियर मध्यम गति से, प्रयास के अनुपात में बढ़ेगा':'करियर में संघर्ष और दिशा-भ्रम संभव - धैर्य और एकाग्रता आवश्यक है')}`});
+  const occ10 = vd.occ[10];
+  if(occ10.includes('Ketu')) F.push({i:'🔯', t:'दशम भाव में केतु - क्षेत्र गूढ़ विद्या, शोध, तकनीक या आध्यात्म से जुड़ेगा; साधारण ढांचे की नौकरी में मन कम लगेगा'});
+  else if(!occ10.length) F.push({i:'⚠️', t:'दशम भाव खाली है - करियर का फल दशमेश और AmK की दशा से बनेगा'});
+  else F.push({i: occ10.some(k=>SHUBH.includes(k))?'✅':'⚠️', t:`दशम भाव में ${occ10.map(k=>PN[k]).join(', ')} - करियर का स्वरूप इन्हीं ग्रहों से बनेगा`});
+  q = qBand(R.amk, vd);
+  F.push({i:ICON[q], t:`अमात्यकारक ${PN[R.amk]} ${descShort(R.amk, vd)} - ${q==='good'?'पेशे का ग्रह मजबूत है, क्षेत्र में पहचान बनेगी':(q==='mid'?'पेशे में मध्यम सफलता, निरंतरता से बढ़ेगी':'पेशे में उतार-चढ़ाव रहेगा - क्षेत्र चुनने में सावधानी रखें')}`});
+  q = qBand(R.d1dashamesh, vd);
+  F.push({i:ICON[q], t:`D1 का दशमेश ${PN[R.d1dashamesh]} D10 में ${descShort(R.d1dashamesh, vd)} - जन्म कुंडली से करियर संबंध ${q==='good'?'मजबूत है':'मध्यम या कमजोर है'}`});
+  const s10sign = (vd.lag + 9) % 12;
+  F.push({i:'🎯', t:`क्षेत्र संकेत: दशम राशि ${SIGNS[s10sign]} (${['अग्नि','पृथ्वी','वायु','जल'][s10sign%4]} तत्व) - ${ELEM_FIELD[s10sign%4]} की ओर झुकाव रहेगा; दशमेश ${SIGNS[vd.signs[R.dashamesh]]} में होने से कार्य-पद्धति उसी रंग की होगी`});
+  let biz = 0, job = 0;
+  [R.lagnesh, R.dashamesh].forEach(k=>{ if([2,11].includes(vd.house[k])) biz += 2; if([1,4,7,10,5,9].includes(vd.house[k])) biz += 1; });
+  if(vd.house[R.dashamesh]===vd.house[LORDKEY[(vd.lag+5)%12]]) job += 2;
+  if(R.amk==='Shani' && qBand('Shani', vd)!=='bad') job += 1;
+  if(vd.occ[10].includes('Shani') || vd.occ[6].length>=2) job += 1;
+  const rel = mutualRelation(vd, R.lagnesh, R.dashamesh);
+  if(rel==='युति' || rel==='राशि परिवर्तन') biz += 1;
+  F.push({i:'🧑‍💼', t:`नौकरी या व्यवसाय: ${biz>job?'लग्नेश-दशमेश की स्थिति धन-लाभ पक्ष में है - स्वतंत्र कार्य या स्वयं का व्यवसाय नौकरी से अधिक फलदायी रहेगा':(job>biz?'सेवा-भाव और कर्म कारक का बल अधिक है - नौकरी या सेवा-क्षेत्र में स्थिरता बेहतर मिलेगी':'दोनों पक्ष संतुलित हैं - शुरुआत नौकरी से, अनुभव के बाद स्वतंत्र कार्य की ओर बढ़ना उचित रहेगा')}`});
+  q = qBand(R.lagnesh, vd);
+  F.push({i:ICON[q], t:`लग्नेश ${PN[R.lagnesh]} ${descShort(R.lagnesh, vd)} - करियर में स्वयं की भूमिका ${q==='good'?'निर्णायक रहेगी':'सामान्य रहेगी, दूसरों के सहारे की जरूरत पड़ेगी'}`});
+  return F;
+}
+
+/* ---------- विशेष सारांश ---------- */
+function specialSummary(topic, R){
+  const [gname] = gradeOf(R.total);
+  const sorted = R.rows.slice().sort((a,b)=>(b.score/b.max)-(a.score/a.max));
+  const best = sorted[0], worst = sorted[sorted.length-1];
+  const close = R.total>=60 ? 'कुल मिलाकर यह पक्ष मजबूत है और अनुकूल दशा में अच्छे फल देगा' : (R.total>=45 ? 'कुल मिलाकर यह पक्ष मध्यम है - सही समय और प्रयास से फल सुधरेंगे' : 'कुल मिलाकर यह पक्ष कमजोर-मध्यम है - धैर्य, सही समय और उपायों से काम लेना उचित रहेगा');
+  return `${topic} Score ${R.total}/100 - ${gname}। सबसे मजबूत पक्ष ${best.label} है (${best.score}/${best.max}), सबसे कमजोर ${worst.label} (${worst.score}/${worst.max})। ${close}।`;
+}
+
+/* ---------- विशेष Render ---------- */
+function renderSpecialTab(code){
+  const sp = SPECIALS[code];
+  const box = document.getElementById('tab-content');
+  const vd = buildVarga(state.lons, sp.varga);
+  const d1vd = state.d1vd;
+  let R, points, factors, topic;
+  let genderHtml = '';
+  if(code==='VIVAH'){
+    topic = 'विवाह';
+    R = computeVivah(vd, d1vd);
+    factors = vivahFactors(R, vd, d1vd);
+    const ulHouseD1 = ((R.ul - d1vd.lag + 12) % 12) + 1;
+    points = `
+    <tr><td>वर्ग लग्न (D9)</td><td><b>${SIGNS[vd.lag]}</b> - लग्नेश ${PN[R.lagnesh]} ${descShort(R.lagnesh, vd)}</td></tr>
+    <tr><td>सप्तम भाव</td><td>${SIGNS[(vd.lag+6)%12]} - ${vd.occ[7].length?`स्थित ग्रह: ${vd.occ[7].map(k=>PN[k]).join(', ')}`:'खाली'}</td></tr>
+    <tr><td>सप्तमेश</td><td>${PN[R.saptamesh]} - ${descShort(R.saptamesh, vd)}</td></tr>
+    <tr><td>मुख्य कारक</td><td>${PN[R.mainK]} - ${descShort(R.mainK, vd)}${state.combust.has(R.mainK)?' (जन्म कुंडली में अस्त)':''}</td></tr>
+    <tr><td>उपपद लग्न (UL)</td><td>${SIGNS[R.ul]}${d1vd.occ[ulHouseD1].length?` - स्थित ग्रह: ${d1vd.occ[ulHouseD1].map(k=>PN[k]).join(', ')}`:''}; स्वामी ${PN[R.ulLord]} D1 में ${descShort(R.ulLord, d1vd)}</td></tr>`;
+    genderHtml = `<div class="grow"><span style="font-size:14px;align-self:center">जातक:</span><button class="gbtn${state.gender!=='स्त्री'?' on':''}" data-g="पुरुष">पुरुष</button><button class="gbtn${state.gender==='स्त्री'?' on':''}" data-g="स्त्री">स्त्री</button></div>`;
+  } else if(code==='SANTAN'){
+    topic = 'संतान';
+    R = computeSantan(vd, d1vd);
+    factors = santanFactors(R, vd, d1vd);
+    points = `
+    <tr><td>वर्ग लग्न (D7)</td><td><b>${SIGNS[vd.lag]}</b> - लग्नेश ${PN[R.lagnesh]} ${descShort(R.lagnesh, vd)}</td></tr>
+    <tr><td>पंचम भाव</td><td>${SIGNS[(vd.lag+4)%12]} - ${vd.occ[5].length?`स्थित ग्रह: ${vd.occ[5].map(k=>PN[k]).join(', ')}`:'खाली'}</td></tr>
+    <tr><td>पंचमेश</td><td>${PN[R.panchamesh]} - ${descShort(R.panchamesh, vd)}</td></tr>
+    <tr><td>संतान कारक गुरु</td><td>${descShort('Guru', vd)}</td></tr>
+    <tr><td>शुक्र</td><td>${descShort('Shukra', vd)}${dignityOf('Shukra', vd.signs.Shukra)==='उच्च'?' - उच्च का है, विशेष शुभ':''}</td></tr>`;
+  } else {
+    topic = 'करियर';
+    R = computeCareer(vd, d1vd, state.karakas);
+    factors = careerFactors(R, vd, d1vd);
+    points = `
+    <tr><td>वर्ग लग्न (D10)</td><td><b>${SIGNS[vd.lag]}</b> - लग्नेश ${PN[R.lagnesh]} ${descShort(R.lagnesh, vd)}</td></tr>
+    <tr><td>दशम भाव</td><td>${SIGNS[(vd.lag+9)%12]} - ${vd.occ[10].length?`स्थित ग्रह: ${vd.occ[10].map(k=>PN[k]).join(', ')}`:'खाली'}</td></tr>
+    <tr><td>दशमेश</td><td>${PN[R.dashamesh]} - ${descShort(R.dashamesh, vd)}</td></tr>
+    <tr><td>अमात्यकारक (AmK)</td><td>${PN[R.amk]} - ${descShort(R.amk, vd)}</td></tr>
+    <tr><td>D1 दशमेश</td><td>${PN[R.d1dashamesh]} - D10 में ${descShort(R.d1dashamesh, vd)}</td></tr>`;
+  }
+  const summary = specialSummary(topic, R);
+  const [gname, gcolor] = gradeOf(R.total);
+  const srows = R.rows.map(r=>`<tr><td>${r.label}<div style="font-size:12px;color:#999">${r.desc}</div></td><td style="text-align:right;font-weight:bold;font-size:16px">${r.score}<span style="color:#999;font-weight:normal;font-size:13px">/${r.max}</span></td></tr>`).join('');
+  box.innerHTML = `
+  ${genderHtml}
+  <div class="card"><h2>${sp.emoji} ${sp.name} Score</h2>
+    <div style="text-align:center"><span class="big">${R.total}</span><span style="font-size:18px;color:#888">/100</span><span class="grade" style="background:${gcolor}">${gname}</span></div>
+    <div class="bar"><div style="width:${R.total}%;background:${gcolor}"></div></div>
+    <table>${srows}</table>
+    <div class="scale">श्रेणी: 75+ बहुत मजबूत | 60-74 मजबूत | 45-59 मध्यम | 30-44 कमजोर-मध्यम | 30 से कम कमजोर</div></div>
+  <div class="card"><h2>${sp.emoji} ${sp.varga} ${topic} - ${sp.vname} कुंडली</h2>
+    <div class="chartflex"><div class="chartbox">${drawChart(vd)}</div><div class="infobox"><table>${points}</table></div></div></div>
+  <div class="card"><h2>विस्तृत फलित - ${factors.length} बिंदु</h2>
+    <div class="factors">${factors.map(f=>`<div class="factor">${f.i} ${f.t}</div>`).join('')}</div></div>
+  <div class="sum"><b>सारांश:</b> ${summary}</div>`;
+  state.current = {special:true, code, cfg:sp, vd, score:{rows:R.rows, total:R.total}, factors, summary, R};
+  state.current.text = specialSectionText(sp, vd, R, factors, summary, topic);
+  box.querySelectorAll('.gbtn').forEach(b=>b.addEventListener('click', ()=>{ state.gender = b.dataset.g; renderSpecialTab('VIVAH'); }));
+}
+function specialSectionText(sp, vd, R, factors, summary, topic){
+  const [gname] = gradeOf(R.total);
+  const L = [];
+  L.push(`${sp.varga} ${sp.name} (${sp.vname})${sp.code==='VIVAH'?` - जातक: ${state.gender}`:''}`);
+  L.push(`Score: ${R.total}/100 (${gname})`);
+  L.push('-'.repeat(46));
+  R.rows.forEach(r=>{ L.push(`${r.label}: ${r.score}/${r.max}`); L.push(`   ${r.desc}`); });
+  L.push('-'.repeat(46));
+  L.push(`वर्ग लग्न: ${SIGNS[vd.lag]}`);
+  L.push('कुंडली (भाव अनुसार):');
+  for(let h=1;h<=12;h++){
+    const sign = (vd.lag + h - 1) % 12;
+    const pls = (h===1 ? ['लग्न'] : []).concat(vd.occ[h].map(k=>PN[k]));
+    L.push(`भाव ${h} (${SIGNS[sign]}): ${pls.length ? pls.join(', ') : 'खाली'}`);
+  }
+  if(sp.code==='VIVAH') L.push(`उपपद लग्न (UL): ${SIGNS[R.ul]}`);
+  L.push('-'.repeat(46));
+  L.push('विस्तृत फलित:');
+  factors.forEach(f=>L.push(`${f.i} ${f.t}`));
+  L.push('-'.repeat(46));
+  L.push(`सारांश: ${summary}`);
+  return L.join('\n');
+}
+
 /* ================= Rendering ================= */
-const state = {lons:null, d1vd:null, karakas:null, combust:new Set(), vakri:new Set(), codeStr:'', active:'D9', current:null};
+const state = {lons:null, d1vd:null, karakas:null, combust:new Set(), vakri:new Set(), codeStr:'', active:'D9', current:null, gender:'पुरुष'};
 const A_POS = {1:[200,105],2:[105,45],3:[45,105],4:[105,200],5:[45,295],6:[105,355],7:[200,295],8:[295,355],9:[355,295],10:[295,200],11:[355,105],12:[295,45]};
 function drawChart(vd){
   let texts='';
@@ -524,6 +785,7 @@ function renderTab(code){
     state.current = null;
     return;
   }
+  if(SPECIALS[code]){ renderSpecialTab(code); return; }
   const cfg = VARGA_CONFIG.find(c=>c.code===code);
   const vd = buildVarga(state.lons, code);
   const d1vd = state.d1vd;
@@ -566,6 +828,15 @@ function buildTabs(){
     b.addEventListener('click', ()=>renderTab(cfg.code));
     (cfg.group==='main' ? main : sub).appendChild(b);
   });
+  const spBox = document.getElementById('tabs-special');
+  Object.values(SPECIALS).forEach(sp=>{
+    const b = document.createElement('div');
+    b.className = 'tab' + (sp.code===state.active ? ' on' : '');
+    b.dataset.code = sp.code;
+    b.innerHTML = `${sp.emoji}<br>${sp.short}`;
+    b.addEventListener('click', ()=>renderTab(sp.code));
+    spBox.appendChild(b);
+  });
 }
 buildTabs();
 
@@ -604,9 +875,20 @@ document.getElementById('btn-txt').addEventListener('click', ()=>{
   const err = document.getElementById('code-error');
   if(!state.current){ err.innerText = 'पहले Astro Code भरकर कोई वर्ग चुनें'; return; }
   err.innerText = '';
+  if(state.current.special){
+    const sp = state.current.cfg;
+    const headS = [
+      `वर्ग विशेष विश्लेषण v1.3 - ${sp.name} (${sp.vname})`,
+      `Astro Code: ${state.codeStr}`,
+      `जन्म कुंडली: ${document.getElementById('d1-summary').innerText}`,
+      '='.repeat(46)
+    ].join('\n');
+    downloadText(`Varga_${sp.code}_${sp.name}.txt`, headS + '\n' + state.current.text);
+    return;
+  }
   const {cfg, vd, score, factors, summary} = state.current;
   const head = [
-    `वर्ग विशेष विश्लेषण v1.2 - ${cfg.code} ${cfg.name} (${cfg.vname})`,
+    `वर्ग विशेष विश्लेषण v1.3 - ${cfg.code} ${cfg.name} (${cfg.vname})`,
     `Astro Code: ${state.codeStr}`,
     `जन्म कुंडली: ${document.getElementById('d1-summary').innerText}`,
     '='.repeat(46)
@@ -618,7 +900,7 @@ document.getElementById('btn-alltxt').addEventListener('click', ()=>{
   if(!state.lons){ err.innerText = 'पहले Astro Code भरें'; return; }
   err.innerText = '';
   const parts = [[
-    'वर्ग विशेष विश्लेषण v1.2 - सभी 20 वर्ग',
+    'वर्ग विशेष विश्लेषण v1.3 - सभी 20 वर्ग',
     `Astro Code: ${state.codeStr}`,
     `जन्म कुंडली: ${document.getElementById('d1-summary').innerText}`
   ].join('\n')];
