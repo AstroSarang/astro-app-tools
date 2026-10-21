@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>वैदिक ज्योतिष कैलकुलेटर (v14.1 - फाइनल)</title>
+    <title>वैदिक ज्योतिष कैलकुलेटर (v14.2 - फाइनल)</title>
     <style>
         /* --- Styles --- */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; line-height: 1.6; padding: 20px; background-color: #f0f2f5; color: #1d2129; margin: 0; }
@@ -541,7 +541,8 @@
         window._d1DetailData = {
             houseRashis, houseLords, planetsInHouse, planetPositions,
             planetRashiIndices, aspectsOnHouse, planetStates,
-            lagnaRashi, moonAbsoluteHouse
+            lagnaRashi, moonAbsoluteHouse,
+            nakshatras: (window._d1NakFP && window._d1NakFP === numbers.join(',')) ? window._d1Nakshatras : null
         };
 
         outputDiv.innerHTML = `<div class="output-section">
@@ -660,7 +661,9 @@
                     const pName = PLANETS_DISPLAY[pKey] || pKey;
                     const pRashiIdx = d.planetRashiIndices[pKey];
                     const pRashiName = RASHIS[pRashiIdx];
-                    let detail = `${pName}: ${pRashiName} राशि में स्थित है।`;
+                    let detail = (d.nakshatras && d.nakshatras[pKey])
+                        ? `${pName}: ${pRashiName} राशि, ${d.nakshatras[pKey]} नक्षत्र में स्थित है।`
+                        : `${pName}: ${pRashiName} राशि में स्थित है।`;
                     // Dignity (skip Rahu/Ketu uchh/neech/vakri per prompt)
                     if (pKey !== 'Rahu' && pKey !== 'Ketu') {
                         const dig = getDignityInfo(pKey, pRashiIdx, houseNum, d.planetPositions, d.houseRashis, d.planetsInHouse, d.moonAbsoluteHouse, false);
@@ -912,6 +915,12 @@ btnEphem.addEventListener('click', async ()=>{
     const order=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
     const nums=[signNum(lagna)].concat(order.map(k=>signNum(P[k].lon)));
     document.getElementById('rashi-input').value=nums.join(',');
+
+    /* v14.2: नक्षत्र (विस्तृत विश्लेषण हेतु) - degree से निकालकर रखो */
+    const NAK27=['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्वा फाल्गुनी','उत्तरा फाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वा भाद्रपद','उत्तरा भाद्रपद','रेवती'];
+    window._d1Nakshatras={};
+    order.forEach(k=>{ window._d1Nakshatras[k]=NAK27[Math.floor(P[k].lon/(360/27))%27]; });
+    window._d1NakFP=nums.join(',');
 
     /* checkboxes reset + auto-fill */
     const keys=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
