@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BNN + योग-दोष महा-कैलकुलेटर v2.1</title>
+    <title>BNN + योग-दोष महा-कैलकुलेटर v2.3</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; line-height: 1.6; padding: 20px; background-color: #f0f2f5; color: #1d2129; margin: 0; }
         .container { max-width: 950px; margin: 20px auto; background: #ffffff; padding: 35px 40px; border-radius: 10px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
@@ -107,7 +107,7 @@
 <body>
 
 <div class="container">
-    <h1>🕉️ BNN + योग-दोष महा-कैलकुलेटर v2.1</h1>
+    <h1>🕉️ BNN + योग-दोष महा-कैलकुलेटर v2.3</h1>
 
     <!-- Mode Toggle -->
     <div class="mode-toggle">
@@ -175,7 +175,7 @@
         </div>
     </div>
 
-    <!-- ============ MODE 3: Graha Yuddha (v2.1 में नया) ============ -->
+    <!-- ============ MODE 3: Graha Yuddha (v2.1 में नया, v2.3 में साथ बैठे जोड़े) ============ -->
     <div id="mode3-panel" style="display:none;">
         <h2 style="border:none;">⚔️ ग्रह युद्ध रिपोर्ट</h2>
         <div class="instruction">पांच तारा ग्रहों (मंगल, बुध, गुरु, शुक्र, शनि) के किसी जोड़े में देशांतर अंतर <strong>1° से कम</strong> हो तो ग्रह युद्ध होता है। विजेता <strong>B.V. Raman के Shadbala नियम</strong> से तय होता है - देशांतर कम वाला विजेता, अधिक वाला पराजित। इस tab के लिए ऊपर <strong>Astro Code भरना जरूरी</strong> है, क्योंकि युद्ध की जांच के लिए सटीक अंश चाहिए - सिर्फ राशि संख्या से युद्ध नहीं जांचा जा सकता।</div>
@@ -258,6 +258,7 @@ async function calcFromAstroCode(){
     const retroMap={};
     taraBodies.forEach(b=>{ const r=swe.calculatePosition(jd,b,F); retroMap[b]=(typeof r.longitudeSpeed==='number')?(r.longitudeSpeed<0):null; });
     window._gyData={ lagnaLon:lons[0],
+      all:{Surya:lons[1],Chandra:lons[2],Mangal:lons[3],Budh:lons[4],Guru:lons[5],Shukra:lons[6],Shani:lons[7],Rahu:lons[8],Ketu:lons[9]},
       lons:{Mangal:lons[3],Budh:lons[4],Guru:lons[5],Shukra:lons[6],Shani:lons[7]},
       retro:{Mangal:retroMap[SEP.Mars],Budh:retroMap[SEP.Mercury],Guru:retroMap[SEP.Jupiter],Shukra:retroMap[SEP.Venus],Shani:retroMap[SEP.Saturn]} };
   } catch(e) { window._gyData=null; }
@@ -1098,80 +1099,170 @@ document.getElementById('btn-applycode').addEventListener('click', async functio
 </script>
 
 <script>
-/* ============ MODE 3: Graha Yuddha (v2.1) ============ */
+/* ============ MODE 3: Graha Yuddha (v2.3 - chart + साथ बैठे जोड़े) ============ */
 (function(){
   var HN = {Mangal:'मंगल', Budh:'बुध', Guru:'गुरु', Shukra:'शुक्र', Shani:'शनि'};
+  var SHORT = {Surya:'सूर्य', Chandra:'चंद्र', Mangal:'मंगल', Budh:'बुध', Guru:'गुरु', Shukra:'शुक्र', Shani:'शनि', Rahu:'राहु', Ketu:'केतु'};
   var KARAKA = {Mangal:'भूमि, भाई, साहस व ऊर्जा', Budh:'वाणी, व्यापार, पढ़ाई व हिसाब-किताब', Guru:'धर्म, गुरुजन, संतान व धन-विस्तार', Shukra:'विवाह-सुख, वाहन, कला व भोग-विलास', Shani:'नौकरी, मेहनत, बुजुर्ग व धैर्य'};
   var RASHI = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
   var LORD = ['Mangal','Shukra','Budh','Chandra','Surya','Budh','Shukra','Mangal','Guru','Shani','Shani','Guru'];
   var HTHEME = ['स्वयं व शरीर','धन व कुटुंब','भाई व साहस','माता, सुख व वाहन','संतान व बुद्धि','रोग व शत्रु','विवाह व साझेदारी','आयु व गुप्त क्षेत्र','भाग्य व पिता','कर्म व पेशा','लाभ व मित्र','व्यय व विदेश'];
   var TARA = ['Mangal','Budh','Guru','Shukra','Shani'];
+  var ALL = ['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
+  var ANCH = {1:[200,105],2:[105,45],3:[45,105],4:[105,200],5:[45,295],6:[105,355],7:[200,295],8:[295,355],9:[355,295],10:[295,200],11:[355,105],12:[295,45]};
+  var LBL = {1:[186,58],2:[86,22],3:[22,86],4:[86,218],5:[22,314],6:[86,378],7:[186,354],8:[300,378],9:[336,314],10:[300,218],11:[336,86],12:[278,22]};
   window._gyText = '';
-  function sgn(lon){ return Math.floor((((lon % 360) + 360) % 360) / 30); }
-  function fmtLon(lon){
-    var L = ((lon % 360) + 360) % 360, d = Math.floor((L % 30)), m = Math.floor(((L % 30) - d) * 60);
-    return RASHI[sgn(L)] + ' ' + d + '°' + (m < 10 ? '0' : '') + m + "'";
-  }
-  function fmtDiff(d){
-    var deg = Math.floor(d), m = Math.round((d - deg) * 60);
-    if (m === 60) { deg += 1; m = 0; }
-    return deg + '°' + (m < 10 ? '0' : '') + m + "'";
-  }
+  function n360(lon){ return ((lon % 360) + 360) % 360; }
+  function sgn(lon){ return Math.floor(n360(lon) / 30); }
+  function degIn(lon){ var L = n360(lon) % 30, d = Math.floor(L), m = Math.floor((L - d) * 60); return d + '°' + (m < 10 ? '0' : '') + m + "'"; }
+  function fmtLon(lon){ return RASHI[sgn(lon)] + ' ' + degIn(lon); }
+  function fmtDiff(d){ var deg = Math.floor(d), m = Math.round((d - deg) * 60); if (m === 60) { deg += 1; m = 0; } return deg + '°' + (m < 10 ? '0' : '') + m + "'"; }
   function houseOf(sign, lagnaSign){ return ((sign - lagnaSign + 12) % 12) + 1; }
-  function lordHouses(key, lagnaSign){
-    var hs = [];
-    for (var i = 0; i < 12; i++) if (LORD[i] === key) hs.push(houseOf(i, lagnaSign));
-    return hs;
-  }
+  function lordHouses(key, lagnaSign){ var hs = []; for (var i = 0; i < 12; i++) if (LORD[i] === key) hs.push(houseOf(i, lagnaSign)); return hs; }
   function housesText(hs){ return hs.map(function(h){ return h + 'वें'; }).join(' व '); }
+
+  function buildChart(D, warSet){
+    var lagnaSign = sgn(D.lagnaLon);
+    var houses = {};
+    for (var h = 1; h <= 12; h++) houses[h] = [];
+    houses[1].push('लग्न ' + degIn(D.lagnaLon));
+    ALL.forEach(function(k){
+      var lon = D.all[k];
+      if (typeof lon !== 'number') return;
+      var hh = houseOf(sgn(lon), lagnaSign);
+      var label = SHORT[k] + ' ' + degIn(lon);
+      if (D.retro && D.retro[k]) label += ' (व)';
+      houses[hh].push({t: label, war: !!warSet[k]});
+    });
+    var s = '<svg width="400" height="400" viewBox="0 0 400 400" style="max-width:100%;height:auto;display:block;margin:0 auto;">';
+    s += '<rect x="2" y="2" width="396" height="396" fill="#fffdf5" stroke="#8d6e00" stroke-width="2"/>';
+    s += '<path d="M2 2 L398 398 M398 2 L2 398 M200 2 L398 200 L200 398 L2 200 Z" fill="none" stroke="#8d6e00" stroke-width="1.5"/>';
+    for (var hh2 = 1; hh2 <= 12; hh2++) {
+      var signIdx = (lagnaSign + hh2 - 1) % 12;
+      s += '<text x="' + LBL[hh2][0] + '" y="' + LBL[hh2][1] + '" font-size="10.5" fill="#999">' + RASHI[signIdx] + '</text>';
+      var items = houses[hh2], cx = ANCH[hh2][0], cy = ANCH[hh2][1];
+      var startY = cy - (items.length - 1) * 8 + 4;
+      items.forEach(function(it, ix){
+        var txt = typeof it === 'string' ? it : it.t;
+        var war = typeof it === 'string' ? false : it.war;
+        s += '<text x="' + cx + '" y="' + (startY + ix * 16) + '" font-size="12.5" text-anchor="middle" fill="' + (war ? '#c62828' : '#333') + '"' + (war || typeof it === 'string' ? ' font-weight="bold"' : '') + '>' + txt + '</text>';
+      });
+    }
+    s += '</svg>';
+    return s;
+  }
 
   window.gyRender = function(){
     var out = document.getElementById('gy-output');
     if (!out) return;
     var D = window._gyData;
-    if (!D) { out.innerHTML = 'पहले ऊपर Astro Code डालकर 📥 भरो दबाएं - युद्ध रिपोर्ट यहां बनेगी।'; window._gyText = ''; return; }
+    if (!D || !D.all) { out.innerHTML = 'पहले ऊपर Astro Code डालकर 📥 भरो दबाएं - युद्ध रिपोर्ट यहां बनेगी।'; window._gyText = ''; return; }
     var lagnaSign = sgn(D.lagnaLon);
-    var pairs = [], closest = null;
+    var wars = [];
     for (var i = 0; i < TARA.length; i++) for (var j = i + 1; j < TARA.length; j++) {
       var a = TARA[i], b = TARA[j];
-      var raw = Math.abs(D.lons[a] - D.lons[b]);
-      var sep = Math.min(raw, 360 - raw);
-      if (!closest || sep < closest.sep) closest = {a:a, b:b, sep:sep};
-      if (sep < 1) {
-        var win, lose;
-        if (sep < 0.001) { win = null; lose = null; }
+      var raw0 = Math.abs(D.lons[a] - D.lons[b]);
+      var sep0 = Math.min(raw0, 360 - raw0);
+      if (sep0 < 1) {
+        var rec = {a:a, b:b, sep:sep0};
+        if (sep0 < 0.001) { rec.win = null; rec.lose = null; }
         else {
           var la = D.lons[a], lb = D.lons[b];
-          if (raw > 180) { if (la < lb) la += 360; else lb += 360; }
-          if (la < lb) { win = a; lose = b; } else { win = b; lose = a; }
+          if (raw0 > 180) { if (la < lb) la += 360; else lb += 360; }
+          if (la < lb) { rec.win = a; rec.lose = b; } else { rec.win = b; rec.lose = a; }
         }
-        pairs.push({a:a, b:b, sep:sep, win:win, lose:lose});
+        wars.push(rec);
       }
     }
+    var warSet = {};
+    wars.forEach(function(w){ warSet[w.a] = true; warSet[w.b] = true; });
+
+    // साथ बैठे ग्रहों के समूह (एक ही राशि में 2+ ग्रह)
+    var bySign = {};
+    ALL.forEach(function(k){ var sg = sgn(D.all[k]); (bySign[sg] = bySign[sg] || []).push(k); });
+    var groups = Object.keys(bySign).filter(function(sg){ return bySign[sg].length >= 2; })
+      .map(function(sg){ return {sign:+sg, planets:bySign[sg], house:houseOf(+sg, lagnaSign)}; })
+      .sort(function(x, y){ return x.house - y.house; });
+    var countedPairs = [];
+    groups.forEach(function(g){
+      g.pairs = [];
+      for (var x = 0; x < g.planets.length; x++) for (var y = x + 1; y < g.planets.length; y++) {
+        var p1 = g.planets[x], p2 = g.planets[y];
+        var rw = Math.abs(D.all[p1] - D.all[p2]);
+        var sp = Math.min(rw, 360 - rw);
+        var bothTara = TARA.indexOf(p1) >= 0 && TARA.indexOf(p2) >= 0;
+        var pr = {p1:p1, p2:p2, sep:sp, counted:bothTara, war:(bothTara && sp < 1)};
+        g.pairs.push(pr);
+        if (bothTara) countedPairs.push(pr);
+      }
+      g.pairs.sort(function(m, n){ return m.sep - n.sep; });
+    });
+    // राशि-सीमा पार युद्ध (अलग राशियों में पर 1° से कम) - table में अलग से
+    var crossWars = wars.filter(function(w){ return sgn(D.lons[w.a]) !== sgn(D.lons[w.b]); });
+
     var html = '', txt = [];
     txt.push('⚔️ ग्रह युद्ध रिपोर्ट');
     txt.push('लग्न: ' + fmtLon(D.lagnaLon));
-    txt.push('नियम: देशांतर अंतर 1° से कम = युद्ध; विजेता = देशांतर कम वाला (B.V. Raman Shadbala परंपरा)');
+    ALL.forEach(function(k){ txt.push(SHORT[k] + ': ' + fmtLon(D.all[k]) + ((D.retro && D.retro[k]) ? ' (वक्री)' : '')); });
+    txt.push('नियम: साथ बैठे दो तारा ग्रहों में देशांतर अंतर 1° से कम = युद्ध; विजेता = देशांतर कम वाला (B.V. Raman Shadbala परंपरा)');
     txt.push('');
-    if (!pairs.length) {
-      html = '<div style="background:#e8f5e9;border:1.5px solid #66bb6a;border-radius:10px;padding:12px 16px;font-size:15px;">✅ <b>इस कुंडली में ग्रह युद्ध नहीं है।</b><br>सबसे पास का जोड़ा ' + HN[closest.a] + '-' + HN[closest.b] + ' भी ' + fmtDiff(closest.sep) + ' दूर है - युद्ध के लिए 1° से कम अंतर चाहिए। सभी तारा ग्रह स्वतंत्र हैं, किसी का फल युद्ध से घटेगा-बढ़ेगा नहीं।</div>';
-      txt.push('✅ इस कुंडली में ग्रह युद्ध नहीं है।');
-      txt.push('सबसे पास का जोड़ा ' + HN[closest.a] + '-' + HN[closest.b] + ' भी ' + fmtDiff(closest.sep) + ' दूर है।');
+    txt.push('साथ बैठे ग्रहों के जोड़े:');
+    groups.forEach(function(g){
+      txt.push(g.house + 'वां भाव (' + RASHI[g.sign] + ') - ' + g.planets.map(function(k){ return SHORT[k]; }).join(', ') + ' साथ:');
+      g.pairs.forEach(function(pr){
+        var st = pr.counted ? (pr.war ? '⚔️ युद्ध' : 'गिनती में - युद्ध नहीं') : ('युद्ध में नहीं गिना जाता (' + [pr.p1, pr.p2].filter(function(k){ return TARA.indexOf(k) < 0; }).map(function(k){ return SHORT[k]; }).join('-') + ')');
+        txt.push('- ' + SHORT[pr.p1] + ' - ' + SHORT[pr.p2] + ': ' + fmtDiff(pr.sep) + ' - ' + st);
+      });
+    });
+    if (!groups.length) txt.push('(कोई भी दो ग्रह एक ही राशि में साथ नहीं बैठे)');
+    crossWars.forEach(function(w){ txt.push('- ' + HN[w.a] + ' - ' + HN[w.b] + ': ' + fmtDiff(w.sep) + ' - ⚔️ युद्ध (राशि सीमा के आर-पार)'); });
+    txt.push('');
+
+    html += '<div style="margin-bottom:14px;">' + buildChart(D, warSet) + '</div>';
+    html += '<div style="font-size:15.5px;font-weight:bold;color:#4a148c;margin:6px 0;">साथ बैठे ग्रहों के जोड़े</div>';
+    if (!groups.length && !crossWars.length) {
+      html += '<div style="font-size:14.5px;margin-bottom:14px;">कोई भी दो ग्रह एक ही राशि में साथ नहीं बैठे हैं।</div>';
     } else {
-      html = '<div style="font-size:15px;margin-bottom:10px;">⚔️ <b>इस कुंडली में ' + pairs.length + ' ग्रह युद्ध मिला:</b></div>';
-      pairs.forEach(function(pr, idx){
+      html += '<table style="width:100%;border-collapse:collapse;font-size:14.5px;margin-bottom:14px;"><tr style="background:#fdf3dd;"><th style="border:1px solid #e8dcc0;padding:7px 9px;text-align:left;">जोड़ा (साथ बैठे)</th><th style="border:1px solid #e8dcc0;padding:7px 9px;text-align:left;">दूरी</th><th style="border:1px solid #e8dcc0;padding:7px 9px;text-align:left;">स्थिति</th></tr>';
+      groups.forEach(function(g){
+        html += '<tr><td colspan="3" style="border:1px solid #e8dcc0;padding:7px 9px;background:#f7f7f7;font-weight:bold;">' + g.house + 'वां भाव (' + RASHI[g.sign] + ') - ' + g.planets.map(function(k){ return SHORT[k]; }).join(', ') + ' साथ</td></tr>';
+        g.pairs.forEach(function(pr){
+          var st = pr.counted ? (pr.war ? '⚔️ युद्ध' : 'गिनती में - युद्ध नहीं (दूरी अधिक)') : ('युद्ध में नहीं गिना जाता (' + [pr.p1, pr.p2].filter(function(k){ return TARA.indexOf(k) < 0; }).map(function(k){ return SHORT[k]; }).join('-') + ')');
+          html += '<tr' + (pr.war ? ' style="background:#fdecea;font-weight:bold;"' : (pr.counted ? '' : ' style="color:#666;"')) + '><td style="border:1px solid #e8dcc0;padding:7px 9px;">' + SHORT[pr.p1] + ' - ' + SHORT[pr.p2] + '</td><td style="border:1px solid #e8dcc0;padding:7px 9px;">' + fmtDiff(pr.sep) + '</td><td style="border:1px solid #e8dcc0;padding:7px 9px;">' + st + '</td></tr>';
+        });
+      });
+      crossWars.forEach(function(w){
+        html += '<tr style="background:#fdecea;font-weight:bold;"><td style="border:1px solid #e8dcc0;padding:7px 9px;">' + HN[w.a] + ' - ' + HN[w.b] + ' (राशि सीमा के आर-पार)</td><td style="border:1px solid #e8dcc0;padding:7px 9px;">' + fmtDiff(w.sep) + '</td><td style="border:1px solid #e8dcc0;padding:7px 9px;">⚔️ युद्ध</td></tr>';
+      });
+      html += '</table>';
+    }
+    html += '<div style="font-size:13.5px;color:#555;margin-bottom:14px;">अलग-अलग भावों में बैठे ग्रहों के जोड़े table में नहीं आते - युद्ध की संभावना साथ बैठे ग्रहों में होती है। सूर्य, चंद्र, राहु व केतु ग्रह युद्ध में भाग नहीं लेते - उनसे बने जोड़े गिनती से बाहर रहते हैं।</div>';
+
+    if (!wars.length) {
+      if (countedPairs.length) {
+        countedPairs.sort(function(m, n){ return m.sep - n.sep; });
+        var c = countedPairs[0];
+        html += '<div style="background:#e8f5e9;border:1.5px solid #66bb6a;border-radius:10px;padding:12px 16px;font-size:15px;">✅ <b>परिणाम: इस कुंडली में ग्रह युद्ध नहीं है।</b><br>गिनती में आने वाले तारा जोड़ों में सबसे पास का जोड़ा ' + SHORT[c.p1] + '-' + SHORT[c.p2] + ' भी ' + fmtDiff(c.sep) + ' दूर है - युद्ध के लिए 1° से कम अंतर चाहिए। सूर्य, चंद्र, राहु या केतु से बनी नजदीकी युति युद्ध नहीं गिनी जाती।</div>';
+        txt.push('✅ परिणाम: इस कुंडली में ग्रह युद्ध नहीं है। सबसे पास का गिना जाने वाला तारा जोड़ा ' + SHORT[c.p1] + '-' + SHORT[c.p2] + ' ' + fmtDiff(c.sep) + ' दूर है।');
+      } else {
+        html += '<div style="background:#e8f5e9;border:1.5px solid #66bb6a;border-radius:10px;padding:12px 16px;font-size:15px;">✅ <b>परिणाम: इस कुंडली में ग्रह युद्ध नहीं है।</b><br>कोई भी दो तारा ग्रह एक ही राशि में साथ नहीं बैठे हैं, इसलिए युद्ध का प्रश्न ही नहीं उठता।</div>';
+        txt.push('✅ परिणाम: इस कुंडली में ग्रह युद्ध नहीं है - कोई भी दो तारा ग्रह साथ नहीं बैठे।');
+      }
+    } else {
+      html += '<div style="background:#fff3e0;border:1.5px solid #ffb74d;border-radius:10px;padding:12px 16px;font-size:15px;margin-bottom:12px;">⚔️ <b>परिणाम: इस कुंडली में ' + wars.length + ' ग्रह युद्ध मिला:</b></div>';
+      txt.push('⚔️ परिणाम: इस कुंडली में ' + wars.length + ' ग्रह युद्ध मिला।');
+      wars.forEach(function(pr, idx){
         var warHouse = houseOf(sgn(D.lons[pr.a]), lagnaSign);
-        html += '<table style="width:100%;border-collapse:collapse;font-size:14.5px;margin-bottom:10px;"><tr style="background:#fdf3dd;"><th style="border:1px solid #e8dcc0;padding:7px 9px;text-align:left;">युद्ध का जोड़ा</th><th style="border:1px solid #e8dcc0;padding:7px 9px;text-align:left;">स्थिति</th><th style="border:1px solid #e8dcc0;padding:7px 9px;text-align:left;">देशांतर</th><th style="border:1px solid #e8dcc0;padding:7px 9px;text-align:left;">अंतर</th></tr>';
-        html += '<tr><td style="border:1px solid #e8dcc0;padding:7px 9px;">' + HN[pr.a] + ' - ' + HN[pr.b] + '</td><td style="border:1px solid #e8dcc0;padding:7px 9px;">' + RASHI[sgn(D.lons[pr.a])] + ' - ' + warHouse + 'वां भाव</td><td style="border:1px solid #e8dcc0;padding:7px 9px;">' + HN[pr.a] + ' ' + fmtLon(D.lons[pr.a]) + ' • ' + HN[pr.b] + ' ' + fmtLon(D.lons[pr.b]) + '</td><td style="border:1px solid #e8dcc0;padding:7px 9px;"><b>' + fmtDiff(pr.sep) + '</b></td></tr></table>';
         txt.push('युद्ध ' + (idx + 1) + ': ' + HN[pr.a] + ' (' + fmtLon(D.lons[pr.a]) + ') - ' + HN[pr.b] + ' (' + fmtLon(D.lons[pr.b]) + '), अंतर ' + fmtDiff(pr.sep) + ', ' + warHouse + 'वें भाव (' + HTHEME[warHouse - 1] + ') में');
         if (!pr.win) {
-          html += '<div style="background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;padding:10px 14px;font-size:14.5px;margin-bottom:12px;">दोनों ग्रह बिल्कुल एक ही अंश पर हैं - पूर्ण युति, विजेता अनिर्णित। दोनों के विषय पूरी तरह घुले-मिले फल देंगे।</div>';
+          html += '<div style="background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;padding:10px 14px;font-size:14.5px;margin-bottom:12px;">' + HN[pr.a] + ' - ' + HN[pr.b] + ': दोनों ग्रह बिल्कुल एक ही अंश पर हैं - पूर्ण युति, विजेता अनिर्णित। दोनों के विषय पूरी तरह घुले-मिले फल देंगे।</div>';
           txt.push('दोनों ग्रह बिल्कुल एक ही अंश पर - विजेता अनिर्णित।');
         } else {
           var W = pr.win, L = pr.lose;
           var wLord = lordHouses(W, lagnaSign), lLord = lordHouses(L, lagnaSign);
           var wHouse = houseOf(sgn(D.lons[W]), lagnaSign), lHouse = houseOf(sgn(D.lons[L]), lagnaSign);
           var wRetro = D.retro && D.retro[W], lRetro = D.retro && D.retro[L];
+          html += '<div style="font-size:15px;margin:10px 0 8px;"><b>' + HN[pr.a] + ' - ' + HN[pr.b] + '</b> (' + RASHI[sgn(D.lons[pr.a])] + ', ' + warHouse + 'वां भाव, अंतर ' + fmtDiff(pr.sep) + ')</div>';
           html += '<div style="background:#e8f5e9;border:1.5px solid #66bb6a;border-radius:10px;padding:10px 14px;font-size:14.5px;margin-bottom:8px;">🏆 <b>विजेता - ' + HN[W] + '</b> (देशांतर कम वाला)। ' + HN[W] + ' इस कुंडली में ' + housesText(wLord) + ' भाव का स्वामी है और ' + wHouse + 'वें भाव (' + HTHEME[wHouse - 1] + ') में स्थित है - युद्ध जीतने से ' + HN[W] + ' के विषयों (' + KARAKA[W] + ') में संघर्ष के बाद सफलता व बल मिलेगा; इसकी दशा-अंतर्दशा अपेक्षाकृत शुभ रहेगी।</div>';
           html += '<div style="background:#fdecea;border:1.5px solid #e57373;border-radius:10px;padding:10px 14px;font-size:14.5px;margin-bottom:8px;">⚠️ <b>पराजित - ' + HN[L] + '</b> (देशांतर अधिक वाला)। ' + HN[L] + ' इस कुंडली में ' + housesText(lLord) + ' भाव का स्वामी है और ' + lHouse + 'वें भाव (' + HTHEME[lHouse - 1] + ') में स्थित है - इन क्षेत्रों में बाधा, विलंब या अपेक्षित फल में कमी का रंग रहेगा; ' + HN[L] + ' के विषयों (' + KARAKA[L] + ') में विशेष सावधानी रखें और इसकी दशा-अंतर्दशा में बड़े निर्णय सोचकर लें।' + (lRetro ? ' <b>टिप्पणी:</b> पराजित ग्रह वक्री है - शास्त्रों में ऐसी हार का नुकसान सीमित माना गया है।' : '') + (wRetro ? ' विजेता ग्रह वक्री है - उसकी जीत का फल उतार-चढ़ाव के साथ मिलेगा।' : '') + '</div>';
           html += '<div style="font-size:14.5px;margin-bottom:14px;">📌 <b>टिप्पणी:</b> युद्ध ' + warHouse + 'वें भाव (' + HTHEME[warHouse - 1] + ') में हो रहा है - इस क्षेत्र के मामलों में दोनों ग्रहों के विषय आपस में टकराएंगे, और पराजित ' + HN[L] + ' के विषय विजेता ' + HN[W] + ' के विषयों के सामने दब सकते हैं।</div>';
