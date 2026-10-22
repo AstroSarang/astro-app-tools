@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🪐 उपग्रह व विशेष लग्न v1</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans Devanagari','Nirmala UI',sans-serif;background:#f7f1e3;color:#263238;padding:12px}
+.wrap{max-width:460px;margin:0 auto}
+header{background:linear-gradient(135deg,#4a148c,#7b1e1e);color:#fff;padding:15px;border-radius:14px;text-align:center;margin-bottom:12px}
+header h1{font-size:20px}
+header p{font-size:12.5px;opacity:.93;margin-top:3px}
+.card{background:#fff;border-radius:12px;padding:13px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.card h2{font-size:15.5px;margin-bottom:9px;color:#4a148c}
+.card.g h2{color:#1b5e20}
+label{font-size:13px;font-weight:600;display:block;margin-bottom:5px}
+input[type=text]{width:100%;padding:9px;border:1.6px solid #b39ddb;border-radius:8px;font-size:13.5px;font-family:monospace}
+button{cursor:pointer;border:none;border-radius:9px;font-family:inherit}
+.btn-main{background:linear-gradient(135deg,#4a148c,#7b1e1e);color:#fff;padding:10px 18px;font-size:14.5px;font-weight:700;width:100%;margin-top:9px}
+.btn-tool{background:#ede7f6;color:#4a148c;padding:8px 13px;font-size:13px;font-weight:700;border:1.4px solid #b39ddb}
+.btn-tool.g{background:#e8f5e9;color:#1b5e20;border-color:#a5d6a7}
+.status{font-size:12.5px;text-align:center;margin:8px 0 2px;color:#666}
+.err{display:none;background:#ffebee;color:#b71c1c;border:1.4px solid #ef9a9a;border-radius:9px;padding:9px 11px;font-size:13px;margin-bottom:10px}
+.info{font-size:13px;background:#f3e5f5;border-radius:9px;padding:9px 11px;line-height:1.6;margin-bottom:12px}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tabbtn{flex:1;padding:11px;font-size:15px;font-weight:700;background:#fff;color:#666;border:2px solid #d7ccc8;border-radius:11px}
+.tabbtn.active{background:linear-gradient(135deg,#4a148c,#7b1e1e);color:#fff;border-color:#4a148c}
+.tabbtn.active.g{background:linear-gradient(135deg,#1b5e20,#33691e);border-color:#1b5e20}
+.tabpage{display:none}
+.tabpage.active{display:block}
+table{width:100%;border-collapse:collapse;font-size:12.6px}
+th,td{border:1px solid #e6ddc8;padding:6px 7px;text-align:left;vertical-align:top}
+th{background:#f3e5f5;color:#4a148c}
+.gtab th{background:#e8f5e9;color:#1b5e20}
+td b.nm{font-size:13.4px}
+.small{font-size:11.6px;color:#777}
+.ph{color:#4a6741;font-size:12.4px}
+.box{border-radius:12px;padding:12px;margin-bottom:12px;font-size:13.3px;line-height:1.65}
+.note{background:#fff3e0;border:1.6px solid #fb8c00}
+.yogi{background:#e8f5e9;border:1.6px solid #43a047}
+.warn{background:#fce4ec;border:1.6px solid #c62828}
+.chart{display:flex;justify-content:center}
+.btnrow{display:flex;gap:8px;margin:2px 0 12px}
+.btnrow button{flex:1}
+.foot{text-align:center;font-size:12px;color:#90a4ae;line-height:1.6;padding-bottom:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>🪐 उपग्रह व विशेष लग्न</h1>
+<p>11 उपग्रह + 11 विशेष लग्न/स्फुट + योगी व मारक बिंदु - फलित सहित • v1</p>
+</header>
+
+<div class="card">
+<label>🔢 Astro Code</label>
+<input type="text" id="astrocode" placeholder="AS1-...">
+<button class="btn-main" id="btn-fill">📥 भरो व गणना करो</button>
+<div class="status" id="status">Ephemeris लोड हो रहा है...</div>
+</div>
+<div class="err" id="errmsg"></div>
+<div class="info" id="birthinfo" style="display:none"></div>
+
+<div class="tabs">
+<button class="tabbtn active" data-tab="tab1">🪐 उपग्रह</button>
+<button class="tabbtn g" data-tab="tab2">⭐ विशेष लग्न</button>
+</div>
+
+<div class="tabpage active" id="tab1">
+  <div id="tab1body">
+    <div class="card">
+      <h2>जन्म कुंडली - मांदि व गुलिक सहित</h2>
+      <div class="chart" id="chartbox"></div>
+      <p class="small" style="text-align:center">लाल = गुलिक व मांदि • नीचे सुनहरा अंक = राशि क्रमांक</p>
+    </div>
+    <div class="card">
+      <h2>उपग्रह स्थिति व फलित</h2>
+      <table><tr><th style="width:19%">उपग्रह</th><th style="width:30%">स्थिति</th><th>फलित</th></tr><tbody id="upbody"></tbody></table>
+    </div>
+    <div class="box note"><b>टिप्पणी:</b> मांदि व गुलिक सबसे प्रभावी उपग्रह माने जाते हैं - जिस भाव में हों, उस भाव के फलों में विलंब-बाधा का रंग आता है; बाकी उपग्रह अपने भाव अनुसार सूक्ष्म संकेत देते हैं।</div>
+  </div>
+  <div class="btnrow">
+    <button class="btn-tool" id="shot1">📸 Screenshot</button>
+    <button class="btn-tool" id="txt1">💾 TXT</button>
+  </div>
+</div>
+
+<div class="tabpage" id="tab2">
+  <div id="tab2body">
+    <div class="card g">
+      <h2>विशेष लग्न स्थिति व फलित</h2>
+      <table class="gtab"><tr><th style="width:19%">लग्न / बिंदु</th><th style="width:30%">स्थिति</th><th>फलित</th></tr><tbody id="spbody"></tbody></table>
+    </div>
+    <div class="box yogi" id="yogibox"></div>
+    <div class="box warn" id="marakbox"></div>
+  </div>
+  <div class="btnrow">
+    <button class="btn-tool g" id="shot2">📸 Screenshot</button>
+    <button class="btn-tool g" id="txt2">💾 TXT</button>
+  </div>
+</div>
+
+<p class="foot">गणना तुम्हारे JyotishApp की विधि अनुसार - सूर्योदय/सूर्यास्त वैदिक (geometric) पद्धति से।<br>Astro Code भरते ही किसी की भी कुंडली के सारे बिंदु व फलित अपने आप बनेंगे।</p>
+</div>
+
+<script type="module">
+const EPHEM_CDN='https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+let swe=null,SEP=null,SLP=null,SID_MODE_LAHIRI=1;
+const RASHI=['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+const NAK=['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पू.फाल्गुनी','उ.फाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पू.षाढ़ा','उ.षाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पू.भाद्रपद','उ.भाद्रपद','रेवती'];
+const NAKL=['केतु','शुक्र','सूर्य','चंद्र','मंगल','राहु','गुरु','शनि','बुध'];
+const LORDN=['मंगल','शुक्र','बुध','चंद्र','सूर्य','बुध','शुक्र','मंगल','गुरु','शनि','शनि','गुरु'];
+const LORDNUM=[3,6,4,2,1,4,6,3,5,7,7,5];
+const KALA={1:30,2:16,3:6,4:8,5:10,6:12,7:1};
+const DOMAIN=['स्वयं व शरीर','धन व कुटुंब','पराक्रम व भाई-बहन','सुख, घर व माता','संतान व बुद्धि','रोग व शत्रु','दांपत्य व साझेदारी','आयु व गुप्त क्षेत्र','भाग्य व पिता','कर्म व पेशा','लाभ व मित्र','व्यय व विदेश'];
+const DAGDHA=[[7,10],[9,12],[5,10],[2,11],[3,6],[1,5],[4,9],[3,6],[5,8],[5,8],[9,12],[7,10],[2,5],[3,6,9,12],[0],[7,10],[9,12],[5,10],[2,11],[3,6],[1,5],[4,9],[3,6],[5,8],[5,8],[9,12],[7,10],[2,5],[3,6,9,12],[0]];
+const VIMY={केतु:7,शुक्र:20,सूर्य:6,चंद्र:10,मंगल:7,राहु:18,गुरु:16,शनि:19,बुध:17};
+const norm=d=>((d%360)+360)%360;
+const sgn=l=>Math.floor(norm(l)/30)%12;
+const degIn=l=>norm(l)%30;
+function fmtDMS(lon){ lon=norm(lon); const s=sgn(lon); let d=degIn(lon); let dd=Math.floor(d), mm=Math.floor((d-dd)*60), ss=Math.round(((d-dd)*60-mm)*60); if(ss===60){ss=0;mm++;} if(mm===60){mm=0;dd++;} return RASHI[s]+' '+dd+'°'+String(mm).padStart(2,'0')+'\u2032'+String(ss).padStart(2,'0')+'\u2033'; }
+function fmtShort(lon){ const d=degIn(lon); const dd=Math.floor(d); const mm=Math.floor((d-dd)*60); return dd+'°'+String(mm).padStart(2,'0')+'\u2032'; }
+function nakOf(lon){ const w=360/27; const ni=Math.floor(norm(lon)/w)%27; const pada=Math.floor((norm(lon)%w)/(w/4))+1; return {ni, pada, name:NAK[ni], lord:NAKL[ni%9]}; }
+function bhavaOf(lon,lagLon){ return ((sgn(lon)-sgn(lagLon))%12+12)%12+1; }
+function showErr(t){ const e=document.getElementById('errmsg'); e.textContent=t; e.style.display='block'; }
+function hideErr(){ document.getElementById('errmsg').style.display='none'; }
+
+(async function(){ const st=document.getElementById('status');
+  try{ const m=await import(/* @vite-ignore */EPHEM_CDN); swe=new m.SwissEphemeris(); await swe.init(); SEP=m.Planet; SLP=m.LunarPoint; try{SID_MODE_LAHIRI=m.SiderealMode.Lahiri;}catch(e){SID_MODE_LAHIRI=1;} st.textContent='✅ Swiss Ephemeris तैयार है - Astro Code भरकर भरो दबाएं'; }
+  catch(e){ st.textContent='❌ Ephemeris लोड नहीं हुआ: '+e.message; }
+})();
+
+function parseCode(code){
+  const m=/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/.exec((code||'').trim());
+  if(!m) return null;
+  const d8=m[1],t6=m[2],tz=m[3],lat4=m[4],latDir=m[5],lon5=m[6],lonDir=m[7];
+  const Y=+d8.slice(0,4), Mo=+d8.slice(4,6), D=+d8.slice(6,8);
+  const h=+t6.slice(0,2), mi=+t6.slice(2,4), s=+t6.slice(4,6);
+  const tzOff=(+tz.slice(1,3))*60+(+tz.slice(3,5)); const tzMin=tz[0]==='-'?-tzOff:tzOff;
+  let lat=(+lat4.slice(0,2))+(+lat4.slice(2,4))/60; if(latDir==='S') lat=-lat;
+  let lon=(+lon5.slice(0,3))+(+lon5.slice(3,5))/60; if(lonDir==='W') lon=-lon;
+  return {Y,Mo,D,h,mi,s,tzMin,lat,lon};
+}
+function jdFromUTCms(ms){ return ms/86400000+2440587.5; }
+function sidLon(jd,body){ const aya=swe.getAyanamsa(jd); const p=swe.calculatePosition(jd,body); return norm(p.longitude-aya); }
+function ascSid(jd,lat,lon){ const aya=swe.getAyanamsa(jd); const hs=swe.calculateHouses(jd,lat,lon,'P'); return norm(hs.ascendant-aya); }
+function sunRADec(jd){
+  const aya0=0; const p=swe.calculatePosition(jd,SEP.Sun); const lam=p.longitude*Math.PI/180;
+  const T=(jd-2451545)/36525; const eps=(23.4392911-0.0130042*T)*Math.PI/180;
+  let ra=Math.atan2(Math.cos(eps)*Math.sin(lam),Math.cos(lam))*180/Math.PI; if(ra<0) ra+=360;
+  const dec=Math.asin(Math.sin(eps)*Math.sin(lam))*180/Math.PI;
+  return {ra,dec};
+}
+function lstH(jd,lon){ let v=(swe.siderealTime(jd)+lon/15)%24; if(v<0)v+=24; return v; }
+function sunEvent(jdMid,lon,lat,rise){
+  // geometric sunrise/sunset: Sun centre at altitude 0. jdMid = approx JD (UT) near the event.
+  let jd=jdMid;
+  for(let k=0;k<8;k++){
+    const {ra,dec}=sunRADec(jd);
+    let cosH=-Math.tan(lat*Math.PI/180)*Math.tan(dec*Math.PI/180);
+    cosH=Math.max(-1,Math.min(1,cosH));
+    const H=Math.acos(cosH)*180/Math.PI;
+    const target=((rise?ra-H:ra+H)/15%24+24)%24;
+    let err=target-lstH(jd,lon); err=((err+36)%24)-12;
+    jd+=err/1.0027379/24;
+    if(Math.abs(err)<0.00002) break;
+  }
+  return jd;
+}
+function d3Sign(lon){ const s=sgn(lon), pada=Math.floor(degIn(lon)/10); return (s+pada*4)%12; }
+function d9Sign(lon){ const s=sgn(lon), pada=Math.floor(degIn(lon)/(30/9)); const st=s%3===0?s:(s%3===1?(s+8)%12:(s+4)%12); return (st+pada)%12; }
+function currentMD(moonLon,birthMs){
+  const nak=nakOf(moonLon); const w=360/27; const f=(norm(moonLon)%w)/w;
+  let idx=nak.ni%9; let remain=VIMY[NAKL[idx]]*(1-f);
+  let t=birthMs; const now=Date.now();
+  for(let k=0;k<20;k++){
+    const lord=NAKL[idx%9]; const durMs=remain*365.256364*86400000;
+    if(now>=t && now<t+durMs) return lord;
+    t+=durMs; idx++; remain=VIMY[NAKL[idx%9]];
+    if(t>now+40*365.25*86400000) break;
+  }
+  return null;
+}
+let LAST=null;
+function computeAll(B){
+  swe.setSiderealMode(SID_MODE_LAHIRI);
+  const birthMs=Date.UTC(B.Y,B.Mo-1,B.D,B.h,B.mi,B.s)-B.tzMin*60000;
+  const jdB=jdFromUTCms(birthMs);
+  const Su=sidLon(jdB,SEP.Sun), Mo=sidLon(jdB,SEP.Moon), Ma=sidLon(jdB,SEP.Mars), Me=sidLon(jdB,SEP.Mercury),
+        Ju=sidLon(jdB,SEP.Jupiter), Ve=sidLon(jdB,SEP.Venus), Sa=sidLon(jdB,SEP.Saturn), Ra=sidLon(jdB,SLP.MeanNode);
+  const Ke=norm(Ra+180), Lag=ascSid(jdB,B.lat,B.lon);
+  // --- sunrise / sunset (geometric, vedic) ---
+  const lb=new Date(birthMs+B.tzMin*60000);
+  const rises=[], sets=[];
+  for(let off=-1;off<=1;off++){
+    const d=new Date(Date.UTC(lb.getUTCFullYear(),lb.getUTCMonth(),lb.getUTCDate()+off));
+    const y=d.getUTCFullYear(), mo=d.getUTCMonth(), da=d.getUTCDate();
+    rises.push(sunEvent(jdFromUTCms(Date.UTC(y,mo,da,6)-B.tzMin*60000), B.lon, B.lat, true));
+    sets.push(sunEvent(jdFromUTCms(Date.UTC(y,mo,da,18)-B.tzMin*60000), B.lon, B.lat, false));
+  }
+  rises.sort((a,b)=>a-b); sets.sort((a,b)=>a-b);
+  let sr=null; for(const r of rises){ if(r<=jdB+1e-9) sr=r; }
+  if(sr===null) sr=rises[0];
+  let ss=null; for(const s of sets){ if(s>sr){ ss=s; break; } }
+  let sr2=null; for(const r of rises){ if(r>ss){ sr2=r; break; } }
+  const w=new Date((sr-2440587.5)*86400000+B.tzMin*60000).getUTCDay();
+  const isDay=jdB<ss;
+  const pStart=isDay?sr:ss, pEnd=isDay?ss:sr2, dur=(pEnd-pStart)/8;
+  const i3=isDay?w:(w+4)%7;
+  const partOfSlot=s=>{ for(let p=1;p<=8;p++){ if((i3+p-1)%8===s) return p; } return 1; };
+  const momentJD=(slot,frac)=>pStart+(partOfSlot(slot)-1+frac)*dur;
+  const ascAt=jd=>ascSid(jd,B.lat,B.lon);
+  // --- upagrahas ---
+  const dhuma=norm(Su+133.3333333);
+  const vyatipata=norm(360-dhuma);
+  const parivesha=norm(vyatipata+180);
+  const indrachapa=norm(360-parivesha);
+  const upaketu=norm(Su+330);
+  const mandi=ascAt(momentJD(6,0.5));
+  const gulika=ascAt(momentJD(6,0));
+  const kaala=ascAt(momentJD(0,0));
+  const mrityu=ascAt(momentJD(2,0));
+  const artha=ascAt(momentJD(3,0));
+  const yama=ascAt(momentJD(4,0));
+  const UP=[['मांदि',mandi],['गुलिक',gulika],['धूम',dhuma],['व्यतिपात',vyatipata],['परिधि',parivesha],['इंद्रचाप',indrachapa],['उपकेतु',upaketu],['काल',kaala],['मृत्यु',mrityu],['अर्थप्रहर',artha],['यमघंटक',yama]];
+  // --- special lagnas ---
+  const SunSr=sidLon(sr,SEP.Sun);
+  const elMin=(jdB-sr)*1440, elSec=elMin*60;
+  const BL=norm(SunSr+elMin/4), HL=norm(SunSr+elMin*0.5), GL=norm(SunSr+elMin*1.25), VL=norm(SunSr+elMin*5);
+  let a=sgn(Lag)+1, b=sgn(HL)+1; const z2=a%2===1, z3=b%2===1;
+  if(!z2)a=13-a; if(!z3)b=13-b;
+  let ab=z2===z3?a+b:Math.abs(a-b); while(ab>12)ab-=12; if(ab===0)ab=12; if(!z2)ab=Math.abs(13-ab);
+  let vSign=ab-1; if(vSign<0)vSign=0; if(vSign>11)vSign=0;
+  const Varnada=vSign*30+degIn(Lag);
+  const wNak=360/27; const moNakDeg=norm(Mo)%wNak;
+  const Sree=norm(Lag+moNakDeg*27);
+  const sunS=sgn(Su); const ppOff=(sunS+1)%3===1?120:((sunS+1)%3===2?240:0);
+  const PP=norm(Su+ppOff+elSec/12);
+  const wrap9=x=>{ while(x>12)x-=12; return x; };
+  const m2=wrap9(sgn(Lag)+9), m3=wrap9(sgn(Mo)+9);
+  let m4=KALA[LORDNUM[m2-1]]+KALA[LORDNUM[m3-1]]+sgn(Mo); while(m4>12)m4-=12;
+  let induSign=m4-1; if(induSign<0)induSign=0;
+  const Indu=induSign*30+degIn(Mo);
+  const Bhrigu=norm(Ra+norm(Mo-Ra)/2);
+  const Beeja=norm(Su+Ve+Ju), Kshetra=norm(Mo+Ma+Ju);
+  const SP=[['भाव लग्न',BL],['होरा लग्न',HL],['घटि लग्न',GL],['विघटि लग्न',VL],['वर्णद लग्न',Varnada],['श्री लग्न',Sree],['प्राणपद लग्न',PP],['इंदु लग्न',Indu],['भृगु बिंदु',Bhrigu],['बीज स्फुट',Beeja],['क्षेत्र स्फुट',Kshetra]];
+  const yogiPt=norm(Su+Mo+93.3333333), avaPt=norm(yogiPt+186.6666667);
+  const yogi=nakOf(yogiPt).lord, saha=LORDN[sgn(yogiPt)], ava=nakOf(avaPt).lord;
+  const d22L=LORDN[(d3Sign(Lag)+7)%12], d22M=LORDN[(d3Sign(Mo)+7)%12];
+  const n64L=LORDN[(d9Sign(Lag)+3)%12], n64M=LORDN[(d9Sign(Mo)+3)%12];
+  const tithi=Math.floor(norm(Mo-Su)/12)%30;
+  const dagdha=DAGDHA[tithi].filter(x=>x>0).map(x=>RASHI[x-1]);
+  const mdLord=currentMD(Mo,birthMs);
+  return {B,birthMs,jdB,Su,Mo,Ma,Me,Ju,Ve,Sa,Ra,Ke,Lag,UP,SP,yogiPt,avaPt,yogi,saha,ava,d22L,d22M,n64L,n64M,dagdha,mdLord,
+          sr,ss,isDay,sunriseTxt:new Date((sr-2440587.5)*86400000+B.tzMin*60000)};
+}
+// ---------------- फलित ----------------
+const MANDI12=['मांदि लग्न में - शरीर व स्वास्थ्य में आलस्य-थकान का रंग; स्वयं के प्रयासों में विलंब, पर धैर्य से सफलता मिलेगी।','मांदि धन भाव में - धन संचय धीरे होगा, वाणी में कटुता से बचना होगा; कुटुंब में मतभेद संभव।','मांदि पराक्रम भाव में - प्रयासों में रुकावट, भाई-बहनों से मतभेद संभव; साहस धैर्य से ही फल देगा।','मांदि सुख भाव में - घर-परिवार के सुख में कमी का अनुभव, माता के स्वास्थ्य की चिंता; संपत्ति के काम धीरे बनेंगे।','मांदि पंचम में - संतान व शिक्षा में विलंब-बाधा; सट्टा-जोखिम से दूर रहें, बुद्धि परिश्रम से चमकेगी।','मांदि षष्ठ में - शत्रु व रोग पर विजय धीरे मिलेगी; ऋण सोचकर लें, सेवा-क्षेत्र में नाम होगा।','मांदि सप्तम में - दांपत्य व साझेदारी में विलंब व ठंडक; जीवनसाथी के स्वास्थ्य की सतर्कता रखें।','मांदि अष्टम में - आयु भाव में मांदि दीर्घायु का भी संकेत है, पर अचानक घटनाओं व स्वास्थ्य में सतर्कता आवश्यक है।','मांदि भाग्य भाव में - भाग्योदय में विलंब, पिता व गुरुजनों से मतभेद संभव; धर्म-कर्म से भाग्य जागेगा।','मांदि कर्म भाव में - पेशे में बाधा और विलंब के बाद स्थिर सफलता; परिश्रम अधिक, फल धीरे मिलेगा।','मांदि लाभ भाव में - लाभ धीरे-धीरे व परिश्रम से मिलेगा; बड़े भाई-बहनों से मतभेद संभव।','मांदि व्यय भाव में - खर्चों पर नियंत्रण कठिन, विदेश-यात्रा में बाधा संभव; आध्यात्म की ओर झुकाव बढ़ेगा।'];
+const GULIKA12=['गुलिक लग्न में - व्यक्तित्व पर गंभीरता की छाप; स्वास्थ्य में छोटी-मोटी परेशानियां, पर आयु मजबूत रहेगी।','गुलिक धन भाव में - धन आने में अड़चनें, वाणी से विवाद संभव; पैतृक धन में विलंब होगा।','गुलिक तृतीय में - पराक्रम में उतार-चढ़ाव, भाई-बहनों के साथ खटपट संभव; यात्राओं में सावधानी रखें।','गुलिक चतुर्थ में - घर के सुख में अशांति का रंग, वाहन-संपत्ति के कामों में बाधा; माता का स्वास्थ्य देखें।','गुलिक पंचम में - संतान पक्ष में चिंता-विलंब, शिक्षा में एकाग्रता की कमी; मंत्र-जप से लाभ होगा।','गुलिक षष्ठ में - शत्रु पराजित होंगे, पर रोग-ऋण का बोझ धीरे उतरेगा; अनुशासन ही उपाय है।','गुलिक सप्तम में - विवाह में विलंब या दांपत्य में कटुता का रंग; साझेदारी सोचकर करें।','गुलिक अष्टम में - गुप्त भय व अचानक बाधाओं का संकेत; स्वास्थ्य व दुर्घटना में विशेष सतर्कता रखें।','गुलिक भाग्य भाव में - भाग्य में रुकावट, पिता-गुरु पक्ष में मतभेद संभव; धैर्य से भाग्य खुलेगा।','गुलिक कर्म भाव में - पद-प्रतिष्ठा में बाधाएं, अधिकारियों से मतभेद संभव; मेहनत ही मार्ग है।','गुलिक लाभ भाव में - लाभ में कटौती व मित्रों से धोखे की संभावना; अपेक्षाएं सीमित रखें।','गुलिक व्यय भाव में - अनावश्यक खर्च व नींद की समस्या; विदेश कार्यों में बाधा, दान से शांति मिलेगी।'];
+const CATP={
+'धूम':{kendra:'धूम केंद्र भाव ({d}) में धुंध व अस्थिरता देता है - निर्णय स्पष्टता से व धैर्य से लें, पारदर्शिता रखें।',trikona:'धूम त्रिकोण ({d}) में - इस क्षेत्र की योजनाओं में धुंध रहेगी, पारदर्शिता से ही लाभ होगा।',upachaya:'धूम उपचय भाव ({d}) में - आरंभ में धुंध रहेगी, समय के साथ स्थिति स्पष्ट होती जाएगी।',dusthana:'धूम त्रिक भाव ({d}) में - गुप्त अस्थिरता व भ्रम का संकेत; जल्दबाजी से बचें।',other:'धूम {d} के भाव में - इस क्षेत्र में धुंध व अस्थिरता रहेगी, निर्णय धैर्य से लें।'},
+'व्यतिपात':{kendra:'व्यतिपात केंद्र ({d}) में अचानक उतार-चढ़ाव देता है - बड़े निर्णय सोचकर लें।',trikona:'व्यतिपात त्रिकोण ({d}) में - इस क्षेत्र में अचानक बदलाव संभव है, लचीलापन रखें।',upachaya:'व्यतिपात उपचय ({d}) में - उतार-चढ़ाव के बाद स्थिति सुधरेगी।',dusthana:'व्यतिपात त्रिक भाव ({d}) में - अचानक बाधाओं का संकेत, सावधानी आवश्यक है।',other:'व्यतिपात {d} के भाव में अचानक उतार-चढ़ाव देता है - बोलने और खर्च में संयम रखें।'},
+'परिधि':{kendra:'परिधि केंद्र ({d}) में रक्षा-कवच का काम देती है - बाधाओं से बचाव होगा।',trikona:'परिधि त्रिकोण ({d}) में शुभ रक्षा देती है - इस क्षेत्र में संरक्षण मिलेगा।',upachaya:'परिधि उपचय ({d}) में - धीरे-धीरे सुरक्षा व स्थिरता बढ़ेगी।',dusthana:'परिधि त्रिक भाव ({d}) में रक्षा-कवच का काम देती है, फिर भी इस क्षेत्र में सतर्कता रखनी होगी।',other:'परिधि {d} के भाव में रक्षा का घेरा बनाती है - फिर भी सतर्क रहें।'},
+'इंद्रचाप':{kendra:'इंद्रचाप केंद्र ({d}) में - इस क्षेत्र में छिपी चमक है; आरंभिक संघर्ष के बाद मान-प्रतिष्ठा मिलेगी।',trikona:'इंद्रचाप त्रिकोण ({d}) में - भाग्य की छिपी किरण इस क्षेत्र से चमकेगी।',upachaya:'इंद्रचाप उपचय ({d}) में - समय के साथ इस क्षेत्र में चमक बढ़ेगी।',dusthana:'इंद्रचाप त्रिक भाव ({d}) में - कठिनाइयों के बीच से अप्रत्याशित लाभ का मार्ग खुलेगा।',other:'इंद्रचाप {d} के भाव में - संघर्ष के बाद इस क्षेत्र में प्रतिष्ठा मिलेगी।'},
+'उपकेतु':{kendra:'उपकेतु केंद्र ({d}) में विरक्ति का रंग देता है - इस क्षेत्र में आसक्ति कम, पर स्पष्टता अधिक रहेगी।',trikona:'उपकेतु त्रिकोण ({d}) में - इस क्षेत्र में आध्यात्मिक झुकाव व विरक्ति रहेगी।',upachaya:'उपकेतु उपचय ({d}) में - प्रयास निरासक्त भाव से करें, फल समय पर मिलेगा।',dusthana:'उपकेतु त्रिक भाव ({d}) में - गुप्त हानि से सावधानी रखें, आध्यात्म सहायक होगा।',other:'उपकेतु {d} के भाव में विरक्ति का झुकाव देता है - संग्रह व संबंध धीरे बनेंगे, दिखावे से दूरी रहेगी।'},
+'काल':{kendra:'काल केंद्र ({d}) में विलंब देता है, पर फल स्थायी रहता है - धैर्य रखें।',trikona:'काल त्रिकोण ({d}) में - इस क्षेत्र के फल समय लेकर, पर टिकाऊ मिलेंगे।',upachaya:'काल उपचय ({d}) में - समय के साथ धीरे-धीरे इस क्षेत्र का लाभ बढ़ेगा, पर जो मिलेगा वह स्थायी रहेगा।',dusthana:'काल त्रिक भाव ({d}) में - इस क्षेत्र में दीर्घ विलंब संभव है, हिम्मत न हारें।',other:'काल {d} के भाव में विलंब देता है, पर जो लाभ मिलेगा वह स्थायी रहेगा।'},
+'मृत्यु':{kendra:'मृत्यु बिंदु केंद्र ({d}) में - इस क्षेत्र में अचानक परिवर्तन संभव; स्वास्थ्य व निर्णयों में सावधानी रखें।',trikona:'मृत्यु बिंदु त्रिकोण ({d}) में - इस क्षेत्र की योजनाओं में सावधानी रखें, जोखिम न लें।',upachaya:'मृत्यु बिंदु उपचय ({d}) में - प्रतिस्पर्धा में सावधानी से आगे बढ़ें।',dusthana:'मृत्यु बिंदु त्रिक भाव ({d}) में - गुप्त शत्रु व स्वास्थ्य में विशेष सावधानी आवश्यक है।',other:'मृत्यु बिंदु {d} के भाव में - इस क्षेत्र में अनावश्यक जोखिम, गुप्त शत्रु व खर्च से सावधानी रखें; विदेश-आध्यात्म में झुकाव रहेगा।'},
+'अर्थप्रहर':{kendra:'अर्थप्रहर केंद्र ({d}) में - अपने पराक्रम व प्रयास से ही इस क्षेत्र में अर्थ-प्राप्ति का मार्ग खुलेगा।',trikona:'अर्थप्रहर त्रिकोण ({d}) में - प्रयास व बुद्धि से धन का मार्ग खुलेगा।',upachaya:'अर्थप्रहर उपचय ({d}) में - परिश्रम से लाभ धीरे-धीरे बढ़ेगा।',dusthana:'अर्थप्रहर त्रिक भाव ({d}) में - धन के लिए संघर्ष अधिक होगा, पर प्रयास व्यर्थ नहीं जाएगा।',other:'अर्थप्रहर {d} के भाव में - इस क्षेत्र से अर्थ-प्राप्ति अपने प्रयास से ही होगी।'},
+'यमघंटक':{kendra:'यमघंटक केंद्र ({d}) में कठोर क्षणों का सूचक है - इस क्षेत्र के निर्णय शांत मन से लें।',trikona:'यमघंटक त्रिकोण ({d}) में - इस क्षेत्र में कठोर अनुभव संभव हैं, संयम रखें।',upachaya:'यमघंटक उपचय ({d}) में - प्रतिस्पर्धा में कठोर क्षण आएंगे, धैर्य से जीत होगी।',dusthana:'यमघंटक त्रिक भाव ({d}) में - इस क्षेत्र में विशेष सावधानी रखें, वाद-विवाद से दूर रहें।',other:'यमघंटक {d} के भाव में कठोर क्षणों का सूचक है - उधार, वादे व बड़े वचन सोचकर ही दें।'}
+};
+function catOf(bh){ if([1,4,7,10].includes(bh))return 'kendra'; if([5,9].includes(bh))return 'trikona'; if([3,11].includes(bh))return 'upachaya'; if([6,8,12].includes(bh))return 'dusthana'; return 'other'; }
+function upPhalit(name,bh){
+  if(name==='मांदि') return MANDI12[bh-1];
+  if(name==='गुलिक') return GULIKA12[bh-1];
+  return CATP[name][catOf(bh)].replace('{d}',DOMAIN[bh-1]);
+}
+function spPhalit(name,lon,R){
+  const s=sgn(lon), bh=bhavaOf(lon,R.Lag), lord=LORDN[s];
+  const PL={'सूर्य':R.Su,'चंद्र':R.Mo,'मंगल':R.Ma,'बुध':R.Me,'गुरु':R.Ju,'शुक्र':R.Ve,'शनि':R.Sa};
+  const lb=bhavaOf(PL[lord],R.Lag), d=DOMAIN[bh-1];
+  switch(name){
+    case 'भाव लग्न': return s===sgn(R.Lag)?'यह जन्म लग्न की राशि में ही है - शरीर व आरोग्य की दिशा जन्म लग्न जैसी ही रहेगी, लग्न के फल ही प्रधान रहेंगे।':'शरीर व आरोग्य की दिशा इसी लग्न से देखी जाती है - यह '+RASHI[s]+' में है, इसलिए स्वास्थ्य-प्रवृत्ति '+lord+' के स्वभाव जैसी रहेगी।';
+    case 'होरा लग्न': return 'धन व संपत्ति का केंद्र '+bh+' भाव ('+d+') में है और होरेश '+lord+' '+lb+' भाव में स्थित है - आय के स्रोत व संपत्ति की दिशा इसी से तय होगी।';
+    case 'घटि लग्न': return 'पद, सत्ता व अधिकार का सूचक '+bh+' भाव ('+d+') में है; घटेश '+lord+' '+lb+' भाव में है - पद-प्राप्ति का मार्ग इसी दिशा से खुलेगा, '+(lb===6||lb===8||lb===12?'पर संघर्ष के बाद पद स्थिर होगा।':'पद की स्थिति अनुकूल रहेगी।');
+    case 'विघटि लग्न': return 'सूक्ष्म लग्न '+bh+' भाव ('+d+') में है - स्वभाव की गहराई व अंतर्दृष्टि इस क्षेत्र से जुड़ी रहेगी।';
+    case 'वर्णद लग्न': return 'वर्णद लग्न '+bh+' भाव ('+d+') में है - जीवन की दिशा इस भाव के क्षेत्र से प्रभावित रहेगी'+(bh===8?'; अष्टम में होने से जीवन में बड़े परिवर्तन के दौर आएंगे, गुप्त विद्या व शोध में रुचि रहेगी।':'; इस क्षेत्र के फल जीवन में विशेष महत्व रखेंगे।');
+    case 'श्री लग्न': return 'श्री लग्न '+bh+' भाव ('+d+') में है - धन व समृद्धि का मार्ग इस भाव से जुड़ा है'+(bh===8?'; अष्टम में होने से अचानक धन, विरासत या बीमा पक्ष से लाभ की संभावना रहती है।':'।')+' धन-निर्णय मन से जुड़े रहेंगे, क्योंकि यह लग्न चंद्र से बनता है।';
+    case 'प्राणपद लग्न': return 'प्राणपद '+bh+' भाव ('+d+') में है'+(bh===9?' - धर्म व गुरु-कृपा से प्राण-रक्षा होगी;':'')+' स्वास्थ्य की मूल दिशा इसी से देखें; स्वामी '+lord+' '+lb+' भाव में है।';
+    case 'इंदु लग्न': return 'संपत्ति का इंदु लग्न '+bh+' भाव ('+d+') में है और स्वामी '+lord+' '+lb+' भाव में है - संपत्ति वृद्धि की दिशा इसी से देखें, '+(bh===11?'लाभ से संपत्ति बनेगी।':'संपत्ति परिश्रम से बनेगी।');
+    case 'भृगु बिंदु': return 'चंद्र-राहु का मध्य बिंदु '+bh+' भाव ('+d+') में है - गोचर में कोई ग्रह इस बिंदु को छुए तो इस क्षेत्र की घटनाएं सक्रिय होंगी।';
+    case 'बीज स्फुट': return 'संतान-बीज '+bh+' भाव ('+d+') में है - संतान का मार्ग इस भाव की स्थिति से जुड़ा रहेगा'+(bh===7?'; सप्तम में होने से संतान का समय दांपत्य-स्थिति से गहराई से जुड़ा रहेगा।':'.');
+    case 'क्षेत्र स्फुट': return 'क्षेत्र स्फुट '+bh+' भाव ('+d+') में है - संतान-क्षेत्र की स्थिति इसी भाव से देखें।';
+  }
+  return '';
+}
+// ---------------- rendering ----------------
+const MONTHS=['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+function p2(n){ return String(n).padStart(2,'0'); }
+function chartSVG(R){
+  const CENT={1:[200,100],2:[105,42],3:[45,100],4:[105,192],5:[45,288],6:[105,352],7:[200,282],8:[295,352],9:[355,288],10:[295,192],11:[355,100],12:[295,42]};
+  const ascS=sgn(R.Lag);
+  const items=[['सूर्य',R.Su,''],['चंद्र',R.Mo,''],['मंगल',R.Ma,''],['बुध',R.Me,''],['गुरु',R.Ju,''],['शुक्र',R.Ve,''],['शनि',R.Sa,''],['राहु',R.Ra,''],['केतु',R.Ke,''],['मांदि',R.UP[0][1],'red'],['गुलिक',R.UP[1][1],'red']];
+  const bySign={}; items.forEach(([nm,lon,cls])=>{ const s=sgn(lon); (bySign[s]=bySign[s]||[]).push({nm,lon,cls}); });
+  let texts='';
+  for(let h=1;h<=12;h++){
+    const sign=(ascS+h-1)%12, [cx,cy]=CENT[h], lines=[];
+    if(h===1) lines.push({t:'लग्न '+fmtShort(R.Lag),bold:true});
+    (bySign[sign]||[]).forEach(it=>lines.push({t:it.nm+' '+fmtShort(it.lon),red:it.cls==='red'}));
+    lines.push({t:RASHI[sign]+' ('+(sign+1)+')',dim:true});
+    const y0=cy-(lines.length-1)*9;
+    lines.forEach((L,i)=>{ texts+='<text x="'+cx+'" y="'+(y0+i*18)+'" font-size="'+(L.bold?14:12.5)+'" '+(L.bold?'font-weight="700" fill="#b71c1c"':L.red?'font-weight="700" fill="#c62828"':L.dim?'fill="#b8860b" font-size="11"':'fill="#222"')+' text-anchor="middle">'+L.t+'</text>'; });
+  }
+  return '<svg width="400" height="400" viewBox="0 0 400 400" style="max-width:92vw;height:auto">'
+   +'<rect x="20" y="20" width="360" height="360" fill="#fffdf5" stroke="#7b1e1e" stroke-width="2.5"/>'
+   +'<line x1="20" y1="20" x2="380" y2="380" stroke="#7b1e1e" stroke-width="1.4"/>'
+   +'<line x1="380" y1="20" x2="20" y2="380" stroke="#7b1e1e" stroke-width="1.4"/>'
+   +'<polygon points="200,20 380,200 200,380 20,200" fill="none" stroke="#7b1e1e" stroke-width="1.4"/>'+texts+'</svg>';
+}
+function rowHTML(name,lon,R,phalit){
+  const nk=nakOf(lon), bh=bhavaOf(lon,R.Lag);
+  return '<tr><td><b class="nm">'+name+'</b></td><td>'+RASHI[sgn(lon)]+' '+fmtShort(lon)+' • भाव '+bh+'<br><span class="small">'+nk.name+'-'+nk.pada+'</span></td><td class="ph">'+phalit+'</td></tr>';
+}
+function render(R){
+  const bi=document.getElementById('birthinfo');
+  const st=R.sunriseTxt;
+  bi.innerHTML='जन्म: '+R.B.D+' '+MONTHS[R.B.Mo-1]+' '+R.B.Y+', '+p2(R.B.h)+':'+p2(R.B.mi)+' • लग्न '+RASHI[sgn(R.Lag)]+' • सूर्योदय (वैदिक) '+p2(st.getUTCHours())+':'+p2(st.getUTCMinutes())+':'+p2(st.getUTCSeconds())+' • गणना '+(R.isDay?'दिन':'रात्रि')+' के भागों से';
+  bi.style.display='block';
+  document.getElementById('chartbox').innerHTML=chartSVG(R);
+  document.getElementById('upbody').innerHTML=R.UP.map(([nm,lon])=>rowHTML(nm,lon,R,upPhalit(nm,bhavaOf(lon,R.Lag)))).join('');
+  let sp=R.SP.map(([nm,lon])=>rowHTML(nm,lon,R,spPhalit(nm,lon,R))).join('');
+  if(bhavaOf(R.SP[9][1],R.Lag)===bhavaOf(R.SP[10][1],R.Lag)){
+    // बीज-क्षेत्र एक ही भाव - क्षेत्र फलित में संयोग पंक्ति जोड़ो
+    sp=sp.replace('संतान-क्षेत्र की स्थिति इसी भाव से देखें।','संतान-क्षेत्र की स्थिति इसी भाव से देखें। बीज व क्षेत्र एक ही भाव में होना विशेष संयोग है - संतान-फल इस भाव से गहराई से जुड़ा है।');
+  }
+  document.getElementById('spbody').innerHTML=sp;
+  let yogiHTML='🧘 <b>योगी ग्रह: '+R.yogi+'</b> (योग बिंदु: '+fmtDMS(R.yogiPt)+') - योगी ग्रह की दशा-अंतर्दशा व गोचर विशेष फलदायी माने जाते हैं।';
+  if(R.mdLord && R.mdLord===R.yogi) yogiHTML+='<br>✨ संयोग से अभी <b>'+R.yogi+' की ही महादशा</b> चल रही है - यह संयोग इस पूरे काल को विशेष फलदायी बनाता है।';
+  yogiHTML+='<br><b>सह योगी:</b> '+R.saha+' • <b>अव योगी:</b> '+R.ava+' (अव बिंदु: '+fmtDMS(R.avaPt)+') - अव योगी से जुड़े उपाय व निर्णय सोचकर करें।';
+  document.getElementById('yogibox').innerHTML=yogiHTML;
+  document.getElementById('marakbox').innerHTML='⚠️ <b>मारक-सूचक बिंदु:</b> 22वां द्रेष्काण स्वामी - '+R.d22L+' (लग्न से), '+R.d22M+' (चंद्र से) • 64वां नवांश स्वामी - '+R.n64L+' (लग्न से), '+R.n64M+' (चंद्र से) - स्वास्थ्य सावधानी के काल तय करने में इनका उपयोग होता है।<br><b>दग्ध राशियां:</b> '+(R.dagdha.length?R.dagdha.join(', '):'कोई नहीं')+' - इन राशियों के लग्न/चंद्र काल में शुभ कार्य आरंभ करने में सावधानी (मुहूर्त उपयोग)।';
+}
+function buildTXT(tab){
+  const R=LAST; if(!R) return '';
+  const head='उपग्रह व विशेष लग्न v1\nजन्म: '+R.B.D+' '+MONTHS[R.B.Mo-1]+' '+R.B.Y+', '+p2(R.B.h)+':'+p2(R.B.mi)+' • लग्न '+RASHI[sgn(R.Lag)]+'\n';
+  const line=(nm,lon,ph)=>{ const nk=nakOf(lon); return nm+' - '+fmtDMS(lon)+' • भाव '+bhavaOf(lon,R.Lag)+' • '+nk.name+' पाद '+nk.pada+'\n  '+ph; };
+  if(tab===1) return head+'\n--- उपग्रह ---\n'+R.UP.map(([nm,lon])=>line(nm,lon,upPhalit(nm,bhavaOf(lon,R.Lag)))).join('\n');
+  let t=head+'\n--- विशेष लग्न ---\n'+R.SP.map(([nm,lon])=>line(nm,lon,spPhalit(nm,lon,R))).join('\n');
+  t+='\n\nयोगी ग्रह: '+R.yogi+' (योग बिंदु: '+fmtDMS(R.yogiPt)+') • सह योगी: '+R.saha+' • अव योगी: '+R.ava+' (अव बिंदु: '+fmtDMS(R.avaPt)+')';
+  if(R.mdLord && R.mdLord===R.yogi) t+='\nअभी योगी ग्रह '+R.yogi+' की ही महादशा चल रही है।';
+  t+='\n22वां द्रेष्काण स्वामी: '+R.d22L+' (लग्न से), '+R.d22M+' (चंद्र से)\n64वां नवांश स्वामी: '+R.n64L+' (लग्न से), '+R.n64M+' (चंद्र से)\nदग्ध राशियां: '+(R.dagdha.length?R.dagdha.join(', '):'कोई नहीं');
+  return t;
+}
+function download(name,content,type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+document.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tabpage').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); document.getElementById(b.dataset.tab).classList.add('active');
+}));
+document.getElementById('btn-fill').addEventListener('click',()=>{
+  hideErr();
+  if(!swe){ showErr('Ephemeris अभी तैयार नहीं है - थोड़ा रुककर फिर दबाएं।'); return; }
+  const B=parseCode(document.getElementById('astrocode').value);
+  if(!B){ showErr('Astro Code सही नहीं है - Home page से बना कोड paste करें।'); return; }
+  try{ LAST=computeAll(B); render(LAST); document.getElementById('status').textContent='✅ गणना हो गई'; }
+  catch(e){ showErr('गणना में दिक्कत: '+e.message); }
+});
+document.getElementById('txt1').addEventListener('click',()=>{ if(!LAST){showErr('पहले गणना करें।');return;} download('upagraha.txt',buildTXT(1),'text/plain;charset=utf-8'); });
+document.getElementById('txt2').addEventListener('click',()=>{ if(!LAST){showErr('पहले गणना करें।');return;} download('vishesh-lagna.txt',buildTXT(2),'text/plain;charset=utf-8'); });
+async function shot(id,name){
+  if(!LAST){ showErr('पहले गणना करें।'); return; }
+  const el=document.getElementById(id);
+  const cv=await html2canvas(el,{scale:2,backgroundColor:'#f7f1e3'});
+  const a=document.createElement('a'); a.href=cv.toDataURL('image/png'); a.download=name; a.click();
+}
+document.getElementById('shot1').addEventListener('click',()=>shot('tab1body','upagraha.png'));
+document.getElementById('shot2').addEventListener('click',()=>shot('tab2body','vishesh-lagna.png'));
+
+</script>
+</body>
+</html>
