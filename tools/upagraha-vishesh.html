@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🪐 उपग्रह व विशेष लग्न v1</title>
+<title>🪐 उपग्रह व विशेष लग्न v1.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -51,7 +51,7 @@ td b.nm{font-size:13.4px}
 <div class="wrap">
 <header>
 <h1>🪐 उपग्रह व विशेष लग्न</h1>
-<p>11 उपग्रह + 11 विशेष लग्न/स्फुट + योगी व मारक बिंदु - फलित सहित • v1</p>
+<p>11 उपग्रह + 11 विशेष लग्न/स्फुट + योगी व मारक बिंदु - फलित सहित • v1.1</p>
 </header>
 
 <div class="card">
@@ -236,7 +236,7 @@ function computeAll(B){
   const Varnada=vSign*30+degIn(Lag);
   const wNak=360/27; const moNakDeg=norm(Mo)%wNak;
   const Sree=norm(Lag+moNakDeg*27);
-  const sunS=sgn(Su); const ppOff=(sunS+1)%3===1?120:((sunS+1)%3===2?240:0);
+  const sunS=sgn(Su); const ppOff=(sunS+1)%3===2?240:120;
   const PP=norm(Su+ppOff+elSec/12);
   const wrap9=x=>{ while(x>12)x-=12; return x; };
   const m2=wrap9(sgn(Lag)+9), m3=wrap9(sgn(Mo)+9);
@@ -343,7 +343,7 @@ function render(R){
 }
 function buildTXT(tab){
   const R=LAST; if(!R) return '';
-  const head='उपग्रह व विशेष लग्न v1\nजन्म: '+R.B.D+' '+MONTHS[R.B.Mo-1]+' '+R.B.Y+', '+p2(R.B.h)+':'+p2(R.B.mi)+' • लग्न '+RASHI[sgn(R.Lag)]+'\n';
+  const head='उपग्रह व विशेष लग्न v1.1\nजन्म: '+R.B.D+' '+MONTHS[R.B.Mo-1]+' '+R.B.Y+', '+p2(R.B.h)+':'+p2(R.B.mi)+' • लग्न '+RASHI[sgn(R.Lag)]+'\n';
   const line=(nm,lon,ph)=>{ const nk=nakOf(lon); return nm+' - '+fmtDMS(lon)+' • भाव '+bhavaOf(lon,R.Lag)+' • '+nk.name+' पाद '+nk.pada+'\n  '+ph; };
   if(tab===1) return head+'\n--- उपग्रह ---\n'+R.UP.map(([nm,lon])=>line(nm,lon,upPhalit(nm,bhavaOf(lon,R.Lag)))).join('\n');
   let t=head+'\n--- विशेष लग्न ---\n'+R.SP.map(([nm,lon])=>line(nm,lon,spPhalit(nm,lon,R))).join('\n');
