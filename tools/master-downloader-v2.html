@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>मास्टर डेटा डाउनलोडर v2.4 - Astro Sarang</title>
+<title>मास्टर डेटा डाउनलोडर v2.5 - Astro Sarang</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 *{box-sizing:border-box}
-body{font-family:'Noto Sans Devanagari',sans-serif;background:#f5f0e8;margin:0;padding:16px;color:#333}
+body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;background:#f5f0e8;margin:0;padding:16px;color:#333}
 .con{max-width:900px;margin:0 auto}
 .head{background:linear-gradient(135deg,#6b21a8,#a855f7);color:#fff;padding:20px;border-radius:12px;text-align:center;margin-bottom:16px}
 .head h1{margin:0;font-size:24px}
@@ -56,7 +56,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <body>
 <div class="con">
 <div class="head">
-<h1>📦 मास्टर डेटा डाउनलोडर v2.4</h1>
+<h1>📦 मास्टर डेटा डाउनलोडर v2.5</h1>
 <div class="sub">13 टूल्स का डेटा एक साथ - PDF, एक TXT या ZIP में</div>
 </div>
 
@@ -705,7 +705,7 @@ async function downloadZIP() {
           zip.file(fname + suffix + '.png', part.data.split(',')[1], {base64: true});
         });
       }
-      if (d.txt) zip.file(fname + '.txt', 'Astro Sarang - मास्टर डेटा डाउनलोडर v2.4\nTool: ' + d.toolName + '\nभाग: ' + d.secName + '\nAstro Code: ' + code + '\n' + '='.repeat(50) + '\n\n' + d.txt);
+      if (d.txt) zip.file(fname + '.txt', 'Astro Sarang - मास्टर डेटा डाउनलोडर v2.5\nTool: ' + d.toolName + '\nभाग: ' + d.secName + '\nAstro Code: ' + code + '\n' + '='.repeat(50) + '\n\n' + d.txt);
     });
     const blob = await zip.generateAsync({type: 'blob'});
     const a = document.createElement('a');
