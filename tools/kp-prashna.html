@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="hi"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KP प्रश्न कैलकुलेटर v2.1 - Astro Sarang</title>
+<title>KP प्रश्न कैलकुलेटर v2.2 - Astro Sarang</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Noto Sans Devanagari','Mangal',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif}
 body{background:#ece7f5;padding:12px;color:#222}
 .wrap{max-width:840px;margin:0 auto}
 header{background:linear-gradient(135deg,#4a148c,#7b1fa2);color:#fff;border-radius:14px;padding:18px 20px;text-align:center;box-shadow:0 3px 10px rgba(74,20,140,.3)}
@@ -63,7 +63,7 @@ small.dim{color:#777}
 .tabpage{display:none}.tabpage.active{display:block}
 </style></head><body><div class="wrap">
 <header>
-<h1>🔮 KP प्रश्न कैलकुलेटर <small style="font-size:14px">v2.1</small></h1>
+<h1>🔮 KP प्रश्न कैलकुलेटर <small style="font-size:14px">v2.2</small></h1>
 <p>प्रश्न कुंडली के 4 रूप - नंबर प्रश्न (KP), खोई वस्तु, हां/ना Quick, समय प्रश्न (पराशरी) - Astro Sarang</p>
 </header>
 
@@ -669,7 +669,7 @@ document.getElementById('btnTxt').addEventListener('click',()=>{
   const t=tabText[activeTab];
   if(!t){ showErr('पहले खुले हुए Tab में गणना करें, फिर TXT बनेगा।'); return; }
   hideErr();
-  const blob=new Blob(['\ufeffKP प्रश्न कैलकुलेटर v2.1 - Astro Sarang\n'+'='.repeat(45)+'\n'+t],{type:'text/plain;charset=utf-8'});
+  const blob=new Blob(['\ufeffKP प्रश्न कैलकुलेटर v2.2 - Astro Sarang\n'+'='.repeat(45)+'\n'+t],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
   a.download='KP_Prashna_Tab'+activeTab+'.txt'; a.click(); URL.revokeObjectURL(a.href);
 });
