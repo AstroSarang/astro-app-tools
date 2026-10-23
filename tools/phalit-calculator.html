@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>फलित कैलकुलेटर v1</title>
+<title>फलित कैलकुलेटर v1.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;background:#f7f2ea;margin:0;padding:18px;color:#2b2118}
@@ -46,7 +46,7 @@ tr:nth-child(even) td{background:#faf3e3}
 </head>
 <body>
 <div class="wrap">
-  <div class="header"><h1>🔮 फलित कैलकुलेटर</h1><p>v1 - Astro Code से पूरी फलित report (ग्रह विचार + भाव विचार)</p></div>
+  <div class="header"><h1>🔮 फलित कैलकुलेटर</h1><p>v1.1 - Astro Code से पूरी फलित report (ग्रह विचार + भाव विचार)</p></div>
   <div class="panel">
     <label for="astro-code-in">Astro Code डालें</label>
     <input type="text" id="astro-code-in" placeholder="AS1-..." autocomplete="off">
@@ -132,6 +132,13 @@ function resolveYuti(members){
   }
   return { key, text: null, note: null };
 }
+function subCombos(arr, k){
+  if (k === 0) return [[]];
+  if (arr.length < k) return [];
+  if (arr.length === k) return [arr.slice()];
+  const head = arr[0], rest = arr.slice(1);
+  return subCombos(rest, k - 1).map(c => [head].concat(c)).concat(subCombos(rest, k));
+}
 function buildModel(P){
   const secs = [];
   const lag = P['लग्न'];
@@ -194,6 +201,14 @@ function buildModel(P){
     if (bt) entries.push({ title: `${BHAVESH[b - 1]} ${OBL[lp.bhava - 1]} भाव में`, text: bt });
     const gr = groups[b];
     if (gr && gr.text) entries.push({ title: `${gr.members.join(' + ')} - एक भाव में युति`, text: gr.text, note: gr.note });
+    if (mem.length >= 3){
+      for (let k = mem.length - 1; k >= 2; k--){
+        subCombos(mem, k).forEach(sub => {
+          const t = LIB['yuti|' + sub.join('+')];
+          if (t) entries.push({ title: `${sub.join(' + ')} - ${k} ग्रहों की युति`, text: t });
+        });
+      }
+    }
     bSlots += entries.length;
     secs.push({ part: 'bhava', title: `${BHN[b - 1]} भाव विचार (${BHS[b - 1]})`,
       posline: `स्वामी: ${lord} (${OBL[lp.bhava - 1]} भाव में) - स्थित ग्रह: ${mem.length ? mem.join(', ') : 'कोई नहीं'}`,
