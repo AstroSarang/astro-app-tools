@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>मेरे नोट्स - Keep जैसा टूल v1.0</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f1f3f4; --card:#ffffff; --text:#202124; --muted:#5f6368; --border:#dadce0;
+  --header:#ffffff; --accent:#fbbc04; --accent2:#1a73e8; --chip:#e8f0fe; --shadow:0 1px 3px rgba(0,0,0,.18);
+  --hover:#f8f9fa;
+}
+body.dark{
+  --bg:#202124; --card:#2d2e30; --text:#e8eaed; --muted:#9aa0a6; --border:#5f6368;
+  --header:#2d2e30; --chip:#3c4043; --hover:#3c4043;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;color:var(--text)}
+/* Header */
+.topbar{position:sticky;top:0;z-index:50;background:var(--header);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:700;white-space:nowrap}
+.logo .icon{width:40px;height:40px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.logo small{display:block;font-size:11px;font-weight:400;color:var(--muted)}
+.searchbox{flex:1;min-width:180px;max-width:640px;margin:0 auto;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:24px;padding:9px 16px}
+.searchbox input{flex:1;border:none;outline:none;background:transparent;font-size:16px}
+.top-actions{display:flex;align-items:center;gap:8px}
+.iconbtn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px}
+.iconbtn:hover{background:var(--hover)}
+.switch{position:relative;width:48px;height:26px;flex:none}
+.switch input{opacity:0;width:0;height:0}
+.switch .track{position:absolute;inset:0;background:#bdc1c6;border-radius:26px;transition:.2s}
+.switch .track:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.switch input:checked + .track{background:#34a853}
+.switch input:checked + .track:before{transform:translateX(22px)}
+/* Layout */
+.layout{display:flex;align-items:flex-start;max-width:1280px;margin:0 auto}
+.sidebar{width:230px;flex:none;padding:16px 8px;position:sticky;top:73px}
+.sideitem{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:11px 18px;border-radius:0 24px 24px 0;font-size:15px;margin-bottom:2px}
+.sideitem:hover{background:var(--hover)}
+.sideitem.active{background:#feefc3;color:#202124;font-weight:600}
+body.dark .sideitem.active{background:#41331a;color:#e8eaed}
+.sideitem .cnt{margin-left:auto;font-size:12px;color:var(--muted)}
+.sidelabel{font-size:12px;color:var(--muted);padding:14px 18px 6px;font-weight:700;letter-spacing:.4px}
+.main{flex:1;padding:18px 16px 60px;min-width:0}
+/* Composer */
+.composer{max-width:620px;margin:6px auto 26px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:6px 8px}
+.composer .collapsed{padding:10px 12px;color:var(--muted);font-size:16px;cursor:text;display:flex;justify-content:space-between;align-items:center}
+.composer input.title{width:100%;border:none;outline:none;background:transparent;font-size:17px;font-weight:600;padding:10px 12px 4px}
+.composer textarea.body{width:100%;border:none;outline:none;background:transparent;font-size:15px;padding:8px 12px;resize:vertical;min-height:64px;line-height:1.55}
+.composer .row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px}
+.composer select,.composer input[type="datetime-local"]{border:1px solid var(--border);background:var(--card);border-radius:8px;padding:6px 8px;font-size:13px}
+.toolbtn{padding:7px 10px;border-radius:18px;font-size:13px;background:var(--hover);border:1px solid var(--border)}
+.toolbtn.on{background:var(--chip);border-color:var(--accent2);font-weight:700}
+.savebtn{background:var(--accent2);color:#fff;padding:9px 22px;border-radius:20px;font-size:15px;font-weight:600}
+.closebtn{padding:9px 16px;border-radius:20px;font-size:15px}
+.closebtn:hover{background:var(--hover)}
+.dots{display:flex;gap:6px;padding:4px 12px;flex-wrap:wrap}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);cursor:pointer}
+.dot.sel{border-color:#202124;transform:scale(1.12)}
+.listedit{padding:4px 12px}
+.listedit .lirow{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.listedit .lirow input[type="text"]{flex:1;border:none;border-bottom:1px solid var(--border);outline:none;background:transparent;padding:6px 4px;font-size:15px}
+.listedit .lirow input[type="checkbox"]{width:18px;height:18px;accent-color:#1a73e8}
+/* Sections + grid */
+.secttl{font-size:12px;font-weight:700;letter-spacing:.6px;color:var(--muted);margin:18px 4px 10px}
+.grid{columns:4 240px;column-gap:16px}
+.grid.listview{columns:1;max-width:720px;margin:0 auto}
+.note{break-inside:avoid;margin-bottom:16px;border:1px solid var(--border);border-radius:12px;padding:14px 14px 8px;position:relative;transition:box-shadow .15s;cursor:pointer}
+.note:hover{box-shadow:0 3px 10px rgba(0,0,0,.22)}
+.note h3{font-size:16px;margin-bottom:7px;padding-right:30px;line-height:1.4;word-break:break-word}
+.note .txt{font-size:14.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:var(--text)}
+.note .pinmark{position:absolute;top:10px;right:10px;font-size:17px}
+.note .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.tagchip{font-size:11.5px;background:rgba(0,0,0,.07);padding:3px 9px;border-radius:12px}
+.remchip{font-size:11.5px;background:#fce8e6;color:#a50e0e;padding:3px 9px;border-radius:12px}
+.remchip.ok{background:#e6f4ea;color:#137333}
+.time{font-size:11px;color:var(--muted)}
+.note .actions{display:flex;gap:2px;margin-top:8px;border-top:1px solid rgba(0,0,0,.06);padding-top:6px;flex-wrap:wrap}
+.abtn{width:34px;height:34px;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center}
+.abtn:hover{background:rgba(0,0,0,.08)}
+.abtn.wide{width:auto;padding:0 10px;border-radius:17px;font-size:12.5px;color:#c5221f;font-weight:600}
+.palette{display:none;gap:6px;padding:8px 2px 4px;flex-wrap:wrap}
+.palette.open{display:flex}
+.checkitem{display:flex;gap:9px;align-items:flex-start;padding:3px 0;font-size:14.5px;line-height:1.5}
+.checkitem input{width:17px;height:17px;margin-top:2px;accent-color:#1a73e8;flex:none}
+.checkitem.done span{text-decoration:line-through;color:var(--muted)}
+.progress{height:6px;background:rgba(0,0,0,.1);border-radius:4px;margin-top:9px;overflow:hidden}
+.progress i{display:block;height:100%;background:#34a853}
+.empty{text-align:center;color:var(--muted);padding:54px 20px;font-size:16px;line-height:1.8}
+.empty .big{font-size:52px;display:block;margin-bottom:10px}
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:36px 14px;overflow:auto}
+.overlay.open{display:flex}
+.modal{background:var(--card);width:100%;max-width:620px;border-radius:14px;padding:10px 10px 14px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+.modal input.title{width:100%;border:none;outline:none;background:transparent;font-size:19px;font-weight:700;padding:10px 12px 4px}
+.modal textarea.body{width:100%;border:none;outline:none;background:transparent;font-size:15.5px;padding:8px 12px;resize:vertical;min-height:130px;line-height:1.6}
+.modal .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:6px 8px}
+.modal select,.modal input[type="datetime-local"]{border:1px solid var(--border);background:var(--card);border-radius:8px;padding:6px 8px;font-size:13px}
+/* Toolbar under grid */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:30px auto 0;max-width:720px}
+.toolbar button{border:1px solid var(--border);background:var(--card);padding:9px 16px;border-radius:20px;font-size:13.5px}
+.toolbar button:hover{background:var(--hover)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);background:#202124;color:#fff;padding:12px 22px;border-radius:10px;font-size:14.5px;z-index:200;transition:.25s;box-shadow:0 4px 14px rgba(0,0,0,.35);max-width:92vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.version{text-align:center;color:var(--muted);font-size:12px;margin-top:22px}
+@media(max-width:760px){
+  .sidebar{display:none}
+  .mobilefilters{display:flex !important}
+  .logo small{display:none}
+}
+.mobilefilters{display:none;gap:8px;overflow-x:auto;padding:2px 2px 14px}
+.mobilefilters button{flex:none;border:1px solid var(--border);background:var(--card);padding:8px 15px;border-radius:18px;font-size:14px}
+.mobilefilters button.active{background:#feefc3;font-weight:700;color:#202124}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="logo"><div class="icon">📝</div><div>मेरे नोट्स<small>Keep जैसा टूल - v1.0</small></div></div>
+  <div class="searchbox"><span>🔍</span><input id="searchInput" type="text" placeholder="नोट खोजें - शीर्षक, लिखा हुआ, लेबल..."></div>
+  <div class="top-actions">
+    <button class="iconbtn" id="layoutBtn" title="ग्रिड / लिस्ट">▦</button>
+    <span style="font-size:13px;color:var(--muted)">डार्क</span>
+    <label class="switch"><input type="checkbox" id="darkToggle"><span class="track"></span></label>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="mobilefilters" id="mobileFilters"></div>
+
+    <div class="composer" id="composer">
+      <div class="collapsed" id="composerCollapsed"><span>नोट लिखें...</span><span>☑️ 📌</span></div>
+      <div id="composerOpen" style="display:none">
+        <input class="title" id="cTitle" type="text" placeholder="शीर्षक">
+        <div id="cTextWrap"><textarea class="body" id="cBody" placeholder="नोट लिखें..."></textarea></div>
+        <div id="cListWrap" class="listedit" style="display:none"></div>
+        <div class="dots" id="cDots"></div>
+        <div class="row">
+          <button class="toolbtn" id="cTypeBtn">☑️ चेकलिस्ट बनाएं</button>
+          <button class="toolbtn" id="cPinBtn">📌 पिन करें</button>
+          <select id="cLabel"><option value="">लेबल नहीं</option></select>
+          <input type="datetime-local" id="cReminder" title="रिमाइंडर">
+          <span style="flex:1"></span>
+          <button class="closebtn" id="cClose">बंद करें</button>
+          <button class="savebtn" id="cSave">सेव करें</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="content"></div>
+
+    <div class="toolbar">
+      <button id="exportTxtBtn">💾 सभी नोट्स TXT डाउनलोड</button>
+      <button id="exportJsonBtn">📤 बैकअप JSON डाउनलोड</button>
+      <button id="importBtn">📥 बैकअप JSON लाएं</button>
+      <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+      <button id="addLabelBtn">🏷️ नया लेबल जोड़ें</button>
+    </div>
+    <div id="labelForm" style="display:none;max-width:480px;margin:14px auto 0;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px">
+      <div style="display:flex;gap:8px">
+        <input id="newLabelInput" type="text" placeholder="लेबल का नाम लिखें" style="flex:1;border:1px solid var(--border);border-radius:8px;padding:9px 12px;background:transparent">
+        <button class="savebtn" id="saveLabelBtn" style="padding:9px 18px">जोड़ें</button>
+      </div>
+    </div>
+    <p class="version">मेरे नोट्स v1.0 - सारे नोट्स इसी डिवाइस के ब्राउज़र में अपने आप सेव होते हैं, इंटरनेट की ज़रूरत नहीं।</p>
+  </main>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modalBox">
+    <input class="title" id="mTitle" type="text" placeholder="शीर्षक">
+    <div id="mTextWrap"><textarea class="body" id="mBody" placeholder="नोट लिखें..."></textarea></div>
+    <div id="mListWrap" class="listedit" style="display:none"></div>
+    <div class="dots" id="mDots"></div>
+    <div class="row">
+      <button class="toolbtn" id="mTypeBtn">☑️ चेकलिस्ट</button>
+      <button class="toolbtn" id="mPinBtn">📌 पिन</button>
+      <select id="mLabel"><option value="">लेबल नहीं</option></select>
+      <input type="datetime-local" id="mReminder">
+    </div>
+    <div class="row">
+      <span class="time" id="mTime"></span><span style="flex:1"></span>
+      <button class="closebtn" id="mClose">बंद करें</button>
+      <button class="savebtn" id="mSave">सेव करें</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+var VERSION = "v1.0";
+var LS_KEY = "sarangKeepNotes_v1";
+var COLORS = [
+  {id:"default", name:"सफ़ेद", bg:"#ffffff", darkBg:"#2d2e30"},
+  {id:"lal", name:"लाल", bg:"#fde8e7", darkBg:"#5c2e2a"},
+  {id:"narangi", name:"नारंगी", bg:"#fdecc8", darkBg:"#594324"},
+  {id:"peela", name:"पीला", bg:"#fff7ae", darkBg:"#59522a"},
+  {id:"hara", name:"हरा", bg:"#d9f7c4", darkBg:"#34522e"},
+  {id:"teal", name:"फ़िरोज़ी", bg:"#cbf7ec", darkBg:"#2a4f47"},
+  {id:"neela", name:"नीला", bg:"#cbf0f8", darkBg:"#2a4759"},
+  {id:"baingani", name:"बैंगनी", bg:"#e8d5fd", darkBg:"#453259"},
+  {id:"gulabi", name:"गुलाबी", bg:"#fdcfe8", darkBg:"#59304a"},
+  {id:"gray", name:"ग्रे", bg:"#e8eaed", darkBg:"#3c4043"}
+];
+function colorBg(id){
+  var c = COLORS.filter(function(x){return x.id===id})[0] || COLORS[0];
+  return document.body.classList.contains("dark") ? c.darkBg : c.bg;
+}
+var state = { notes:[], labels:[], view:"notes", label:null, search:"", layout:"grid", dark:false };
+var composer = { type:"text", color:"default", pinned:false, items:[{text:"",done:false}] };
+var editingId = null;
+var editState = { type:"text", color:"default", pinned:false, items:[] };
+
+function uid(){ return "n" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function load(){
+  try{
+    var raw = localStorage.getItem(LS_KEY);
+    if(raw){
+      var d = JSON.parse(raw);
+      state.notes = d.notes||[]; state.labels = d.labels||[];
+      state.layout = d.layout||"grid"; state.dark = !!d.dark;
+    } else {
+      state.notes = [
+        {id:uid(), title:"स्वागत है 🙏", body:"यह आपका अपना Keep जैसा नोट्स टूल है - v1.0\n\n• ऊपर के डिब्बे में नया नोट लिखें\n• नोट को पिन करें, रंग बदलें, लेबल लगाएं\n• चेकलिस्ट वाले नोट भी बना सकते हैं\n• सारे नोट्स इसी डिवाइस में अपने आप सेव रहते हैं - पेज बंद करके खोलने पर भी नहीं उड़ते", type:"text", items:[], color:"peela", pinned:true, archived:false, trashed:false, label:"", reminder:"", created:Date.now(), updated:Date.now()},
+        {id:uid(), title:"नमूना चेकलिस्ट - काम की सूची", body:"", type:"list", items:[{text:"पहला काम पूरा हुआ",done:true},{text:"दूसरा काम बाकी है",done:false},{text:"नोट पर क्लिक करके बदल सकते हैं",done:false}], color:"hara", pinned:false, archived:false, trashed:false, label:"", reminder:"", created:Date.now(), updated:Date.now()}
+      ];
+      state.labels = ["काम","निजी","आइडिया"];
+      save();
+    }
+  }catch(e){ state.notes=[]; state.labels=[]; }
+  document.body.classList.toggle("dark", state.dark);
+  document.getElementById("darkToggle").checked = state.dark;
+}
+function save(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify({notes:state.notes, labels:state.labels, layout:state.layout, dark:state.dark})); }catch(e){}
+}
+function toast(msg){
+  var t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show");
+  setTimeout(function(){ t.classList.remove("show"); }, 2400);
+}
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function fmtDate(ts){
+  try{ return new Date(ts).toLocaleString("hi-IN",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}); }catch(e){ return ""; }
+}
+function fmtRem(r){
+  if(!r) return "";
+  try{ return new Date(r).toLocaleString("hi-IN",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}); }catch(e){ return r; }
+}
+
+/* ---------- Sidebar / filters ---------- */
+function counts(){
+  return {
+    notes: state.notes.filter(function(n){return !n.trashed && !n.archived}).length,
+    pinned: state.notes.filter(function(n){return !n.trashed && !n.archived && n.pinned}).length,
+    archive: state.notes.filter(function(n){return !n.trashed && n.archived}).length,
+    trash: state.notes.filter(function(n){return n.trashed}).length
+  };
+}
+function renderFilters(){
+  var c = counts();
+  var items = [
+    {v:"notes", t:"📝 सभी नोट्स", n:c.notes},
+    {v:"pinned", t:"📌 पिन किए हुए", n:c.pinned},
+    {v:"archive", t:"🗄️ आर्काइव", n:c.archive},
+    {v:"trash", t:"🗑️ कचरा", n:c.trash}
+  ];
+  var html = items.map(function(it){
+    var act = (state.view===it.v) ? " active" : "";
+    return '<button class="sideitem'+act+'" data-view="'+it.v+'">'+it.t+'<span class="cnt">'+it.n+'</span></button>';
+  }).join("");
+  if(state.labels.length){
+    html += '<div class="sidelabel">लेबल</div>';
+    html += state.labels.map(function(lb){
+      var n = state.notes.filter(function(x){return !x.trashed && x.label===lb}).length;
+      var act = (state.view==="label" && state.label===lb) ? " active" : "";
+      return '<button class="sideitem'+act+'" data-view="label" data-label="'+esc(lb)+'">🏷️ '+esc(lb)+'<span class="cnt">'+n+'</span></button>';
+    }).join("");
+  }
+  document.getElementById("sidebar").innerHTML = html;
+  var mh = items.map(function(it){
+    var act = (state.view===it.v) ? " active" : "";
+    return '<button class="'+act.trim()+'" data-view="'+it.v+'">'+it.t+'</button>';
+  }).join("");
+  document.getElementById("mobileFilters").innerHTML = mh;
+  var bind = function(scope){
+    scope.querySelectorAll("[data-view]").forEach(function(b){
+      b.addEventListener("click", function(){
+        state.view = b.getAttribute("data-view");
+        state.label = b.getAttribute("data-label") || null;
+        render();
+      });
+    });
+  };
+  bind(document.getElementById("sidebar"));
+  bind(document.getElementById("mobileFilters"));
+  fillLabelSelects();
+}
+function fillLabelSelects(){
+  ["cLabel","mLabel"].forEach(function(id){
+    var sel = document.getElementById(id); if(!sel) return;
+    var cur = sel.value;
+    sel.innerHTML = '<option value="">लेबल नहीं</option>' + state.labels.map(function(lb){ return '<option value="'+esc(lb)+'">'+esc(lb)+'</option>'; }).join("");
+    if(cur) sel.value = cur;
+  });
+}
+
+/* ---------- Composer ---------- */
+function renderDots(containerId, current, onPick){
+  var box = document.getElementById(containerId);
+  box.innerHTML = "";
+  COLORS.forEach(function(c){
+    var d = document.createElement("button");
+    d.className = "dot" + (c.id===current ? " sel" : "");
+    d.title = c.name; d.style.background = c.bg;
+    d.addEventListener("click", function(ev){ ev.stopPropagation(); onPick(c.id); });
+    box.appendChild(d);
+  });
+}
+function renderListEditor(containerId, items, onChange){
+  var box = document.getElementById(containerId);
+  box.innerHTML = "";
+  items.forEach(function(it, idx){
+    var row = document.createElement("div"); row.className = "lirow";
+    var cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = !!it.done;
+    cb.addEventListener("change", function(){ it.done = cb.checked; onChange(); });
+    var tx = document.createElement("input"); tx.type = "text"; tx.value = it.text; tx.placeholder = "काम लिखें...";
+    tx.addEventListener("input", function(){ it.text = tx.value; onChange(); });
+    tx.addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); items.splice(idx+1,0,{text:"",done:false}); onChange(true); } });
+    var del = document.createElement("button"); del.textContent = "✕"; del.style.color = "var(--muted)";
+    del.addEventListener("click", function(){ items.splice(idx,1); if(!items.length) items.push({text:"",done:false}); onChange(true); });
+    row.appendChild(cb); row.appendChild(tx); row.appendChild(del);
+    box.appendChild(row);
+  });
+  var add = document.createElement("button"); add.className = "toolbtn"; add.textContent = "＋ नया काम जोड़ें";
+  add.addEventListener("click", function(){ items.push({text:"",done:false}); onChange(true); });
+  box.appendChild(add);
+  var inputs = box.querySelectorAll('input[type="text"]');
+  if(box.dataset.focusLast === "1" && inputs.length){ var last = inputs[inputs.length-1]; last.focus(); box.dataset.focusLast = "0"; }
+}
+function syncComposer(){
+  document.getElementById("cTextWrap").style.display = composer.type==="text" ? "block" : "none";
+  document.getElementById("cListWrap").style.display = composer.type==="list" ? "block" : "none";
+  document.getElementById("cTypeBtn").textContent = composer.type==="list" ? "📄 साधा नोट बनाएं" : "☑️ चेकलिस्ट बनाएं";
+  document.getElementById("cTypeBtn").classList.toggle("on", composer.type==="list");
+  document.getElementById("cPinBtn").classList.toggle("on", composer.pinned);
+  document.getElementById("composer").style.background = colorBg(composer.color);
+  renderDots("cDots", composer.color, function(id){ composer.color = id; syncComposer(); });
+  if(composer.type==="list"){
+    renderListEditor("cListWrap", composer.items, function(rerender){
+      if(rerender){ document.getElementById("cListWrap").dataset.focusLast = "1"; syncComposer(); }
+    });
+  }
+}
+function openComposer(){
+  document.getElementById("composerCollapsed").style.display = "none";
+  document.getElementById("composerOpen").style.display = "block";
+  syncComposer();
+  document.getElementById("cTitle").focus();
+}
+function closeComposer(saveIt){
+  if(saveIt){
+    var title = document.getElementById("cTitle").value.trim();
+    var body = document.getElementById("cBody").value.trim();
+    var items = composer.items.filter(function(i){ return i.text.trim() !== ""; });
+    var hasContent = composer.type==="text" ? (title || body) : (title || items.length);
+    if(!hasContent){ toast("खाली नोट सेव नहीं हुआ"); }
+    else{
+      state.notes.unshift({
+        id: uid(), title: title, body: composer.type==="text" ? body : "",
+        type: composer.type, items: composer.type==="list" ? items : [],
+        color: composer.color, pinned: composer.pinned, archived:false, trashed:false,
+        label: document.getElementById("cLabel").value,
+        reminder: document.getElementById("cReminder").value,
+        created: Date.now(), updated: Date.now()
+      });
+      save(); toast("नोट सेव हो गया ✅");
+    }
+  }
+  document.getElementById("cTitle").value = "";
+  document.getElementById("cBody").value = "";
+  document.getElementById("cReminder").value = "";
+  document.getElementById("cLabel").value = "";
+  composer = { type:"text", color:"default", pinned:false, items:[{text:"",done:false}] };
+  document.getElementById("composerCollapsed").style.display = "flex";
+  document.getElementById("composerOpen").style.display = "none";
+  render();
+}
+
+/* ---------- Note cards ---------- */
+function filteredNotes(){
+  var q = state.search.trim().toLowerCase();
+  var list = state.notes.filter(function(n){
+    if(state.view==="trash") { if(!n.trashed) return false; }
+    else if(state.view==="archive") { if(n.trashed || !n.archived) return false; }
+    else if(state.view==="pinned") { if(n.trashed || n.archived || !n.pinned) return false; }
+    else if(state.view==="label") { if(n.trashed || n.label !== state.label) return false; }
+    else { if(n.trashed || n.archived) return false; }
+    if(q){
+      var hay = (n.title + " " + n.body + " " + n.label + " " + n.items.map(function(i){return i.text}).join(" ")).toLowerCase();
+      if(hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+  list.sort(function(a,b){
+    if(a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+    return b.updated - a.updated;
+  });
+  return list;
+}
+function noteCard(n){
+  var div = document.createElement("div");
+  div.className = "note"; div.style.background = colorBg(n.color);
+  var inner = "";
+  if(n.pinned) inner += '<div class="pinmark" title="पिन किया हुआ">📌</div>';
+  if(n.title) inner += "<h3>" + esc(n.title) + "</h3>";
+  if(n.type==="list"){
+    var doneCount = n.items.filter(function(i){return i.done}).length;
+    inner += n.items.slice(0,12).map(function(it){
+      return '<label class="checkitem'+(it.done?" done":"")+'"><input type="checkbox" data-act="check" '+(it.done?"checked":"")+'><span>'+esc(it.text)+'</span></label>';
+    }).join("");
+    if(n.items.length > 12) inner += '<div class="time">और ' + (n.items.length-12) + ' काम...</div>';
+    if(n.items.length) inner += '<div class="progress"><i style="width:' + Math.round(doneCount*100/n.items.length) + '%"></i></div>';
+  } else {
+    inner += '<div class="txt">' + esc(n.body) + "</div>";
+  }
+  inner += '<div class="meta">';
+  if(n.label) inner += '<span class="tagchip">🏷️ ' + esc(n.label) + "</span>";
+  if(n.reminder){
+    var overdue = new Date(n.reminder).getTime() < Date.now();
+    inner += '<span class="remchip ' + (overdue ? "" : "ok") + '">⏰ ' + esc(fmtRem(n.reminder)) + (overdue ? " - समय हो गया" : "") + "</span>";
+  }
+  inner += '<span class="time">' + fmtDate(n.updated) + "</span></div>";
+  inner += '<div class="palette" id="pal-' + n.id + '">' + COLORS.map(function(c){ return '<button class="dot" data-color="'+c.id+'" title="'+c.name+'" style="background:'+c.bg+'"></button>'; }).join("") + "</div>";
+  inner += '<div class="actions">';
+  if(state.view==="trash"){
+    inner += '<button class="abtn" data-act="restore" title="वापस लाएं">↩️</button>';
+    inner += '<button class="abtn wide" data-act="permanent">हमेशा के लिए हटाएं</button>';
+  } else {
+    inner += '<button class="abtn" data-act="pin" title="पिन / हटाएं">' + (n.pinned ? "📌" : "📍") + "</button>";
+    inner += '<button class="abtn" data-act="color" title="रंग बदलें">🎨</button>';
+    inner += '<button class="abtn" data-act="copy" title="कॉपी करें">📋</button>';
+    inner += '<button class="abtn" data-act="archive" title="' + (n.archived ? "आर्काइव से निकालें" : "आर्काइव करें") + '">' + (n.archived ? "📤" : "🗄️") + "</button>";
+    inner += '<button class="abtn" data-act="trash" title="कचरे में डालें">🗑️</button>';
+  }
+  inner += "</div>";
+  div.innerHTML = inner;
+
+  div.addEventListener("click", function(e){
+    var actEl = e.target.closest("[data-act]");
+    var colorEl = e.target.closest("[data-color]");
+    if(colorEl){
+      e.stopPropagation();
+      n.color = colorEl.getAttribute("data-color"); n.updated = Date.now(); save(); render(); return;
+    }
+    if(actEl){
+      e.stopPropagation();
+      var act = actEl.getAttribute("data-act");
+      if(act==="check"){
+        var boxes = div.querySelectorAll('[data-act="check"]');
+        var idx = Array.prototype.indexOf.call(boxes, actEl);
+        if(n.items[idx]){ n.items[idx].done = actEl.checked; n.updated = Date.now(); save(); render(); }
+        return;
+      }
+      if(act==="pin"){ n.pinned = !n.pinned; n.updated = Date.now(); save(); render(); toast(n.pinned ? "पिन हो गया 📌" : "पिन हट गया"); return; }
+      if(act==="color"){ var p = document.getElementById("pal-"+n.id); if(p) p.classList.toggle("open"); return; }
+      if(act==="copy"){
+        var text = (n.title ? n.title + "\n" : "") + (n.type==="list" ? n.items.map(function(i){return (i.done?"☑ ":"☐ ") + i.text}).join("\n") : n.body);
+        if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(function(){ toast("कॉपी हो गया 📋"); }, function(){ toast("कॉपी नहीं हो पाया"); }); }
+        else{ toast("इस ब्राउज़र में कॉपी उपलब्ध नहीं है"); }
+        return;
+      }
+      if(act==="archive"){ n.archived = !n.archived; n.updated = Date.now(); save(); render(); toast(n.archived ? "आर्काइव में गया 🗄️" : "आर्काइव से वापस आया"); return; }
+      if(act==="trash"){ n.trashed = true; n.pinned = false; n.updated = Date.now(); save(); render(); toast("कचरे में गया - कचरा खंड से वापस ला सकते हैं"); return; }
+      if(act==="restore"){ n.trashed = false; n.updated = Date.now(); save(); render(); toast("नोट वापस आ गया ↩️"); return; }
+      if(act==="permanent"){
+        if(actEl.dataset.armed === "1"){
+          state.notes = state.notes.filter(function(x){ return x.id !== n.id; });
+          save(); render(); toast("नोट हमेशा के लिए हट गया");
+        } else {
+          actEl.dataset.armed = "1"; actEl.textContent = "पक्का? फिर दबाएं";
+          setTimeout(function(){ if(actEl.isConnected){ actEl.dataset.armed = "0"; actEl.textContent = "हमेशा के लिए हटाएं"; } }, 3000);
+        }
+        return;
+      }
+      return;
+    }
+    if(state.view !== "trash") openEditor(n.id);
+  });
+  return div;
+}
+function section(title, notes){
+  if(!notes.length) return "";
+  var wrap = document.createElement("div");
+  if(title) wrap.innerHTML = '<div class="secttl">' + title + "</div>";
+  var g = document.createElement("div");
+  g.className = "grid" + (state.layout==="list" ? " listview" : "");
+  notes.forEach(function(n){ g.appendChild(noteCard(n)); });
+  wrap.appendChild(g);
+  return wrap;
+}
+function render(){
+  renderFilters();
+  var content = document.getElementById("content");
+  content.innerHTML = "";
+  var list = filteredNotes();
+  if(!list.length){
+    var msgs = {
+      notes:"अभी कोई नोट नहीं है। ऊपर के डिब्बे में पहला नोट लिखें।",
+      pinned:"कोई पिन किया हुआ नोट नहीं है। नोट पर 📍 दबाकर पिन करें।",
+      archive:"आर्काइव खाली है।",
+      trash:"कचरा खाली है। हटाए हुए नोट यहाँ  - वापस लाए जा सकते हैं।",
+      label:"इस लेबल का कोई नोट नहीं है।"
+    };
+    content.innerHTML = '<div class="empty"><span class="big">📝</span>' + (state.search ? "खोज से कोई नोट नहीं मिला।" : (msgs[state.view] || msgs.notes)) + "</div>";
+    return;
+  }
+  if(state.view==="notes" && !state.search){
+    var pinned = list.filter(function(n){return n.pinned});
+    var rest = list.filter(function(n){return !n.pinned});
+    if(pinned.length && rest.length){
+      content.appendChild(section("📌 पिन किए हुए", pinned));
+      content.appendChild(section("बाकी नोट्स", rest));
+      return;
+    }
+  }
+  content.appendChild(section("", list));
+}
+
+/* ---------- Editor modal ---------- */
+function syncEditor(){
+  document.getElementById("mTextWrap").style.display = editState.type==="text" ? "block" : "none";
+  document.getElementById("mListWrap").style.display = editState.type==="list" ? "block" : "none";
+  document.getElementById("mTypeBtn").classList.toggle("on", editState.type==="list");
+  document.getElementById("mPinBtn").classList.toggle("on", editState.pinned);
+  document.getElementById("modalBox").style.background = colorBg(editState.color);
+  renderDots("mDots", editState.color, function(id){ editState.color = id; syncEditor(); });
+  if(editState.type==="list"){
+    renderListEditor("mListWrap", editState.items, function(rerender){
+      if(rerender){ document.getElementById("mListWrap").dataset.focusLast = "1"; syncEditor(); }
+    });
+  }
+}
+function openEditor(id){
+  var n = state.notes.filter(function(x){return x.id===id})[0]; if(!n) return;
+  editingId = id;
+  editState = { type:n.type, color:n.color, pinned:n.pinned, items: JSON.parse(JSON.stringify(n.items||[])) };
+  if(!editState.items.length) editState.items = [{text:"",done:false}];
+  document.getElementById("mTitle").value = n.title || "";
+  document.getElementById("mBody").value = n.body || "";
+  document.getElementById("mReminder").value = n.reminder || "";
+  fillLabelSelects();
+  document.getElementById("mLabel").value = n.label || "";
+  document.getElementById("mTime").textContent = "आखिरी बदलाव - " + fmtDate(n.updated);
+  syncEditor();
+  document.getElementById("overlay").classList.add("open");
+}
+function closeEditor(saveIt){
+  if(saveIt && editingId){
+    var n = state.notes.filter(function(x){return x.id===editingId})[0];
+    if(n){
+      n.title = document.getElementById("mTitle").value.trim();
+      n.type = editState.type;
+      n.color = editState.color; n.pinned = editState.pinned;
+      n.label = document.getElementById("mLabel").value;
+      n.reminder = document.getElementById("mReminder").value;
+      if(editState.type==="text"){ n.body = document.getElementById("mBody").value; n.items = []; }
+      else{ n.body = ""; n.items = editState.items.filter(function(i){ return i.text.trim() !== ""; }); }
+      n.updated = Date.now(); save(); toast("बदलाव सेव हो गया ✅");
+    }
+  }
+  editingId = null;
+  document.getElementById("overlay").classList.remove("open");
+  render();
+}
+
+/* ---------- Export / Import ---------- */
+function download(name, text, type){
+  var blob = new Blob([text], {type: type || "text/plain;charset=utf-8"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 400);
+}
+function exportTxt(){
+  var active = state.notes.filter(function(n){return !n.trashed});
+  if(!active.length){ toast("कोई नोट नहीं है"); return; }
+  var out = "मेरे नोट्स - " + new Date().toLocaleString("hi-IN") + "\n==============================\n\n";
+  active.forEach(function(n, i){
+    out += (i+1) + ". " + (n.title || "(बिना शीर्षक)") + (n.pinned ? " 📌" : "") + "\n";
+    if(n.label) out += "लेबल - " + n.label + "\n";
+    if(n.reminder) out += "रिमाइंडर - " + fmtRem(n.reminder) + "\n";
+    if(n.type==="list"){ out += n.items.map(function(it){ return (it.done ? "☑ " : "☐ ") + it.text; }).join("\n") + "\n"; }
+    else out += (n.body || "") + "\n";
+    out += "------------------------------\n\n";
+  });
+  download("mere-notes.txt", out);
+  toast("TXT डाउनलोड हो गया 💾");
+}
+function exportJson(){
+  download("mere-notes-backup.json", JSON.stringify({notes:state.notes, labels:state.labels}, null, 2), "application/json");
+  toast("बैकअप डाउनलोड हो गया 📤");
+}
+function importJson(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var d = JSON.parse(reader.result);
+      if(!d || !Array.isArray(d.notes)) throw new Error("bad");
+      state.notes = d.notes; state.labels = Array.isArray(d.labels) ? d.labels : state.labels;
+      save(); state.view = "notes"; render(); toast("बैकअप आ गया - " + d.notes.length + " नोट्स ✅");
+    }catch(e){ toast("यह फाइल सही बैकअप नहीं लगती"); }
+  };
+  reader.readAsText(file);
+}
+
+/* ---------- Events ---------- */
+document.getElementById("composerCollapsed").addEventListener("click", openComposer);
+document.getElementById("cSave").addEventListener("click", function(){ closeComposer(true); });
+document.getElementById("cClose").addEventListener("click", function(){ closeComposer(true); });
+document.getElementById("cTypeBtn").addEventListener("click", function(){
+  composer.type = composer.type==="text" ? "list" : "text"; syncComposer();
+});
+document.getElementById("cPinBtn").addEventListener("click", function(){ composer.pinned = !composer.pinned; syncComposer(); });
+document.getElementById("searchInput").addEventListener("input", function(e){ state.search = e.target.value; render(); });
+document.getElementById("layoutBtn").addEventListener("click", function(){
+  state.layout = state.layout==="grid" ? "list" : "grid";
+  this.textContent = state.layout==="grid" ? "▦" : "☰";
+  save(); render();
+});
+document.getElementById("darkToggle").addEventListener("change", function(e){
+  state.dark = e.target.checked; document.body.classList.toggle("dark", state.dark); save(); render(); syncComposer();
+});
+document.getElementById("mSave").addEventListener("click", function(){ closeEditor(true); });
+document.getElementById("mClose").addEventListener("click", function(){ closeEditor(true); });
+document.getElementById("overlay").addEventListener("click", function(e){ if(e.target===this) closeEditor(true); });
+document.getElementById("mTypeBtn").addEventListener("click", function(){
+  if(editState.type==="text"){
+    var body = document.getElementById("mBody").value;
+    editState.items = body.split("\n").filter(function(l){return l.trim()}).map(function(l){ return {text:l, done:false}; });
+    if(!editState.items.length) editState.items = [{text:"",done:false}];
+    editState.type = "list";
+  } else editState.type = "text";
+  syncEditor();
+});
+document.getElementById("mPinBtn").addEventListener("click", function(){ editState.pinned = !editState.pinned; syncEditor(); });
+document.getElementById("exportTxtBtn").addEventListener("click", exportTxt);
+document.getElementById("exportJsonBtn").addEventListener("click", exportJson);
+document.getElementById("importBtn").addEventListener("click", function(){ document.getElementById("importFile").click(); });
+document.getElementById("importFile").addEventListener("change", function(e){ if(e.target.files[0]) importJson(e.target.files[0]); e.target.value = ""; });
+document.getElementById("addLabelBtn").addEventListener("click", function(){
+  var f = document.getElementById("labelForm");
+  f.style.display = f.style.display==="none" ? "block" : "none";
+  if(f.style.display==="block") document.getElementById("newLabelInput").focus();
+});
+document.getElementById("saveLabelBtn").addEventListener("click", function(){
+  var v = document.getElementById("newLabelInput").value.trim();
+  if(!v){ toast("लेबल का नाम लिखें"); return; }
+  if(state.labels.indexOf(v) !== -1){ toast("यह लेबल पहले से है"); return; }
+  state.labels.push(v); save();
+  document.getElementById("newLabelInput").value = "";
+  document.getElementById("labelForm").style.display = "none";
+  render(); toast("लेबल जुड़ गया 🏷️");
+});
+
+load();
+document.getElementById("layoutBtn").textContent = state.layout==="grid" ? "▦" : "☰";
+render();
+</script>
+</body>
+</html>
