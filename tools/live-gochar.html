@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>लाइव गोचर कैलकुलेटर v1.1</title>
+<title>लाइव गोचर कैलकुलेटर v1.2</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;background:#f3ecdd;color:#202124;line-height:1.55}
@@ -56,7 +56,7 @@ tr.event td{color:#137333;font-weight:700;background:#f2faf3}
 <body>
 <header>
   <h1>🔭 लाइव गोचर कैलकुलेटर</h1>
-  <p>Swiss Ephemeris (Live) • लाहिरी अयनांश • राहु/केतु Mean • v1.1</p>
+  <p>Swiss Ephemeris (Live) • लाहिरी अयनांश • राहु/केतु Mean • v1.2</p>
 </header>
 <div class="wrap">
   <div id="ephem-status">⏳ Swiss Ephemeris लोड हो रहा है...</div>
@@ -147,7 +147,7 @@ tr.event td{color:#137333;font-weight:700;background:#f2faf3}
     </div>
   </div>
 
-  <p class="version">लाइव गोचर कैलकुलेटर v1.1 • Astro Sarang</p>
+  <p class="version">लाइव गोचर कैलकुलेटर v1.2 • Astro Sarang</p>
 </div>
 
 <script type="module">
@@ -350,7 +350,8 @@ function chartItems(pos, lagnaLon){
   for(const p of PLANETS){
     const L = pos[p.key].lon, s = Math.floor(L/30);
     const vk = (p.key !== 'sun' && pos[p.key].speed < 0) ? '(व)' : '';
-    push(s, `${p.short}${vk} ${Math.floor(L % 30)}`);
+    const as = isCombust(p.key, pos) ? '(अ)' : '';
+    push(s, `${p.short}${vk}${as} ${Math.floor(L % 30)}`);
   }
   return bySign;
 }
