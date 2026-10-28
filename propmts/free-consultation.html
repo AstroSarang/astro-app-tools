@@ -114,7 +114,18 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData_hi = `कृपया जातक के ज्योतिषीय डेटा का उपयोग करके विश्लेषण कीजिये, जैसे ग्रह स्तिथि के अनुसार, कंरट दशा-गोचर में परिस्थिति, रोग और बीमारियाँ वैगरे, तथा करियर-विवाह-धन.
+        const rawData_hi = `
+
+ये D1 और D9 कुंडलियों के स्क्रीनशॉट हैं।
+
+निर्देश : कृपया कुंडलियों के लिए ग्रहों के राशि नंबर निकालें।
+
+क्रम: लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु। फॉर्मेट:
+D-xx: 1,2,3,4,5,6,7,8,9,10
+
+सभी के नंबर एक साथ कोड फोर्मेट में दें।
+----------
+कृपया जातक के ज्योतिषीय डेटा का उपयोग करके विश्लेषण कीजिये, जैसे ग्रह स्तिथि के अनुसार, कंरट दशा-गोचर में परिस्थिति, रोग और बीमारियाँ वैगरे, तथा करियर-विवाह-धन.
 
 उसके पहले ध्यान रखने योग्य बातें :
 
@@ -226,7 +237,21 @@ Remedies de dejiye, dharmik aur gairdharmik dono (short caution ke sath ki ye sa
     * जातक का भाग्यशाली ग्रह कौन सा है और उसे कैसे मजबूत किया जा सकता है?
 
 आपका उत्तर सरल हिंदी में होना चाहिए, लेकिन भाषा में ज्योतिषीय गंभीरता और ज्ञान झलकना चाहिए। विश्लेषण को अलग-अलग खंडों में व्यवस्थित करें ताकि उसे समझना आसान हो।`;
-        const rawData_en = `Please analyze using the native's astrological data - such as per planetary positions, the situation in current dasha-transit, diseases and ailments etc., as well as career-marriage-wealth.
+        const rawData_en = `
+
+These are screenshots of the D1 and D9 Kundli (birth charts).
+
+Instructions: Please carefully examine both charts and extract the zodiac sign numbers for the Ascendant (Lagna) and all nine planets.
+
+Required Order: Ascendant (Lagna), Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu.
+
+Output Format:
+D1: 1,2,3,4,5,6,7,8,9,10
+D9: 1,2,3,4,5,6,7,8,9,10
+
+Important: Provide the zodiac sign numbers for both charts together in a single code block, following the exact order and format specified above. Ensure accuracy and do not include any additional explanations.
+----------
+Please analyze using the native's astrological data - such as per planetary positions, the situation in current dasha-transit, diseases and ailments etc., as well as career-marriage-wealth.
 
 Before that, points to keep in mind:
 
@@ -338,7 +363,21 @@ Your analysis should be such that it amazes the native and reveals the hidden as
     * Which is the native's lucky planet and how can it be strengthened?
 
 Your answer should be in simple Hindi, but the language should reflect astrological seriousness and knowledge. Organize the analysis into different sections so it is easy to understand.`;
-        const rawData_mr = `कृपया जातकाच्या ज्योतिषीय डेटाचा वापर करून विश्लेषण करा, जसे ग्रहस्थितीनुसार, करंट दशा-गोचरातील परिस्थिती, रोग आणि आजार वगैरे, तसेच करियर-विवाह-धन.
+        const rawData_mr = `
+हे D1 आणि D9 कुंडल्यांचे स्क्रीनशॉट आहेत.
+
+सूचना: कृपया दोन्ही कुंडल्यांचे काळजीपूर्वक निरीक्षण करून लग्न (Ascendant) आणि सर्व नऊ ग्रहांचे राशी क्रमांक अचूकपणे काढा.
+
+आवश्यक क्रम: लग्न, सूर्य, चंद्र, मंगळ, बुध, गुरु, शुक्र, शनी, राहू, केतू.
+
+उत्तराचे स्वरूप:
+
+D1: 1,2,3,4,5,6,7,8,9,10
+D9: 1,2,3,4,5,6,7,8,9,10
+
+महत्त्वाची सूचना: दोन्ही कुंडल्यांमधील राशी क्रमांक वरील दिलेल्या क्रमाने आणि स्वरूपात एकाच कोड ब्लॉकमध्ये द्या. सर्व क्रमांक अचूक असल्याची खात्री करा. कोणतेही अतिरिक्त स्पष्टीकरण देऊ नका.
+----------
+कृपया जातकाच्या ज्योतिषीय डेटाचा वापर करून विश्लेषण करा, जसे ग्रहस्थितीनुसार, करंट दशा-गोचरातील परिस्थिती, रोग आणि आजार वगैरे, तसेच करियर-विवाह-धन.
 
 त्याआधी लक्षात ठेवण्यासारख्या गोष्टी:
 
