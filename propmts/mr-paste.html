@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Astrology AI Prompt Creator</title>
+    <title>MR Paste v6.3 - Astrology AI Prompt Creator</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -113,12 +113,28 @@
                 flex-direction: column;
             }
         }
+    
+        .astro-box { background:#fff3e0; border:2px solid #ef6c00; border-radius:8px; padding:15px; margin-bottom:18px; }
+        .astro-box label { font-weight:bold; }
+        .astro-box input { width:100%; padding:10px; font-size:16px; margin-top:6px; box-sizing:border-box; }
+        .astro-box button { margin-top:10px; margin-right:8px; padding:10px 16px; font-size:16px; cursor:pointer; }
+        #astroMsg, #copyMsg { font-weight:bold; margin-top:8px; min-height:20px; }
+        .note { color:#555; font-size:14px; margin-top:6px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>MR Paste प्रॉम्प्ट जनरेटर</h1>
+    <h1>MR Paste प्रॉम्प्ट जनरेटर v6.3</h1>
+    <div class="astro-box">
+        <label for="astroCode">एस्ट्रो कोड (Astro Code):</label>
+        <input id="astroCode" type="text" placeholder="उदाहरण: AS1-19950214-030000-+0530-2119N-07951E" />
+        <button id="astroFillBtn" type="button" onclick="v6fillAuto(false)">भरो (Astro Code से डेटा भरें)</button>
+        <button id="astroRefillBtn" type="button" onclick="v6refillTap()">ऑटो-फिल से फिर से भरें (दो-टैप)</button>
+        <div id="astroMsg"></div>
+        <div class="note">नोट: भरो दबाने पर नीचे के चारों डेटा बॉक्स (पराशरी, जैमिनी, BNN, KP) एस्ट्रो कोड से अपने आप भर जाएंगे। पहले से भरा हुआ बॉक्स नहीं छेड़ा जाएगा, उसे बदलने के लिए दो-टैप बटन दबाएं। मैनुअल पेस्ट बॉक्स हमेशा साथ में रहेंगे, ताकि आप संख्या खुद भी सुधार सकें। KP के सभी 5 बिंदु एस्ट्रो कोड से भरे जाते हैं। भाषा बदलने पर डेटा बॉक्स अपने आप नहीं बदलते; नई भाषा में डेटा चाहिए तो भाषा चुनकर दो-टैप बटन से फिर से भरें, तभी चारों बॉक्स नई भाषा में भरेंगे।</div>
+    </div>
+
 
     <!-- Basic Info -->
     <div class="row">
@@ -178,6 +194,7 @@
         <h3 style="margin-bottom:5px;">आपका तैयार प्रॉम्प्ट:</h3>
         <textarea id="finalPrompt" readonly></textarea>
         <button id="copyBtn" onclick="copyToClipboard()">Copy Prompt (प्रॉम्प्ट कॉपी करें)</button>
+        <div id="copyMsg"></div>
     </div>
 
 </div>
@@ -317,7 +334,7 @@ ${blockKP}`;
         const copyText = document.getElementById("finalPrompt");
         const btn = document.getElementById("copyBtn") || event.target;
         const val = copyText.value;
-        if(!val){ alert("पहले प्रॉम्प्ट बनाएं!"); return; }
+        if(!val){ window.setCopyMsg ? window.setCopyMsg("पहले प्रॉम्प्ट बनाएं!", false) : null; return; }
         // Try modern clipboard API first
         if(navigator.clipboard && window.isSecureContext){
             navigator.clipboard.writeText(val).then(()=>{
@@ -333,12 +350,852 @@ ${blockKP}`;
         try{
             const ok = document.execCommand('copy');
             showCopyFeedback(btn, ok);
-            if(!ok) setTimeout(()=>alert("कॉपी नहीं हुआ - manually select करके copy करें"), 2100);
+            if(!ok) setTimeout(()=>{ if(window.setCopyMsg) window.setCopyMsg("कॉपी नहीं हुआ - manually select करके copy करें", false); }, 2100);
         }catch(e){
             showCopyFeedback(btn, false);
         }
     }
 </script>
 
+<script>
+(function(){
+  const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+  (async function initEphem(){
+    try{
+      const m = await import(/* @vite-ignore */EPHEM_CDN);
+      const swe = new m.SwissEphemeris();
+      await swe.init();
+      swe.setSiderealMode(m.SiderealMode.Lahiri);
+      window._swe = swe;
+      window._SEP = m.Planet;
+      const msg = document.getElementById('astroMsg'); if(msg && !msg.textContent) msg.textContent = 'Ephemeris तैयार है, एस्ट्रो कोड डालकर भरो दबाएं।';
+    }catch(e){
+      const msg = document.getElementById('astroMsg'); if(msg) msg.textContent = 'Ephemeris लोड नहीं हुआ: ' + e.message;
+    }
+  })();
+})();
+</script>
+<script>
+// ===== MR Paste v6 - Astro Code Auto-Fill (addition to v5, v5 instructions/fields unchanged) =====
+// Calculation rules: Lahiri ayanamsa, Swiss Ephemeris browser build (calculatePosition is tropical, subtract getAyanamsa),
+// Rahu = body 10, Ketu = Rahu+180, never MeanNode. Varga: Parashara equal division, D9 standard,
+// D60=(sign+pada)%12, D6=(sign*6+pada)%12, D8=(sign*8+pada)%12, D11=(sign*11+pada)%12,
+// D30/D5 = APK boundary mapping (even 20-25 deg = Meena, unverified best guess, noted in code only, not used in MR output).
+// Drishti: 7th + Mars 4/8, Jupiter 5/9, Saturn 3/10, Rahu/Ketu 5/9. Jaimini: chara karakas by degree, Arudha as in website code.
+// KP: Placidus cusps with KP ayanamsa offset as in his KP tool (Lahiri longitude + 5'26.22"), sublords by Vimshottari proportions.
+// No extra verification prompt is added anywhere. No popup dialogs are used here.
+const V6_RASHI = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+const V6_PL = {Sun:'सूर्य',Moon:'चंद्र',Mars:'मंगल',Mercury:'बुध',Jupiter:'गुरु',Venus:'शुक्र',Saturn:'शनि',Rahu:'राहु',Ketu:'केतु'};
+const V6_PL_EN = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+const V6_LORD = ['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+const V6_NAK = ['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती'];
+const V6_NAK_LORD = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const V6_BHAVA = {1:'पहले',2:'दूसरे',3:'तीसरे',4:'चौथे',5:'पाँचवें',6:'छठे',7:'सातवें',8:'आठवें',9:'नौवें',10:'दसवें',11:'ग्यारहवें',12:'बारहवें'};
+const V6_BHAVA2 = {1:'1ले',2:'2रे',3:'3रे',4:'4थे',5:'5वें',6:'6ठे',7:'7वें',8:'8वें',9:'9वें',10:'10वें',11:'11वें',12:'12वें'};
+const V6_FRIENDS = {Sun:['Moon','Mars','Jupiter'],Moon:['Sun','Mercury'],Mars:['Sun','Moon','Jupiter'],Mercury:['Sun','Venus'],Jupiter:['Sun','Moon','Mars'],Venus:['Mercury','Saturn'],Saturn:['Mercury','Venus']};
+const V6_ENEMIES = {Sun:['Venus','Saturn'],Moon:[],Mars:['Mercury'],Mercury:['Moon'],Jupiter:['Mercury','Venus'],Venus:['Sun','Moon'],Saturn:['Sun','Moon','Mars']};
+const V6_UCHCHA = {Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
+const V6_NEECHA = {Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+const V6_COMBUST = {Moon:12,Mars:17,Mercury:14,Jupiter:11,Venus:10,Saturn:15};
+const V6_ASPECT = {Sun:[7],Moon:[7],Mars:[4,7,8],Mercury:[7],Jupiter:[5,7,9],Venus:[7],Saturn:[3,7,10],Rahu:[5,7,9],Ketu:[5,7,9]};
+const V6_KP_OFFSET_MIN = 5 + 26.22/60; // arcminutes, KP ayanamsa = Lahiri - this
+const V6_KP_SIGN_LORD = ['Ma','Ve','Me','Mo','Su','Me','Ve','Ma','Ju','Sa','Sa','Ju'];
+const V6_KP_NAK_LORDS = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const V6_KP_YEARS = {Ke:7,Ve:20,Su:6,Mo:10,Ma:7,Ra:18,Ju:16,Sa:19,Me:17};
+const V6_KP_ORDER = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const V6_KP_FULL = {Su:'Sun',Mo:'Moon',Ma:'Mars',Me:'Mercury',Ju:'Jupiter',Ve:'Venus',Sa:'Saturn',Ra:'Rahu',Ke:'Ketu'};
+const V6_KP_SHORT = {Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
+function v6norm(x){ return ((x%360)+360)%360; }
+function v6fmtDeg(lon){ const d=Math.floor(lon%30); const m=Math.floor(((lon%30)-d)*60); return d+'°'+m+"'"; }
+function v6nak(lon){ const idx=Math.floor(lon/(360/27))%27; const pada=Math.floor(((lon%(360/27))/(360/27/4)))+1; return {name:V6_NAK[idx], lord:V6_NAK_LORD[idx], idx:idx, pada:pada}; }
+function v6setMsg(id, txt, ok){ const el=document.getElementById(id); if(!el) return; el.textContent=txt; el.style.color = ok===false ? '#c62828' : '#2e7d32'; }
+window.setCopyMsg = function(txt, ok){ v6setMsg('copyMsg', txt, ok); };
+function v6parseAstro(code){
+  const m = code.trim().match(/AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-]\d{2})(\d{2})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])/);
+  if(!m) return null;
+  const y=+m[1], mo=+m[2], d=+m[3], hh=+m[4], mm=+m[5], ss=+m[6];
+  const tzSign = m[7][0]==='+'?1:-1; const tzH = tzSign*(parseInt(m[7].slice(1)) + (+m[8])/60);
+  let lat = (+m[9]) + (+m[10])/60; if(m[11]==='S') lat=-lat;
+  let lon = (+m[12]) + (+m[13])/60; if(m[14]==='W') lon=-lon;
+  return {y:y,mo:mo,d:d,hh:hh,mm:mm,ss:ss,tzH:tzH,lat:lat,lon:lon};
+}
+function v6varga(sign, deg, v){
+  const pada=Math.floor(deg/(30/v));
+  if(v===9){ if([0,3,6,9].includes(sign)) return (sign+pada)%12; if([1,4,7,10].includes(sign)) return (sign+8+pada)%12; return (sign+4+pada)%12; }
+  if(v===60) return (sign+pada)%12;
+  if(v===6) return (sign*6+pada)%12;
+  if(v===8) return (sign*8+pada)%12;
+  if(v===11) return (sign*11+pada)%12;
+  if(v===7) return (sign*7+pada)%12;
+  if(v===10){ return (sign%2===0 ? (sign+pada)%12 : (sign+8+pada)%12); }
+  if(v===30 || v===5){
+    const odd = (sign%2===0);
+    if(odd){ if(deg<5) return 0; if(deg<10) return 10; if(deg<18) return 8; if(deg<25) return 2; return 6; }
+    else { if(deg<12) return 5; if(deg<25) return 11; return 7; }
+  }
+  return (sign+pada)%12;
+}
+function v6kpSubs(nakIdx){
+  const total=800, start=nakIdx%9, res=[]; let pos=0;
+  for(let i=0;i<9;i++){ const lord=V6_KP_ORDER[(start+i)%9]; const w=V6_KP_YEARS[lord]/120*total; res.push({lord:lord,s:pos,e:pos+w}); pos+=w; }
+  return res;
+}
+function v6kpLords(absMin, nakIdx){
+  const din=absMin - nakIdx*800; const subs=v6kpSubs(nakIdx);
+  for(const sub of subs){ if(sub.s<=din && din<sub.e){ const si=V6_KP_ORDER.indexOf(sub.lord); const wtot=sub.e-sub.s; let pos=sub.s;
+    for(let i=0;i<9;i++){ const ssl=V6_KP_ORDER[(si+i)%9]; const w=V6_KP_YEARS[ssl]/120*wtot; if(pos<=din && din<pos+w) return {sl:sub.lord, ssl:ssl}; pos+=w; } } }
+  return {sl:'?', ssl:'?'};
+}
+function v6jaiminiKarakas(posDeg){
+  const planets=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+  const degs=planets.map(p=>({p:p,d:posDeg[p]%30})).sort((a,b)=>b.d-a.d);
+  const names=['Atmakaraka','Amatyakaraka','Bhratrukaraka','Matrukaraka','Putrakaraka','Gnatikaraka','Darakaraka'];
+  const hi={Atmakaraka:'आत्मकारक',Amatyakaraka:'अमात्यकारक',Bhratrukaraka:'भ्रातृकारक',Matrukaraka:'मातृकारक',Putrakaraka:'पुत्रकारक',Gnatikaraka:'ज्ञातिकारक',Darakaraka:'दाराकारक'};
+  const res={}; degs.forEach((x,i)=>{ res[names[i]]=x.p; }); res._hi=hi; res._order=degs; return res;
+}
+function v6arudha(lagnaSign, posSign){
+  const normH=h=>((h-1)%12+12)%12+1; const res={};
+  for(let h=1;h<=12;h++){
+    const rashiNum=((lagnaSign+h-1)%12+12)%12; const lordKey=V6_LORD[rashiNum]; const lordSign=posSign[lordKey];
+    const houseOfLord=((lordSign-lagnaSign)%12+12)%12+1; const steps=((houseOfLord-h)%12+12)%12+1; let aHouse;
+    if(steps===1||steps===7) aHouse=normH(h+9); else if(steps===4) aHouse=houseOfLord; else if(steps===10) aHouse=normH(h+3); else aHouse=normH(houseOfLord+steps-1);
+    let dist=((aHouse-h)%12+12)%12+1; if(dist===1||dist===7) aHouse=normH(aHouse+9); res[h]=aHouse;
+  }
+  return res;
+}
+function v6rashiDrishti(sign){
+  // 0=Movable,1=Fixed,2=Dual pattern: Mesha etc. Types by index: 0 Mov,1 Fix,2 Dual repeating
+  const type=sign%3; const mov=[0,3,6,9], fix=[1,4,7,10], dual=[2,5,8,11]; const out=[];
+  if(type===0){ const adj=(sign+1)%12; fix.forEach(r=>{ if(r!==adj) out.push(r); }); }
+  else if(type===1){ const adj=(sign-1+12)%12; mov.forEach(r=>{ if(r!==adj) out.push(r); }); }
+  else { dual.forEach(r=>{ if(r!==sign) out.push(r); }); }
+  return out.sort((a,b)=>a-b);
+}
+
+// ===== Chart calculation =====
+let V6_CHART=null;
+async function v6calcChart(){
+  const swe=window._swe, SEP=window._SEP;
+  if(!swe) { v6setMsg('astroMsg','Ephemeris अभी तैयार नहीं है, थोड़ी देर बाद फिर से भरो दबाएं।',false); return null; }
+  const code=document.getElementById('astroCode').value.trim();
+  const ad=v6parseAstro(code);
+  if(!ad){ v6setMsg('astroMsg','Astro Code का फॉर्मेट गलत है। उदाहरण: AS1-19950214-030000-+0530-2119N-07951E',false); return null; }
+  try{
+    const utcMs=Date.UTC(ad.y, ad.mo-1, ad.d, ad.hh, ad.mm, ad.ss) - (ad.tzH*3600000);
+    const ud=new Date(utcMs);
+    let jd;
+    if(typeof swe.julianDay==='function'){ jd=swe.julianDay(ud.getUTCFullYear(), ud.getUTCMonth()+1, ud.getUTCDate(), ud.getUTCHours()+ud.getUTCMinutes()/60+ud.getUTCSeconds()/3600); }
+    else { jd=ud.getTime()/86400000 + 2440587.5; }
+    const ayan=swe.getAyanamsa(jd);
+    const pos={}, posDeg={}, speed={};
+    const plMap={Sun:'Sun',Moon:'Moon',Mars:'Mars',Mercury:'Mercury',Jupiter:'Jupiter',Venus:'Venus',Saturn:'Saturn'};
+    for(const p of V6_PL_EN){
+      let lon, sp=0;
+      if(p==='Rahu'){ const r=swe.calculatePosition(jd, 10); lon=v6norm(r.longitude-ayan); sp=0; }
+      else if(p==='Ketu'){ const r=swe.calculatePosition(jd, 10); lon=v6norm(r.longitude-ayan+180); sp=0; }
+      else { const r=swe.calculatePosition(jd, SEP[plMap[p]]); lon=v6norm(r.longitude-ayan); sp=r.longitudeSpeed!==undefined?r.longitudeSpeed:(r.speedLongitude!==undefined?r.speedLongitude:(r.speedInLongitude!==undefined?r.speedInLongitude:(r.speed!==undefined?r.speed:0))); }
+      posDeg[p]=lon; pos[p]=Math.floor(lon/30); speed[p]=sp;
+    }
+    const hs=swe.calculateHouses(jd, ad.lat, ad.lon, 'P');
+    const lagnaDeg=v6norm(hs.ascendant-ayan); const lagnaSign=Math.floor(lagnaDeg/30);
+    const cuspsRaw = hs.cusps ? hs.cusps : [];
+    pos.Lagna=lagnaSign; posDeg.Lagna=lagnaDeg;
+    const nak={}; for(const p of [...V6_PL_EN,'Lagna']) nak[p]=v6nak(posDeg[p]);
+    const d9={}, d9Lon={};
+    for(const p of [...V6_PL_EN,'Lagna']){ d9[p]=v6varga(pos[p], posDeg[p]%30, 9); const padaSize=30/9; const lonIn=(posDeg[p]%30)%padaSize; d9Lon[p]=(d9[p]*30 + lonIn*9)%360; }
+    const bhava=r=>((r-lagnaSign)%12+12)%12+1;
+    const rashiOfBhava=b=>(lagnaSign+b-1)%12;
+    const d9bhava=r=>((r-d9.Lagna)%12+12)%12+1;
+    const planetsInBhava={}; const planetsInD9Bhava={};
+    for(let b=1;b<=12;b++){ planetsInBhava[b]=[]; planetsInD9Bhava[b]=[]; }
+    for(const p of V6_PL_EN){ planetsInBhava[bhava(pos[p])].push(p); planetsInD9Bhava[d9bhava(d9[p])].push(p); }
+    function aspectedByMap(posSign, bhavaFn){
+      const m={}; for(let b=1;b<=12;b++) m[b]=[];
+      for(const p of V6_PL_EN){ const pb=bhavaFn(posSign[p]); for(const asp of (V6_ASPECT[p]||[7])){ const tb=((pb+asp-2)%12)+1; m[tb].push({p:p,asp:asp}); } }
+      return m;
+    }
+    const aspectedBy=aspectedByMap(pos, b=>bhava(b));
+    const aspectedByD9=aspectedByMap(d9, b=>d9bhava(b));
+    // KP cusps
+    const kpAyan=ayan - (V6_KP_OFFSET_MIN/60);
+    let cusps12=[];
+    if(cuspsRaw.length>=13) cusps12=cuspsRaw.slice(1).concat([cuspsRaw[0]]).slice(0,12); else if(cuspsRaw.length===12) cusps12=cuspsRaw.slice(); else if(cuspsRaw.length>0) cusps12=cuspsRaw.slice();
+    const kpCusps=[];
+    for(let i=0;i<12;i++){ const ct=cusps12[i]!==undefined?cusps12[i]:0; const c=v6norm(ct-kpAyan); const rashi=Math.floor(c/30)%12; const nakIdx=Math.floor(c/(360/27))%27; const lords=v6kpLords(c*60, nakIdx); kpCusps.push({bhava:i+1,cusp:c,rashi:rashi,nakIdx:nakIdx,rl:V6_KP_SIGN_LORD[rashi],nl:V6_KP_NAK_LORDS[nakIdx],sl:lords.sl,ssl:lords.ssl}); }
+    const placidusBhava=(lonLahiri)=>{ const lonKP=v6norm(lonLahiri + (V6_KP_OFFSET_MIN/60)); for(let i=0;i<12;i++){ const c1=kpCusps[i].cusp, c2=kpCusps[(i+1)%12].cusp; if(c1<c2){ if(c1<=lonKP && lonKP<c2) return i+1; } else { if(lonKP>=c1 || lonKP<c2) return i+1; } } return 1; };
+    const karakas=v6jaiminiKarakas(posDeg);
+    const arudha=v6arudha(lagnaSign, pos);
+    V6_CHART={ad:ad,jd:jd,ayan:ayan,pos:pos,posDeg:posDeg,speed:speed,nak:nak,d9:d9,d9Lon:d9Lon,bhava:bhava,rashiOfBhava:rashiOfBhava,d9bhava:d9bhava,planetsInBhava:planetsInBhava,planetsInD9Bhava:planetsInD9Bhava,aspectedBy:aspectedBy,aspectedByD9:aspectedByD9,kpCusps:kpCusps,placidusBhava:placidusBhava,karakas:karakas,arudha:arudha,lagnaSign:lagnaSign,lagnaDeg:lagnaDeg};
+    return V6_CHART;
+  }catch(e){ v6setMsg('astroMsg','गणना में त्रुटि: '+e.message,false); return null; }
+}
+// ===== Formatting helpers =====
+function v6ava(p){
+  const C=V6_CHART; const sign=C.pos[p]; const parts=[];
+  if(p!=='Rahu' && p!=='Ketu'){
+    if(V6_UCHCHA[p]===sign) parts.push('उच्च');
+    else if(V6_NEECHA[p]===sign) parts.push('नीच');
+    if(C.speed[p]<-0.001) parts.push('वक्री');
+    if(p!=='Sun' && V6_COMBUST[p]){
+      let dist=Math.abs(v6norm(C.posDeg[p]-C.posDeg.Sun)); if(dist>180) dist=360-dist;
+      if(dist<V6_COMBUST[p]) parts.push('अस्त');
+    }
+  }
+  if(p!=='Rahu' && p!=='Ketu'){
+    const lord=V6_LORD[sign];
+    if(lord===p) parts.push('स्वराशि');
+    else if((V6_FRIENDS[p]||[]).includes(lord)) parts.push('मित्र राशि');
+    else if((V6_ENEMIES[p]||[]).includes(lord)) parts.push('शत्रु राशि');
+    else parts.push('सम राशि');
+  }
+  if(C.d9[p]===sign) parts.push('राशि वर्गोत्तम');
+  if(C.bhava(sign)===C.d9bhava(C.d9[p])) parts.push('भाव वर्गोत्तम');
+  return parts.length?(' ('+parts.join(', ')+')'):'';
+}
+function v6pPos(p){ const C=V6_CHART; return V6_PL[p]+' '+V6_BHAVA[C.bhava(C.pos[p])]+' भाव में, '+V6_RASHI[C.pos[p]]+' राशि'+v6ava(p)+' में स्थित है'; }
+function v6pNak(p){ const C=V6_CHART; const n=C.nak[p]; return V6_PL[p]+' '+n.name+' नक्षत्र (स्वामी: '+V6_PL[n.lord]+') में स्थित है'; }
+function v6listPlanets(arr){ if(!arr||!arr.length) return 'कोई नहीं'; return arr.map(p=>V6_PL[p]).join(', '); }
+function v6listWithNak(arr){ if(!arr||!arr.length) return 'कोई नहीं'; return arr.map(p=>{ const n=V6_CHART.nak[p]; return V6_PL[p]+' ('+n.name+' नक्षत्र, स्वामी: '+V6_PL[n.lord]+')'; }).join(', '); }
+function v6drishtiList(entries){ if(!entries||!entries.length) return 'कोई नहीं'; const seen={}; const out=[]; for(const e of entries){ if(seen[e.p]) continue; seen[e.p]=1; out.push(V6_PL[e.p]+' की '+e.asp+'वीं दृष्टि'); } return out.join(', '); }
+function v6friendTwo(a,b){ const aToB=(V6_FRIENDS[a]||[]).includes(b)?'मित्र':((V6_ENEMIES[a]||[]).includes(b)?'शत्रु':'सम'); const bToA=(V6_FRIENDS[b]||[]).includes(a)?'मित्र':((V6_ENEMIES[b]||[]).includes(a)?'शत्रु':'सम'); if(aToB===bToA) return 'नैसर्गिक रूप से एक-दूसरे के '+aToB+' हैं'; return V6_PL[a]+' '+V6_PL[b]+' को '+aToB+' मानते हैं, '+V6_PL[b]+' '+V6_PL[a]+' को '+bToA+' मानते हैं'; }
+function v6rel(a,b){
+  const C=V6_CHART; const sa=C.pos[a], sb=C.pos[b]; if(sa===sb) return 'युति';
+  const dist=((sb-sa)%12+12)%12; if(dist===1||dist===11) return '2-12 संबंध'; if(dist===4||dist===8) return 'त्रिकोण (1-5-9) संबंध'; return 'कोई सीधा युति/2-12/त्रिकोण संबंध नहीं';
+}
+function v6bhavaCuspNak(bhavaNum, lagnaLon){
+  const cusp=v6norm(lagnaLon+(bhavaNum-1)*30); const n=v6nak(cusp); return {cusp:cusp, nak:n};
+}
+function v6q(q,a){ return '➤ '+q+'\nउत्तर: '+a+'\n'; }
+function v6sec(num, title, body){ return num+' '+title+':\n'+body+'\n'; }
+
+// ===== Parashari builder =====
+function v6buildParashari(){
+  const C=V6_CHART; const isMale=document.getElementById('gender').value==='जातक';
+  const lagnaLord=V6_LORD[C.lagnaSign]; const lord7=V6_LORD[C.rashiOfBhava(7)]; const r7=C.rashiOfBhava(7);
+  const lord8=V6_LORD[C.rashiOfBhava(8)];
+  const karaka=isMale?'Venus':'Jupiter'; const karakaHi=V6_PL[karaka];
+  let s='';
+  // 1 Saptamesh
+  let b='';
+  b+=v6q('कौन-सा ग्रह सप्तम भाव का स्वामी है?', V6_PL[lord7]);
+  b+=v6q('सप्तमेश ग्रह किस राशी-भाव में स्थित है?', V6_BHAVA[C.bhava(C.pos[lord7])]+' भाव में, '+V6_RASHI[C.pos[lord7]]+' राशि'+v6ava(lord7)+' में स्थित है।');
+  b+=v6q('सप्तमेश ग्रह किस नक्षत्र (स्वामी) में स्थित है?', v6pNak(lord7)+'।');
+  const yuti=C.planetsInBhava[C.bhava(C.pos[lord7])].filter(p=>p!==lord7);
+  b+=v6q('सप्तमेश ग्रह की युति किन ग्रहों से हो रही है?', yuti.length? (v6listPlanets(yuti)+' से युति हो रही है।') : 'किसी ग्रह से युति नहीं हो रही है।');
+  b+=v6q('सप्तमेश से युत ग्रह किस नक्षत्र (स्वामी) में स्थित है?', yuti.length? v6listWithNak(yuti)+'।' : 'लागू नहीं।');
+  b+=v6q('सप्तमेश पर किन ग्रहों की दृष्टि है?', v6drishtiList(C.aspectedBy[C.bhava(C.pos[lord7])])+' है।');
+  b+=v6q('क्या लग्नेश और सप्तमेश में शत्रुता/मित्रता/समानता है?', 'लग्नेश ('+V6_PL[lagnaLord]+') और सप्तमेश ('+V6_PL[lord7]+') '+v6friendTwo(lagnaLord, lord7)+'।');
+  s+=v6sec('1]','सप्तमेश (7वें भाव का स्वामी)',b);
+  // 2 Saptam bhava
+  b='';
+  const cusp7=v6bhavaCuspNak(7, C.lagnaDeg);
+  b+=v6q('सप्तम भाव किस राशि और नक्षत्र (स्वामी) में स्थित है?', V6_RASHI[r7]+' राशि में। (भाव मध्य: '+cusp7.nak.name+' नक्षत्र, स्वामी: '+V6_PL[cusp7.nak.lord]+')।');
+  b+=v6q('सप्तम भाव में कौन-कौन से ग्रह स्थित हैं?', v6listPlanets(C.planetsInBhava[7])+' स्थित हैं।');
+  b+=v6q('सप्तम भाव में स्तिथ ग्रह किस नक्षत्र (स्वामी) में स्थित है?', C.planetsInBhava[7].length? v6listWithNak(C.planetsInBhava[7])+'।' : 'लागू नहीं।');
+  b+=v6q('सप्तम भाव पर कौन-कौन से ग्रह दृष्टि डाल रहे हैं?', v6drishtiList(C.aspectedBy[7])+' है।');
+  s+=v6sec('2]','सप्तम भाव (7th House)',b);
+  // 3 D9
+  b='';
+  const d9r7=C.d9[C.rashiOfBhava(7)]!==undefined ? null : null;
+  // D9 7th sign: sign of 7th bhava in D9 = D9 sign of D1 7th rashi? Use D9 lagna +6
+  const d9_7sign=(C.d9.Lagna+6)%12; const d9_7bhava=7;
+  const cuspD9_7=v6bhavaCuspNak(7, C.d9Lon.Lagna);
+  b+=v6q('नवमांश में सप्तम भाव किस राशि और नक्षत्र (स्वामी) में स्थित है?', V6_RASHI[d9_7sign]+' राशि में। (भाव मध्य: '+cuspD9_7.nak.name+' नक्षत्र, स्वामी: '+V6_PL[cuspD9_7.nak.lord]+')।');
+  b+=v6q('नवमांश में सप्तम भाव में कौन-कौन से ग्रह स्थित हैं? (उनके नक्षत्र-स्वामी सहित)', v6listWithNak(C.planetsInD9Bhava[7])+'।');
+  b+=v6q('नवमांश में सप्तम भाव पर किन ग्रहों की दृष्टि है?', v6drishtiList(C.aspectedByD9[7])+' है।');
+  const d9lord7=V6_LORD[d9_7sign];
+  b+=v6q('नवमांश में सप्तमेश ग्रह कौन है और वह किस भाव, राशि और नक्षत्र (स्वामी) में स्थित है?', 'नवमांश में सप्तमेश '+V6_PL[d9lord7]+' है, जो डी9 में '+V6_BHAVA[C.d9bhava(C.d9[d9lord7])]+' भाव में, '+V6_RASHI[C.d9[d9lord7]]+' राशि में, '+v6nak(C.d9Lon[d9lord7]).name+' नक्षत्र (स्वामी: '+V6_PL[v6nak(C.d9Lon[d9lord7]).lord]+') में स्थित है।');
+  const d9yuti=C.planetsInD9Bhava[C.d9bhava(C.d9[d9lord7])].filter(p=>p!==d9lord7);
+  b+=v6q('नवमांश में सप्तमेश ग्रह की युति या दृष्टि किन ग्रहों से हो रही है?', 'युति: '+(d9yuti.length?v6listPlanets(d9yuti):'कोई नहीं')+'। दृष्टि: '+v6drishtiList(C.aspectedByD9[C.d9bhava(C.d9[d9lord7])])+'।');
+  b+=v6q('नवमांश में सप्तमेश से युत ग्रह किस नक्षत्र में स्थित है?', d9yuti.length? v6listWithNak(d9yuti)+'।' : 'लागू नहीं।');
+  const cuspD9_1=v6bhavaCuspNak(1, C.d9Lon.Lagna);
+  b+=v6q('नवमांश में लग्न किस राशि और नक्षत्र (स्वामी) में स्थित है?', V6_RASHI[C.d9.Lagna]+' राशि में। (भाव मध्य: '+cuspD9_1.nak.name+' नक्षत्र, स्वामी: '+V6_PL[cuspD9_1.nak.lord]+')।');
+  b+=v6q('नवमांश में लग्न भाव में कौन-कौन से ग्रह स्थित हैं? (नक्षत्र-स्वामी)', v6listWithNak(C.planetsInD9Bhava[1])+'।');
+  const d9lord1=V6_LORD[C.d9.Lagna];
+  b+=v6q('नवमांश में लग्नेश ग्रह किस भाव, राशी और नक्षत्र (स्वामी) में स्थित है?', 'नवमांश में लग्नेश '+V6_PL[d9lord1]+' है, जो डी9 में '+V6_BHAVA[C.d9bhava(C.d9[d9lord1])]+' भाव में, '+V6_RASHI[C.d9[d9lord1]]+' राशि में, '+v6nak(C.d9Lon[d9lord1]).name+' नक्षत्र (स्वामी: '+V6_PL[v6nak(C.d9Lon[d9lord1]).lord]+') में स्थित है।');
+  b+=v6q('नवमांश में लग्नेश ग्रह की युति या दृष्टि किन ग्रहों से हो रही है?', 'युति: '+v6listPlanets(C.planetsInD9Bhava[C.d9bhava(C.d9[d9lord1])].filter(p=>p!==d9lord1))+'। दृष्टि: '+v6drishtiList(C.aspectedByD9[C.d9bhava(C.d9[d9lord1])])+'।');
+  b+=v6q('नवमांश में शुक्र और बृहस्पति की स्थिति क्या है?', 'शुक्र डी9 में '+V6_BHAVA[C.d9bhava(C.d9.Venus)]+' भाव में '+V6_RASHI[C.d9.Venus]+' राशि में है। बृहस्पति डी9 में '+V6_BHAVA[C.d9bhava(C.d9.Jupiter)]+' भाव में '+V6_RASHI[C.d9.Jupiter]+' राशि में है।');
+  s+=v6sec('3]','नवमांश कुंडली (D9 Chart)',b);
+  // 4 D1 Saptamesh in D9
+  b='';
+  b+=v6q('(D9) नवमांश में D1 का सप्तमेश कौन से भाव, राशी और नक्षत्र (स्वामी) में स्थित है?', 'D1 का सप्तमेश '+V6_PL[lord7]+', नवमांश (D9) में '+V6_BHAVA[C.d9bhava(C.d9[lord7])]+' भाव में, '+V6_RASHI[C.d9[lord7]]+' राशि'+' और '+v6nak(C.d9Lon[lord7]).name+' नक्षत्र (स्वामी: '+V6_PL[v6nak(C.d9Lon[lord7]).lord]+') में स्थित है।');
+  b+=v6q('(D9) नवमांश में D1 सप्तमेश किसके साथ बैठा है?', v6listPlanets(C.planetsInD9Bhava[C.d9bhava(C.d9[lord7])].filter(p=>p!==lord7))+' के साथ बैठा है।');
+  b+=v6q('(D9) नवमांश में D1 सप्तमेश पर किन ग्रहों की दृष्टि है?', v6drishtiList(C.aspectedByD9[C.d9bhava(C.d9[lord7])])+' है।');
+  s+=v6sec('4]','D1 सप्तमेश की नवमांश (D9) में स्थिति',b);
+  // 5 Shukra/Guru
+  b='';
+  b+=v6q('पुरुष की कुंडली में शुक्र किस भाव और राशि में है?', 'शुक्र '+V6_BHAVA[C.bhava(C.pos.Venus)]+' भाव में, '+V6_RASHI[C.pos.Venus]+' राशि'+v6ava('Venus')+' में है।');
+  b+=v6q('शुक्र किस नक्षत्र में स्थित है?', v6pNak('Venus')+'।');
+  b+=v6q('स्त्री की कुंडली में बृहस्पति किस भाव और राशि में है?', 'बृहस्पति '+V6_BHAVA[C.bhava(C.pos.Jupiter)]+' भाव में, '+V6_RASHI[C.pos.Jupiter]+' राशि'+v6ava('Jupiter')+' में है।');
+  b+=v6q('गुरु किस नक्षत्र में स्थित है?', v6pNak('Jupiter')+'।');
+  b+=v6q('इन ग्रहों पर कौन-कौन से ग्रह दृष्टि डाल रहे हैं या युति बना रहे हैं?', 'शुक्र पर दृष्टि: '+v6drishtiList(C.aspectedBy[C.bhava(C.pos.Venus)])+'। शुक्र की युति: '+v6listPlanets(C.planetsInBhava[C.bhava(C.pos.Venus)].filter(p=>p!=='Venus'))+'। गुरु पर दृष्टि: '+v6drishtiList(C.aspectedBy[C.bhava(C.pos.Jupiter)])+'। गुरु की युति: '+v6listPlanets(C.planetsInBhava[C.bhava(C.pos.Jupiter)].filter(p=>p!=='Jupiter'))+'।');
+  s+=v6sec('5]','शुक्र और बृहस्पति',b);
+  // 6 Shukra-Mangal
+  b='';
+  b+=v6q('शुक्र और मंगल की युति या दृष्टि है क्या?', v6rel('Venus','Mars')+' है।');
+  b+=v6q('इनकी स्थिति कौन-कौन से भावों में है?', 'शुक्र '+V6_BHAVA[C.bhava(C.pos.Venus)]+' भाव ('+V6_RASHI[C.pos.Venus]+' राशि) में और मंगल '+V6_BHAVA[C.bhava(C.pos.Mars)]+' भाव ('+V6_RASHI[C.pos.Mars]+' राशि) में स्थित हैं।');
+  s+=v6sec('6]','शुक्र और मंगल का संबंध',b);
+  // 7 Shukra-Rahu/Ketu
+  b='';
+  const shukBhava=C.bhava(C.pos.Venus);
+  const yutiRahu=C.planetsInBhava[shukBhava].includes('Rahu'); const yutiKetu=C.planetsInBhava[shukBhava].includes('Ketu');
+  b+=v6q('शुक्र और राहु/केतु की युति है क्या?', (yutiRahu?'हाँ, शुक्र और राहु की युति है। ':'नहीं, शुक्र और राहु की युति नहीं है। ')+(yutiKetu?'शुक्र और केतु की युति है।':'शुक्र और केतु की युति नहीं है।'));
+  b+=v6q('यदि हां, तो कौन-से भाव में है? (नक्षत्र,स्वामी)', (yutiRahu||yutiKetu)? (V6_BHAVA[shukBhava]+' भाव में है। शुक्र ('+C.nak.Venus.name+' नक्षत्र, स्वामी: '+V6_PL[C.nak.Venus.lord]+')'+(yutiRahu?' और राहु ('+C.nak.Rahu.name+' नक्षत्र, स्वामी: '+V6_PL[C.nak.Rahu.lord]+')':'')+(yutiKetu?' और केतु ('+C.nak.Ketu.name+' नक्षत्र, स्वामी: '+V6_PL[C.nak.Ketu.lord]+')':'')+'।') : 'लागू नहीं।');
+  const drOnShuk=C.aspectedBy[shukBhava].filter(e=>e.p==='Rahu'||e.p==='Ketu');
+  b+=v6q('शुक्र पर राहु/केतु की दृष्टि है या नहीं?', drOnShuk.length? ('हाँ, शुक्र पर '+v6drishtiList(drOnShuk)+' है।') : 'नहीं, शुक्र पर राहु/केतु की दृष्टि नहीं है।');
+  s+=v6sec('7]','शुक्र-राहु या शुक्र-केतु का प्रभाव',b);
+  // 8 Saptam se Dasham = 4th bhava
+  b='';
+  const b10from7=((7+10-2)%12)+1; const r10=C.rashiOfBhava(b10from7); const lord10=V6_LORD[r10];
+  b+=v6q('सप्तम से दसवां भाव कौन-सा है और उसमें कौन-कौन से ग्रह हैं?', 'सप्तम भाव से दसवां भाव कुंडली का '+V6_BHAVA[b10from7]+' भाव ('+V6_RASHI[r10]+' राशि) है। इसमें '+v6listWithNak(C.planetsInBhava[b10from7])+' स्थित हैं।');
+  b+=v6q('इस भाव का स्वामी किस स्थिति में है? (नक्षत्र,स्वामी)', 'इस भाव का स्वामी '+V6_PL[lord10]+' है, जो '+V6_BHAVA[C.bhava(C.pos[lord10])]+' भाव ('+V6_RASHI[C.pos[lord10]]+' राशि'+v6ava(lord10)+') में '+C.nak[lord10].name+' नक्षत्र (स्वामी: '+V6_PL[C.nak[lord10].lord]+') में स्थित है।');
+  s+=v6sec('8]','सप्तम भाव से दशम भाव (10th from 7th House)',b);
+  // 9 Sasural 8th
+  b='';
+  b+=v6q('अष्टम भाव किस राशि में है और इसका स्वामी कहाँ स्थित है? (नक्षत्र,स्वामी)', 'अष्टम भाव '+V6_RASHI[C.rashiOfBhava(8)]+' राशि में है। इसका स्वामी '+V6_PL[lord8]+' '+V6_BHAVA[C.bhava(C.pos[lord8])]+' भाव में '+V6_RASHI[C.pos[lord8]]+' राशि में '+C.nak[lord8].name+' नक्षत्र (स्वामी: '+V6_PL[C.nak[lord8].lord]+') में स्थित है।');
+  b+=v6q('अष्टम भाव में कौन-कौन से ग्रह स्थित हैं या उस पर दृष्टि डाल रहे हैं?', 'स्थित ग्रह: '+v6listPlanets(C.planetsInBhava[8])+'। दृष्टि: '+v6drishtiList(C.aspectedBy[8])+'।');
+  s+=v6sec('9]','ससुराल से सम्बन्ध (8th House)',b);
+  // 10 Chandra-Saptam
+  b='';
+  b+=v6q('चंद्रमा किस भाव में स्थित है?', 'चंद्रमा '+V6_BHAVA[C.bhava(C.pos.Moon)]+' भाव में ('+V6_RASHI[C.pos.Moon]+' राशि'+v6ava('Moon')+') स्थित है।');
+  b+=v6q('चंद्रमा किस नक्षत्र में स्थित है?', v6pNak('Moon')+'।');
+  const moonYuti=C.planetsInBhava[C.bhava(C.pos.Moon)].filter(p=>p!=='Moon');
+  const moonRel7 = (C.bhava(C.pos.Moon)===7 || moonYuti.includes(lord7) || C.planetsInBhava[7].includes('Moon')) ? 'हाँ' : 'नहीं';
+  b+=v6q('सप्तम भाव या सप्तमेश से इसका संबंध है क्या?', moonRel7+', चंद्रमा की सप्तमेश '+V6_PL[lord7]+' के साथ स्थिति: युति ग्रह: '+v6listPlanets(moonYuti)+'।');
+  b+=v6q('चंद्रमा पर कौन-कौन से ग्रह प्रभाव डाल रहे हैं?', 'दृष्टि: '+v6drishtiList(C.aspectedBy[C.bhava(C.pos.Moon)])+'। युति: '+v6listPlanets(moonYuti)+'।');
+  const moonNakName=C.nak.Moon.name;
+  const moonNakPlanets=V6_PL_EN.filter(p=>C.nak[p].name===moonNakName);
+  const sevenRelated=[lord7, ...C.planetsInBhava[7]];
+  const inMoonNak=moonNakPlanets.filter(p=>sevenRelated.includes(p));
+  b+=v6q('क्या सप्तम भाव से संबंधित ग्रह चंद्रमा के नक्षत्र में है ? क्या चंद्रमा से युत, दृष्ट है ?', 'चंद्रमा '+moonNakName+' नक्षत्र में है। इस नक्षत्र में स्थित ग्रह: '+v6listPlanets(moonNakPlanets)+'। इनमें सप्तम से संबंधित ग्रह: '+(inMoonNak.length?v6listPlanets(inMoonNak):'कोई नहीं')+'। चंद्रमा से युत ग्रह: '+v6listPlanets(moonYuti)+'। चंद्रमा पर दृष्टि: '+v6drishtiList(C.aspectedBy[C.bhava(C.pos.Moon)])+'।');
+  s+=v6sec('10]','चंद्रमा और सप्तम भाव का संबंध',b);
+  return s;
+}
+
+// ===== Jaimini builder =====
+function v6jaiminiPlanetsInSign(sign, d1orD9){
+  const C=V6_CHART; const arr=[];
+  for(const p of V6_PL_EN){ const s = d1orD9==='D9' ? C.d9[p] : C.pos[p]; if(s===sign) arr.push(p); }
+  return arr;
+}
+function v6jaiminiDrishtiForSign(sign){
+  const C=V6_CHART; const aspecting=v6rashiDrishti(sign); const out=[];
+  for(const r of aspecting){ const pls=v6jaiminiPlanetsInSign(r,'D1'); out.push(V6_RASHI[r]+' राशि ('+V6_BHAVA[C.bhava(r)]+' भाव) ['+(pls.length?v6listPlanets(pls):'कोई ग्रह नहीं')+']'); }
+  return out.length?out.join(' | '):'कोई नहीं';
+}
+function v6buildJaimini(){
+  const C=V6_CHART; const kar=C.karakas; const DK=kar.Darakaraka; const AK=kar.Atmakaraka;
+  const ulBhava=C.arudha[12]; const ulSign=C.rashiOfBhava(ulBhava); const a7Bhava=C.arudha[7]; const a7Sign=C.rashiOfBhava(a7Bhava);
+  const akD9=C.d9[AK]; const swam7sign=(akD9+6)%12; const swam7lord=V6_LORD[swam7sign];
+  let s='', b='';
+  // 1 DK
+  b+=v6q('जैमिनी पद्धति से दाराकारक ग्रह कौन-सा है? (सबसे कम अंश वाला ग्रह)', V6_PL[DK]+' है।');
+  b+=v6q('यह ग्रह किस राशि और भाव में स्थित है?', V6_PL[DK]+' '+V6_BHAVA[C.bhava(C.pos[DK])]+' भाव में, '+V6_RASHI[C.pos[DK]]+' राशि में स्थित है।');
+  b+=v6q('इसके साथ कौन-कौन से ग्रहों (चर कारक) की युति है?', v6listPlanets(C.planetsInBhava[C.bhava(C.pos[DK])].filter(p=>p!==DK))+' की युति है।');
+  b+=v6q('इस पर किन राशियों की जैमिनी राशि दृष्टि है? (चर,स्थिर,द्विस्वभाव)', v6jaiminiDrishtiForSign(C.pos[DK])+'।');
+  b+=v6q('यह ग्रह किस नवमांश में स्थित है?', V6_PL[DK]+' नवमांश में '+V6_RASHI[C.d9[DK]]+' राशि में स्थित है।');
+  b+=v6q('दाराकारक किस नक्षत्र में स्थित है?', v6pNak(DK)+'।');
+  s+=v6sec('1]','दाराकारक (DK - Darakaraka)',b);
+  // 2 UL
+  b='';
+  b+=v6q('उपपद लग्न कौन-सा है और यह किस राशि और भाव में स्थित है?', 'उपपद लग्न (UL) '+V6_RASHI[ulSign]+' राशि में है और यह '+V6_BHAVA[ulBhava]+' भाव में स्थित है।');
+  b+=v6q('इसमें कौन-कौन से ग्रह (चर कारक) स्तिथ है?', v6listPlanets(C.planetsInBhava[ulBhava])+' स्थित हैं।');
+  b+=v6q('इस पर किन राशियों की जैमिनी राशि दृष्टि है? (चर,स्थिर,द्विस्वभाव)', v6jaiminiDrishtiForSign(ulSign)+'।');
+  s+=v6sec('2]','उपपद लग्न (UL - UpaPada Lagna)',b);
+  // 3 A7
+  b='';
+  b+=v6q('A7 (दारापद) किस राशि और भाव में स्थित है?', 'A7 (दारापद) '+V6_RASHI[a7Sign]+' राशि में है और यह '+V6_BHAVA[a7Bhava]+' भाव में स्थित है।');
+  b+=v6q('A7 में कौन-कौन से ग्रह (चर कारक) स्तिथ है?', v6listPlanets(C.planetsInBhava[a7Bhava])+' स्थित हैं।');
+  b+=v6q('A7 पर किन राशियों की जैमिनी राशि दृष्टि है? (चर,स्थिर,द्विस्वभाव)', v6jaiminiDrishtiForSign(a7Sign)+'।');
+  s+=v6sec('3]','दारापद (Darapada - A7)',b);
+  // 4 Swamsha / Karakamsha
+  b='';
+  const swamPls=v6jaiminiPlanetsInSign(swam7sign,'D9'); const karaPls=v6jaiminiPlanetsInSign(swam7sign,'D1');
+  b+=v6q('स्वांश लग्न से सप्तम भाव में कौन सी राशि और ग्रह हैं?', 'स्वांश लग्न '+V6_RASHI[akD9]+' राशि है। स्वांश लग्न से सप्तम भाव '+V6_RASHI[swam7sign]+' राशि में है, इसमें डी9 में '+v6listPlanets(swamPls)+' स्थित हैं।');
+  b+=v6q('स्वांश सप्तमेश कहाँ स्थित है?', 'स्वांश सप्तमेश '+V6_PL[swam7lord]+' है, जो स्वांश लग्न से '+V6_BHAVA[((C.d9[swam7lord]-akD9)%12+12)%12+1]+' भाव में '+V6_RASHI[C.d9[swam7lord]]+' राशि में स्थित है।');
+  b+=v6q('स्वांश सप्तमेश किन ग्रहों के साथ युति में है?', v6listPlanets(C.planetsInD9Bhava[C.d9bhava(C.d9[swam7lord])].filter(p=>p!==swam7lord))+' की युति में है।');
+  b+=v6q('कारकांश लग्न से सप्तम भाव में कौन सी राशि और ग्रह हैं?', 'कारकांश लग्न '+V6_RASHI[akD9]+' राशि है। कारकांश लग्न से सप्तम भाव '+V6_RASHI[swam7sign]+' राशि में है, इसमें डी1 में '+v6listPlanets(karaPls)+' स्थित हैं।');
+  b+=v6q('कारकांश सप्तमेश कहाँ स्थित है?', 'कारकांश सप्तमेश '+V6_PL[swam7lord]+' है, जो कारकांश लग्न से '+V6_BHAVA[((C.pos[swam7lord]-akD9)%12+12)%12+1]+' भाव में '+V6_RASHI[C.pos[swam7lord]]+' राशि में स्थित है।');
+  b+=v6q('कारकांश सप्तमेश किन ग्रहों के साथ युति में है?', v6listPlanets(C.planetsInBhava[C.bhava(C.pos[swam7lord])].filter(p=>p!==swam7lord))+' की युति में है।');
+  s+=v6sec('4]','स्वांश और कारकांश से विवाह का विश्लेषण (आत्मा के दृष्टिकोण से)',b);
+  // 5 UL-DK relation
+  b='';
+  const ulAspects=v6rashiDrishti(ulSign); const dkAspects=v6rashiDrishti(C.pos[DK]);
+  b+=v6q('क्या UL और DK एक-दूसरे पर जैमिनी राशि दृष्टि डाल रहे हैं?', (ulAspects.includes(C.pos[DK])||dkAspects.includes(ulSign))?('हाँ, UL ('+V6_RASHI[ulSign]+') और DK ('+V6_RASHI[C.pos[DK]]+') के बीच जैमिनी राशि दृष्टि है।'):'नहीं, UL और DK के बीच सीधी जैमिनी राशि दृष्टि नहीं है।');
+  const ulFromLagna=ulBhava; const dkBhava=C.bhava(C.pos[DK]); const relBhava=((dkBhava-ulBhava)%12+12)%12+1;
+  b+=v6q('क्या वे एक-दूसरे से शुभ भावों (केंद्र, त्रिकोण) में हैं?', 'UL से DK '+V6_BHAVA[relBhava]+' भाव में है। केंद्र (1,4,7,10) और त्रिकोण (1,5,9) की जाँच इसी भाव से करें।');
+  s+=v6sec('5]','UL और DK का आपसी संबंध',b);
+  // 6 Argala
+  function argalaFor(bhavaNum, label){
+    let out='';
+    const argHouses=[2,4,11,5]; const virodhHouses=[12,10,3,9];
+    for(const off of argHouses){ const hb=((bhavaNum+off-2)%12)+1; out+=label+' से '+V6_BHAVA[off]+' भाव ('+V6_BHAVA[hb]+' भाव, '+V6_RASHI[C.rashiOfBhava(hb)]+' राशि) में: '+v6listPlanets(C.planetsInBhava[hb])+'। '; }
+    out+='विरोध: ';
+    for(const off of virodhHouses){ const hb=((bhavaNum+off-2)%12)+1; out+=label+' से '+V6_BHAVA[off]+' भाव ('+V6_BHAVA[hb]+' भाव) में: '+v6listPlanets(C.planetsInBhava[hb])+'। '; }
+    return out;
+  }
+  b='';
+  b+=v6q('सप्तम भाव से दूसरे, चौथे, ग्यारहवें और पांचवें भाव में कौन से ग्रह (शुभ/पाप) हैं?', argalaFor(7,'सप्तम'));
+  b+=v6q('क्या इन अर्गलाओं का विरोध करने वाले ग्रह (बारहवें, दसवें, तीसरे और नवें भाव में) मौजूद हैं? कौन अधिक बलवान है?', 'विरोध वाले भावों के ग्रह ऊपर दिए गए हैं। बल का निर्णय जेमिनी विश्लेषण में करें, कच्चे डेटा में केवल ग्रह सूची दी गई है।');
+  const dkBhava2=C.bhava(C.pos[DK]);
+  b+=v6q('DK जिस भाव में है, उससे दूसरे, चौथे, ग्यारहवें और पांचवें भाव में कौन से ग्रह हैं? क्या इन अर्गलाओं का विरोध हो रहा है?', argalaFor(dkBhava2,'DK'));
+  b+=v6q('UL जिस भाव में है, उससे दूसरे, चौथे, ग्यारहवें और पांचवें भाव में कौन से ग्रह हैं? क्या इन अर्गलाओं का विरोध हो रहा है?', argalaFor(ulBhava,'UL'));
+  s+=v6sec('6]','अर्गला विश्लेषण (अप्रत्यक्ष हस्तक्षेप और संसाधनों का प्रवाह)',b);
+  return s;
+}
+// ===== BNN builder =====
+function v6bnnPlanetSection(p){
+  const C=V6_CHART; let s='';
+  s+=v6q(V6_PL[p]+' किस राशि में है (और किस डिग्री पर है)?', V6_PL[p]+' '+V6_RASHI[C.pos[p]]+' राशि में है ('+v6fmtDeg(C.posDeg[p])+' पर है)।');
+  s+=v6q(V6_PL[p]+' किस ग्रह के नक्षत्र में है?', v6pNak(p)+'।');
+  s+=v6q(V6_PL[p]+' के साथ युति में ग्रह कौन से हैं?', v6listPlanets(C.planetsInBhava[C.bhava(C.pos[p])].filter(x=>x!==p))+' युति में हैं।');
+  const sign=C.pos[p]; const second=(sign+1)%12, twelfth=(sign+11)%12;
+  s+=v6q(V6_PL[p]+' से दूसरी और बारहवीं राशि में कौन से ग्रह हैं?', 'दूसरी राशि ('+V6_RASHI[second]+') में: '+v6listPlanets(v6jaiminiPlanetsInSign(second,'D1'))+'। बारहवीं राशि ('+V6_RASHI[twelfth]+') में: '+v6listPlanets(v6jaiminiPlanetsInSign(twelfth,'D1'))+'।');
+  const tri=[sign,(sign+4)%12,(sign+8)%12];
+  s+=v6q(V6_PL[p]+' से त्रिकोण (1-5-9) में कौन से ग्रह हैं?', tri.map(r=>V6_RASHI[r]+' में: '+v6listPlanets(v6jaiminiPlanetsInSign(r,'D1'))).join(' | ')+'।');
+  return s;
+}
+function v6buildBNN(){
+  const C=V6_CHART; const isMale=document.getElementById('gender').value==='जातक';
+  const spouseKaraka=isMale?'Venus':'Mars';
+  const sutraA=isMale?'Jupiter':'Venus';
+  const sutraB=isMale?'Venus':'Mars';
+  const sutraName=isMale?'गुरु-शुक्र':'शुक्र-मंगल';
+  const sutraDesc=isMale?'गुरु (जीव) और शुक्र (पत्नी)':'शुक्र (स्वयं स्त्री देह) और मंगल (पति)';
+  let s='';
+  s+=v6sec('1]','गुरु (Jupiter) - जीव कारक की स्थिति और संबंध', v6bnnPlanetSection('Jupiter'));
+  let b='';
+  b+=v6q('कुंडली के जेंडर के अनुसार जीवनसाथी कारक ग्रह का चयन करें (पुरुष जातक = शुक्र, स्त्री जातक = मंगल)।', 'जीवनसाथी कारक ग्रह: '+V6_PL[spouseKaraka]+' है।');
+  b+=v6bnnPlanetSection(spouseKaraka);
+  s+=v6sec('2]','जीवनसाथी कारक की स्थिति और संबंध (पुरुष के लिए शुक्र, स्त्री के लिए मंगल)', b);
+  b='';
+  const distDeg=Math.abs(v6norm(C.posDeg[sutraA]-C.posDeg[sutraB])); const closeDist=Math.min(distDeg,360-distDeg);
+  const relAB=v6rel(sutraA,sutraB);
+  const pairQ=isMale?'पुरुष की कुंडली में: क्या गुरु (जीव) और शुक्र (पत्नी) युति, 2-12, या 1-5-9 संबंध में हैं?':'स्त्री की कुंडली में: क्या शुक्र (स्वयं स्त्री देह) और मंगल (पति) युति, 2-12, या 1-5-9 संबंध में हैं?';
+  b+=v6q(pairQ, sutraDesc+' का संबंध: '+relAB+' है। '+(relAB==='युति'?'युति में हैं।':relAB==='2-12 संबंध'?'2-12 संबंध में हैं।':relAB==='त्रिकोण (1-5-9) संबंध'?'त्रिकोण (1-5-9) संबंध में हैं।':'युति, 2-12, या 1-5-9 में से किसी संबंध में नहीं हैं।'));
+  b+=v6q('यदि युति है, तो उनकी डिग्री में कितनी निकटता है? कोई अन्य आपसी संबंध?', 'डिग्री अंतर: '+closeDist.toFixed(2)+'° है। अन्य आपसी संबंध: '+relAB+'।');
+  s+=v6sec('3]','जीव/स्वयं और जीवनसाथी का आपसी संबंध - विवाह का मुख्य सूत्र',b);
+  b='';
+  b+=v6q('शनि (कर्म): शनि का जीवनसाथी कारक ग्रह (पुरुष के लिए शुक्र, स्त्री के लिए मंगल) से क्या संबंध है (युति, 2-12, 1-5-9)?', 'शनि का '+V6_PL[spouseKaraka]+' से संबंध: '+v6rel('Saturn',spouseKaraka)+' है।');
+  b+=v6q('राहु और केतु: राहु/केतु का जीवनसाथी कारक ग्रह या विवाह सूत्र ('+sutraName+') से क्या संबंध है?', 'राहु का '+V6_PL[spouseKaraka]+' से संबंध: '+v6rel('Rahu',spouseKaraka)+'। केतु का '+V6_PL[spouseKaraka]+' से संबंध: '+v6rel('Ketu',spouseKaraka)+'। राहु का विवाह सूत्र ('+sutraName+') से संबंध: '+V6_PL[sutraA]+' से '+v6rel('Rahu',sutraA)+', '+V6_PL[sutraB]+' से '+v6rel('Rahu',sutraB)+'। केतु का विवाह सूत्र ('+sutraName+') से संबंध: '+V6_PL[sutraA]+' से '+v6rel('Ketu',sutraA)+', '+V6_PL[sutraB]+' से '+v6rel('Ketu',sutraB)+'।');
+  const vakriCandidates=[spouseKaraka,'Jupiter'];
+  for(const p of ['Saturn','Mars','Rahu','Ketu',sutraA,sutraB]){ if(!vakriCandidates.includes(p)) vakriCandidates.push(p); }
+  const vakri=vakriCandidates.filter(p=>C.speed[p]<-0.001);
+  b+=v6q('वक्र ग्रह: क्या जीवनसाथी कारक ग्रह, गुरु, या उन पर प्रभाव डालने वाला कोई ग्रह वक्री (Retrograde) है?', vakri.length? ('वक्री ग्रह: '+v6listPlanets(vakri)+'।') : 'जीवनसाथी कारक ग्रह, गुरु, शनि, मंगल, राहु, केतु में कोई वक्री नहीं है।');
+  s+=v6sec('4]','अन्य महत्वपूर्ण ग्रहों का प्रभाव',b);
+  return s;
+}
+// ===== KP builder =====
+function v6kpPlanetKP(p){
+  const C=V6_CHART; const lonLahiri=C.posDeg[p]; const lon=v6norm(lonLahiri + (V6_KP_OFFSET_MIN/60)); const absMin=lon*60; const nakIdx=Math.floor(lon/(360/27))%27; const lords=v6kpLords(absMin, nakIdx);
+  return {nl:V6_KP_FULL[V6_KP_NAK_LORDS[nakIdx]] || V6_KP_NAK_LORDS[nakIdx], sl:V6_KP_FULL[lords.sl]||lords.sl, ssl:V6_KP_FULL[lords.ssl]||lords.ssl, nakIdx:nakIdx};
+}
+function v6kpSig(house){
+  const C=V6_CHART; const res={A:[],B:[],C:[],D:[]};
+  for(const p of V6_PL_EN){
+    const nlPlanet=C.nak[p].lord; const A=[C.placidusBhava(C.posDeg[nlPlanet])]; const B=[C.placidusBhava(C.posDeg[p])]; const Cc=[], Dd=[];
+    for(let b=1;b<=12;b++){ const hr=(C.lagnaSign+b-1)%12; const l=V6_LORD[hr]; if(l===nlPlanet) Cc.push(b); if(l===p) Dd.push(b); }
+    if(A.includes(house)) res.A.push(p); if(B.includes(house)) res.B.push(p); if(Cc.includes(house)) res.C.push(p); if(Dd.includes(house)) res.D.push(p);
+  }
+  const f=arr=>arr.length?arr.map(p=>V6_PL[p]).join(', '):'-';
+  return 'A: '+f(res.A)+' | B: '+f(res.B)+' | C: '+f(res.C)+' | D: '+f(res.D);
+}
+function v6kpSigHousesForPlanet(p){
+  const C=V6_CHART; const nlPlanet=C.nak[p].lord; const A=[C.placidusBhava(C.posDeg[nlPlanet])]; const B=[C.placidusBhava(C.posDeg[p])]; const Cc=[], Dd=[];
+  for(let b=1;b<=12;b++){ const hr=(C.lagnaSign+b-1)%12; const l=V6_LORD[hr]; if(l===nlPlanet) Cc.push(b); if(l===p) Dd.push(b); }
+  return {A:A,B:B,C:Cc,D:Dd};
+}
+function v6buildKP() {
+  const C=V6_CHART; const csl7=C.kpCusps[6]; const cslPlanet=V6_KP_FULL[csl7.sl]||csl7.sl; const cslKP=v6kpPlanetKP(cslPlanet);
+  const sig7=v6kpSigHousesForPlanet(cslPlanet); const allSig=[...new Set([...sig7.A,...sig7.B,...sig7.C,...sig7.D])].sort((a,b)=>a-b);
+  const has=h=>allSig.includes(h);
+  const neg=allSig.filter(h=>[1,6,8,10,12].includes(h));
+  const csl5=C.kpCusps[4]; const csl5Planet=V6_KP_FULL[csl5.sl]||csl5.sl; const csl5KP=v6kpPlanetKP(csl5Planet);
+  const sig5=v6kpSigHousesForPlanet(csl5Planet); const allSig5=[...new Set([...sig5.A,...sig5.B,...sig5.C,...sig5.D])].sort((a,b)=>a-b);
+  const csl11=C.kpCusps[10]; const csl11Planet=V6_KP_FULL[csl11.sl]||csl11.sl; const sig11=v6kpSigHousesForPlanet(csl11Planet); const allSig11=[...new Set([...sig11.A,...sig11.B,...sig11.C,...sig11.D])].sort((a,b)=>a-b);
+  const nakLord7=C.nak[cslPlanet].lord;
+  let s='', b='';
+  b+=v6q('7वें भाव का कस्पल सब-लॉर्ड (CSL) कौन है?', V6_PL[cslPlanet]+' है।');
+  b+=v6q('यह CSL किन भावों को सिग्निफाई कर रहा है (विशेषकर 2, 7, 11 भावों के संबंध)?', 'CSL '+V6_PL[cslPlanet]+' के सिग्निफिकेटर भाव: A: '+sig7.A.join(', ')+' | B: '+sig7.B.join(', ')+' | C: '+sig7.C.join(', ')+' | D: '+sig7.D.join(', ')+'। 2, 7, 11 में से: '+([2,7,11].filter(h=>allSig.includes(h)).join(', ')||'कोई नहीं')+'।');
+  b+=v6q('क्या यह CSL विवाह को अस्वीकार करने वाले भावों (जैसे 1, 6, 8, 10, 12 - जो अलगाव या देरी दर्शाते हैं) को भी सिग्निफाई कर रहा है?', neg.length? ('हाँ, इन भावों को भी सिग्निफाई कर रहा है: '+neg.join(', ')+'।') : 'नहीं, 1, 6, 8, 10, 12 में से किसी को सिग्निफाई नहीं कर रहा है।');
+  s+=v6sec('1]','विवाह का वादा (Promise of Marriage)',b);
+  b='';
+  b+=v6q('क्या 7th CSL शनि है, या शनि के नक्षत्र में बैठा है?', '7th CSL '+V6_PL[cslPlanet]+' है। '+(cslPlanet==='Saturn'?'यह शनि ही है।':'यह शनि नहीं है।')+' इसका नक्षत्र स्वामी '+V6_PL[nakLord7]+' है। '+(nakLord7==='Saturn'?'यह शनि के नक्षत्र में बैठा है।':'यह शनि के नक्षत्र में नहीं बैठा है।'));
+  b+=v6q('क्या 7th CSL प्रबल रूप से 8वें भाव (रुकावट, देरी और अचानक बाधा) को सिग्निफाई कर रहा है?', has(8)?'हाँ, 8वें भाव को सिग्निफाई कर रहा है।':'नहीं, 8वें भाव को सिग्निफाई नहीं कर रहा है।');
+  b+=v6q('क्या 7th CSL प्रबल रूप से 12वें भाव (विवाह विरक्ति, दूर जाने और एकांत) तथा 1, 6, 10 भावों (विवाह के बाधक भाव) को सिग्निफाई कर रहा है?', '12वें भाव: '+(has(12)?'हाँ':'नहीं')+'। 1, 6, 10 में से सिग्निफाई किए गए भाव: '+([1,6,10].filter(h=>allSig.includes(h)).join(', ')||'कोई नहीं')+'।');
+  s+=v6sec('2]','विवाह में देरी के योग (Delay in & Obstacles in Marriage)',b);
+  b='';
+  const nlPlanet=cslKP.nl; const slPlanet=cslKP.sl; const sslPlanet=cslKP.ssl;
+  b+=v6q('7वें CSL का नक्षत्र स्वामी कौन है और वह कहाँ स्थित है?', '7वें CSL का नक्षत्र स्वामी '+V6_PL[nlPlanet]+' है, और वह KP पद्धति के अनुसार '+V6_BHAVA[C.placidusBhava(C.posDeg[nlPlanet])]+' भाव में स्थित है।');
+  b+=v6q('7वें CSL का उप-स्वामी कौन है और वह कहाँ स्थित है?', '7वें CSL का उप-स्वामी '+V6_PL[slPlanet]+' है, और वह KP पद्धति के अनुसार '+V6_BHAVA[C.placidusBhava(C.posDeg[slPlanet])]+' भाव में स्थित है।');
+  b+=v6q('7वें CSL का SSL कौन है और वह कहाँ स्थित है?', '7वें CSL का SSL '+V6_PL[sslPlanet]+' है, और वह KP पद्धति के अनुसार '+V6_BHAVA[C.placidusBhava(C.posDeg[sslPlanet])]+' भाव में स्थित है।');
+  b+=v6q('विवाह से संबंधित भावों (2, 7, 11) को सिग्निफाई करने वाले प्रमुख ग्रह कौन से हैं और उनकी स्थिति क्या है?', '2रे भाव के सिग्निफिकेटर: '+v6kpSig(2)+'। 7वें भाव के सिग्निफिकेटर: '+v6kpSig(7)+'। 11वें भाव के सिग्निफिकेटर: '+v6kpSig(11)+'।');
+  s+=v6sec('3]','जीवनसाथी की प्रकृति और वैवाहिक संबंध',b);
+  b='';
+  b+=v6q('क्या 7th CSL विवाह के लिए शुभ भावों (2, 7, 11) को दृढ़ता से दिखा रहा है?', '2, 7, 11 में से दिखाए गए भाव: '+([2,7,11].filter(h=>allSig.includes(h)).join(', ')||'कोई नहीं')+'।');
+  b+=v6q('क्या 7th CSL अलगाव/तलाक के भावों (1, 6, 10) को प्रबलता से सिग्निफाई कर रहा है?', '1, 6, 10 में से सिग्निफाई किए गए भाव: '+([1,6,10].filter(h=>allSig.includes(h)).join(', ')||'कोई नहीं')+'। (ध्यान दें: 6ठा भाव 7वें का 12वां है, जो कानूनी अलगाव देता है)।');
+  b+=v6q('क्या 7th CSL 8वें भाव (मानसिक तनाव, ससुराल से क्लेश, गुप्त धोखे, या जीवनसाथी के लिए मारक कष्ट) को सिग्निफाई कर रहा है?', has(8)?'हाँ, 8वें भाव को सिग्निफाई कर रहा है।':'नहीं, 8वें भाव को सिग्निफाई नहीं कर रहा है।');
+  b+=v6q('क्या 7th CSL या 11th CSL का संबंध 12वें भाव (शय्या सुख की कमी/गुप्त परेशानियां) से हो रहा है?', '7th CSL ('+V6_PL[cslPlanet]+') का 12वें भाव से संबंध: '+(has(12)?'हाँ':'नहीं')+'। 11th CSL ('+V6_PL[csl11Planet]+') का 12वें भाव से संबंध: '+(allSig11.includes(12)?'हाँ':'नहीं')+'।');
+  s+=v6sec('4]','वैवाहिक जीवन की गुणवत्ता और अलगाव (Quality of Married Life & Separation)',b);
+  b='';
+  const signLord5=V6_LORD[Math.floor(C.posDeg[csl5Planet]/30)%12]; const signLord7=V6_LORD[Math.floor(C.posDeg[cslPlanet]/30)%12];
+  b+=v6q('5वें भाव (प्रेम/रोमांस) का कस्पल सब-लॉर्ड (CSL) कौन है?', '5वें भाव का CSL '+V6_PL[csl5Planet]+' है।');
+  b+=v6q('क्या 7वें CSL और 5वें CSL के बीच कोई सीधा संबंध बन रहा है?', '7th CSL: '+V6_PL[cslPlanet]+', 5th CSL: '+V6_PL[csl5Planet]+'। '+(cslPlanet===csl5Planet?'दोनों CSL एक ही ग्रह हैं, इसलिए सीधा संबंध है।':'दोनों CSL अलग ग्रह हैं। 7th CSL के नक्षत्र स्वामी/उप-स्वामी: '+V6_PL[cslKP.nl]+'/'+V6_PL[cslKP.sl]+'। 5th CSL के नक्षत्र स्वामी/उप-स्वामी: '+V6_PL[csl5KP.nl]+'/'+V6_PL[csl5KP.sl]+'।'));
+  b+=v6q('क्या 5th CSL विवाह के भावों (7वें या 11वें) को प्रबलता से सिग्निफाई कर रहा है?', '5th CSL के सिग्निफिकेटर भाव: '+allSig5.join(', ')+'। 7वें भाव: '+(allSig5.includes(7)?'हाँ':'नहीं')+'। 11वें भाव: '+(allSig5.includes(11)?'हाँ':'नहीं')+'।');
+  b+=v6q('क्या 7th CSL केवल 2, 7, 11 को दिखा रहा है (बिना 5वें भाव के किसी भी प्रभाव के)?', '7th CSL के सिग्निफिकेटर भाव: '+allSig.join(', ')+'। 5वें भाव का प्रभाव: '+(has(5)?'हाँ, 5वां भाव भी सिग्निफाई हो रहा है।':'नहीं, 5वां भाव सिग्निफाई नहीं हो रहा है।'));
+  b+=v6q('5th CSL और 7th CSL का राशि स्वामी, नक्षत्र स्वामी तथा उप-स्वामी कौन है? क्या इनमें कोई समानता है, या इनके बीच कोई परिवर्तन योग या गहरा संबंध बन रहा है?', '5th CSL ('+V6_PL[csl5Planet]+'): राशि स्वामी '+V6_PL[signLord5]+', नक्षत्र स्वामी '+V6_PL[csl5KP.nl]+', उप-स्वामी '+V6_PL[csl5KP.sl]+'। 7th CSL ('+V6_PL[cslPlanet]+'): राशि स्वामी '+V6_PL[signLord7]+', नक्षत्र स्वामी '+V6_PL[cslKP.nl]+', उप-स्वामी '+V6_PL[cslKP.sl]+'। समान ग्रह: '+(([csl5KP.nl,csl5KP.sl,signLord5].filter(x=>[cslKP.nl,cslKP.sl,signLord7].includes(x)).map(x=>V6_PL[x]).join(', ')||'कोई नहीं'))+'।');
+  s+=v6sec('5]','विवाह का प्रकार (Love vs. Arranged Marriage)',b);
+  return s;
+}
+const V63_Q = {en: [{"num": "1", "title": "Saptamesh (lord of the 7th house):", "qs": ["Which planet is the lord of the seventh house?", "In which sign-house is the Saptamesh planet placed?", "In which nakshatra (lord) is the Saptamesh planet placed?", "With which planets is the Saptamesh planet in conjunction?", "In which nakshatra (lord) is the planet conjunct with the Saptamesh placed?", "Which planets aspect the Saptamesh?", "Is there enmity/friendship/neutrality between the Lagnesh and the Saptamesh?"]}, {"num": "2", "title": "Seventh house (7th House):", "qs": ["In which sign and nakshatra (lord) is the seventh house placed?", "Which planets are placed in the seventh house?", "In which nakshatra (lord) is the planet placed in the seventh house?", "Which planets are aspecting the seventh house?"]}, {"num": "3", "title": "Navamsha chart (D9 Chart):", "qs": ["In which sign and nakshatra (lord) is the seventh house placed in Navamsha?", "Which planets are placed in the seventh house in Navamsha? (including their nakshatra lords)", "Which planets aspect the seventh house in Navamsha?", "Who is the Saptamesh planet in Navamsha, and in which house, sign, and nakshatra (lord) is it placed?", "With which planets is the Saptamesh planet in conjunction or aspect in Navamsha?", "In which nakshatra is the planet conjunct with the Saptamesh placed in Navamsha?", "In which sign and nakshatra (lord) is the lagna placed in Navamsha?", "Which planets are placed in the lagna bhava in Navamsha? (nakshatra lord)", "In which house, sign, and nakshatra (lord) is the Lagnesh planet placed in Navamsha?", "With which planets is the Lagnesh planet in conjunction or aspect in Navamsha?", "What is the position of Venus and Jupiter in Navamsha?"]}, {"num": "4", "title": "Position of D1's Saptamesh in Navamsha (D9):", "qs": ["In (D9) Navamsha, in which house, sign, and nakshatra (lord) is D1's Saptamesh placed?", "In (D9) Navamsha, with whom is D1's Saptamesh sitting?", "In (D9) Navamsha, which planets aspect D1's Saptamesh?"]}, {"num": "5", "title": "Venus and Jupiter:", "qs": ["In a man's chart, in which house and sign is Venus?", "In which nakshatra is Venus placed?", "In a woman's chart, in which house and sign is Jupiter?", "In which nakshatra is Jupiter placed?", "Which planets are aspecting these planets or forming conjunctions with them?"]}, {"num": "6", "title": "Relationship between Venus and Mars:", "qs": ["Is there a conjunction or aspect between Venus and Mars?", "In which houses are they placed?"]}, {"num": "7", "title": "Effect of Venus-Rahu or Venus-Ketu:", "qs": ["Is there a conjunction of Venus and Rahu/Ketu?", "If yes, then in which house is it? (nakshatra, lord)", "Is there an aspect of Rahu/Ketu on Venus or not?"]}, {"num": "8", "title": "Tenth house from the seventh house (10th from 7th House):", "qs": ["Which is the tenth house from the seventh, and which planets are in it?", "In what position is the lord of this house? (nakshatra, lord)"]}, {"num": "9", "title": "Relationship with in-laws (8th House):", "qs": ["In which sign is the eighth house, and where is its lord placed? (nakshatra, lord)", "Which planets are placed in the eighth house or aspecting it?"]}, {"num": "10", "title": "Relationship between the Moon and the seventh house:", "qs": ["In which house is the Moon placed?", "In which nakshatra is the Moon placed?", "Does it have any relationship with the seventh house or the Saptamesh?", "Which planets are influencing the Moon?", "Is the planet related to the seventh house in the Moon's nakshatra? Is it conjunct with or aspecting the Moon?"]}, {"num": "1", "title": "Darakaraka (DK - Darakaraka):", "qs": ["Which is the Darakaraka planet as per the Jaimini method? (the planet with the lowest degree)", "In which sign and house is the Darakaraka placed?", "With which planets (Chara Karakas) is the Darakaraka in conjunction?", "Which signs cast Jaimini Rashi Drishti on the Darakaraka? (movable, fixed, dual)", "In which Navamsha is the Darakaraka placed?", "In which nakshatra is the Darakaraka placed?"]}, {"num": "2", "title": "Upapada Lagna (UL - Upapada Lagna):", "qs": ["Which is the Upapada Lagna, and in which sign and house is it placed?", "Which planets (Chara Karakas) are placed in it?", "Which signs cast Jaimini Rashi Drishti on it? (movable, fixed, dual)"]}, {"num": "3", "title": "Darapada (Darapada - A7):", "qs": ["In which sign and house is A7 (Darapada) placed?", "Which planets (Chara Karakas) are placed in A7?", "Which signs cast Jaimini Rashi Drishti on A7? (movable, fixed, dual)"]}, {"num": "4", "title": "Analysis of marriage from Swamsha and Karakamsha (from the soul's perspective):", "qs": ["Which sign and planets are in the seventh house from the Swamsha Lagna?", "Where is the Swamsha Saptamesh placed?", "With which planets is the Swamsha Saptamesh in conjunction?", "Which sign and planets are in the seventh house from the Karakamsha Lagna?", "Where is the Karakamsha Saptamesh placed?", "With which planets is the Karakamsha Saptamesh in conjunction?"]}, {"num": "5", "title": "Mutual relationship between UL and DK:", "qs": ["Are UL and DK casting Jaimini Rashi Drishti on each other?", "Are they in auspicious houses (Kendra, Trikona) from each other?"]}, {"num": "6", "title": "Argala analysis (indirect intervention and flow of resources):", "qs": ["Which planets (benefic/malefic) are in the second, fourth, eleventh, and fifth houses from the seventh house?", "Are there planets opposing these Argalas (in the twelfth, tenth, third, and ninth houses)? Which is stronger?", "Which planets are in the second, fourth, eleventh, and fifth houses from the house where DK is placed? Are these Argalas being opposed?", "Which planets are in the second, fourth, eleventh, and fifth houses from the house where UL is placed? Are these Argalas being opposed?"]}, {"num": "1", "title": "Jupiter (Jupiter) - position and relationships of the Jeeva Karaka:", "qs": ["In which sign is Jupiter (and at what degree)?", "In which planet's nakshatra is Jupiter?", "Which planets are in conjunction with Jupiter?", "Which planets are in the second and twelfth signs from Jupiter?", "Which planets are in trine (1-5-9) from Jupiter?"]}, {"num": "2", "title": "Position and relationships of the spouse karaka (Venus for a man, Mars for a woman):", "qs": ["Select the spouse karaka planet according to the kundali's gender (male native = Venus, female native = Mars).", "In which sign is this karaka planet (and at what degree)?", "In which planet's nakshatra is this karaka planet?", "Which planets are in conjunction with this karaka planet?", "Which planets are in the second and twelfth signs from this karaka planet?", "Which planets are in trine (1-5-9) from this karaka planet?"]}, {"num": "3", "title": "Mutual relationship between Jeeva/self and spouse - the main formula of marriage:", "qs": ["In a man's chart: Are Jupiter (Jeeva) and Venus (wife) in conjunction, 2-12, or 1-5-9 relationship?", "In a woman's chart: Are Venus (the female body/self) and Mars (husband) in conjunction, 2-12, or 1-5-9 relationship?", "If there is a conjunction, how close are they in degree? Any other mutual relationship?"]}, {"num": "4", "title": "Influence of other important planets:", "qs": ["Saturn (karma): What is Saturn's relationship with the spouse karaka planet (Venus for a man, Mars for a woman) (conjunction, 2-12, 1-5-9)?", "Rahu and Ketu: What is Rahu/Ketu's relationship with the spouse karaka planet or the marriage formula (Jupiter-Venus or Venus-Mars)? (This indicates separation, intercaste marriage, or obstacles).", "Retrograde planets: Is the spouse karaka planet, Jupiter, or any planet influencing them retrograde?"]}, {"num": "1", "title": "Promise of Marriage:", "qs": ["Who is the cuspal sub-lord (CSL) of the 7th house?", "Which houses is this CSL signifying (especially with respect to the 2nd, 7th, and 11th houses)?", "Is this CSL also signifying the houses that deny marriage (such as 1, 6, 8, 10, 12 - which indicate separation or delay)?"]}, {"num": "2", "title": "Combinations for delay in marriage (Delay in & Obstacles in Marriage):", "qs": ["Is the 7th CSL Saturn, or is it placed in Saturn's nakshatra?", "Is the 7th CSL strongly signifying the 8th house (obstruction, delay, and sudden obstacles)?", "Is the 7th CSL strongly signifying the 12th house (aversion to marriage, going far, and seclusion) and the 1st, 6th, 10th houses (houses obstructing marriage)?"]}, {"num": "3", "title": "Nature of spouse and marital relations (Nature of Spouse & Marital Relations):", "qs": ["Who is the nakshatra lord of the 7th CSL, and where is it placed?", "Who is the sub-lord of the 7th CSL, and where is it placed?", "Who is the SSL of the 7th CSL, and where is it placed?", "Which are the major planets signifying the houses related to marriage (2, 7, 11), and what is their position?"]}, {"num": "4", "title": "Quality of married life and separation (Quality of Married Life & Separation):", "qs": ["Is the 7th CSL firmly showing the auspicious houses (2, 7, 11) for marriage?", "Is the 7th CSL strongly signifying the houses of separation/divorce (1, 6, 10)? (Note: the 6th house is the 12th from the 7th, which gives legal separation).", "Is the 7th CSL signifying the 8th house (mental stress, troubles from in-laws, secret deceptions, or maraka suffering for the spouse)?", "Is the 7th CSL or the 11th CSL relating to the 12th house (lack of bed pleasures/hidden troubles)?"]}, {"num": "5", "title": "Type of marriage (Love vs. Arranged Marriage):", "qs": ["Who is the cuspal sub-lord (CSL) of the 5th house (love/romance)?", "Is any direct relationship forming between the 7th CSL and the 5th CSL?", "Is the 5th CSL strongly signifying the houses of marriage (7th or 11th)?", "Is the 7th CSL showing only 2, 7, 11 (without any influence of the 5th house)?", "Who are the sign lord (Sign Lord), star lord (Star Lord), and sub-lord (Sub-Lord / SL) of the 5th CSL and the 7th CSL? Is there any commonality between them, or is any 'parivartana yoga' (Mutual Reception) or deep relationship forming between them?"]}], mr: [{"num": "1", "title": "सप्तमेश (7व्या भावाचा स्वामी):", "qs": ["कोणता ग्रह सप्तम भावाचा स्वामी आहे?", "सप्तमेश ग्रह कोणत्या राशी-भावात स्थित आहे?", "सप्तमेश ग्रह कोणत्या नक्षत्रात (स्वामी) स्थित आहे?", "सप्तमेश ग्रहाची युती कोणत्या ग्रहांसोबत होत आहे?", "सप्तमेशासोबत युत असलेला ग्रह कोणत्या नक्षत्रात (स्वामी) स्थित आहे?", "सप्तमेशावर कोणत्या ग्रहांची दृष्टी आहे?", "लग्नेश आणि सप्तमेश यांत शत्रुत्व/मैत्री/समानता आहे का?"]}, {"num": "2", "title": "सप्तम भाव (7th House):", "qs": ["सप्तम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?", "सप्तम भावात कोणकोणते ग्रह स्थित आहेत?", "सप्तम भावात स्थित ग्रह कोणत्या नक्षत्रात (स्वामी) स्थित आहे?", "सप्तम भावावर कोणकोणते ग्रह दृष्टी टाकत आहेत?"]}, {"num": "3", "title": "नवमांश कुंडली (D9 Chart):", "qs": ["नवमांशात सप्तम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?", "नवमांशात सप्तम भावात कोणकोणते ग्रह स्थित आहेत? (त्यांच्या नक्षत्र-स्वामींसह)", "नवमांशात सप्तम भावावर कोणत्या ग्रहांची दृष्टी आहे?", "नवमांशात सप्तमेश ग्रह कोण आहे आणि तो कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?", "नवमांशात सप्तमेश ग्रहाची युती किंवा दृष्टी कोणत्या ग्रहांसोबत होत आहे?", "नवमांशात सप्तमेशासोबत युत असलेला ग्रह कोणत्या नक्षत्रात स्थित आहे?", "नवमांशात लग्न कोणत्या राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?", "नवमांशात लग्न भावात कोणकोणते ग्रह स्थित आहेत? (नक्षत्र-स्वामी)", "नवमांशात लग्नेश ग्रह कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?", "नवमांशात लग्नेश ग्रहाची युती किंवा दृष्टी कोणत्या ग्रहांसोबत होत आहे?", "नवमांशात शुक्र आणि गुरूची स्थिती काय आहे?"]}, {"num": "4", "title": "D1 च्या सप्तमेशाची नवमांशात (D9) स्थिती:", "qs": ["(D9) नवमांशात D1 चा सप्तमेश कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) स्थित आहे?", "(D9) नवमांशात D1 चा सप्तमेश कोणासोबत बसला आहे?", "(D9) नवमांशात D1 च्या सप्तमेशावर कोणत्या ग्रहांची दृष्टी आहे?"]}, {"num": "5", "title": "शुक्र आणि बृहस्पती:", "qs": ["पुरुषाच्या कुंडलीत शुक्र कोणत्या भावात आणि राशीत आहे?", "शुक्र कोणत्या नक्षत्रात स्थित आहे?", "स्त्रीच्या कुंडलीत बृहस्पती कोणत्या भावात आणि राशीत आहे?", "गुरू कोणत्या नक्षत्रात स्थित आहे?", "या ग्रहांवर कोणकोणते ग्रह दृष्टी टाकत आहेत किंवा युती बनवत आहेत?"]}, {"num": "6", "title": "शुक्र आणि मंगळ यांचा संबंध:", "qs": ["शुक्र आणि मंगळ यांची युती किंवा दृष्टी आहे का?", "त्यांची स्थिती कोणकोणत्या भावांत आहे?"]}, {"num": "7", "title": "शुक्र-राहू किंवा शुक्र-केतू यांचा प्रभाव:", "qs": ["शुक्र आणि राहू/केतू यांची युती आहे का?", "जर होय, तर कोणत्या भावात आहे? (नक्षत्र, स्वामी)", "शुक्रावर राहू/केतूची दृष्टी आहे की नाही?"]}, {"num": "8", "title": "सप्तम भावापासून दशम भाव (10th from 7th House):", "qs": ["सप्तमापासून दहावा भाव कोणता आहे आणि त्यात कोणकोणते ग्रह आहेत?", "या भावाचा स्वामी कोणत्या स्थितीत आहे? (नक्षत्र, स्वामी)"]}, {"num": "9", "title": "सासरच्यांशी संबंध (8th House):", "qs": ["अष्टम भाव कोणत्या राशीत आहे आणि त्याचा स्वामी कुठे स्थित आहे? (नक्षत्र, स्वामी)", "अष्टम भावात कोणकोणते ग्रह स्थित आहेत किंवा त्यावर दृष्टी टाकत आहेत?"]}, {"num": "10", "title": "चंद्र आणि सप्तम भाव यांचा संबंध:", "qs": ["चंद्र कोणत्या भावात स्थित आहे?", "चंद्र कोणत्या नक्षत्रात स्थित आहे?", "सप्तम भाव किंवा सप्तमेश यांच्याशी त्याचा संबंध आहे का?", "चंद्रावर कोणकोणते ग्रह प्रभाव टाकत आहेत?", "सप्तम भावाशी संबंधित ग्रह चंद्राच्या नक्षत्रात आहे का? चंद्रासोबत युत, दृष्ट आहे का?"]}, {"num": "1", "title": "दाराकारक (DK - Darakaraka):", "qs": ["जैमिनी पद्धतीने दाराकारक ग्रह कोणता आहे? (सर्वांत कमी अंश असलेला ग्रह)", "दाराकारक कोणत्या राशीत आणि भावात स्थित आहे?", "दाराकारकासोबत कोणकोणत्या ग्रहांची (चर कारक) युती आहे?", "दाराकारकावर कोणत्या राशींची जैमिनी राशी दृष्टी आहे? (चर, स्थिर, द्विस्वभाव)", "दाराकारक कोणत्या नवमांशात स्थित आहे?", "दाराकारक कोणत्या नक्षत्रात स्थित आहे?"]}, {"num": "2", "title": "उपपद लग्न (UL - Upapada Lagna):", "qs": ["उपपद लग्न कोणते आहे आणि ते कोणत्या राशीत आणि भावात स्थित आहे?", "यात कोणकोणते ग्रह (चर कारक) स्थित आहेत?", "यावर कोणत्या राशींची जैमिनी राशी दृष्टी आहे? (चर, स्थिर, द्विस्वभाव)"]}, {"num": "3", "title": "दारापद (Darapada - A7):", "qs": ["A7 (दारापद) कोणत्या राशीत आणि भावात स्थित आहे?", "A7 मध्ये कोणकोणते ग्रह (चर कारक) स्थित आहेत?", "A7 वर कोणत्या राशींची जैमिनी राशी दृष्टी आहे? (चर, स्थिर, द्विस्वभाव)"]}, {"num": "4", "title": "स्वांश आणि कारकांश यांवरून विवाहाचे विश्लेषण (आत्म्याच्या दृष्टिकोनातून):", "qs": ["स्वांश लग्नापासून सप्तम भावात कोणती राशी आणि ग्रह आहेत?", "स्वांश सप्तमेश कुठे स्थित आहे?", "स्वांश सप्तमेश कोणत्या ग्रहांसोबत युतीत आहे?", "कारकांश लग्नापासून सप्तम भावात कोणती राशी आणि ग्रह आहेत?", "कारकांश सप्तमेश कुठे स्थित आहे?", "कारकांश सप्तमेश कोणत्या ग्रहांसोबत युतीत आहे?"]}, {"num": "5", "title": "UL आणि DK यांचा परस्पर संबंध:", "qs": ["UL आणि DK एकमेकांवर जैमिनी राशी दृष्टी टाकत आहेत का?", "ते एकमेकांपासून शुभ भावांत (केंद्र, त्रिकोण) आहेत का?"]}, {"num": "6", "title": "अर्गला विश्लेषण (अप्रत्यक्ष हस्तक्षेप आणि संसाधनांचा प्रवाह):", "qs": ["सप्तम भावापासून दुसऱ्या, चौथ्या, अकराव्या आणि पाचव्या भावात कोणते ग्रह (शुभ/पाप) आहेत?", "या अर्गलांना विरोध करणारे ग्रह (बाराव्या, दहाव्या, तिसऱ्या आणि नवव्या भावात) अस्तित्वात आहेत का? कोण अधिक बलवान आहे?", "DK ज्या भावात आहे, त्यापासून दुसऱ्या, चौथ्या, अकराव्या आणि पाचव्या भावात कोणते ग्रह आहेत? या अर्गलांचा विरोध होत आहे का?", "UL ज्या भावात आहे, त्यापासून दुसऱ्या, चौथ्या, अकराव्या आणि पाचव्या भावात कोणते ग्रह आहेत? या अर्गलांचा विरोध होत आहे का?"]}, {"num": "1", "title": "गुरू (Jupiter) - जीव कारकाची स्थिती आणि संबंध:", "qs": ["गुरू कोणत्या राशीत आहे (आणि किती डिग्रीवर आहे)?", "गुरू कोणत्या ग्रहाच्या नक्षत्रात आहे?", "गुरूसोबत युतीत कोणते ग्रह आहेत?", "गुरूपासून दुसऱ्या आणि बाराव्या राशीत कोणते ग्रह आहेत?", "गुरूपासून त्रिकोणात (1-5-9) कोणते ग्रह आहेत?"]}, {"num": "2", "title": "जीवनसाथी कारकाची स्थिती आणि संबंध (पुरुषासाठी शुक्र, स्त्रीसाठी मंगळ):", "qs": ["कुंडलीच्या जेंडरनुसार जीवनसाथी कारक ग्रह निवडा (पुरुष जातक = शुक्र, स्त्री जातक = मंगळ).", "हा कारक ग्रह कोणत्या राशीत आहे (आणि किती डिग्रीवर आहे)?", "हा कारक ग्रह कोणत्या ग्रहाच्या नक्षत्रात आहे?", "या कारक ग्रहासोबत युतीत कोणते ग्रह आहेत?", "या कारक ग्रहापासून दुसऱ्या आणि बाराव्या राशीत कोणते ग्रह आहेत?", "या कारक ग्रहापासून त्रिकोणात (1-5-9) कोणते ग्रह आहेत?"]}, {"num": "3", "title": "जीव/स्वतः आणि जीवनसाथी यांचा परस्पर संबंध - विवाहाचे मुख्य सूत्र:", "qs": ["पुरुषाच्या कुंडलीत: गुरू (जीव) आणि शुक्र (पत्नी) युती, 2-12 किंवा 1-5-9 संबंधात आहेत का?", "स्त्रीच्या कुंडलीत: शुक्र (स्वतः स्त्री देह) आणि मंगळ (पती) युती, 2-12 किंवा 1-5-9 संबंधात आहेत का?", "जर युती असेल, तर त्यांच्या डिग्रीत किती निकटता आहे? इतर कोणता परस्पर संबंध?"]}, {"num": "4", "title": "इतर महत्त्वाच्या ग्रहांचा प्रभाव:", "qs": ["शनी (कर्म): शनीचा जीवनसाथी कारक ग्रहाशी (पुरुषासाठी शुक्र, स्त्रीसाठी मंगळ) काय संबंध आहे (युती, 2-12, 1-5-9)?", "राहू आणि केतू: राहू/केतूचा जीवनसाथी कारक ग्रह किंवा विवाह सूत्राशी (गुरू-शुक्र किंवा शुक्र-मंगळ) काय संबंध आहे? (हे वेगळेपणा, आंतरजातीय विवाह किंवा अडथळे दर्शवते).", "वक्री ग्रह: जीवनसाथी कारक ग्रह, गुरू, किंवा त्यांवर प्रभाव टाकणारा कोणताही ग्रह वक्री (Retrograde) आहे का?"]}, {"num": "1", "title": "विवाहाचे वचन (Promise of Marriage):", "qs": ["7व्या भावाचा कस्पल सब-लॉर्ड (CSL) कोण आहे?", "हा CSL कोणत्या भावांना सिग्निफाय करत आहे (विशेषतः 2, 7, 11 भावांच्या संबंधात)?", "हा CSL विवाह नाकारणाऱ्या भावांनाही (जसे 1, 6, 8, 10, 12 - जे वेगळेपणा किंवा विलंब दर्शवतात) सिग्निफाय करत आहे का?"]}, {"num": "2", "title": "विवाहातील विलंबाचे योग (Delay in & Obstacles in Marriage):", "qs": ["7th CSL शनी आहे का, किंवा शनीच्या नक्षत्रात बसला आहे का?", "7th CSL प्रबलपणे 8व्या भावाला (अडथळा, विलंब आणि अचानक अडचण) सिग्निफाय करत आहे का?", "7th CSL प्रबलपणे 12व्या भावाला (विवाह विरक्ती, दूर जाणे आणि एकांत) तसेच 1, 6, 10 भावांना (विवाहाचे अडथळा भाव) सिग्निफाय करत आहे का?"]}, {"num": "3", "title": "जीवनसाथीची प्रकृती आणि वैवाहिक संबंध (Nature of Spouse & Marital Relations):", "qs": ["7व्या CSL चा नक्षत्र स्वामी कोण आहे आणि तो कुठे स्थित आहे?", "7व्या CSL चा उप-स्वामी कोण आहे आणि तो कुठे स्थित आहे?", "7व्या CSL चा SSL कोण आहे आणि तो कुठे स्थित आहे?", "विवाहाशी संबंधित भावांना (2, 7, 11) सिग्निफाय करणारे प्रमुख ग्रह कोणते आहेत आणि त्यांची स्थिती काय आहे?"]}, {"num": "4", "title": "वैवाहिक जीवनाची गुणवत्ता आणि वेगळेपणा (Quality of Married Life & Separation):", "qs": ["7th CSL विवाहासाठी शुभ भावांना (2, 7, 11) दृढपणे दाखवत आहे का?", "7th CSL वेगळेपणा/घटस्फोटाच्या भावांना (1, 6, 10) प्रबलपणे सिग्निफाय करत आहे का? (लक्षात ठेवा: 6वा भाव 7व्यापासून 12वा आहे, जो कायदेशीर वेगळेपणा देतो).", "7th CSL 8व्या भावाला (मानसिक तणाव, सासरच्यांकडून क्लेश, गुप्त फसवणूक, किंवा जीवनसाथीसाठी मारक कष्ट) सिग्निफाय करत आहे का?", "7th CSL किंवा 11th CSL चा 12व्या भावाशी (शय्या सुखाची कमतरता/गुप्त त्रास) संबंध होत आहे का?"]}, {"num": "5", "title": "विवाहाचा प्रकार (Love vs. Arranged Marriage):", "qs": ["5व्या भावाचा (प्रेम/रोमान्स) कस्पल सब-लॉर्ड (CSL) कोण आहे?", "7व्या CSL आणि 5व्या CSL यांच्यात कोणता थेट संबंध तयार होत आहे का?", "5th CSL विवाहाच्या भावांना (7वा किंवा 11वा) प्रबलपणे सिग्निफाय करत आहे का?", "7th CSL फक्त 2, 7, 11 दाखवत आहे का (5व्या भावाच्या कोणत्याही प्रभावाशिवाय)?", "5th CSL आणि 7th CSL चा राशी स्वामी (Sign Lord), नक्षत्र स्वामी (Star Lord) आणि उप-स्वामी (Sub-Lord / SL) कोण आहे? यांच्यात कोणती समानता आहे का, किंवा यांच्यात कोणता 'परिवर्तन योग' (Mutual Reception) किंवा खोल संबंध तयार होत आहे का?"]}]};
+// ===== MR Paste v6.3 - Language-aware auto-fill (Hindi builders above unchanged) =====
+// EN/MR question wording: marriage-report-v2-lang.html Parts 1-4 (EN lines 1242+, MR lines 2212+).
+// Hindi output still uses v6buildParashari/Jaimini/BNN/KP exactly; en/mr use the LM builders below,
+// which read the same V6_CHART values, so positions/CSLs/significators cannot drift from Hindi.
+const V63_PL = {
+  en:{Sun:'Sun',Moon:'Moon',Mars:'Mars',Mercury:'Mercury',Jupiter:'Jupiter',Venus:'Venus',Saturn:'Saturn',Rahu:'Rahu',Ketu:'Ketu'},
+  mr:{Sun:'सूर्य',Moon:'चंद्र',Mars:'मंगळ',Mercury:'बुध',Jupiter:'गुरू',Venus:'शुक्र',Saturn:'शनी',Rahu:'राहू',Ketu:'केतू'}
+};
+const V63_RASHI = {
+  en:['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'],
+  mr:['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तूळ','वृश्चिक','धनू','मकर','कुंभ','मीन']
+};
+const V63_NAK = {
+  en:['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'],
+  mr:['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसू','पुष्य','आश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाती','विशाखा','अनुराधा','ज्येष्ठा','मूळ','पूर्वाषाढा','उत्तराषाढा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती']
+};
+const V63_BH = {
+  en:['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'],
+  mr:['1ल्या','2ऱ्या','3ऱ्या','4थ्या','5व्या','6व्या','7व्या','8व्या','9व्या','10व्या','11व्या','12व्या']
+};
+const V63_ASP = {
+  en:{3:'3rd',4:'4th',5:'5th',7:'7th',8:'8th',9:'9th',10:'10th'},
+  mr:{3:'3री',4:'4थी',5:'5वी',7:'7वी',8:'8वी',9:'9वी',10:'10वी'}
+};
+const V63_W = {
+  en:{none:'None',yes:'Yes',no:'No',na:'Not applicable',yuti:'conjunction',rel212:'2-12 relation',tri:'trine (1-5-9) relation',norel:'no direct conjunction/2-12/trine relation',uchcha:'exalted',neecha:'debilitated',vakri:'retrograde',asta:'combust',swa:'own sign',mitra:'friend sign',shatru:'enemy sign',sama:'neutral sign',rv:'rashi vargottama',bv:'bhava vargottama'},
+  mr:{none:'कोणीही नाही',yes:'होय',no:'नाही',na:'लागू नाही',yuti:'युती',rel212:'2-12 संबंध',tri:'त्रिकोण (1-5-9) संबंध',norel:'कोणताही थेट युती/2-12/त्रिकोण संबंध नाही',uchcha:'उच्च',neecha:'नीच',vakri:'वक्री',asta:'अस्त',swa:'स्वराशी',mitra:'मित्र राशी',shatru:'शत्रू राशी',sama:'सम राशी',rv:'राशी वर्गोत्तम',bv:'भाव वर्गोत्तम'}
+};
+function v63pl(L,p){return V63_PL[L][p];}
+function v63ra(L,i){return V63_RASHI[L][i];}
+function v63bh(L,n){return V63_BH[L][n-1];}
+function v63q(L,q,a){return '➤ '+q+'\n'+(L==='en'?'Answer: ':'उत्तर: ')+a+'\n';}
+function v63sec(num,title,body){return num+' '+title.replace(/:\s*$/,'')+':\n'+body+'\n';}
+function v63list(L,arr){if(!arr||!arr.length) return V63_W[L].none; return arr.map(p=>v63pl(L,p)).join(', ');}
+function v63listNak(L,arr){
+  if(!arr||!arr.length) return V63_W[L].none;
+  return arr.map(p=>{const n=V6_CHART.nak[p]; return v63pl(L,p)+' ('+V63_NAK[L][n.idx]+(L==='en'?' nakshatra, lord: ':' नक्षत्र, स्वामी: ')+v63pl(L,n.lord)+')';}).join(', ');
+}
+function v63drishti(L,entries){
+  if(!entries||!entries.length) return V63_W[L].none;
+  const seen={}, out=[];
+  for(const e of entries){if(seen[e.p]) continue; seen[e.p]=1; out.push(L==='en'? v63pl(L,e.p)+' '+V63_ASP[L][e.asp]+' aspect' : v63pl(L,e.p)+'ची '+V63_ASP[L][e.asp]+' दृष्टी');}
+  return out.join(', ');
+}
+function v63ava(L,p){
+  const C=V6_CHART, W=V63_W[L], sign=C.pos[p], parts=[];
+  if(p!=='Rahu'&&p!=='Ketu'){
+    if(V6_UCHCHA[p]===sign) parts.push(W.uchcha); else if(V6_NEECHA[p]===sign) parts.push(W.neecha);
+    if(C.speed[p]<-0.001) parts.push(W.vakri);
+    if(p!=='Sun'&&V6_COMBUST[p]){let dist=Math.abs(v6norm(C.posDeg[p]-C.posDeg.Sun)); if(dist>180) dist=360-dist; if(dist<V6_COMBUST[p]) parts.push(W.asta);}
+  }
+  if(p!=='Rahu'&&p!=='Ketu'){
+    const lord=V6_LORD[sign];
+    if(lord===p) parts.push(W.swa); else if((V6_FRIENDS[p]||[]).includes(lord)) parts.push(W.mitra); else if((V6_ENEMIES[p]||[]).includes(lord)) parts.push(W.shatru); else parts.push(W.sama);
+  }
+  if(C.d9[p]===sign) parts.push(W.rv);
+  if(C.bhava(sign)===C.d9bhava(C.d9[p])) parts.push(W.bv);
+  return parts.length?(' ('+parts.join(', ')+')'):'';
+}
+function v63pos(L,p){
+  const C=V6_CHART;
+  if(L==='en') return v63pl(L,p)+' is in the '+v63bh(L,C.bhava(C.pos[p]))+' house, in '+v63ra(L,C.pos[p])+' sign'+v63ava(L,p);
+  return v63pl(L,p)+' '+v63bh(L,C.bhava(C.pos[p]))+' भावात, '+v63ra(L,C.pos[p])+' राशीत आहे'+v63ava(L,p);
+}
+function v63nakStr(L,p){
+  const C=V6_CHART, n=C.nak[p];
+  if(L==='en') return v63pl(L,p)+' is in '+V63_NAK[L][n.idx]+' nakshatra (lord: '+v63pl(L,n.lord)+')';
+  return v63pl(L,p)+' '+V63_NAK[L][n.idx]+' नक्षत्रात आहे (स्वामी: '+v63pl(L,n.lord)+')';
+}
+function v63friend(L,a,b){
+  const aToB=(V6_FRIENDS[a]||[]).includes(b)?'mitra':((V6_ENEMIES[a]||[]).includes(b)?'shatru':'sama');
+  const bToA=(V6_FRIENDS[b]||[]).includes(a)?'mitra':((V6_ENEMIES[b]||[]).includes(a)?'shatru':'sama');
+  const W=V63_W[L];
+  if(aToB===bToA) return L==='en'? ('naturally '+W[aToB]+' to each other') : ('नैसर्गिकरित्या एकमेकांचे '+W[aToB]+' आहेत');
+  if(L==='en') return v63pl(L,a)+' considers '+v63pl(L,b)+' as '+W[aToB]+', '+v63pl(L,b)+' considers '+v63pl(L,a)+' as '+W[bToA];
+  return v63pl(L,a)+' '+v63pl(L,b)+' यांना '+W[aToB]+' मानतात, '+v63pl(L,b)+' '+v63pl(L,a)+' यांना '+W[bToA]+' मानतात';
+}
+function v63rel(L,a,b){
+  const C=V6_CHART, W=V63_W[L], sa=C.pos[a], sb=C.pos[b];
+  if(sa===sb) return W.yuti;
+  const dist=((sb-sa)%12+12)%12;
+  if(dist===1||dist===11) return W.rel212;
+  if(dist===4||dist===8) return W.tri;
+  return W.norel;
+}
+function v63jaiminiDrishti(L,sign){
+  const C=V6_CHART, aspecting=v6rashiDrishti(sign), out=[];
+  for(const r of aspecting){
+    const pls=v6jaiminiPlanetsInSign(r,'D1');
+    if(L==='en') out.push(v63ra(L,r)+' sign ('+v63bh(L,C.bhava(r))+' house) ['+(pls.length?v63list(L,pls):'no planet')+']');
+    else out.push(v63ra(L,r)+' राशी ('+v63bh(L,C.bhava(r))+' भाव) ['+(pls.length?v63list(L,pls):'कोणताही ग्रह नाही')+']');
+  }
+  return out.length?out.join(' | '):(L==='en'?'None':'कोणीही नाही');
+}
+function v63kpSig(L,house){
+  const C=V6_CHART, res={A:[],B:[],C:[],D:[]};
+  for(const p of V6_PL_EN){
+    const nlPlanet=C.nak[p].lord, A=[C.placidusBhava(C.posDeg[nlPlanet])], B=[C.placidusBhava(C.posDeg[p])], Cc=[], Dd=[];
+    for(let b=1;b<=12;b++){const hr=(C.lagnaSign+b-1)%12, l=V6_LORD[hr]; if(l===nlPlanet) Cc.push(b); if(l===p) Dd.push(b);}
+    if(A.includes(house)) res.A.push(p); if(B.includes(house)) res.B.push(p); if(Cc.includes(house)) res.C.push(p); if(Dd.includes(house)) res.D.push(p);
+  }
+  const f=arr=>arr.length?arr.map(p=>v63pl(L,p)).join(', '):'-';
+  return 'A: '+f(res.A)+' | B: '+f(res.B)+' | C: '+f(res.C)+' | D: '+f(res.D);
+}
+function v63argala(L,bhavaNum,label){
+  const C=V6_CHART; let out='';
+  const argHouses=[2,4,11,5], virodhHouses=[12,10,3,9];
+  for(const off of argHouses){const hb=((bhavaNum+off-2)%12)+1;
+    if(L==='en') out+='From '+label+', '+v63bh(L,off)+' house ('+v63bh(L,hb)+' house, '+v63ra(L,C.rashiOfBhava(hb))+' sign): '+v63list(L,C.planetsInBhava[hb])+'. ';
+    else out+=label+' '+v63bh(L,off)+' भावात ('+v63bh(L,hb)+' भाव, '+v63ra(L,C.rashiOfBhava(hb))+' राशी): '+v63list(L,C.planetsInBhava[hb])+'. ';}
+  if(L==='en') out+='Opposition: '; else out+='विरोध: ';
+  for(const off of virodhHouses){const hb=((bhavaNum+off-2)%12)+1;
+    if(L==='en') out+='From '+label+', '+v63bh(L,off)+' house ('+v63bh(L,hb)+' house): '+v63list(L,C.planetsInBhava[hb])+'. ';
+    else out+=label+' '+v63bh(L,off)+' भावात ('+v63bh(L,hb)+' भाव): '+v63list(L,C.planetsInBhava[hb])+'. ';}
+  return out;
+}
+
+// ===== Parashari LM =====
+function v63buildParashari(L){
+  const C=V6_CHART, Q=V63_Q[L], W=V63_W[L];
+  const lagnaLord=V6_LORD[C.lagnaSign], lord7=V6_LORD[C.rashiOfBhava(7)], r7=C.rashiOfBhava(7), lord8=V6_LORD[C.rashiOfBhava(8)];
+  const cusp7=v6bhavaCuspNak(7, C.lagnaDeg);
+  const d9_7sign=(C.d9.Lagna+6)%12, d9lord7=V6_LORD[d9_7sign], d9lord1=V6_LORD[C.d9.Lagna];
+  const cuspD9_7=v6bhavaCuspNak(7, C.d9Lon.Lagna), cuspD9_1=v6bhavaCuspNak(1, C.d9Lon.Lagna);
+  const d9yuti=C.planetsInD9Bhava[C.d9bhava(C.d9[d9lord7])].filter(p=>p!==d9lord7);
+  const yuti=C.planetsInBhava[C.bhava(C.pos[lord7])].filter(p=>p!==lord7);
+  const shukBhava=C.bhava(C.pos.Venus), yutiRahu=C.planetsInBhava[shukBhava].includes('Rahu'), yutiKetu=C.planetsInBhava[shukBhava].includes('Ketu');
+  const drOnShuk=C.aspectedBy[shukBhava].filter(e=>e.p==='Rahu'||e.p==='Ketu');
+  const b10from7=((7+10-2)%12)+1, r10=C.rashiOfBhava(b10from7), lord10=V6_LORD[r10];
+  const moonYuti=C.planetsInBhava[C.bhava(C.pos.Moon)].filter(p=>p!=='Moon');
+  const moonRel7=(C.bhava(C.pos.Moon)===7||moonYuti.includes(lord7)||C.planetsInBhava[7].includes('Moon'))?W.yes:W.no;
+  const moonNakPlanets=V6_PL_EN.filter(p=>C.nak[p].name===C.nak.Moon.name);
+  const sevenRelated=[lord7, ...C.planetsInBhava[7]], inMoonNak=moonNakPlanets.filter(p=>sevenRelated.includes(p));
+  const A=(qs,ans)=>qs.map((q,i)=>v63q(L,q,ans[i])).join('');
+  let s='';
+  s+=v63sec('1]',Q[0].title,A(Q[0].qs,[v63pl(L,lord7),
+    v63pos(L,lord7)+'.',
+    v63nakStr(L,lord7)+'.',
+    yuti.length? (L==='en'? 'In conjunction with '+v63list(L,yuti)+'.' : v63list(L,yuti)+' युतीत आहेत.') : (L==='en'?'In conjunction with no planet.':'कोणत्याही ग्रहासोबत युती नाही.'),
+    yuti.length? v63listNak(L,yuti)+'.' : W.na+'.',
+    v63drishti(L,C.aspectedBy[C.bhava(C.pos[lord7])])+'.',
+    L==='en'? ('Lagnesh ('+v63pl(L,lagnaLord)+') and Saptamesh ('+v63pl(L,lord7)+') are '+v63friend(L,lagnaLord,lord7)+'.') : ('लग्नेश ('+v63pl(L,lagnaLord)+') आणि सप्तमेश ('+v63pl(L,lord7)+') '+v63friend(L,lagnaLord,lord7)+'.')]));
+  s+=v63sec('2]',Q[1].title,A(Q[1].qs,[
+    L==='en'? (v63ra(L,r7)+' sign. (Bhava madhya: '+V63_NAK[L][cusp7.nak.idx]+' nakshatra, lord: '+v63pl(L,cusp7.nak.lord)+').') : (v63ra(L,r7)+' राशीत. (भाव मध्य: '+V63_NAK[L][cusp7.nak.idx]+' नक्षत्र, स्वामी: '+v63pl(L,cusp7.nak.lord)+').'),
+    v63list(L,C.planetsInBhava[7])+'.',
+    C.planetsInBhava[7].length? v63listNak(L,C.planetsInBhava[7])+'.' : W.na+'.',
+    v63drishti(L,C.aspectedBy[7])+'.']));
+  s+=v63sec('3]',Q[2].title,A(Q[2].qs,[
+    L==='en'? (v63ra(L,d9_7sign)+' sign. (Bhava madhya: '+V63_NAK[L][cuspD9_7.nak.idx]+' nakshatra, lord: '+v63pl(L,cuspD9_7.nak.lord)+').') : (v63ra(L,d9_7sign)+' राशीत. (भाव मध्य: '+V63_NAK[L][cuspD9_7.nak.idx]+' नक्षत्र, स्वामी: '+v63pl(L,cuspD9_7.nak.lord)+').'),
+    v63listNak(L,C.planetsInD9Bhava[7])+'.',
+    v63drishti(L,C.aspectedByD9[7])+'.',
+    L==='en'? ('Saptamesh in Navamsha is '+v63pl(L,d9lord7)+', in the '+v63bh(L,C.d9bhava(C.d9[d9lord7]))+' house in D9, in '+v63ra(L,C.d9[d9lord7])+' sign, in '+V63_NAK[L][v6nak(C.d9Lon[d9lord7]).idx]+' nakshatra (lord: '+v63pl(L,v6nak(C.d9Lon[d9lord7]).lord)+').') : ('नवमांशात सप्तमेश '+v63pl(L,d9lord7)+' आहे, D9 मध्ये '+v63bh(L,C.d9bhava(C.d9[d9lord7]))+' भावात, '+v63ra(L,C.d9[d9lord7])+' राशीत, '+V63_NAK[L][v6nak(C.d9Lon[d9lord7]).idx]+' नक्षत्रात (स्वामी: '+v63pl(L,v6nak(C.d9Lon[d9lord7]).lord)+') आहे.'),
+    L==='en'? ('Conjunction: '+(d9yuti.length?v63list(L,d9yuti):W.none)+'. Aspect: '+v63drishti(L,C.aspectedByD9[C.d9bhava(C.d9[d9lord7])])+'.') : ('युती: '+(d9yuti.length?v63list(L,d9yuti):W.none)+' . दृष्टी: '+v63drishti(L,C.aspectedByD9[C.d9bhava(C.d9[d9lord7])])+'.'),
+    d9yuti.length? v63listNak(L,d9yuti)+'.' : W.na+'.',
+    L==='en'? (v63ra(L,C.d9.Lagna)+' sign. (Bhava madhya: '+V63_NAK[L][cuspD9_1.nak.idx]+' nakshatra, lord: '+v63pl(L,cuspD9_1.nak.lord)+').') : (v63ra(L,C.d9.Lagna)+' राशीत. (भाव मध्य: '+V63_NAK[L][cuspD9_1.nak.idx]+' नक्षत्र, स्वामी: '+v63pl(L,cuspD9_1.nak.lord)+').'),
+    v63listNak(L,C.planetsInD9Bhava[1])+'.',
+    L==='en'? ('Lagnesh in Navamsha is '+v63pl(L,d9lord1)+', in the '+v63bh(L,C.d9bhava(C.d9[d9lord1]))+' house in D9, in '+v63ra(L,C.d9[d9lord1])+' sign, in '+V63_NAK[L][v6nak(C.d9Lon[d9lord1]).idx]+' nakshatra (lord: '+v63pl(L,v6nak(C.d9Lon[d9lord1]).lord)+').') : ('नवमांशात लग्नेश '+v63pl(L,d9lord1)+' आहे, D9 मध्ये '+v63bh(L,C.d9bhava(C.d9[d9lord1]))+' भावात, '+v63ra(L,C.d9[d9lord1])+' राशीत, '+V63_NAK[L][v6nak(C.d9Lon[d9lord1]).idx]+' नक्षत्रात (स्वामी: '+v63pl(L,v6nak(C.d9Lon[d9lord1]).lord)+') आहे.'),
+    L==='en'? ('Conjunction: '+v63list(L,C.planetsInD9Bhava[C.d9bhava(C.d9[d9lord1])].filter(p=>p!==d9lord1))+'. Aspect: '+v63drishti(L,C.aspectedByD9[C.d9bhava(C.d9[d9lord1])])+'.') : ('युती: '+v63list(L,C.planetsInD9Bhava[C.d9bhava(C.d9[d9lord1])].filter(p=>p!==d9lord1))+' . दृष्टी: '+v63drishti(L,C.aspectedByD9[C.d9bhava(C.d9[d9lord1])])+'.'),
+    L==='en'? ('Venus in D9 is in the '+v63bh(L,C.d9bhava(C.d9.Venus))+' house, in '+v63ra(L,C.d9.Venus)+' sign. Jupiter in D9 is in the '+v63bh(L,C.d9bhava(C.d9.Jupiter))+' house, in '+v63ra(L,C.d9.Jupiter)+' sign.') : ('शुक्र D9 मध्ये '+v63bh(L,C.d9bhava(C.d9.Venus))+' भावात '+v63ra(L,C.d9.Venus)+' राशीत आहे. गुरू D9 मध्ये '+v63bh(L,C.d9bhava(C.d9.Jupiter))+' भावात '+v63ra(L,C.d9.Jupiter)+' राशीत आहे.')]));
+  s+=v63sec('4]',Q[3].title,A(Q[3].qs,[
+    L==='en'? ('D1 Saptamesh '+v63pl(L,lord7)+' is in Navamsha (D9) in the '+v63bh(L,C.d9bhava(C.d9[lord7]))+' house, in '+v63ra(L,C.d9[lord7])+' sign, in '+V63_NAK[L][v6nak(C.d9Lon[lord7]).idx]+' nakshatra (lord: '+v63pl(L,v6nak(C.d9Lon[lord7]).lord)+').') : ('D1 चा सप्तमेश '+v63pl(L,lord7)+' नवमांशात (D9) '+v63bh(L,C.d9bhava(C.d9[lord7]))+' भावात, '+v63ra(L,C.d9[lord7])+' राशीत, '+V63_NAK[L][v6nak(C.d9Lon[lord7]).idx]+' नक्षत्रात (स्वामी: '+v63pl(L,v6nak(C.d9Lon[lord7]).lord)+') आहे.'),
+    v63list(L,C.planetsInD9Bhava[C.d9bhava(C.d9[lord7])].filter(p=>p!==lord7))+'.',
+    v63drishti(L,C.aspectedByD9[C.d9bhava(C.d9[lord7])])+'.']));
+  s+=v63sec('5]',Q[4].title,A(Q[4].qs,[
+    v63pos(L,'Venus')+'.', v63nakStr(L,'Venus')+'.', v63pos(L,'Jupiter')+'.', v63nakStr(L,'Jupiter')+'.',
+    L==='en'? ('Aspect on Venus: '+v63drishti(L,C.aspectedBy[C.bhava(C.pos.Venus)])+'. Conjunction of Venus: '+v63list(L,C.planetsInBhava[C.bhava(C.pos.Venus)].filter(p=>p!=='Venus'))+'. Aspect on Jupiter: '+v63drishti(L,C.aspectedBy[C.bhava(C.pos.Jupiter)])+'. Conjunction of Jupiter: '+v63list(L,C.planetsInBhava[C.bhava(C.pos.Jupiter)].filter(p=>p!=='Jupiter'))+'.') : ('शुक्रावर दृष्टी: '+v63drishti(L,C.aspectedBy[C.bhava(C.pos.Venus)])+' . शुक्राची युती: '+v63list(L,C.planetsInBhava[C.bhava(C.pos.Venus)].filter(p=>p!=='Venus'))+' . गुरूवर दृष्टी: '+v63drishti(L,C.aspectedBy[C.bhava(C.pos.Jupiter)])+' . गुरूची युती: '+v63list(L,C.planetsInBhava[C.bhava(C.pos.Jupiter)].filter(p=>p!=='Jupiter'))+'.')]));
+  s+=v63sec('6]',Q[5].title,A(Q[5].qs,[
+    v63rel(L,'Venus','Mars')+'.',
+    L==='en'? ('Venus is in the '+v63bh(L,C.bhava(C.pos.Venus))+' house ('+v63ra(L,C.pos.Venus)+' sign) and Mars is in the '+v63bh(L,C.bhava(C.pos.Mars))+' house ('+v63ra(L,C.pos.Mars)+' sign).') : ('शुक्र '+v63bh(L,C.bhava(C.pos.Venus))+' भावात ('+v63ra(L,C.pos.Venus)+' राशी) आणि मंगळ '+v63bh(L,C.bhava(C.pos.Mars))+' भावात ('+v63ra(L,C.pos.Mars)+' राशी) आहे.')]));
+  s+=v63sec('7]',Q[6].title,A(Q[6].qs,[
+    L==='en'? ((yutiRahu?'Yes, Venus and Rahu are in conjunction. ':'No, Venus and Rahu are not in conjunction. ')+(yutiKetu?'Venus and Ketu are in conjunction.':'Venus and Ketu are not in conjunction.')) : ((yutiRahu?'होय, शुक्र आणि राहू युतीत आहेत. ':'नाही, शुक्र आणि राहू युतीत नाहीत. ')+(yutiKetu?'शुक्र आणि केतू युतीत आहेत.':'शुक्र आणि केतू युतीत नाहीत.')),
+    (yutiRahu||yutiKetu)? (L==='en'? ('In the '+v63bh(L,shukBhava)+' house. Venus ('+V63_NAK[L][C.nak.Venus.idx]+' nakshatra, lord: '+v63pl(L,C.nak.Venus.lord)+')'+(yutiRahu?' and Rahu ('+V63_NAK[L][C.nak.Rahu.idx]+' nakshatra, lord: '+v63pl(L,C.nak.Rahu.lord)+')':'')+(yutiKetu?' and Ketu ('+V63_NAK[L][C.nak.Ketu.idx]+' nakshatra, lord: '+v63pl(L,C.nak.Ketu.lord)+')':'')+'.') : (v63bh(L,shukBhava)+' भावात आहे. शुक्र ('+V63_NAK[L][C.nak.Venus.idx]+' नक्षत्र, स्वामी: '+v63pl(L,C.nak.Venus.lord)+')'+(yutiRahu?' आणि राहू ('+V63_NAK[L][C.nak.Rahu.idx]+' नक्षत्र, स्वामी: '+v63pl(L,C.nak.Rahu.lord)+')':'')+(yutiKetu?' आणि केतू ('+V63_NAK[L][C.nak.Ketu.idx]+' नक्षत्र, स्वामी: '+v63pl(L,C.nak.Ketu.lord)+')':'')+'.')) : W.na+'.',
+    drOnShuk.length? (L==='en'? ('Yes, '+v63drishti(L,drOnShuk)+' on Venus.') : ('होय, शुक्रावर '+v63drishti(L,drOnShuk)+' आहे.')) : (L==='en'?'No, Rahu/Ketu do not aspect Venus.':'नाही, शुक्रावर राहू/केतूची दृष्टी नाही.')]));
+  s+=v63sec('8]',Q[7].title,A(Q[7].qs,[
+    L==='en'? ('The tenth house from the seventh is the '+v63bh(L,b10from7)+' house ('+v63ra(L,r10)+' sign). Planets in it: '+v63listNak(L,C.planetsInBhava[b10from7])+'.') : ('सप्तमापासून दहावा भाव '+v63bh(L,b10from7)+' भाव ('+v63ra(L,r10)+' राशी) आहे. त्यातील ग्रह: '+v63listNak(L,C.planetsInBhava[b10from7])+'.'),
+    L==='en'? ('Lord of this house is '+v63pl(L,lord10)+', in the '+v63bh(L,C.bhava(C.pos[lord10]))+' house ('+v63ra(L,C.pos[lord10])+' sign'+v63ava(L,lord10)+'), in '+V63_NAK[L][C.nak[lord10].idx]+' nakshatra (lord: '+v63pl(L,C.nak[lord10].lord)+').') : ('या भावाचा स्वामी '+v63pl(L,lord10)+' आहे, जो '+v63bh(L,C.bhava(C.pos[lord10]))+' भावात ('+v63ra(L,C.pos[lord10])+' राशी'+v63ava(L,lord10)+') '+V63_NAK[L][C.nak[lord10].idx]+' नक्षत्रात (स्वामी: '+v63pl(L,C.nak[lord10].lord)+') आहे.')]));
+  s+=v63sec('9]',Q[8].title,A(Q[8].qs,[
+    L==='en'? ('The eighth house is in '+v63ra(L,C.rashiOfBhava(8))+' sign. Its lord '+v63pl(L,lord8)+' is in the '+v63bh(L,C.bhava(C.pos[lord8]))+' house, in '+v63ra(L,C.pos[lord8])+' sign, in '+V63_NAK[L][C.nak[lord8].idx]+' nakshatra (lord: '+v63pl(L,C.nak[lord8].lord)+').') : ('अष्टम भाव '+v63ra(L,C.rashiOfBhava(8))+' राशीत आहे. त्याचा स्वामी '+v63pl(L,lord8)+' '+v63bh(L,C.bhava(C.pos[lord8]))+' भावात '+v63ra(L,C.pos[lord8])+' राशीत '+V63_NAK[L][C.nak[lord8].idx]+' नक्षत्रात (स्वामी: '+v63pl(L,C.nak[lord8].lord)+') आहे.'),
+    L==='en'? ('Planets placed: '+v63list(L,C.planetsInBhava[8])+'. Aspect: '+v63drishti(L,C.aspectedBy[8])+'.') : ('स्थित ग्रह: '+v63list(L,C.planetsInBhava[8])+' . दृष्टी: '+v63drishti(L,C.aspectedBy[8])+'.')]));
+  s+=v63sec('10]',Q[9].title,A(Q[9].qs,[
+    v63pos(L,'Moon')+'.', v63nakStr(L,'Moon')+'.',
+    moonRel7+', '+(L==='en'? ('conjunction planets with Moon: '+v63list(L,moonYuti)+'.') : ('चंद्रासोबत युत ग्रह: '+v63list(L,moonYuti)+'.')),
+    L==='en'? ('Aspect: '+v63drishti(L,C.aspectedBy[C.bhava(C.pos.Moon)])+'. Conjunction: '+v63list(L,moonYuti)+'.') : ('दृष्टी: '+v63drishti(L,C.aspectedBy[C.bhava(C.pos.Moon)])+' . युती: '+v63list(L,moonYuti)+'.'),
+    L==='en'? ('Moon is in '+V63_NAK[L][C.nak.Moon.idx]+' nakshatra. Planets in this nakshatra: '+v63list(L,moonNakPlanets)+'. Of these, seventh-related planets: '+(inMoonNak.length?v63list(L,inMoonNak):W.none)+'. Planets conjunct Moon: '+v63list(L,moonYuti)+'. Aspect on Moon: '+v63drishti(L,C.aspectedBy[C.bhava(C.pos.Moon)])+'.') : ('चंद्र '+V63_NAK[L][C.nak.Moon.idx]+' नक्षत्रात आहे. या नक्षत्रातील ग्रह: '+v63list(L,moonNakPlanets)+' . त्यांतील सप्तमाशी संबंधित ग्रह: '+(inMoonNak.length?v63list(L,inMoonNak):W.none)+' . चंद्रासोबत युत ग्रह: '+v63list(L,moonYuti)+' . चंद्रावर दृष्टी: '+v63drishti(L,C.aspectedBy[C.bhava(C.pos.Moon)])+'.')]));
+  return s;
+}
+
+// ===== Jaimini LM =====
+function v63buildJaimini(L){
+  const C=V6_CHART, Q=V63_Q[L], W=V63_W[L], kar=C.karakas, DK=kar.Darakaraka, AK=kar.Atmakaraka;
+  const ulBhava=C.arudha[12], ulSign=C.rashiOfBhava(ulBhava), a7Bhava=C.arudha[7], a7Sign=C.rashiOfBhava(a7Bhava);
+  const akD9=C.d9[AK], swam7sign=(akD9+6)%12, swam7lord=V6_LORD[swam7sign];
+  const swamPls=v6jaiminiPlanetsInSign(swam7sign,'D9'), karaPls=v6jaiminiPlanetsInSign(swam7sign,'D1');
+  const ulAspects=v6rashiDrishti(ulSign), dkAspects=v6rashiDrishti(C.pos[DK]);
+  const dkBhava=C.bhava(C.pos[DK]), relBhava=((dkBhava-ulBhava)%12+12)%12+1;
+  const A=(qs,ans)=>qs.map((q,i)=>v63q(L,q,ans[i])).join('');
+  let s='';
+  s+=v63sec('1]',Q[10].title,A(Q[10].qs,[
+    v63pl(L,DK)+'.',
+    v63pos(L,DK)+'.',
+    v63list(L,C.planetsInBhava[C.bhava(C.pos[DK])].filter(p=>p!==DK))+'.',
+    v63jaiminiDrishti(L,C.pos[DK])+'.',
+    L==='en'? (v63pl(L,DK)+' is in Navamsha in '+v63ra(L,C.d9[DK])+' sign.') : (v63pl(L,DK)+' नवमांशात '+v63ra(L,C.d9[DK])+' राशीत आहे.'),
+    v63nakStr(L,DK)+'.']));
+  s+=v63sec('2]',Q[11].title,A(Q[11].qs,[
+    L==='en'? ('Upapada Lagna (UL) is in '+v63ra(L,ulSign)+' sign and in the '+v63bh(L,ulBhava)+' house.') : ('उपपद लग्न (UL) '+v63ra(L,ulSign)+' राशीत आहे आणि '+v63bh(L,ulBhava)+' भावात आहे.'),
+    v63list(L,C.planetsInBhava[ulBhava])+'.',
+    v63jaiminiDrishti(L,ulSign)+'.']));
+  s+=v63sec('3]',Q[12].title,A(Q[12].qs,[
+    L==='en'? ('A7 (Darapada) is in '+v63ra(L,a7Sign)+' sign and in the '+v63bh(L,a7Bhava)+' house.') : ('A7 (दारापद) '+v63ra(L,a7Sign)+' राशीत आहे आणि '+v63bh(L,a7Bhava)+' भावात आहे.'),
+    v63list(L,C.planetsInBhava[a7Bhava])+'.',
+    v63jaiminiDrishti(L,a7Sign)+'.']));
+  s+=v63sec('4]',Q[13].title,A(Q[13].qs,[
+    L==='en'? ('Swamsha Lagna is '+v63ra(L,akD9)+' sign. The seventh house from Swamsha Lagna is '+v63ra(L,swam7sign)+' sign, in D9 planets there: '+v63list(L,swamPls)+'.') : ('स्वांश लग्न '+v63ra(L,akD9)+' राशी आहे. स्वांश लग्नापासून सप्तम भाव '+v63ra(L,swam7sign)+' राशीत आहे, D9 मध्ये तेथील ग्रह: '+v63list(L,swamPls)+'.'),
+    L==='en'? ('Swamsha Saptamesh is '+v63pl(L,swam7lord)+', from Swamsha Lagna in the '+v63bh(L,((C.d9[swam7lord]-akD9)%12+12)%12+1)+' house, in '+v63ra(L,C.d9[swam7lord])+' sign.') : ('स्वांश सप्तमेश '+v63pl(L,swam7lord)+' आहे, स्वांश लग्नापासून '+v63bh(L,((C.d9[swam7lord]-akD9)%12+12)%12+1)+' भावात '+v63ra(L,C.d9[swam7lord])+' राशीत आहे.'),
+    v63list(L,C.planetsInD9Bhava[C.d9bhava(C.d9[swam7lord])].filter(p=>p!==swam7lord))+'.',
+    L==='en'? ('Karakamsha Lagna is '+v63ra(L,akD9)+' sign. The seventh house from Karakamsha Lagna is '+v63ra(L,swam7sign)+' sign, in D1 planets there: '+v63list(L,karaPls)+'.') : ('कारकांश लग्न '+v63ra(L,akD9)+' राशी आहे. कारकांश लग्नापासून सप्तम भाव '+v63ra(L,swam7sign)+' राशीत आहे, D1 मध्ये तेथील ग्रह: '+v63list(L,karaPls)+'.'),
+    L==='en'? ('Karakamsha Saptamesh is '+v63pl(L,swam7lord)+', from Karakamsha Lagna in the '+v63bh(L,((C.pos[swam7lord]-akD9)%12+12)%12+1)+' house, in '+v63ra(L,C.pos[swam7lord])+' sign.') : ('कारकांश सप्तमेश '+v63pl(L,swam7lord)+' आहे, कारकांश लग्नापासून '+v63bh(L,((C.pos[swam7lord]-akD9)%12+12)%12+1)+' भावात '+v63ra(L,C.pos[swam7lord])+' राशीत आहे.'),
+    v63list(L,C.planetsInBhava[C.bhava(C.pos[swam7lord])].filter(p=>p!==swam7lord))+'.']));
+  s+=v63sec('5]',Q[14].title,A(Q[14].qs,[
+    (ulAspects.includes(C.pos[DK])||dkAspects.includes(ulSign))? (L==='en'? ('Yes, there is Jaimini Rashi Drishti between UL ('+v63ra(L,ulSign)+') and DK ('+v63ra(L,C.pos[DK])+').') : ('होय, UL ('+v63ra(L,ulSign)+') आणि DK ('+v63ra(L,C.pos[DK])+') यांच्यात जैमिनी राशी दृष्टी आहे.')) : (L==='en'?'No, there is no direct Jaimini Rashi Drishti between UL and DK.':'नाही, UL आणि DK यांच्यात थेट जैमिनी राशी दृष्टी नाही.'),
+    L==='en'? ('From UL, DK is in the '+v63bh(L,relBhava)+' house. Check Kendra (1,4,7,10) and Trikona (1,5,9) from this house.') : ('UL पासून DK '+v63bh(L,relBhava)+' भावात आहे. याच भावावरून केंद्र (1,4,7,10) आणि त्रिकोण (1,5,9) तपासा.')]));
+  const lab7=L==='en'?'7th house':'7व्या भावापासून', labDK=L==='en'?'DK':'DK पासून', labUL=L==='en'?'UL':'UL पासून';
+  s+=v63sec('6]',Q[15].title,A(Q[15].qs,[
+    v63argala(L,7,lab7),
+    L==='en'? 'Opposing-house planets are listed above. Strength is decided in Jaimini analysis; raw data gives only the planet list.' : 'विरोध करणाऱ्या भावांतील ग्रह वरीलप्रमाणे आहेत. बलाचा निर्णय जैमिनी विश्लेषणात होईल, कच्च्या डेटात फक्त ग्रहांची यादी दिली आहे.',
+    v63argala(L,dkBhava,labDK),
+    v63argala(L,ulBhava,labUL)]));
+  return s;
+}
+// ===== BNN LM =====
+function v63bnnPlanetSection(L,p){
+  const C=V6_CHART, sign=C.pos[p], second=(sign+1)%12, twelfth=(sign+11)%12, tri=[sign,(sign+4)%12,(sign+8)%12];
+  const qs=V63_Q[L][16].qs;
+  return qs.map((q,i)=>{
+    const ans=[v63pl(L,p)+' '+(L==='en'? ('is in '+v63ra(L,sign)+' sign ('+v6fmtDeg(C.posDeg[p])+').') : (v63ra(L,sign)+' राशीत आहे ('+v6fmtDeg(C.posDeg[p])+').')),
+      v63nakStr(L,p)+'.',
+      v63list(L,C.planetsInBhava[C.bhava(C.pos[p])].filter(x=>x!==p))+'.',
+      L==='en'? ('Second sign ('+v63ra(L,second)+'): '+v63list(L,v6jaiminiPlanetsInSign(second,'D1'))+'. Twelfth sign ('+v63ra(L,twelfth)+'): '+v63list(L,v6jaiminiPlanetsInSign(twelfth,'D1'))+'.') : ('दुसऱ्या राशीत ('+v63ra(L,second)+'): '+v63list(L,v6jaiminiPlanetsInSign(second,'D1'))+' . बाराव्या राशीत ('+v63ra(L,twelfth)+'): '+v63list(L,v6jaiminiPlanetsInSign(twelfth,'D1'))+'.'),
+      tri.map(r=>v63ra(L,r)+': '+v63list(L,v6jaiminiPlanetsInSign(r,'D1'))).join(' | ')+'.'];
+    return v63q(L,q,ans[i]);
+  }).join('');
+}
+function v63buildBNN(L){
+  const C=V6_CHART, Q=V63_Q[L], W=V63_W[L], isMale=document.getElementById('gender').value==='जातक';
+  const spouseKaraka=isMale?'Venus':'Mars', sutraA=isMale?'Jupiter':'Venus', sutraB=isMale?'Venus':'Mars';
+  const sutraName=L==='en'? (isMale?'Jupiter-Venus':'Venus-Mars') : (isMale?'गुरू-शुक्र':'शुक्र-मंगळ');
+  const distDeg=Math.abs(v6norm(C.posDeg[sutraA]-C.posDeg[sutraB])), closeDist=Math.min(distDeg,360-distDeg), relAB=v63rel(L,sutraA,sutraB);
+  let s='';
+  s+=v63sec('1]',Q[16].title, v63bnnPlanetSection(L,'Jupiter'));
+  let b='';
+  b+=v63q(L,Q[17].qs[0], L==='en'? ('Spouse karaka planet: '+v63pl(L,spouseKaraka)+'.') : ('जीवनसाथी कारक ग्रह: '+v63pl(L,spouseKaraka)+' आहे.'));
+  // Sec2 remaining 5 questions are the same pattern as Sec1, with spouse karaka planet
+  const sec2qs=Q[17].qs.slice(1);
+  const sec2ans=[v63pl(L,spouseKaraka)+' '+(L==='en'? ('is in '+v63ra(L,C.pos[spouseKaraka])+' sign ('+v6fmtDeg(C.posDeg[spouseKaraka])+').') : (v63ra(L,C.pos[spouseKaraka])+' राशीत आहे ('+v6fmtDeg(C.posDeg[spouseKaraka])+').')),
+    v63nakStr(L,spouseKaraka)+'.',
+    v63list(L,C.planetsInBhava[C.bhava(C.pos[spouseKaraka])].filter(x=>x!==spouseKaraka))+'.',
+    (()=>{const sign=C.pos[spouseKaraka], second=(sign+1)%12, twelfth=(sign+11)%12; return L==='en'? ('Second sign ('+v63ra(L,second)+'): '+v63list(L,v6jaiminiPlanetsInSign(second,'D1'))+'. Twelfth sign ('+v63ra(L,twelfth)+'): '+v63list(L,v6jaiminiPlanetsInSign(twelfth,'D1'))+'.') : ('दुसऱ्या राशीत ('+v63ra(L,second)+'): '+v63list(L,v6jaiminiPlanetsInSign(second,'D1'))+' . बाराव्या राशीत ('+v63ra(L,twelfth)+'): '+v63list(L,v6jaiminiPlanetsInSign(twelfth,'D1'))+'.');})(),
+    (()=>{const sign=C.pos[spouseKaraka], tri=[sign,(sign+4)%12,(sign+8)%12]; return tri.map(r=>v63ra(L,r)+': '+v63list(L,v6jaiminiPlanetsInSign(r,'D1'))).join(' | ')+'.';})()];
+  b+=sec2qs.map((q,i)=>v63q(L,q,sec2ans[i])).join('');
+  s+=v63sec('2]',Q[17].title,b);
+  b='';
+  const pairQ=isMale? Q[18].qs[0] : Q[18].qs[1];
+  const pairAns=L==='en'? (v63pl(L,sutraA)+' and '+v63pl(L,sutraB)+' relation: '+relAB+'.') : (v63pl(L,sutraA)+' आणि '+v63pl(L,sutraB)+' यांचा संबंध: '+relAB+' आहे.');
+  b+=v63q(L,pairQ,pairAns);
+  b+=v63q(L,Q[18].qs[2], L==='en'? ('Degree difference: '+closeDist.toFixed(2)+'°. Other mutual relation: '+relAB+'.') : ('डिग्रीतील फरक: '+closeDist.toFixed(2)+'° आहे. इतर परस्पर संबंध: '+relAB+'.'));
+  s+=v63sec('3]',Q[18].title,b);
+  b='';
+  b+=v63q(L,Q[19].qs[0], L==='en'? ('Saturn relation with '+v63pl(L,spouseKaraka)+': '+v63rel(L,'Saturn',spouseKaraka)+'.') : ('शनीचा '+v63pl(L,spouseKaraka)+' याच्याशी संबंध: '+v63rel(L,'Saturn',spouseKaraka)+' आहे.'));
+  b+=v63q(L,Q[19].qs[1], L==='en'? ('Rahu relation with '+v63pl(L,spouseKaraka)+': '+v63rel(L,'Rahu',spouseKaraka)+'. Ketu relation with '+v63pl(L,spouseKaraka)+': '+v63rel(L,'Ketu',spouseKaraka)+'. Rahu relation with the marriage formula ('+sutraName+'): '+v63pl(L,sutraA)+' - '+v63rel(L,'Rahu',sutraA)+', '+v63pl(L,sutraB)+' - '+v63rel(L,'Rahu',sutraB)+'. Ketu relation with the marriage formula ('+sutraName+'): '+v63pl(L,sutraA)+' - '+v63rel(L,'Ketu',sutraA)+', '+v63pl(L,sutraB)+' - '+v63rel(L,'Ketu',sutraB)+'.') : ('राहूचा '+v63pl(L,spouseKaraka)+' याच्याशी संबंध: '+v63rel(L,'Rahu',spouseKaraka)+' . केतूचा '+v63pl(L,spouseKaraka)+' याच्याशी संबंध: '+v63rel(L,'Ketu',spouseKaraka)+' . राहूचा विवाह सूत्राशी ('+sutraName+') संबंध: '+v63pl(L,sutraA)+' - '+v63rel(L,'Rahu',sutraA)+', '+v63pl(L,sutraB)+' - '+v63rel(L,'Rahu',sutraB)+' . केतूचा विवाह सूत्राशी ('+sutraName+') संबंध: '+v63pl(L,sutraA)+' - '+v63rel(L,'Ketu',sutraA)+', '+v63pl(L,sutraB)+' - '+v63rel(L,'Ketu',sutraB)+'.'));
+  const vakriCandidates=[spouseKaraka,'Jupiter'];
+  for(const p of ['Saturn','Mars','Rahu','Ketu',sutraA,sutraB]){if(!vakriCandidates.includes(p)) vakriCandidates.push(p);}
+  const vakri=vakriCandidates.filter(p=>C.speed[p]<-0.001);
+  b+=v63q(L,Q[19].qs[2], vakri.length? (L==='en'? ('Retrograde planets: '+v63list(L,vakri)+'.') : ('वक्री ग्रह: '+v63list(L,vakri)+' आहेत.')) : (L==='en'?'No retrograde planet among spouse karaka, Jupiter, Saturn, Mars, Rahu, Ketu.':'जीवनसाथी कारक ग्रह, गुरू, शनी, मंगळ, राहू, केतू यांपैकी कोणताही वक्री नाही.'));
+  s+=v63sec('4]',Q[19].title,b);
+  return s;
+}
+// ===== KP LM =====
+function v63buildKP(L){
+  const C=V6_CHART, Q=V63_Q[L], W=V63_W[L];
+  const csl7=C.kpCusps[6], cslPlanet=V6_KP_FULL[csl7.sl]||csl7.sl, cslKP=v6kpPlanetKP(cslPlanet);
+  const sig7=v6kpSigHousesForPlanet(cslPlanet), allSig=[...new Set([...sig7.A,...sig7.B,...sig7.C,...sig7.D])].sort((a,b)=>a-b);
+  const has=h=>allSig.includes(h), neg=allSig.filter(h=>[1,6,8,10,12].includes(h));
+  const csl5=C.kpCusps[4], csl5Planet=V6_KP_FULL[csl5.sl]||csl5.sl, csl5KP=v6kpPlanetKP(csl5Planet);
+  const sig5=v6kpSigHousesForPlanet(csl5Planet), allSig5=[...new Set([...sig5.A,...sig5.B,...sig5.C,...sig5.D])].sort((a,b)=>a-b);
+  const csl11=C.kpCusps[10], csl11Planet=V6_KP_FULL[csl11.sl]||csl11.sl, sig11=v6kpSigHousesForPlanet(csl11Planet), allSig11=[...new Set([...sig11.A,...sig11.B,...sig11.C,...sig11.D])].sort((a,b)=>a-b);
+  const nakLord7=C.nak[cslPlanet].lord;
+  const A=(qs,ans)=>qs.map((q,i)=>v63q(L,q,ans[i])).join('');
+  let s='', b='';
+  b=A(Q[20].qs,[v63pl(L,cslPlanet)+'.',
+    L==='en'? ('CSL '+v63pl(L,cslPlanet)+' signifying houses: A: '+sig7.A.join(', ')+' | B: '+sig7.B.join(', ')+' | C: '+sig7.C.join(', ')+' | D: '+sig7.D.join(', ')+'. Of 2, 7, 11: '+([2,7,11].filter(h=>allSig.includes(h)).join(', ')||W.none)+'.') : ('CSL '+v63pl(L,cslPlanet)+' सिग्निफाय करणारे भाव: A: '+sig7.A.join(', ')+' | B: '+sig7.B.join(', ')+' | C: '+sig7.C.join(', ')+' | D: '+sig7.D.join(', ')+' . 2, 7, 11 पैकी: '+([2,7,11].filter(h=>allSig.includes(h)).join(', ')||W.none)+'.'),
+    neg.length? (L==='en'? ('Yes, it also signifies these houses: '+neg.join(', ')+'.') : ('होय, तो या भावांनाही सिग्निफाय करत आहे: '+neg.join(', ')+'.')) : (L==='en'?'No, it does not signify any of 1, 6, 8, 10, 12.':'नाही, तो 1, 6, 8, 10, 12 पैकी कोणत्याही भावाला सिग्निफाय करत नाही.')]);
+  s+=v63sec('1]',Q[20].title,b); b='';
+  b=A(Q[21].qs,[
+    L==='en'? ('7th CSL is '+v63pl(L,cslPlanet)+'. '+(cslPlanet==='Saturn'?'It is Saturn itself.':'It is not Saturn.')+' Its nakshatra lord is '+v63pl(L,nakLord7)+'. '+(nakLord7==='Saturn'?'It is placed in Saturn nakshatra.':'It is not placed in Saturn nakshatra.')) : ('7th CSL '+v63pl(L,cslPlanet)+' आहे. '+(cslPlanet==='Saturn'?'तो शनीच आहे.':'तो शनी नाही.')+' त्याचा नक्षत्र स्वामी '+v63pl(L,nakLord7)+' आहे. '+(nakLord7==='Saturn'?'तो शनीच्या नक्षत्रात बसला आहे.':'तो शनीच्या नक्षत्रात बसला नाही.')),
+    has(8)? (L==='en'?'Yes, it signifies the 8th house.':'होय, तो 8व्या भावाला सिग्निफाय करत आहे.') : (L==='en'?'No, it does not signify the 8th house.':'नाही, तो 8व्या भावाला सिग्निफाय करत नाही.'),
+    L==='en'? ('12th house: '+(has(12)?W.yes:W.no)+'. Of 1, 6, 10 signified: '+([1,6,10].filter(h=>allSig.includes(h)).join(', ')||W.none)+'.') : ('12वा भाव: '+(has(12)?W.yes:W.no)+' . 1, 6, 10 पैकी सिग्निफाय केलेले भाव: '+([1,6,10].filter(h=>allSig.includes(h)).join(', ')||W.none)+'.')]);
+  s+=v63sec('2]',Q[21].title,b); b='';
+  const nlPlanet=cslKP.nl, slPlanet=cslKP.sl, sslPlanet=cslKP.ssl;
+  b=A(Q[22].qs,[
+    L==='en'? ('Nakshatra lord of 7th CSL is '+v63pl(L,nlPlanet)+', placed in the '+v63bh(L,C.placidusBhava(C.posDeg[nlPlanet]))+' house as per KP.') : ('7व्या CSL चा नक्षत्र स्वामी '+v63pl(L,nlPlanet)+' आहे, KP पद्धतीनुसार '+v63bh(L,C.placidusBhava(C.posDeg[nlPlanet]))+' भावात स्थित आहे.'),
+    L==='en'? ('Sub-lord of 7th CSL is '+v63pl(L,slPlanet)+', placed in the '+v63bh(L,C.placidusBhava(C.posDeg[slPlanet]))+' house as per KP.') : ('7व्या CSL चा उप-स्वामी '+v63pl(L,slPlanet)+' आहे, KP पद्धतीनुसार '+v63bh(L,C.placidusBhava(C.posDeg[slPlanet]))+' भावात स्थित आहे.'),
+    L==='en'? ('SSL of 7th CSL is '+v63pl(L,sslPlanet)+', placed in the '+v63bh(L,C.placidusBhava(C.posDeg[sslPlanet]))+' house as per KP.') : ('7व्या CSL चा SSL '+v63pl(L,sslPlanet)+' आहे, KP पद्धतीनुसार '+v63bh(L,C.placidusBhava(C.posDeg[sslPlanet]))+' भावात स्थित आहे.'),
+    L==='en'? ('2nd house significators: '+v63kpSig(L,2)+'. 7th house significators: '+v63kpSig(L,7)+'. 11th house significators: '+v63kpSig(L,11)+'.') : ('2ऱ्या भावाचे सिग्निफिकेटर: '+v63kpSig(L,2)+' . 7व्या भावाचे सिग्निफिकेटर: '+v63kpSig(L,7)+' . 11व्या भावाचे सिग्निफिकेटर: '+v63kpSig(L,11)+' .')]);
+  s+=v63sec('3]',Q[22].title,b); b='';
+  b=A(Q[23].qs,[
+    L==='en'? ('Of 2, 7, 11 shown: '+([2,7,11].filter(h=>allSig.includes(h)).join(', ')||W.none)+'.') : ('2, 7, 11 पैकी दाखवलेले भाव: '+([2,7,11].filter(h=>allSig.includes(h)).join(', ')||W.none)+'.'),
+    L==='en'? ('Of 1, 6, 10 signified: '+([1,6,10].filter(h=>allSig.includes(h)).join(', ')||W.none)+'. (Note: the 6th house is the 12th from the 7th, which gives legal separation).') : ('1, 6, 10 पैकी सिग्निफाय केलेले भाव: '+([1,6,10].filter(h=>allSig.includes(h)).join(', ')||W.none)+' . (लक्षात ठेवा: 6वा भाव 7व्यापासून 12वा आहे, जो कायदेशीर वेगळेपणा देतो).'),
+    has(8)? (L==='en'?'Yes, it signifies the 8th house.':'होय, तो 8व्या भावाला सिग्निफाय करत आहे.') : (L==='en'?'No, it does not signify the 8th house.':'नाही, तो 8व्या भावाला सिग्निफाय करत नाही.'),
+    L==='en'? ('7th CSL ('+v63pl(L,cslPlanet)+') relation with 12th house: '+(has(12)?W.yes:W.no)+'. 11th CSL ('+v63pl(L,csl11Planet)+') relation with 12th house: '+(allSig11.includes(12)?W.yes:W.no)+'.') : ('7th CSL ('+v63pl(L,cslPlanet)+') चा 12व्या भावाशी संबंध: '+(has(12)?W.yes:W.no)+' . 11th CSL ('+v63pl(L,csl11Planet)+') चा 12व्या भावाशी संबंध: '+(allSig11.includes(12)?W.yes:W.no)+' .')]);
+  s+=v63sec('4]',Q[23].title,b); b='';
+  const signLord5=V6_LORD[Math.floor(C.posDeg[csl5Planet]/30)%12], signLord7=V6_LORD[Math.floor(C.posDeg[cslPlanet]/30)%12];
+  b=A(Q[24].qs,[
+    L==='en'? ('CSL of the 5th house is '+v63pl(L,csl5Planet)+'.') : ('5व्या भावाचा CSL '+v63pl(L,csl5Planet)+' आहे.'),
+    L==='en'? ('7th CSL: '+v63pl(L,cslPlanet)+', 5th CSL: '+v63pl(L,csl5Planet)+'. '+(cslPlanet===csl5Planet?'Both CSLs are the same planet, so there is a direct relation.':'Both CSLs are different planets. Nakshatra lord/sub-lord of 7th CSL: '+v63pl(L,cslKP.nl)+'/'+v63pl(L,cslKP.sl)+'. Nakshatra lord/sub-lord of 5th CSL: '+v63pl(L,csl5KP.nl)+'/'+v63pl(L,csl5KP.sl)+'.')) : ('7th CSL: '+v63pl(L,cslPlanet)+', 5th CSL: '+v63pl(L,csl5Planet)+' . '+(cslPlanet===csl5Planet?'दोन्ही CSL एकच ग्रह आहेत, त्यामुळे थेट संबंध आहे.':'दोन्ही CSL वेगळे ग्रह आहेत. 7th CSL चा नक्षत्र स्वामी/उप-स्वामी: '+v63pl(L,cslKP.nl)+'/'+v63pl(L,cslKP.sl)+' . 5th CSL चा नक्षत्र स्वामी/उप-स्वामी: '+v63pl(L,csl5KP.nl)+'/'+v63pl(L,csl5KP.sl)+' .')),
+    L==='en'? ('5th CSL signifying houses: '+allSig5.join(', ')+'. 7th house: '+(allSig5.includes(7)?W.yes:W.no)+'. 11th house: '+(allSig5.includes(11)?W.yes:W.no)+'.') : ('5th CSL सिग्निफाय करणारे भाव: '+allSig5.join(', ')+' . 7वा भाव: '+(allSig5.includes(7)?W.yes:W.no)+' . 11वा भाव: '+(allSig5.includes(11)?W.yes:W.no)+' .'),
+    L==='en'? ('7th CSL signifying houses: '+allSig.join(', ')+'. 5th house influence: '+(has(5)?'Yes, the 5th house is also signified.':'No, the 5th house is not signified.')) : ('7th CSL सिग्निफाय करणारे भाव: '+allSig.join(', ')+' . 5व्या भावाचा प्रभाव: '+(has(5)?'होय, 5वा भावही सिग्निफाय होत आहे.':'नाही, 5वा भाव सिग्निफाय होत नाही.')),
+    L==='en'? ('5th CSL ('+v63pl(L,csl5Planet)+'): sign lord '+v63pl(L,signLord5)+', star lord '+v63pl(L,csl5KP.nl)+', sub-lord '+v63pl(L,csl5KP.sl)+'. 7th CSL ('+v63pl(L,cslPlanet)+'): sign lord '+v63pl(L,signLord7)+', star lord '+v63pl(L,cslKP.nl)+', sub-lord '+v63pl(L,cslKP.sl)+'. Common planets: '+(([csl5KP.nl,csl5KP.sl,signLord5].filter(x=>[cslKP.nl,cslKP.sl,signLord7].includes(x)).map(x=>v63pl(L,x)).join(', ')||W.none))+'.') : ('5th CSL ('+v63pl(L,csl5Planet)+'): राशी स्वामी '+v63pl(L,signLord5)+', नक्षत्र स्वामी '+v63pl(L,csl5KP.nl)+', उप-स्वामी '+v63pl(L,csl5KP.sl)+' . 7th CSL ('+v63pl(L,cslPlanet)+'): राशी स्वामी '+v63pl(L,signLord7)+', नक्षत्र स्वामी '+v63pl(L,cslKP.nl)+', उप-स्वामी '+v63pl(L,cslKP.sl)+' . समान ग्रह: '+(([csl5KP.nl,csl5KP.sl,signLord5].filter(x=>[cslKP.nl,cslKP.sl,signLord7].includes(x)).map(x=>v63pl(L,x)).join(', ')||W.none))+'.')]);
+  s+=v63sec('5]',Q[24].title,b);
+  return s;
+}
+
+// ===== Fill / Refill =====
+async function v6fillAuto(force){
+  const btn=document.getElementById('astroFillBtn');
+  if(btn) btn.disabled=true;
+  const chart=await v6calcChart();
+  if(!chart){ if(btn) btn.disabled=false; return; }
+  const _lang=document.getElementById('lang').value||'hi';
+  const data=(_lang==='hi')?{dataParashari:v6buildParashari(), dataJaimini:v6buildJaimini(), dataBNN:v6buildBNN(), dataKP:v6buildKP()}:{dataParashari:v63buildParashari(_lang), dataJaimini:v63buildJaimini(_lang), dataBNN:v63buildBNN(_lang), dataKP:v63buildKP(_lang)};
+  const filled=[], skipped=[];
+  for(const id of Object.keys(data)){
+    const el=document.getElementById(id);
+    if(!el) continue;
+    if(!force && el.value.trim()!==''){ skipped.push(id); continue; }
+    el.value=data[id]; filled.push(id);
+  }
+  v6setMsg('astroMsg', 'ऑटो-फिल हो गया। भरे गए: '+filled.join(', ')+(skipped.length? '। पहले से भरे हुए (नहीं छेड़े गए): '+skipped.join(', ')+'। इन्हें बदलने के लिए नीचे दिए गए दो-टैप बटन का उपयोग करें।' : '।'), true);
+  if(btn) btn.disabled=false;
+  const gen=document.getElementById('createBtn'); if(gen) gen.disabled=false;
+}
+let v6refillArmed=false, v6refillTimer=null;
+function v6refillTap(){
+  const btn=document.getElementById('astroRefillBtn'); if(!btn) return;
+  if(!v6refillArmed){ v6refillArmed=true; btn.textContent='पक्का? फिर दबाएं'; if(v6refillTimer) clearTimeout(v6refillTimer); v6refillTimer=setTimeout(()=>{ v6refillArmed=false; btn.textContent='ऑटो-फिल से फिर से भरें (दो-टैप)'; }, 3000); return; }
+  v6refillArmed=false; if(v6refillTimer) clearTimeout(v6refillTimer); btn.textContent='ऑटो-फिल से फिर से भरें (दो-टैप)'; v6fillAuto(true);
+}
+
+</script>
 </body>
 </html>
