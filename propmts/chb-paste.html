@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Child Analysis Prompt Generator</title>
+    <title>CHB Paste v4 - Astrology AI Prompt Creator</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #fff3e0; /* Light Orange background for Child/Jupiter theme */
+            background-color: #f0f2f5;
             margin: 0;
             padding: 20px;
-            color: #333;
+            color: #1c1e21;
         }
         .container {
             max-width: 850px;
@@ -19,19 +19,12 @@
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-top: 5px solid #ef6c00;
         }
         h1 {
             text-align: center;
-            color: #e65100; /* Dark Orange */
-            margin-bottom: 10px;
-            font-size: 26px;
-        }
-        p.subtitle {
-            text-align: center;
-            color: #777;
+            color: #01579b;
             margin-bottom: 30px;
-            font-weight: 500;
+            font-size: 24px;
         }
         .row {
             display: flex;
@@ -46,7 +39,7 @@
         label {
             margin-bottom: 8px;
             font-weight: 600;
-            color: #444;
+            color: #333;
         }
         input, select {
             padding: 12px;
@@ -55,20 +48,19 @@
             font-size: 16px;
         }
         .section-box {
-            background-color: #fff8e1; /* Very light orange/yellow */
-            border: 1px solid #ffe0b2;
+            background-color: #fafafa;
+            border: 1px solid #eee;
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 8px;
         }
         .section-header {
             font-weight: bold;
-            color: #ef6c00;
+            color: #01579b;
             margin-bottom: 10px;
-            font-size: 16px;
-            border-bottom: 2px solid #ffcc80;
+            border-bottom: 2px solid #01579b;
             display: inline-block;
-            padding-bottom: 5px;
+            padding-bottom: 3px;
         }
         textarea {
             width: 100%;
@@ -91,55 +83,64 @@
             transition: 0.2s;
         }
         #createBtn {
-            background-color: #ef6c00;
+            background-color: #01579b; /* Red/Maroon theme */
             color: white;
             margin-top: 10px;
         }
         #createBtn:hover {
-            background-color: #d84315;
+            background-color: #0277bd;
         }
         #outputArea {
             margin-top: 40px;
             display: none;
-            background-color: #fafafa;
-            padding: 20px;
-            border: 1px solid #eee;
-            border-radius: 8px;
         }
         #finalPrompt {
             height: 400px;
             font-size: 14px;
             line-height: 1.5;
-            background-color: #fff;
-            color: #000;
-            border: 1px solid #ccc;
+            background-color: #fffde7;
         }
         #copyBtn {
-            background-color: #2e7d32; /* Green for success */
+            background-color: #388e3c;
             color: white;
             margin-top: 15px;
         }
         #copyBtn:hover {
-            background-color: #1b5e20;
+            background-color: #2e7d32;
         }
         @media (max-width: 600px) {
             .row {
                 flex-direction: column;
             }
         }
+    
+        .astro-box { background:#fff3e0; border:2px solid #ef6c00; border-radius:8px; padding:15px; margin-bottom:18px; }
+        .astro-box label { font-weight:bold; }
+        .astro-box input { width:100%; padding:10px; font-size:16px; margin-top:6px; box-sizing:border-box; }
+        .astro-box button { margin-top:10px; margin-right:8px; padding:10px 16px; font-size:16px; cursor:pointer; }
+        #astroMsg, #copyMsg { font-weight:bold; margin-top:8px; min-height:20px; }
+        .note { color:#555; font-size:14px; margin-top:6px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>CHB Paste प्रॉम्प्ट जनरेटर</h1>
-    <p class="subtitle">Child (Progeny) Analysis AI Tool</p>
+    <h1>CHB Paste प्रॉम्प्ट जनरेटर v4</h1>
+    <div class="astro-box">
+        <label for="astroCode">एस्ट्रो कोड (Astro Code):</label>
+        <input id="astroCode" type="text" placeholder="उदाहरण: AS1-19950214-030000-+0530-2119N-07951E" />
+        <button id="astroFillBtn" type="button" onclick="chbFillAuto(false)">भरो (Astro Code से डेटा भरें)</button>
+        <button id="astroRefillBtn" type="button" onclick="chbRefillTap()">ऑटो-फिल से फिर से भरें (दो-टैप)</button>
+        <div id="astroMsg"></div>
+        <div class="note">नोट: भरो दबाने पर नीचे के चारों डेटा बॉक्स (पराशरी, जैमिनी, BNN, KP) एस्ट्रो कोड से अपने आप भर जाएंगे। पहले से भरा हुआ बॉक्स नहीं छेड़ा जाएगा, उसे बदलने के लिए दो-टैप बटन दबाएं। मैनुअल पेस्ट बॉक्स हमेशा साथ में रहेंगे, ताकि आप संख्या खुद भी सुधार सकें। पराशरी के 7, जैमिनी के 4, BNN के 2 और KP के 2 बिंदु एस्ट्रो कोड से भरे जाते हैं। भाग 1B में लिंग के हिसाब से सिर्फ एक स्फुट दिखता है, पुरुष को बीज स्फुट और स्त्री को क्षेत्र स्फुट। भाषा बदलने पर डेटा बॉक्स अपने आप नहीं बदलते; नई भाषा में डेटा चाहिए तो भाषा चुनकर दो-टैप बटन से फिर से भरें, तभी चारों बॉक्स नई भाषा में भरेंगे।</div>
+    </div>
+
 
     <!-- Basic Info -->
     <div class="row">
         <div class="col">
             <label>1. नाम (Name):</label>
-            <input type="text" id="name" placeholder="उदा. विकास">
+            <input type="text" id="name" placeholder="उदा. सारंग">
         </div>
         <div class="col">
             <label>2. लिंग (Gender):</label>
@@ -160,22 +161,22 @@
 
     <!-- Data Sections -->
     <div class="section-box">
-        <div class="section-header">1. पराशरी डेटा (Parashari Data)</div>
+        <div class="section-header">पराशरी डेटा (Parashari Data)</div>
         <textarea id="dataParashari" placeholder="यहाँ पराशरी डेटा पेस्ट करें..."></textarea>
     </div>
 
     <div class="section-box">
-        <div class="section-header">2. जैमिनी डेटा (Jaimini Data)</div>
+        <div class="section-header">जैमिनी डेटा (Jaimini Data)</div>
         <textarea id="dataJaimini" placeholder="यहाँ जैमिनी डेटा पेस्ट करें..."></textarea>
     </div>
 
     <div class="section-box">
-        <div class="section-header">3. BNN डेटा (Bhrigu Nandi Nadi Data)</div>
+        <div class="section-header">BNN डेटा (Bhrigu Nandi Nadi Data)</div>
         <textarea id="dataBNN" placeholder="यहाँ BNN डेटा पेस्ट करें..."></textarea>
     </div>
 
     <div class="section-box">
-        <div class="section-header">4. KP डेटा (Krishnamurti Paddhati Data)</div>
+        <div class="section-header">KP डेटा (Krishnamurti Paddhati Data)</div>
         <textarea id="dataKP" placeholder="यहाँ KP डेटा पेस्ट करें..."></textarea>
     </div>
 
@@ -183,101 +184,131 @@
 
     <!-- Output Section -->
     <div id="outputArea">
-        <h3 style="margin-bottom:5px; color:#333;">आपका तैयार प्रॉम्प्ट:</h3>
+        <h3 style="margin-bottom:5px;">आपका तैयार प्रॉम्प्ट:</h3>
         <textarea id="finalPrompt" readonly></textarea>
         <button id="copyBtn" onclick="copyToClipboard()">Copy Prompt (प्रॉम्प्ट कॉपी करें)</button>
+        <div id="copyMsg"></div>
     </div>
 
 </div>
 
 <script>
-    var T = {
+    const T = {
         hi: {
-            b1: function(n,g){ return "निम्मलिखित " + n + " नामक " + g + " के कुंडली के आधार पर उसकी संभावित संतान विश्लेषण रिपोर्ट का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी 7 बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष भी दीजिए।"; },
-            c1: "\n\nविस्तारपूर्वक समग्र पराशरी निष्कर्ष भाग 1 A और भाग 1 B :\n------------------------------------------",
-            b2: function(n,g){ return "निम्मलिखित " + n + " नामक " + g + " के कुंडली के आधार पर उसकी संभावित संतान विश्लेषण रिपोर्ट का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी 4 बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष भी दीजिए।"; },
-            c2: "\n\nविस्तारपूर्वक समग्र जैमिनी निष्कर्ष :\n-------------------------------------------",
-            b3: function(n,g){ return "निम्मलिखित " + n + " नामक " + g + " के कुंडली के आधार पर उसकी संभावित संतान विश्लेषण रिपोर्ट का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी 2 बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष भी दीजिए।"; },
-            c3: "\n\nविस्तारपूर्वक समग्र BNN निष्कर्ष :\n-------------------------------------------",
-            b4: function(n,g){ return "निम्मलिखित " + n + " नामक " + g + " के कुंडली के आधार पर उसकी संभावित संतान विश्लेषण रिपोर्ट का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी 2 बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष भी दीजिए।"; },
-            c4: "\n\nविस्तारपूर्वक समग्र KP निष्कर्ष :"
+            p1: (n,g)=>`निम्मलिखित ${n} नामक ${g} के कुंडली के आधार पर उसकी संभावित संतान विश्लेषण रिपोर्ट का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी 7 बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।`,
+            c1: `विस्तारपूर्वक समग्र पराशरी निष्कर्ष भाग 1 A और भाग 1 B :
+-------------------------------------------`,
+            p2: (n,g)=>`निम्मलिखित ${n} नामक ${g} के कुंडली के आधार पर उसकी संभावित संतान विश्लेषण रिपोर्ट का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी 4 बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।`,
+            c2: `विस्तारपूर्वक समग्र जैमिनी निष्कर्ष :
+-------------------------------------------`,
+            p3: (n,g)=>`निम्मलिखित ${n} नामक ${g} के कुंडली के आधार पर उसकी संभावित संतान विश्लेषण रिपोर्ट का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी 2 बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।`,
+            c3: `विस्तारपूर्वक समग्र BNN निष्कर्ष :
+-------------------------------------------`,
+            p4: (n,g)=>`निम्मलिखित ${n} नामक ${g} के कुंडली के आधार पर उसकी संभावित संतान विश्लेषण रिपोर्ट का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी 2 बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।`,
+            c4: `विस्तारपूर्वक समग्र KP निष्कर्ष :`
         },
         en: {
-            b1: function(n,g){ return "Based on the horoscope of " + n + " (" + g + "), provide a deep and detailed analysis of their prospective progeny analysis report. Ensure all 7 points along with each of their sub-points are analyzed in detail, and provide a conclusion for each point at the end."; },
-            c1: "\n\nDetailed Overall Parashari Conclusion Part 1A and 1B:\n------------------------------------------",
-            b2: function(n,g){ return "Based on the horoscope of " + n + " (" + g + "), provide a deep and detailed analysis of their prospective progeny analysis report. Ensure all 4 points along with each of their sub-points are analyzed in detail, and provide a conclusion for each point at the end."; },
-            c2: "\n\nDetailed Overall Jaimini Conclusion:\n-------------------------------------------",
-            b3: function(n,g){ return "Based on the horoscope of " + n + " (" + g + "), provide a deep and detailed analysis of their prospective progeny analysis report. Ensure all 2 points along with each of their sub-points are analyzed in detail, and provide a conclusion for each point at the end."; },
-            c3: "\n\nDetailed Overall BNN Conclusion:\n-------------------------------------------",
-            b4: function(n,g){ return "Based on the horoscope of " + n + " (" + g + "), provide a deep and detailed analysis of their prospective progeny analysis report. Ensure all 2 points along with each of their sub-points are analyzed in detail, and provide a conclusion for each point at the end."; },
-            c4: "\n\nDetailed Overall KP Conclusion:"
+            p1: (n,g)=>`Based on the horoscope of ${n} (${g}), provide a deep and detailed analysis of their prospective progeny analysis report. Ensure all 7 points along with each of their sub-points are analyzed in detail, and provide a detailed conclusion (Detailed Conclusion) for each point at the end.`,
+            c1: `Detailed Overall Parashari Conclusion Part 1A and 1B:
+-------------------------------------------`,
+            p2: (n,g)=>`Based on the horoscope of ${n} (${g}), provide a deep and detailed analysis of their prospective progeny analysis report. Ensure all 4 points along with each of their sub-points are analyzed in detail, and provide a detailed conclusion (Detailed Conclusion) for each point at the end.`,
+            c2: `Detailed Overall Jaimini Conclusion:
+-------------------------------------------`,
+            p3: (n,g)=>`Based on the horoscope of ${n} (${g}), provide a deep and detailed analysis of their prospective progeny analysis report. Ensure all 2 points along with each of their sub-points are analyzed in detail, and provide a detailed conclusion (Detailed Conclusion) for each point at the end.`,
+            c3: `Detailed Overall BNN Conclusion:
+-------------------------------------------`,
+            p4: (n,g)=>`Based on the horoscope of ${n} (${g}), provide a deep and detailed analysis of their prospective progeny analysis report. Ensure all 2 points along with each of their sub-points are analyzed in detail, and provide a detailed conclusion (Detailed Conclusion) for each point at the end.`,
+            c4: `Detailed Overall KP Conclusion:`
         },
         mr: {
-            b1: function(n,g){ return n + " नावाच्या " + g + " च्या कुंडलीच्या आधारे त्याच्या संभाव्य संतती विश्लेषण अहवालाचे सखोल आणि तपशीलवार विश्लेषण (Detailed Analysis) करा, सर्व 7 मुद्दे आणि त्यांच्या प्रत्येक उपमुद्द्यांचे तपशीलवार विश्लेषण झाले पाहिजे याची काळजी घ्या, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष द्या."; },
-            c1: "\n\nतपशीलवार समग्र पराशरी निष्कर्ष भाग 1 A आणि भाग 1 B :\n------------------------------------------",
-            b2: function(n,g){ return n + " नावाच्या " + g + " च्या कुंडलीच्या आधारे त्याच्या संभाव्य संतती विश्लेषण अहवालाचे सखोल आणि तपशीलवार विश्लेषण (Detailed Analysis) करा, सर्व 4 मुद्दे आणि त्यांच्या प्रत्येक उपमुद्द्यांचे तपशीलवार विश्लेषण झाले पाहिजे याची काळजी घ्या, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष द्या."; },
-            c2: "\n\nतपशीलवार समग्र जैमिनी निष्कर्ष :\n-------------------------------------------",
-            b3: function(n,g){ return n + " नावाच्या " + g + " च्या कुंडलीच्या आधारे त्याच्या संभाव्य संतती विश्लेषण अहवालाचे सखोल आणि तपशीलवार विश्लेषण (Detailed Analysis) करा, सर्व 2 मुद्दे आणि त्यांच्या प्रत्येक उपमुद्द्यांचे तपशीलवार विश्लेषण झाले पाहिजे याची काळजी घ्या, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष द्या."; },
-            c3: "\n\nतपशीलवार समग्र BNN निष्कर्ष :\n-------------------------------------------",
-            b4: function(n,g){ return n + " नावाच्या " + g + " च्या कुंडलीच्या आधारे त्याच्या संभाव्य संतती विश्लेषण अहवालाचे सखोल आणि तपशीलवार विश्लेषण (Detailed Analysis) करा, सर्व 2 मुद्दे आणि त्यांच्या प्रत्येक उपमुद्द्यांचे तपशीलवार विश्लेषण झाले पाहिजे याची काळजी घ्या, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष द्या."; },
-            c4: "\n\nतपशीलवार समग्र KP निष्कर्ष :"
+            p1: (n,g,m)=>`${n} नावाच्या ${g} च्या कुंडलीच्या आधारे ${m?"त्याचा":"तिचा"} संभाव्य संतती विश्लेषण अहवालाचे सखोल आणि तपशीलवार विश्लेषण (Detailed Analysis) करा, सर्व 7 मुद्दे आणि त्यांच्या प्रत्येक उपमुद्द्यांचे तपशीलवार विश्लेषण झाले पाहिजे याची काळजी घ्या, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) द्या.`,
+            c1: `तपशीलवार समग्र पराशरी निष्कर्ष भाग 1 A आणि भाग 1 B :
+-------------------------------------------`,
+            p2: (n,g,m)=>`${n} नावाच्या ${g} च्या कुंडलीच्या आधारे ${m?"त्याचा":"तिचा"} संभाव्य संतती विश्लेषण अहवालाचे सखोल आणि तपशीलवार विश्लेषण (Detailed Analysis) करा, सर्व 4 मुद्दे आणि त्यांच्या प्रत्येक उपमुद्द्यांचे तपशीलवार विश्लेषण झाले पाहिजे याची काळजी घ्या, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) द्या.`,
+            c2: `तपशीलवार समग्र जैमिनी निष्कर्ष :
+-------------------------------------------`,
+            p3: (n,g,m)=>`${n} नावाच्या ${g} च्या कुंडलीच्या आधारे ${m?"त्याचा":"तिचा"} संभाव्य संतती विश्लेषण अहवालाचे सखोल आणि तपशीलवार विश्लेषण (Detailed Analysis) करा, सर्व 2 मुद्दे आणि त्यांच्या प्रत्येक उपमुद्द्यांचे तपशीलवार विश्लेषण झाले पाहिजे याची काळजी घ्या, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) द्या.`,
+            c3: `तपशीलवार समग्र BNN निष्कर्ष :
+-------------------------------------------`,
+            p4: (n,g,m)=>`${n} नावाच्या ${g} च्या कुंडलीच्या आधारे ${m?"त्याचा":"तिचा"} संभाव्य संतती विश्लेषण अहवालाचे सखोल आणि तपशीलवार विश्लेषण (Detailed Analysis) करा, सर्व 2 मुद्दे आणि त्यांच्या प्रत्येक उपमुद्द्यांचे तपशीलवार विश्लेषण झाले पाहिजे याची काळजी घ्या, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) द्या.`,
+            c4: `तपशीलवार समग्र KP निष्कर्ष :`
         }
     };
 
+
     function generatePrompt() {
-        try {
-            // 1. Get Variable Inputs
-            var nameRaw = document.getElementById('name').value;
-            var name = nameRaw.trim() === "" ? "xyz" : nameRaw.trim();
-            var gender = document.getElementById('gender').value;
+        // 1. Get Variable Inputs
+        let name = document.getElementById('name').value.trim();
+        if(name === "") name = "xyz";
+        
+        const gender = document.getElementById('gender').value; // जातक / जातिका
 
-            // 2. Get Data Inputs
-            var dParashari = document.getElementById('dataParashari').value.trim();
-            var dJaimini = document.getElementById('dataJaimini').value.trim();
-            var dBNN = document.getElementById('dataBNN').value.trim();
-            var dKP = document.getElementById('dataKP').value.trim();
+        // 2. Get Data Inputs
+        const dParashari = document.getElementById('dataParashari').value.trim();
+        const dJaimini = document.getElementById('dataJaimini').value.trim();
+        const dBNN = document.getElementById('dataBNN').value.trim();
+        const dKP = document.getElementById('dataKP').value.trim();
 
-            // 3. Construct Strings (Based on Child Analysis Template)
+        // 3. Construct Strings exactly as requested
+        
+        // --- Block 1: Parashari ---
+        // Structure: Instruction (8 points) -> Data -> Conclusion Header
+        const lang = document.getElementById('lang').value || 'hi';
+        const t = T[lang] || T.hi;
+        let gLabel = gender;
+        let isMale = (gender === 'जातक');
+        if(lang==='en'){ gLabel = isMale ? 'male native' : 'female native'; }
 
-            // Block 1: Intro (7 Points) + Parashari Data
-            var lang = document.getElementById('lang').value || 'hi';
-            var t = T[lang] || T.hi;
-            var gLabel = gender;
-            if(lang==='en'){ gLabel = gender; }
-            if(lang==='mr'){ gLabel = gender; }
+        const blockParashari = `${t.p1(name,gLabel,isMale)}
 
-            var block1 = t.b1(name, gLabel) + "\n\n" + dParashari;
+${dParashari}
 
-            // Block 2: Parashari Conclusion Header (4 Points) + Jaimini Data
-            var block2 = t.c1 + "\n" + t.b2(name, gLabel) + "\n\n" + dJaimini;
+${t.c1}`;
 
-            // Block 3: Jaimini Conclusion Header (2 Points) + BNN Data
-            var block3 = t.c2 + "\n" + t.b3(name, gLabel) + "\n\n" + dBNN;
+        // --- Block 2: Jaimini ---
+        // Structure: Instruction (6 points) -> Data -> Conclusion Header
+        const blockJaimini = `${t.p2(name,gLabel,isMale)}
 
-            // Block 4: BNN Conclusion Header (2 Points) + KP Data
-            var block4 = t.c3 + "\n" + t.b4(name, gLabel) + "\n\n" + dKP;
+${dJaimini}
 
-            // Block 5: KP Conclusion Header
-            var block5 = t.c4;
+${t.c2}`;
 
-            // Combine All
-            var fullPrompt = block1 + block2 + block3 + block4 + block5;
+        // --- Block 3: BNN ---
+        // Structure: Instruction (3 points) -> Data -> Conclusion Header
+        const blockBNN = `${t.p3(name,gLabel,isMale)}
 
-            // 4. Display Result
-            document.getElementById('finalPrompt').value = fullPrompt;
-            document.getElementById('outputArea').style.display = 'block';
-            
-            // Scroll to output
-            document.getElementById('outputArea').scrollIntoView({behavior: "smooth"});
+${dBNN}
 
-        } catch (err) {
-            alert("Error generating prompt: " + err.message);
-        }
+${t.c3}`;
+
+        // --- Block 4: KP ---
+        // Structure: Instruction (4 points) -> Data -> Conclusion Header
+        const blockKP = `${t.p4(name,gLabel,isMale)}
+
+${dKP}
+
+${t.c4}`;
+
+        // Combine All Blocks with spacing
+        const fullPrompt = `${blockParashari}
+
+${blockJaimini}
+
+${blockBNN}
+
+${blockKP}`;
+
+        // 4. Display Result
+        document.getElementById('finalPrompt').value = fullPrompt;
+        document.getElementById('outputArea').style.display = 'block';
+        
+        // Scroll to output
+        document.getElementById('outputArea').scrollIntoView({behavior: "smooth"});
     }
 
     function showCopyFeedback(btn, success){
-        var origText = btn.innerHTML;
-        var origBg = btn.style.background;
+        const origText = btn.innerHTML;
+        const origBg = btn.style.background;
         if(success){
             btn.innerHTML = "✓ कॉपी हो गया!";
             btn.style.background = "#2e7d32";
@@ -285,20 +316,21 @@
             btn.innerHTML = "✗ कॉपी नहीं हुआ";
             btn.style.background = "#c62828";
         }
-        setTimeout(function(){
+        setTimeout(()=>{
             btn.innerHTML = origText;
             btn.style.background = origBg;
         }, 2000);
     }
     function copyToClipboard() {
-        var copyText = document.getElementById("finalPrompt");
-        var btn = document.getElementById("copyBtn") || event.target;
-        var val = copyText.value;
-        if(!val){ alert("पहले प्रॉम्प्ट बनाएं!"); return; }
+        const copyText = document.getElementById("finalPrompt");
+        const btn = document.getElementById("copyBtn") || event.target;
+        const val = copyText.value;
+        if(!val){ window.setCopyMsg ? window.setCopyMsg("पहले प्रॉम्प्ट बनाएं!", false) : null; return; }
+        // Try modern clipboard API first
         if(navigator.clipboard && window.isSecureContext){
-            navigator.clipboard.writeText(val).then(function(){
+            navigator.clipboard.writeText(val).then(()=>{
                 showCopyFeedback(btn, true);
-            }).catch(function(){ fallbackCopy(copyText, btn); });
+            }).catch(()=>{ fallbackCopy(copyText, btn); });
         } else {
             fallbackCopy(copyText, btn);
         }
@@ -307,14 +339,689 @@
         el.focus(); el.select();
         el.setSelectionRange(0, 99999);
         try{
-            var ok = document.execCommand('copy');
+            const ok = document.execCommand('copy');
             showCopyFeedback(btn, ok);
-            if(!ok) setTimeout(function(){alert("कॉपी नहीं हुआ - manually select करके copy करें")}, 2100);
+            if(!ok) setTimeout(()=>{ if(window.setCopyMsg) window.setCopyMsg("कॉपी नहीं हुआ - manually select करके copy करें", false); }, 2100);
         }catch(e){
             showCopyFeedback(btn, false);
         }
     }
 </script>
 
+<script>
+(function(){
+  const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+  (async function initEphem(){
+    try{
+      const m = await import(/* @vite-ignore */EPHEM_CDN);
+      const swe = new m.SwissEphemeris();
+      await swe.init();
+      swe.setSiderealMode(m.SiderealMode.Lahiri);
+      window._swe = swe;
+      window._SEP = m.Planet;
+      const msg = document.getElementById('astroMsg'); if(msg && !msg.textContent) msg.textContent = 'Ephemeris तैयार है, एस्ट्रो कोड डालकर भरो दबाएं।';
+    }catch(e){
+      const msg = document.getElementById('astroMsg'); if(msg) msg.textContent = 'Ephemeris लोड नहीं हुआ: ' + e.message;
+    }
+  })();
+})();
+</script>
+<script>
+// ===== CHB Paste v4 - Astro Code Auto-Fill (addition to v4, v4 instructions/fields unchanged) =====
+// Calculation rules: Lahiri ayanamsa, Swiss Ephemeris browser build (calculatePosition is tropical, subtract getAyanamsa),
+// Rahu = body 10, Ketu = Rahu+180, never MeanNode. Varga: Parashara equal division, D9 standard,
+// D60=(sign+pada)%12, D6=(sign*6+pada)%12, D8=(sign*8+pada)%12, D11=(sign*11+pada)%12,
+// D30/D5 = APK boundary mapping (even 20-25 deg = Meena, unverified best guess, noted in code only, not used in MR output).
+// Drishti: 7th + Mars 4/8, Jupiter 5/9, Saturn 3/10, Rahu/Ketu 5/9. Jaimini: chara karakas by degree, Arudha as in website code.
+// KP: Placidus cusps with KP ayanamsa offset as in his KP tool (Lahiri longitude + 5'26.22"), sublords by Vimshottari proportions.
+// No extra verification prompt is added anywhere. No popup dialogs are used here.
+const V6_RASHI = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+const V6_PL = {Sun:'सूर्य',Moon:'चंद्र',Mars:'मंगल',Mercury:'बुध',Jupiter:'गुरु',Venus:'शुक्र',Saturn:'शनि',Rahu:'राहु',Ketu:'केतु'};
+const V6_PL_EN = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+const V6_LORD = ['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+const V6_NAK = ['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती'];
+const V6_NAK_LORD = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const V6_BHAVA = {1:'पहले',2:'दूसरे',3:'तीसरे',4:'चौथे',5:'पाँचवें',6:'छठे',7:'सातवें',8:'आठवें',9:'नौवें',10:'दसवें',11:'ग्यारहवें',12:'बारहवें'};
+const V6_BHAVA2 = {1:'1ले',2:'2रे',3:'3रे',4:'4थे',5:'5वें',6:'6ठे',7:'7वें',8:'8वें',9:'9वें',10:'10वें',11:'11वें',12:'12वें'};
+const V6_FRIENDS = {Sun:['Moon','Mars','Jupiter'],Moon:['Sun','Mercury'],Mars:['Sun','Moon','Jupiter'],Mercury:['Sun','Venus'],Jupiter:['Sun','Moon','Mars'],Venus:['Mercury','Saturn'],Saturn:['Mercury','Venus']};
+const V6_ENEMIES = {Sun:['Venus','Saturn'],Moon:[],Mars:['Mercury'],Mercury:['Moon'],Jupiter:['Mercury','Venus'],Venus:['Sun','Moon'],Saturn:['Sun','Moon','Mars']};
+const V6_UCHCHA = {Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
+const V6_NEECHA = {Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+const V6_COMBUST = {Moon:12,Mars:17,Mercury:14,Jupiter:11,Venus:10,Saturn:15};
+const V6_ASPECT = {Sun:[7],Moon:[7],Mars:[4,7,8],Mercury:[7],Jupiter:[5,7,9],Venus:[7],Saturn:[3,7,10],Rahu:[5,7,9],Ketu:[5,7,9]};
+const V6_KP_OFFSET_MIN = 5 + 26.22/60; // arcminutes, KP ayanamsa = Lahiri - this
+const V6_KP_SIGN_LORD = ['Ma','Ve','Me','Mo','Su','Me','Ve','Ma','Ju','Sa','Sa','Ju'];
+const V6_KP_NAK_LORDS = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const V6_KP_YEARS = {Ke:7,Ve:20,Su:6,Mo:10,Ma:7,Ra:18,Ju:16,Sa:19,Me:17};
+const V6_KP_ORDER = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const V6_KP_FULL = {Su:'Sun',Mo:'Moon',Ma:'Mars',Me:'Mercury',Ju:'Jupiter',Ve:'Venus',Sa:'Saturn',Ra:'Rahu',Ke:'Ketu'};
+const V6_KP_SHORT = {Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
+function v6norm(x){ return ((x%360)+360)%360; }
+function v6fmtDeg(lon){ const d=Math.floor(lon%30); const m=Math.floor(((lon%30)-d)*60); return d+'°'+m+"'"; }
+function v6nak(lon){ const idx=Math.floor(lon/(360/27))%27; const pada=Math.floor(((lon%(360/27))/(360/27/4)))+1; return {name:V6_NAK[idx], lord:V6_NAK_LORD[idx], idx:idx, pada:pada}; }
+function v6setMsg(id, txt, ok){ const el=document.getElementById(id); if(!el) return; el.textContent=txt; el.style.color = ok===false ? '#c62828' : '#2e7d32'; }
+window.setCopyMsg = function(txt, ok){ v6setMsg('copyMsg', txt, ok); };
+function v6parseAstro(code){
+  const m = code.trim().match(/AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-]\d{2})(\d{2})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])/);
+  if(!m) return null;
+  const y=+m[1], mo=+m[2], d=+m[3], hh=+m[4], mm=+m[5], ss=+m[6];
+  const tzSign = m[7][0]==='+'?1:-1; const tzH = tzSign*(parseInt(m[7].slice(1)) + (+m[8])/60);
+  let lat = (+m[9]) + (+m[10])/60; if(m[11]==='S') lat=-lat;
+  let lon = (+m[12]) + (+m[13])/60; if(m[14]==='W') lon=-lon;
+  return {y:y,mo:mo,d:d,hh:hh,mm:mm,ss:ss,tzH:tzH,lat:lat,lon:lon};
+}
+function v6varga(sign, deg, v){
+  const pada=Math.floor(deg/(30/v));
+  if(v===9){ if([0,3,6,9].includes(sign)) return (sign+pada)%12; if([1,4,7,10].includes(sign)) return (sign+8+pada)%12; return (sign+4+pada)%12; }
+  if(v===60) return (sign+pada)%12;
+  if(v===6) return (sign*6+pada)%12;
+  if(v===8) return (sign*8+pada)%12;
+  if(v===11) return (sign*11+pada)%12;
+  if(v===7) return (sign*7+pada)%12;
+  if(v===10){ return (sign%2===0 ? (sign+pada)%12 : (sign+8+pada)%12); }
+  if(v===30 || v===5){
+    const odd = (sign%2===0);
+    if(odd){ if(deg<5) return 0; if(deg<10) return 10; if(deg<18) return 8; if(deg<25) return 2; return 6; }
+    else { if(deg<12) return 5; if(deg<25) return 11; return 7; }
+  }
+  return (sign+pada)%12;
+}
+function v6kpSubs(nakIdx){
+  const total=800, start=nakIdx%9, res=[]; let pos=0;
+  for(let i=0;i<9;i++){ const lord=V6_KP_ORDER[(start+i)%9]; const w=V6_KP_YEARS[lord]/120*total; res.push({lord:lord,s:pos,e:pos+w}); pos+=w; }
+  return res;
+}
+function v6kpLords(absMin, nakIdx){
+  const din=absMin - nakIdx*800; const subs=v6kpSubs(nakIdx);
+  for(const sub of subs){ if(sub.s<=din && din<sub.e){ const si=V6_KP_ORDER.indexOf(sub.lord); const wtot=sub.e-sub.s; let pos=sub.s;
+    for(let i=0;i<9;i++){ const ssl=V6_KP_ORDER[(si+i)%9]; const w=V6_KP_YEARS[ssl]/120*wtot; if(pos<=din && din<pos+w) return {sl:sub.lord, ssl:ssl}; pos+=w; } } }
+  return {sl:'?', ssl:'?'};
+}
+function v6jaiminiKarakas(posDeg){
+  const planets=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+  const degs=planets.map(p=>({p:p,d:posDeg[p]%30})).sort((a,b)=>b.d-a.d);
+  const names=['Atmakaraka','Amatyakaraka','Bhratrukaraka','Matrukaraka','Putrakaraka','Gnatikaraka','Darakaraka'];
+  const hi={Atmakaraka:'आत्मकारक',Amatyakaraka:'अमात्यकारक',Bhratrukaraka:'भ्रातृकारक',Matrukaraka:'मातृकारक',Putrakaraka:'पुत्रकारक',Gnatikaraka:'ज्ञातिकारक',Darakaraka:'दाराकारक'};
+  const res={}; degs.forEach((x,i)=>{ res[names[i]]=x.p; }); res._hi=hi; res._order=degs; return res;
+}
+function v6arudha(lagnaSign, posSign){
+  const normH=h=>((h-1)%12+12)%12+1; const res={};
+  for(let h=1;h<=12;h++){
+    const rashiNum=((lagnaSign+h-1)%12+12)%12; const lordKey=V6_LORD[rashiNum]; const lordSign=posSign[lordKey];
+    const houseOfLord=((lordSign-lagnaSign)%12+12)%12+1; const steps=((houseOfLord-h)%12+12)%12+1; let aHouse;
+    if(steps===1||steps===7) aHouse=normH(h+9); else if(steps===4) aHouse=houseOfLord; else if(steps===10) aHouse=normH(h+3); else aHouse=normH(houseOfLord+steps-1);
+    let dist=((aHouse-h)%12+12)%12+1; if(dist===1||dist===7) aHouse=normH(aHouse+9); res[h]=aHouse;
+  }
+  return res;
+}
+function v6rashiDrishti(sign){
+  // 0=Movable,1=Fixed,2=Dual pattern: Mesha etc. Types by index: 0 Mov,1 Fix,2 Dual repeating
+  const type=sign%3; const mov=[0,3,6,9], fix=[1,4,7,10], dual=[2,5,8,11]; const out=[];
+  if(type===0){ const adj=(sign+1)%12; fix.forEach(r=>{ if(r!==adj) out.push(r); }); }
+  else if(type===1){ const adj=(sign-1+12)%12; mov.forEach(r=>{ if(r!==adj) out.push(r); }); }
+  else { dual.forEach(r=>{ if(r!==sign) out.push(r); }); }
+  return out.sort((a,b)=>a-b);
+}
+
+// ===== Chart calculation =====
+let V6_CHART=null;
+async function v6calcChart(){
+  const swe=window._swe, SEP=window._SEP;
+  if(!swe) { v6setMsg('astroMsg','Ephemeris अभी तैयार नहीं है, थोड़ी देर बाद फिर से भरो दबाएं।',false); return null; }
+  const code=document.getElementById('astroCode').value.trim();
+  const ad=v6parseAstro(code);
+  if(!ad){ v6setMsg('astroMsg','Astro Code का फॉर्मेट गलत है। उदाहरण: AS1-19950214-030000-+0530-2119N-07951E',false); return null; }
+  try{
+    const utcMs=Date.UTC(ad.y, ad.mo-1, ad.d, ad.hh, ad.mm, ad.ss) - (ad.tzH*3600000);
+    const ud=new Date(utcMs);
+    let jd;
+    if(typeof swe.julianDay==='function'){ jd=swe.julianDay(ud.getUTCFullYear(), ud.getUTCMonth()+1, ud.getUTCDate(), ud.getUTCHours()+ud.getUTCMinutes()/60+ud.getUTCSeconds()/3600); }
+    else { jd=ud.getTime()/86400000 + 2440587.5; }
+    const ayan=swe.getAyanamsa(jd);
+    const pos={}, posDeg={}, speed={};
+    const plMap={Sun:'Sun',Moon:'Moon',Mars:'Mars',Mercury:'Mercury',Jupiter:'Jupiter',Venus:'Venus',Saturn:'Saturn'};
+    for(const p of V6_PL_EN){
+      let lon, sp=0;
+      if(p==='Rahu'){ const r=swe.calculatePosition(jd, 10); lon=v6norm(r.longitude-ayan); sp=0; }
+      else if(p==='Ketu'){ const r=swe.calculatePosition(jd, 10); lon=v6norm(r.longitude-ayan+180); sp=0; }
+      else { const r=swe.calculatePosition(jd, SEP[plMap[p]]); lon=v6norm(r.longitude-ayan); sp=r.longitudeSpeed!==undefined?r.longitudeSpeed:(r.speedLongitude!==undefined?r.speedLongitude:(r.speedInLongitude!==undefined?r.speedInLongitude:(r.speed!==undefined?r.speed:0))); }
+      posDeg[p]=lon; pos[p]=Math.floor(lon/30); speed[p]=sp;
+    }
+    const hs=swe.calculateHouses(jd, ad.lat, ad.lon, 'P');
+    const lagnaDeg=v6norm(hs.ascendant-ayan); const lagnaSign=Math.floor(lagnaDeg/30);
+    const cuspsRaw = hs.cusps ? hs.cusps : [];
+    pos.Lagna=lagnaSign; posDeg.Lagna=lagnaDeg;
+    const nak={}; for(const p of [...V6_PL_EN,'Lagna']) nak[p]=v6nak(posDeg[p]);
+    const d9={}, d9Lon={};
+    for(const p of [...V6_PL_EN,'Lagna']){ d9[p]=v6varga(pos[p], posDeg[p]%30, 9); const padaSize=30/9; const lonIn=(posDeg[p]%30)%padaSize; d9Lon[p]=(d9[p]*30 + lonIn*9)%360; }
+    const bhava=r=>((r-lagnaSign)%12+12)%12+1;
+    const rashiOfBhava=b=>(lagnaSign+b-1)%12;
+    const d9bhava=r=>((r-d9.Lagna)%12+12)%12+1;
+    const planetsInBhava={}; const planetsInD9Bhava={};
+    for(let b=1;b<=12;b++){ planetsInBhava[b]=[]; planetsInD9Bhava[b]=[]; }
+    for(const p of V6_PL_EN){ planetsInBhava[bhava(pos[p])].push(p); planetsInD9Bhava[d9bhava(d9[p])].push(p); }
+    function aspectedByMap(posSign, bhavaFn){
+      const m={}; for(let b=1;b<=12;b++) m[b]=[];
+      for(const p of V6_PL_EN){ const pb=bhavaFn(posSign[p]); for(const asp of (V6_ASPECT[p]||[7])){ const tb=((pb+asp-2)%12)+1; m[tb].push({p:p,asp:asp}); } }
+      return m;
+    }
+    const aspectedBy=aspectedByMap(pos, b=>bhava(b));
+    const aspectedByD9=aspectedByMap(d9, b=>d9bhava(b));
+    // KP cusps
+    const kpAyan=ayan - (V6_KP_OFFSET_MIN/60);
+    let cusps12=[];
+    if(cuspsRaw.length>=13) cusps12=cuspsRaw.slice(1).concat([cuspsRaw[0]]).slice(0,12); else if(cuspsRaw.length===12) cusps12=cuspsRaw.slice(); else if(cuspsRaw.length>0) cusps12=cuspsRaw.slice();
+    const kpCusps=[];
+    for(let i=0;i<12;i++){ const ct=cusps12[i]!==undefined?cusps12[i]:0; const c=v6norm(ct-kpAyan); const rashi=Math.floor(c/30)%12; const nakIdx=Math.floor(c/(360/27))%27; const lords=v6kpLords(c*60, nakIdx); kpCusps.push({bhava:i+1,cusp:c,rashi:rashi,nakIdx:nakIdx,rl:V6_KP_SIGN_LORD[rashi],nl:V6_KP_NAK_LORDS[nakIdx],sl:lords.sl,ssl:lords.ssl}); }
+    const placidusBhava=(lonLahiri)=>{ const lonKP=v6norm(lonLahiri + (V6_KP_OFFSET_MIN/60)); for(let i=0;i<12;i++){ const c1=kpCusps[i].cusp, c2=kpCusps[(i+1)%12].cusp; if(c1<c2){ if(c1<=lonKP && lonKP<c2) return i+1; } else { if(lonKP>=c1 || lonKP<c2) return i+1; } } return 1; };
+    const karakas=v6jaiminiKarakas(posDeg);
+    const arudha=v6arudha(lagnaSign, pos);
+    V6_CHART={ad:ad,jd:jd,ayan:ayan,pos:pos,posDeg:posDeg,speed:speed,nak:nak,d9:d9,d9Lon:d9Lon,bhava:bhava,rashiOfBhava:rashiOfBhava,d9bhava:d9bhava,planetsInBhava:planetsInBhava,planetsInD9Bhava:planetsInD9Bhava,aspectedBy:aspectedBy,aspectedByD9:aspectedByD9,kpCusps:kpCusps,placidusBhava:placidusBhava,karakas:karakas,arudha:arudha,lagnaSign:lagnaSign,lagnaDeg:lagnaDeg};
+    return V6_CHART;
+  }catch(e){ v6setMsg('astroMsg','गणना में त्रुटि: '+e.message,false); return null; }
+}
+// ===== Formatting helpers =====
+function v6ava(p){
+  const C=V6_CHART; const sign=C.pos[p]; const parts=[];
+  if(p!=='Rahu' && p!=='Ketu'){
+    if(V6_UCHCHA[p]===sign) parts.push('उच्च');
+    else if(V6_NEECHA[p]===sign) parts.push('नीच');
+    if(C.speed[p]<-0.001) parts.push('वक्री');
+    if(p!=='Sun' && V6_COMBUST[p]){
+      let dist=Math.abs(v6norm(C.posDeg[p]-C.posDeg.Sun)); if(dist>180) dist=360-dist;
+      if(dist<V6_COMBUST[p]) parts.push('अस्त');
+    }
+  }
+  if(p!=='Rahu' && p!=='Ketu'){
+    const lord=V6_LORD[sign];
+    if(lord===p) parts.push('स्वराशि');
+    else if((V6_FRIENDS[p]||[]).includes(lord)) parts.push('मित्र राशि');
+    else if((V6_ENEMIES[p]||[]).includes(lord)) parts.push('शत्रु राशि');
+    else parts.push('सम राशि');
+  }
+  if(C.d9[p]===sign) parts.push('राशि वर्गोत्तम');
+  if(C.bhava(sign)===C.d9bhava(C.d9[p])) parts.push('भाव वर्गोत्तम');
+  return parts.length?(' ('+parts.join(', ')+')'):'';
+}
+function v6pPos(p){ const C=V6_CHART; return V6_PL[p]+' '+V6_BHAVA[C.bhava(C.pos[p])]+' भाव में, '+V6_RASHI[C.pos[p]]+' राशि'+v6ava(p)+' में स्थित है'; }
+function v6pNak(p){ const C=V6_CHART; const n=C.nak[p]; return V6_PL[p]+' '+n.name+' नक्षत्र (स्वामी: '+V6_PL[n.lord]+') में स्थित है'; }
+function v6listPlanets(arr){ if(!arr||!arr.length) return 'कोई नहीं'; return arr.map(p=>V6_PL[p]).join(', '); }
+function v6listWithNak(arr){ if(!arr||!arr.length) return 'कोई नहीं'; return arr.map(p=>{ const n=V6_CHART.nak[p]; return V6_PL[p]+' ('+n.name+' नक्षत्र, स्वामी: '+V6_PL[n.lord]+')'; }).join(', '); }
+function v6drishtiList(entries){ if(!entries||!entries.length) return 'कोई नहीं'; const seen={}; const out=[]; for(const e of entries){ if(seen[e.p]) continue; seen[e.p]=1; out.push(V6_PL[e.p]+' की '+e.asp+'वीं दृष्टि'); } return out.join(', '); }
+function v6friendTwo(a,b){ const aToB=(V6_FRIENDS[a]||[]).includes(b)?'मित्र':((V6_ENEMIES[a]||[]).includes(b)?'शत्रु':'सम'); const bToA=(V6_FRIENDS[b]||[]).includes(a)?'मित्र':((V6_ENEMIES[b]||[]).includes(a)?'शत्रु':'सम'); if(aToB===bToA) return 'नैसर्गिक रूप से एक-दूसरे के '+aToB+' हैं'; return V6_PL[a]+' '+V6_PL[b]+' को '+aToB+' मानते हैं, '+V6_PL[b]+' '+V6_PL[a]+' को '+bToA+' मानते हैं'; }
+function v6rel(a,b){
+  const C=V6_CHART; const sa=C.pos[a], sb=C.pos[b]; if(sa===sb) return 'युति';
+  const dist=((sb-sa)%12+12)%12; if(dist===1||dist===11) return '2-12 संबंध'; if(dist===4||dist===8) return 'त्रिकोण (1-5-9) संबंध'; return 'कोई सीधा युति/2-12/त्रिकोण संबंध नहीं';
+}
+function v6bhavaCuspNak(bhavaNum, lagnaLon){
+  const cusp=v6norm(lagnaLon+(bhavaNum-1)*30); const n=v6nak(cusp); return {cusp:cusp, nak:n};
+}
+function v6q(q,a){ return '➤ '+q+'\nउत्तर: '+a+'\n'; }
+function v6sec(num, title, body){ return num+' '+title+':\n'+body+'\n'; }
+
+
+function v6jaiminiPlanetsInSign(sign, d1orD9){
+  const C=V6_CHART; const arr=[];
+  for(const p of V6_PL_EN){ const s = d1orD9==='D9' ? C.d9[p] : C.pos[p]; if(s===sign) arr.push(p); }
+  return arr;
+}
+function v6jaiminiDrishtiForSign(sign){
+  const C=V6_CHART; const aspecting=v6rashiDrishti(sign); const out=[];
+  for(const r of aspecting){ const pls=v6jaiminiPlanetsInSign(r,'D1'); out.push(V6_RASHI[r]+' राशि ('+V6_BHAVA[C.bhava(r)]+' भाव) ['+(pls.length?v6listPlanets(pls):'कोई ग्रह नहीं')+']'); }
+  return out.length?out.join(' | '):'कोई नहीं';
+}
+function v6kpPlanetKP(p){
+  const C=V6_CHART; const lonLahiri=C.posDeg[p]; const lon=v6norm(lonLahiri + (V6_KP_OFFSET_MIN/60)); const absMin=lon*60; const nakIdx=Math.floor(lon/(360/27))%27; const lords=v6kpLords(absMin, nakIdx);
+  return {nl:V6_KP_FULL[V6_KP_NAK_LORDS[nakIdx]] || V6_KP_NAK_LORDS[nakIdx], sl:V6_KP_FULL[lords.sl]||lords.sl, ssl:V6_KP_FULL[lords.ssl]||lords.ssl, nakIdx:nakIdx};
+}
+function v6kpSigHousesForPlanet(p){
+  const C=V6_CHART; const nlPlanet=C.nak[p].lord; const A=[C.placidusBhava(C.posDeg[nlPlanet])]; const B=[C.placidusBhava(C.posDeg[p])]; const Cc=[], Dd=[];
+  for(let b=1;b<=12;b++){ const hr=(C.lagnaSign+b-1)%12; const l=V6_LORD[hr]; if(l===nlPlanet) Cc.push(b); if(l===p) Dd.push(b); }
+  return {A:A,B:B,C:Cc,D:Dd};
+}
+
+const V63_PL = {
+  en:{Sun:'Sun',Moon:'Moon',Mars:'Mars',Mercury:'Mercury',Jupiter:'Jupiter',Venus:'Venus',Saturn:'Saturn',Rahu:'Rahu',Ketu:'Ketu'},
+  mr:{Sun:'सूर्य',Moon:'चंद्र',Mars:'मंगळ',Mercury:'बुध',Jupiter:'गुरू',Venus:'शुक्र',Saturn:'शनी',Rahu:'राहू',Ketu:'केतू'}
+};
+const V63_RASHI = {
+  en:['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'],
+  mr:['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तूळ','वृश्चिक','धनू','मकर','कुंभ','मीन']
+};
+const V63_NAK = {
+  en:['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'],
+  mr:['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसू','पुष्य','आश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाती','विशाखा','अनुराधा','ज्येष्ठा','मूळ','पूर्वाषाढा','उत्तराषाढा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती']
+};
+const V63_BH = {
+  en:['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'],
+  mr:['1ल्या','2ऱ्या','3ऱ्या','4थ्या','5व्या','6व्या','7व्या','8व्या','9व्या','10व्या','11व्या','12व्या']
+};
+const V63_ASP = {
+  en:{3:'3rd',4:'4th',5:'5th',7:'7th',8:'8th',9:'9th',10:'10th'},
+  mr:{3:'3री',4:'4थी',5:'5वी',7:'7वी',8:'8वी',9:'9वी',10:'10वी'}
+};
+const V63_W = {
+  en:{none:'None',yes:'Yes',no:'No',na:'Not applicable',yuti:'conjunction',rel212:'2-12 relation',tri:'trine (1-5-9) relation',norel:'no direct conjunction/2-12/trine relation',uchcha:'exalted',neecha:'debilitated',vakri:'retrograde',asta:'combust',swa:'own sign',mitra:'friend sign',shatru:'enemy sign',sama:'neutral sign',rv:'rashi vargottama',bv:'bhava vargottama'},
+  mr:{none:'कोणीही नाही',yes:'होय',no:'नाही',na:'लागू नाही',yuti:'युती',rel212:'2-12 संबंध',tri:'त्रिकोण (1-5-9) संबंध',norel:'कोणताही थेट युती/2-12/त्रिकोण संबंध नाही',uchcha:'उच्च',neecha:'नीच',vakri:'वक्री',asta:'अस्त',swa:'स्वराशी',mitra:'मित्र राशी',shatru:'शत्रू राशी',sama:'सम राशी',rv:'राशी वर्गोत्तम',bv:'भाव वर्गोत्तम'}
+};
+function v63pl(L,p){return V63_PL[L][p];}
+function v63ra(L,i){return V63_RASHI[L][i];}
+function v63bh(L,n){return V63_BH[L][n-1];}
+function v63q(L,q,a){return '➤ '+q+'\n'+(L==='en'?'Answer: ':'उत्तर: ')+a+'\n';}
+function v63sec(num,title,body){return num+' '+title.replace(/:\s*$/,'')+':\n'+body+'\n';}
+function v63list(L,arr){if(!arr||!arr.length) return V63_W[L].none; return arr.map(p=>v63pl(L,p)).join(', ');}
+function v63listNak(L,arr){
+  if(!arr||!arr.length) return V63_W[L].none;
+  return arr.map(p=>{const n=V6_CHART.nak[p]; return v63pl(L,p)+' ('+V63_NAK[L][n.idx]+(L==='en'?' nakshatra, lord: ':' नक्षत्र, स्वामी: ')+v63pl(L,n.lord)+')';}).join(', ');
+}
+function v63drishti(L,entries){
+  if(!entries||!entries.length) return V63_W[L].none;
+  const seen={}, out=[];
+  for(const e of entries){if(seen[e.p]) continue; seen[e.p]=1; out.push(L==='en'? v63pl(L,e.p)+' '+V63_ASP[L][e.asp]+' aspect' : v63pl(L,e.p)+'ची '+V63_ASP[L][e.asp]+' दृष्टी');}
+  return out.join(', ');
+}
+function v63ava(L,p){
+  const C=V6_CHART, W=V63_W[L], sign=C.pos[p], parts=[];
+  if(p!=='Rahu'&&p!=='Ketu'){
+    if(V6_UCHCHA[p]===sign) parts.push(W.uchcha); else if(V6_NEECHA[p]===sign) parts.push(W.neecha);
+    if(C.speed[p]<-0.001) parts.push(W.vakri);
+    if(p!=='Sun'&&V6_COMBUST[p]){let dist=Math.abs(v6norm(C.posDeg[p]-C.posDeg.Sun)); if(dist>180) dist=360-dist; if(dist<V6_COMBUST[p]) parts.push(W.asta);}
+  }
+  if(p!=='Rahu'&&p!=='Ketu'){
+    const lord=V6_LORD[sign];
+    if(lord===p) parts.push(W.swa); else if((V6_FRIENDS[p]||[]).includes(lord)) parts.push(W.mitra); else if((V6_ENEMIES[p]||[]).includes(lord)) parts.push(W.shatru); else parts.push(W.sama);
+  }
+  if(C.d9[p]===sign) parts.push(W.rv);
+  if(C.bhava(sign)===C.d9bhava(C.d9[p])) parts.push(W.bv);
+  return parts.length?(' ('+parts.join(', ')+')'):'';
+}
+function v63pos(L,p){
+  const C=V6_CHART;
+  if(L==='en') return v63pl(L,p)+' is in the '+v63bh(L,C.bhava(C.pos[p]))+' house, in '+v63ra(L,C.pos[p])+' sign'+v63ava(L,p);
+  return v63pl(L,p)+' '+v63bh(L,C.bhava(C.pos[p]))+' भावात, '+v63ra(L,C.pos[p])+' राशीत आहे'+v63ava(L,p);
+}
+function v63nakStr(L,p){
+  const C=V6_CHART, n=C.nak[p];
+  if(L==='en') return v63pl(L,p)+' is in '+V63_NAK[L][n.idx]+' nakshatra (lord: '+v63pl(L,n.lord)+')';
+  return v63pl(L,p)+' '+V63_NAK[L][n.idx]+' नक्षत्रात आहे (स्वामी: '+v63pl(L,n.lord)+')';
+}
+function v63friend(L,a,b){
+  const aToB=(V6_FRIENDS[a]||[]).includes(b)?'mitra':((V6_ENEMIES[a]||[]).includes(b)?'shatru':'sama');
+  const bToA=(V6_FRIENDS[b]||[]).includes(a)?'mitra':((V6_ENEMIES[b]||[]).includes(a)?'shatru':'sama');
+  const W=V63_W[L];
+  if(aToB===bToA) return L==='en'? ('naturally '+W[aToB]+' to each other') : ('नैसर्गिकरित्या एकमेकांचे '+W[aToB]+' आहेत');
+  if(L==='en') return v63pl(L,a)+' considers '+v63pl(L,b)+' as '+W[aToB]+', '+v63pl(L,b)+' considers '+v63pl(L,a)+' as '+W[bToA];
+  return v63pl(L,a)+' '+v63pl(L,b)+' यांना '+W[aToB]+' मानतात, '+v63pl(L,b)+' '+v63pl(L,a)+' यांना '+W[bToA]+' मानतात';
+}
+function v63rel(L,a,b){
+  const C=V6_CHART, W=V63_W[L], sa=C.pos[a], sb=C.pos[b];
+  if(sa===sb) return W.yuti;
+  const dist=((sb-sa)%12+12)%12;
+  if(dist===1||dist===11) return W.rel212;
+  if(dist===4||dist===8) return W.tri;
+  return W.norel;
+}
+function v63jaiminiDrishti(L,sign){
+  const C=V6_CHART, aspecting=v6rashiDrishti(sign), out=[];
+  for(const r of aspecting){
+    const pls=v6jaiminiPlanetsInSign(r,'D1');
+    if(L==='en') out.push(v63ra(L,r)+' sign ('+v63bh(L,C.bhava(r))+' house) ['+(pls.length?v63list(L,pls):'no planet')+']');
+    else out.push(v63ra(L,r)+' राशी ('+v63bh(L,C.bhava(r))+' भाव) ['+(pls.length?v63list(L,pls):'कोणताही ग्रह नाही')+']');
+  }
+  return out.length?out.join(' | '):(L==='en'?'None':'कोणीही नाही');
+}
+function v63kpSig(L,house){
+  const C=V6_CHART, res={A:[],B:[],C:[],D:[]};
+  for(const p of V6_PL_EN){
+    const nlPlanet=C.nak[p].lord, A=[C.placidusBhava(C.posDeg[nlPlanet])], B=[C.placidusBhava(C.posDeg[p])], Cc=[], Dd=[];
+    for(let b=1;b<=12;b++){const hr=(C.lagnaSign+b-1)%12, l=V6_LORD[hr]; if(l===nlPlanet) Cc.push(b); if(l===p) Dd.push(b);}
+    if(A.includes(house)) res.A.push(p); if(B.includes(house)) res.B.push(p); if(Cc.includes(house)) res.C.push(p); if(Dd.includes(house)) res.D.push(p);
+  }
+  const f=arr=>arr.length?arr.map(p=>v63pl(L,p)).join(', '):'-';
+  return 'A: '+f(res.A)+' | B: '+f(res.B)+' | C: '+f(res.C)+' | D: '+f(res.D);
+}
+function v63argala(L,bhavaNum,label){
+  const C=V6_CHART; let out='';
+  const argHouses=[2,4,11,5], virodhHouses=[12,10,3,9];
+  for(const off of argHouses){const hb=((bhavaNum+off-2)%12)+1;
+    if(L==='en') out+='From '+label+', '+v63bh(L,off)+' house ('+v63bh(L,hb)+' house, '+v63ra(L,C.rashiOfBhava(hb))+' sign): '+v63list(L,C.planetsInBhava[hb])+'. ';
+    else out+=label+' '+v63bh(L,off)+' भावात ('+v63bh(L,hb)+' भाव, '+v63ra(L,C.rashiOfBhava(hb))+' राशी): '+v63list(L,C.planetsInBhava[hb])+'. ';}
+  if(L==='en') out+='Opposition: '; else out+='विरोध: ';
+  for(const off of virodhHouses){const hb=((bhavaNum+off-2)%12)+1;
+    if(L==='en') out+='From '+label+', '+v63bh(L,off)+' house ('+v63bh(L,hb)+' house): '+v63list(L,C.planetsInBhava[hb])+'. ';
+    else out+=label+' '+v63bh(L,off)+' भावात ('+v63bh(L,hb)+' भाव): '+v63list(L,C.planetsInBhava[hb])+'. ';}
+  return out;
+}
+
+const CHB_Q = {"hi": [{"title": "भाग 1: पराशरी ज्योतिष के अनुसार संतान का विश्लेषण", "sections": [{"num": "1", "title": "पंचमेश (5वें भाव का स्वामी):", "subs": [{"label": null, "title": "", "qs": ["कौन-सा ग्रह पंचम भाव का स्वामी है?", "पंचमेश ग्रह किस राशी-भाव में स्थित है? (विशेषकर केंद्र/त्रिकोण में स्थिति)", "पंचमेश ग्रह किस नक्षत्र (स्वामी) में स्थित है?", "पंचमेश ग्रह की युति किन ग्रहों से हो रही है?", "पंचमेश से युत ग्रह किस नक्षत्र (स्वामी) में स्थित है?", "पंचमेश पर किन ग्रहों की दृष्टि है?", "क्या लग्नेश और पंचमेश में शत्रुता/मित्रता/समानता है?"]}]}, {"num": "2", "title": "पंचम भाव (संतान भाव):", "subs": [{"label": null, "title": "", "qs": ["पंचम भाव किस राशि और नक्षत्र (स्वामी) में स्थित है?", "पंचम भाव में कौन-कौन से ग्रह स्थित हैं?", "पंचम भाव में स्तिथ ग्रह किस नक्षत्र (स्वामी) में स्थित है?", "पंचम भाव पर कौन-कौन से ग्रह दृष्टि डाल रहे हैं?"]}]}, {"num": "3", "title": "नवमांश कुंडली (D9) का विश्लेषण - संतान के भाग्य और आंतरिक सुख का आकलन", "subs": [{"label": "A", "title": "D9 में पंचम भाव और पंचमेश:", "qs": ["नवमांश में पंचम भाव किस राशि और नक्षत्र (स्वामी) में स्थित है?", "नवमांश में पंचम भाव में कौन-कौन से ग्रह स्थित हैं? (उनके नक्षत्र-स्वामी सहित)", "नवमांश में पंचम भाव पर किन ग्रहों की दृष्टि है?", "नवमांश में पंचमेश ग्रह कौन है और वह किस भाव, राशि और नक्षत्र (स्वामी) में स्थित है?", "नवमांश में पंचमेश की युति या दृष्टि किन ग्रहों से हो रही है?", "नवमांश में पंचमेश से युत ग्रह किस नक्षत्र में स्थित है?"]}, {"label": "B", "title": "D9 में लग्न और लग्नेश:", "qs": ["नवमांश में लग्न किस राशि और नक्षत्र (स्वामी) में स्थित है?", "नवमांश में लग्न भाव में कौन-कौन से ग्रह स्थित हैं? (नक्षत्र-स्वामी)", "नवमांश में लग्नेश ग्रह किस भाव, राशि और नक्षत्र (स्वामी) में स्थित है?", "नवमांश में लग्नेश की युति या दृष्टि किन ग्रहों से हो रही है?", "नवमांश में गुरु की स्थिति क्या है?"]}, {"label": "C", "title": "D1 पंचमेश की नवमांश (D9) में स्थिति:", "qs": ["(D9) नवमांश में D1 का पंचमेश किस भाव, राशि और नक्षत्र (स्वामी) में स्थित है?", "(D9) नवमांश में D1 पंचमेश किसके साथ बैठा है?", "(D9) नवमांश में D1 पंचमेश पर किन ग्रहों की दृष्टि है?"]}]}, {"num": "4", "title": "सप्तांश कुंडली (D7) का विश्लेषण - संतान का सूक्ष्म और विस्तृत विश्लेषण", "subs": [{"label": "A", "title": "D7 में पंचम भाव और पंचमेश:", "qs": ["सप्तांश में पंचम भाव किस राशि और नक्षत्र (स्वामी) में स्थित है?", "सप्तांश में पंचम भाव में कौन-कौन से ग्रह स्थित हैं? (उनके नक्षत्र-स्वामी सहित)", "सप्तांश में पंचम भाव पर किन ग्रहों की दृष्टि है?", "सप्तांश में पंचमेश ग्रह कौन है और वह किस भाव, राशि और नक्षत्र (स्वामी) में स्थित है?", "सप्तांश में पंचमेश की युति या दृष्टि किन ग्रहों से हो रही है?", "सप्तांश में पंचमेश से युत ग्रह किस नक्षत्र में स्थित है?"]}, {"label": "B", "title": "D7 में लग्न और लग्नेश:", "qs": ["सप्तांश में लग्न किस राशि और नक्षत्र (स्वामी) में स्थित है?", "सप्तांश में लग्न भाव में कौन-कौन से ग्रह स्थित हैं? (नक्षत्र-स्वामी)", "सप्तांश में लग्नेश ग्रह किस भाव, राशि और नक्षत्र (स्वामी) में स्थित है?", "सप्तांश में लग्नेश की युति या दृष्टि किन ग्रहों से हो रही है?", "सप्तांश में गुरु की स्थिति क्या है?"]}, {"label": "C", "title": "जन्म कुंडली (D1) के ग्रहों का D7 में विश्लेषण:", "qs": ["(D7 में) जन्म कुंडली का पंचमेश किस भाव, राशि और नक्षत्र (स्वामी) में स्थित है?", "(D7) सप्तांश में D1 पंचमेश किसके साथ बैठा है?", "(D7) सप्तांश में D1 पंचमेश पर किन ग्रहों की दृष्टि है?"]}]}, {"num": "5", "title": "संतान कारक बृहस्पति (Jupiter):", "subs": [{"label": null, "title": "", "qs": ["बृहस्पति की कुंडली में स्थिति क्या है? (बलवान, वक्री, अस्त, पीड़ित)।", "बृहस्पति का पंचम भाव या पंचमेश से क्या संबंध है?", "बृहस्पति ग्रह कौनसे नक्षत्र में स्थित हैं?", "D9 में बृहस्पति: नवमांश में बृहस्पति की स्थिति और बल क्या है?"]}]}, {"num": "6", "title": "सप्तम भाव (द्वितीय संतान):", "subs": [{"label": null, "title": "", "qs": ["सप्तम भाव (पंचम से तीसरा) और उसके स्वामी की स्थिति।"]}]}, {"num": "7", "title": "भाग 1B: स्फुट की गणना अनुसार संतान का विश्लेषण", "subs": [{"label": "M", "title": "पुरुष (बीज स्फुट)", "qs": ["सूर्य (Sun): [डिग्री]° [मिनट]' [सेकंड]\" [राशि] में", "शुक्र (Venus): [डिग्री]° [मिनट]' [सेकंड]\" [राशि] में", "बृहस्पति (Jupiter): [डिग्री]° [मिनट]' [सेकंड]\" [राशि] में", "उपरोक्त डेटा के आधार पर, बीज स्फुट की गणना करें और बताएं कि यह किस राशि, अंश, कला और विकला पर स्थित है।", "यह बीज स्फुट बिंदु विषम राशि में है या सम राशि में?", "जन्म कुंडली (D1) में इस बीज स्फुट बिंदु पर किन ग्रहों की युति या दृष्टि है? (विशेषकर शुभ और पाप ग्रहों का उल्लेख करें)।", "यह बीज स्फुट बिंदु नवमांश कुंडली (D9) में किस राशि में स्थित है और वहां उस पर क्या प्रभाव है?"]}, {"label": "F", "title": "स्त्री (क्षेत्र स्फुट)", "qs": ["चंद्रमा (Moon): [डिग्री]° [मिनट]' [सेकंड]\" [राशि] में", "मंगल (Mars): [डिग्री]° [मिनट]' [सेकंड]\" [राशि] में", "बृहस्पति (Jupiter): [डिग्री]° [मिनट]' [सेकंड]\" [राशि] में", "उपरोक्त डेटा के आधार पर, क्षेत्र स्फुट की गणना करें और बताएं कि यह किस राशि, अंश, कला और विकला पर स्थित है।", "यह क्षेत्र स्फुट बिंदु विषम राशि में है या सम राशि में?", "जन्म कुंडली (D1) में इस क्षेत्र स्फुट बिंदु पर किन ग्रहों की युति या दृष्टि है? (विशेषकर शुभ और पाप ग्रहों का उल्लेख करें)।", "यह क्षेत्र स्फुट बिंदु नवमांश कुंडली (D9) में किस राशि में स्थित है और वहां उस पर क्या प्रभाव है?"]}]}]}, {"title": "भाग 2: जैमिनी ज्योतिष के अनुसार संतान का विश्लेषण", "sections": [{"num": "1", "title": "पुत्रकारक (PK - Putra Karaka):", "subs": [{"label": null, "title": "", "qs": ["पुत्रकारक ग्रह कौन सा है? (यह चर कारकों में से एक है)।", "PK जन्म कुंडली में कहाँ स्थित है और उस पर किन ग्रहों की दृष्टि है?"]}]}, {"num": "2", "title": "आत्मकारक (AK) और पुत्रकारक (PK) का संबंध:", "subs": [{"label": null, "title": "", "qs": ["क्या AK और PK एक-दूसरे से शुभ भावों (केंद्र, त्रिकोण) में हैं?"]}]}, {"num": "3", "title": "पुत्र पद (A5)संतान की छवि और उनसे प्राप्त सुख:", "subs": [{"label": null, "title": "", "qs": ["A5 (पंचम भाव का आरूढ़ पद) किस भाव में स्थित है?", "A5 में कौन से ग्रह बैठे हैं या उस पर किन ग्रहों की जैमिनी राशि दृष्टि है? (शुभ ग्रहों का प्रभाव संतान को प्रसिद्धि और सुख देता है, पाप ग्रहों का प्रभाव संघर्ष या बदनामी दे सकता है)।", "क्या A5 का संबंध लग्न आरूढ़ (AL), आत्मकारक (AK) या पुत्रकारक (PK) से बन रहा है?"]}]}, {"num": "4", "title": "अर्गला विश्लेषण:", "subs": [{"label": null, "title": "", "qs": ["पंचम भाव पर अर्गला: संतान प्राप्ति और उनके जीवन को कौन सी ताकतें सहयोग दे रही हैं या बाधा डाल रही हैं?", "पुत्रकारक (PK) पर अर्गला: संतान को व्यक्तिगत रूप से मिलने वाले सहयोग या चुनौतियों का विश्लेषण।", "A5 (पुत्र पद) पर अर्गला: संतान की सामाजिक छवि और उनसे मिलने वाले सुख को कौन सी अदृश्य ताकतें प्रभावित कर रही हैं?"]}]}]}, {"title": "भाग 3: भृगु नंदी नाड़ी (BNN) के अनुसार संतान का विश्लेषण", "sections": [{"num": "1", "title": "गुरु (संतान का मुख्य कारक) की स्थिति:", "subs": [{"label": null, "title": "", "qs": ["गुरु से पंचम भाव में कौन सा ग्रह है?", "गुरु के त्रिकोण (1-5-9) में कौन से ग्रह हैं? (विशेषकर शुक्र, चंद्रमा)।"]}]}, {"num": "2", "title": "पुरुष और स्त्री संतान:", "subs": [{"label": null, "title": "", "qs": ["गुरु का संबंध सूर्य/मंगल/केतु से हो तो पुरुष संतान की संभावना।", "गुरु का संबंध शुक्र/चंद्रमा/राहु से हो तो स्त्री संतान की संभावना।"]}]}]}, {"title": "भाग 4: कृष्णमूर्ति पद्धति (KP) के अनुसार संतान का विश्लेषण", "sections": [{"num": "1", "title": "संतान का वादा (Promise of Progeny):", "subs": [{"label": null, "title": "", "qs": ["5वें भाव का कस्पल सब-लॉर्ड (CSL) कौन है?", "यह CSL किन भावों को सिग्निफाई कर रहा है? (संतान के लिए 2, 5, 11 भावों का संबंध अनिवार्य है)।", "क्या यह CSL संतान को नकारने वाले भावों (1, 4, 10) को भी सिग्निफाई कर रहा है?"]}]}, {"num": "2", "title": "IVF या दत्तक ग्रहण (Adoption):", "subs": [{"label": null, "title": "", "qs": ["यदि 5वां CSL 4, 8, 12 जैसे भावों से संबंध बनाए और 2, 5, 11 को भी सिग्निफाई करे, तो यह कृत्रिम गर्भाधान या गोद लेने का संकेत हो सकता है।"]}]}]}], "en": [{"title": "Part 1: Parashari analysis of progeny", "sections": [{"num": "1", "title": "Panchamesh (lord of the 5th bhava):", "subs": [{"label": null, "title": "", "qs": ["Which planet is the lord of the fifth bhava?", "In which rashi-bhava is the panchamesh planet placed? (especially the position in kendra/trikona)", "In which nakshatra (lord) is the panchamesh planet placed?", "With which planets is the panchamesh planet in yuti?", "In which nakshatra (lord) is the planet in yuti with the panchamesh placed?", "Which planets aspect the panchamesh?", "Is there enmity/friendship/neutrality between the lagnesh and the panchamesh?"]}]}, {"num": "2", "title": "Fifth bhava (progeny bhava):", "subs": [{"label": null, "title": "", "qs": ["In which rashi and nakshatra (lord) is the fifth bhava placed?", "Which planets are placed in the fifth bhava?", "In which nakshatra (lord) is the planet placed in the fifth bhava?", "Which planets are casting aspect on the fifth bhava?"]}]}, {"num": "3", "title": "Analysis of the Navamsha kundali (D9) - assessment of the fortune of progeny and inner happiness", "subs": [{"label": "A", "title": "Fifth bhava and panchamesh in D9:", "qs": ["In which rashi and nakshatra (lord) is the fifth bhava placed in the navamsha?", "Which planets are placed in the fifth bhava in the navamsha? (with their nakshatra-lords)", "Which planets aspect the fifth bhava in the navamsha?", "Which planet is the panchamesh in the navamsha and in which bhava, rashi and nakshatra (lord) is it placed?", "With which planets is the panchamesh in yuti or aspect in the navamsha?", "In which nakshatra is the planet in yuti with the panchamesh placed in the navamsha?"]}, {"label": "B", "title": "Lagna and lagnesh in D9:", "qs": ["In which rashi and nakshatra (lord) is the lagna placed in the navamsha?", "Which planets are placed in the lagna bhava in the navamsha? (nakshatra-lord)", "In which bhava, rashi and nakshatra (lord) is the lagnesh planet placed in the navamsha?", "With which planets is the lagnesh in yuti or aspect in the navamsha?", "What is Guru's position in the navamsha?"]}, {"label": "C", "title": "Position of D1's panchamesh in the navamsha (D9):", "qs": ["In which bhava, rashi and nakshatra (lord) is D1's panchamesh placed in the (D9) navamsha?", "With whom is D1's panchamesh placed in the (D9) navamsha?", "Which planets aspect D1's panchamesh in the (D9) navamsha?"]}]}, {"num": "4", "title": "Analysis of the Saptamsha kundali (D7) - minute and detailed analysis of progeny", "subs": [{"label": "A", "title": "Fifth bhava and panchamesh in D7:", "qs": ["In which rashi and nakshatra (lord) is the fifth bhava placed in the saptamsha?", "Which planets are placed in the fifth bhava in the saptamsha? (with their nakshatra-lords)", "Which planets aspect the fifth bhava in the saptamsha?", "Which planet is the panchamesh in the saptamsha and in which bhava, rashi and nakshatra (lord) is it placed?", "With which planets is the panchamesh in yuti or aspect in the saptamsha?", "In which nakshatra is the planet in yuti with the panchamesh placed in the saptamsha?"]}, {"label": "B", "title": "Lagna and lagnesh in D7:", "qs": ["In which rashi and nakshatra (lord) is the lagna placed in the saptamsha?", "Which planets are placed in the lagna bhava in the saptamsha? (nakshatra-lord)", "In which bhava, rashi and nakshatra (lord) is the lagnesh planet placed in the saptamsha?", "With which planets is the lagnesh in yuti or aspect in the saptamsha?", "What is Guru's position in the saptamsha?"]}, {"label": "C", "title": "Analysis of the birth kundali's (D1) planets in D7:", "qs": ["In which bhava, rashi and nakshatra (lord) is the birth kundali's panchamesh placed (in D7)?", "With whom is D1's panchamesh placed in the (D7) saptamsha?", "Which planets aspect D1's panchamesh in the (D7) saptamsha?"]}]}, {"num": "5", "title": "Progeny karaka Brihaspati (Jupiter):", "subs": [{"label": null, "title": "", "qs": ["What is Brihaspati's position in the kundali? (strong, retrograde, combust, afflicted).", "What is Brihaspati's relation with the fifth bhava or panchamesh?", "In which nakshatra is the planet Brihaspati placed?", "Brihaspati in D9: what is Brihaspati's position and strength in the navamsha?"]}]}, {"num": "6", "title": "Seventh bhava (second progeny):", "subs": [{"label": null, "title": "", "qs": ["The seventh bhava (third from the fifth) and the position of its lord."]}]}, {"num": "7", "title": "Part 1B: Sphuta calculation analysis of progeny", "subs": [{"label": "M", "title": "Male (Beeja Sphuta)", "qs": ["Surya (Sun): [degree]° [minute]' [second]\" in [rashi]", "Shukra (Venus): [degree]° [minute]' [second]\" in [rashi]", "Brihaspati (Jupiter): [degree]° [minute]' [second]\" in [rashi]", "Based on the above data, calculate the Beeja Sphuta and tell at which rashi, degrees, minutes and seconds it is placed.", "Is this Beeja Sphuta point in an odd rashi or an even rashi?", "Which planets are in yuti or aspect on this Beeja Sphuta point in the birth kundali (D1)? (especially mention the auspicious and malefic planets).", "In which rashi is this Beeja Sphuta point placed in the navamsha kundali (D9) and what is its influence there?"]}, {"label": "F", "title": "Female (Kshetra Sphuta)", "qs": ["Chandrama (Moon): [degree]° [minute]' [second]\" in [rashi]", "Mangal (Mars): [degree]° [minute]' [second]\" in [rashi]", "Brihaspati (Jupiter): [degree]° [minute]' [second]\" in [rashi]", "Based on the above data, calculate the Kshetra Sphuta and tell at which rashi, degrees, minutes and seconds it is placed.", "Is this Kshetra Sphuta point in an odd rashi or an even rashi?", "Which planets are in yuti or aspect on this Kshetra Sphuta point in the birth kundali (D1)? (especially mention the auspicious and malefic planets).", "In which rashi is this Kshetra Sphuta point placed in the navamsha kundali (D9) and what is its influence there?"]}]}]}, {"title": "Part 2: Jaimini analysis of progeny", "sections": [{"num": "1", "title": "Putrakaraka (PK - Putra Karaka):", "subs": [{"label": null, "title": "", "qs": ["Which planet is the Putrakaraka? (It is one of the chara karakas).", "Where is the PK placed in the birth kundali and which planets aspect it?"]}]}, {"num": "2", "title": "Relation of Atmakaraka (AK) and Putrakaraka (PK):", "subs": [{"label": null, "title": "", "qs": ["Are AK and PK in auspicious bhavas (kendra, trikona) from each other?"]}]}, {"num": "3", "title": "Putra Pada (A5) - image of progeny and the happiness received from them:", "subs": [{"label": null, "title": "", "qs": ["In which bhava is A5 (the arudha pada of the fifth bhava) placed?", "Which planets sit in A5 or which planets have Jaimini rashi aspect on it? (the influence of auspicious planets gives progeny fame and happiness, the influence of malefic planets can give struggle or infamy).", "Is a relation of A5 being formed with the lagna arudha (AL), Atmakaraka (AK) or Putrakaraka (PK)?"]}]}, {"num": "4", "title": "Argala analysis:", "subs": [{"label": null, "title": "", "qs": ["Argala on the fifth bhava: which forces are supporting or obstructing the attainment of progeny and their life?", "Argala on the Putrakaraka (PK): analysis of the support or challenges received personally by the progeny.", "Argala on A5 (Putra Pada): which invisible forces are influencing the social image of the progeny and the happiness received from them?"]}]}]}, {"title": "Part 3: BNN analysis of progeny", "sections": [{"num": "1", "title": "Position of Guru (the main karaka of progeny):", "subs": [{"label": null, "title": "", "qs": ["Which planet is in the fifth bhava from Guru?", "Which planets are in Guru's trikona (1-5-9)? (especially Shukra, Chandrama)."]}]}, {"num": "2", "title": "Male and female progeny:", "subs": [{"label": null, "title": "", "qs": ["If Guru has a relation with Surya/Mangal/Ketu then the possibility of male progeny.", "If Guru has a relation with Shukra/Chandrama/Rahu then the possibility of female progeny."]}]}]}, {"title": "Part 4: KP analysis of progeny", "sections": [{"num": "1", "title": "Promise of progeny:", "subs": [{"label": null, "title": "", "qs": ["Who is the cuspal sub-lord (CSL) of the 5th bhava?", "Which bhavas is this CSL signifying? (for progeny, the connection of the 2, 5, 11 bhavas is essential).", "Is this CSL also signifying the bhavas that deny progeny (1, 4, 10)?"]}]}, {"num": "2", "title": "IVF or adoption:", "subs": [{"label": null, "title": "", "qs": ["If the 5th CSL makes a connection with bhavas like 4, 8, 12 and also signifies 2, 5, 11, then this can be an indication of artificial insemination or adoption."]}]}]}], "mr": [{"title": "भाग 1: पराशरी ज्योतिषानुसार संतानाचे विश्लेषण", "sections": [{"num": "1", "title": "पंचमेश (5व्या भावाचा स्वामी):", "subs": [{"label": null, "title": "", "qs": ["कोणता ग्रह पंचम भावाचा स्वामी आहे?", "पंचमेश ग्रह कोणत्या राशी-भावात आहे? (विशेषतः केंद्र/त्रिकोणातील स्थिती)", "पंचमेश ग्रह कोणत्या नक्षत्रात (स्वामी) आहे?", "पंचमेश ग्रहाची युती कोणत्या ग्रहांबरोबर होत आहे?", "पंचमेशाशी युतीत असलेला ग्रह कोणत्या नक्षत्रात (स्वामी) आहे?", "पंचमेशावर कोणत्या ग्रहांची दृष्टी आहे?", "लग्नेश आणि पंचमेश यांच्यात शत्रुता/मित्रता/समानता आहे का?"]}]}, {"num": "2", "title": "पंचम भाव (संतान भाव):", "subs": [{"label": null, "title": "", "qs": ["पंचम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) आहे?", "पंचम भावात कोणकोणते ग्रह आहेत?", "पंचम भावात असलेला ग्रह कोणत्या नक्षत्रात (स्वामी) आहे?", "पंचम भावावर कोणकोणते ग्रह दृष्टी टाकत आहेत?"]}]}, {"num": "3", "title": "नवांश कुंडली (D9) चे विश्लेषण - संतानाच्या भाग्याचे आणि आंतरिक सुखाचे मूल्यांकन", "subs": [{"label": "A", "title": "D9 मधील पंचम भाव आणि पंचमेश:", "qs": ["नवांशात पंचम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) आहे?", "नवांशात पंचम भावात कोणकोणते ग्रह आहेत? (त्यांच्या नक्षत्र-स्वामिंसह)", "नवांशात पंचम भावावर कोणत्या ग्रहांची दृष्टी आहे?", "नवांशात पंचमेश ग्रह कोणता आहे आणि तो कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?", "नवांशात पंचमेशाची युती किंवा दृष्टी कोणत्या ग्रहांबरोबर होत आहे?", "नवांशात पंचमेशाशी युतीत असलेला ग्रह कोणत्या नक्षत्रात आहे?"]}, {"label": "B", "title": "D9 मधील लग्न आणि लग्नेश:", "qs": ["नवांशात लग्न कोणत्या राशीत आणि नक्षत्रात (स्वामी) आहे?", "नवांशात लग्न भावात कोणकोणते ग्रह आहेत? (नक्षत्र-स्वामी)", "नवांशात लग्नेश ग्रह कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?", "नवांशात लग्नेशाची युती किंवा दृष्टी कोणत्या ग्रहांबरोबर होत आहे?", "नवांशात गुरूची स्थिती काय आहे?"]}, {"label": "C", "title": "D1 च्या पंचमेशाची नवांशात (D9) स्थिती:", "qs": ["(D9) नवांशात D1 चा पंचमेश कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?", "(D9) नवांशात D1 चा पंचमेश कोणाबरोबर बसला आहे?", "(D9) नवांशात D1 च्या पंचमेशावर कोणत्या ग्रहांची दृष्टी आहे?"]}]}, {"num": "4", "title": "सप्तांश कुंडली (D7) चे विश्लेषण - संतानाचे सूक्ष्म आणि सविस्तर विश्लेषण", "subs": [{"label": "A", "title": "D7 मधील पंचम भाव आणि पंचमेश:", "qs": ["सप्तांशात पंचम भाव कोणत्या राशीत आणि नक्षत्रात (स्वामी) आहे?", "सप्तांशात पंचम भावात कोणकोणते ग्रह आहेत? (त्यांच्या नक्षत्र-स्वामिंसह)", "सप्तांशात पंचम भावावर कोणत्या ग्रहांची दृष्टी आहे?", "सप्तांशात पंचमेश ग्रह कोणता आहे आणि तो कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?", "सप्तांशात पंचमेशाची युती किंवा दृष्टी कोणत्या ग्रहांबरोबर होत आहे?", "सप्तांशात पंचमेशाशी युतीत असलेला ग्रह कोणत्या नक्षत्रात आहे?"]}, {"label": "B", "title": "D7 मधील लग्न आणि लग्नेश:", "qs": ["सप्तांशात लग्न कोणत्या राशीत आणि नक्षत्रात (स्वामी) आहे?", "सप्तांशात लग्न भावात कोणकोणते ग्रह आहेत? (नक्षत्र-स्वामी)", "सप्तांशात लग्नेश ग्रह कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?", "सप्तांशात लग्नेशाची युती किंवा दृष्टी कोणत्या ग्रहांबरोबर होत आहे?", "सप्तांशात गुरूची स्थिती काय आहे?"]}, {"label": "C", "title": "जन्म कुंडली (D1) च्या ग्रहांचे D7 मधील विश्लेषण:", "qs": ["(D7 मध्ये) जन्म कुंडलीचा पंचमेश कोणत्या भावात, राशीत आणि नक्षत्रात (स्वामी) आहे?", "(D7) सप्तांशात D1 चा पंचमेश कोणाबरोबर बसला आहे?", "(D7) सप्तांशात D1 च्या पंचमेशावर कोणत्या ग्रहांची दृष्टी आहे?"]}]}, {"num": "5", "title": "संतान कारक बृहस्पती (Jupiter):", "subs": [{"label": null, "title": "", "qs": ["कुंडलीत बृहस्पतीची स्थिती काय आहे? (बलवान, वक्री, अस्त, पीडित).", "बृहस्पतीचा पंचम भाव किंवा पंचमेशाशी काय संबंध आहे?", "बृहस्पती ग्रह कोणत्या नक्षत्रात आहे?", "D9 मध्ये बृहस्पती: नवांशात बृहस्पतीची स्थिती आणि बल काय आहे?"]}]}, {"num": "6", "title": "सप्तम भाव (द्वितीय संतान):", "subs": [{"label": null, "title": "", "qs": ["सप्तम भाव (पंचमापासून तिसरा) आणि त्याच्या स्वामीची स्थिती."]}]}, {"num": "7", "title": "भाग 1B: स्फुट गणनेनुसार संतानाचे विश्लेषण", "subs": [{"label": "M", "title": "पुरुष (बीज स्फुट)", "qs": ["सूर्य (Sun): [डिग्री]° [मिनिट]' [सेकंद]\" [राशी] मध्ये", "शुक्र (Venus): [डिग्री]° [मिनिट]' [सेकंद]\" [राशी] मध्ये", "बृहस्पति (Jupiter): [डिग्री]° [मिनिट]' [सेकंद]\" [राशी] मध्ये", "वरील डेटावर आधारित, बीज स्फुटाची गणना करा आणि ते कोणत्या राशी, अंश, कला आणि विकलेवर स्थित आहे ते सांगा.", "हा बीज स्फुट बिंदू विषम राशीत आहे की सम राशीत?", "जन्म कुंडलीत (D1) या बीज स्फुट बिंदूवर कोणत्या ग्रहांची युती किंवा दृष्टी आहे? (विशेषतः शुभ आणि पाप ग्रहांचा उल्लेख करा).", "हा बीज स्फुट बिंदू नवांश कुंडलीत (D9) कोणत्या राशीत स्थित आहे आणि तिथे त्याचा काय प्रभाव आहे?"]}, {"label": "F", "title": "स्त्री (क्षेत्र स्फुट)", "qs": ["चंद्रमा (Moon): [डिग्री]° [मिनिट]' [सेकंद]\" [राशी] मध्ये", "मंगळ (Mars): [डिग्री]° [मिनिट]' [सेकंद]\" [राशी] मध्ये", "बृहस्पति (Jupiter): [डिग्री]° [मिनिट]' [सेकंद]\" [राशी] मध्ये", "वरील डेटावर आधारित, क्षेत्र स्फुटाची गणना करा आणि ते कोणत्या राशी, अंश, कला आणि विकलेवर स्थित आहे ते सांगा.", "हा क्षेत्र स्फुट बिंदू विषम राशीत आहे की सम राशीत?", "जन्म कुंडलीत (D1) या क्षेत्र स्फुट बिंदूवर कोणत्या ग्रहांची युती किंवा दृष्टी आहे? (विशेषतः शुभ आणि पाप ग्रहांचा उल्लेख करा).", "हा क्षेत्र स्फुट बिंदू नवांश कुंडलीत (D9) कोणत्या राशीत स्थित आहे आणि तिथे त्याचा काय प्रभाव आहे?"]}]}]}, {"title": "भाग 2: जैमिनी ज्योतिषानुसार संतानाचे विश्लेषण", "sections": [{"num": "1", "title": "पुत्रकारक (PK - Putra Karaka):", "subs": [{"label": null, "title": "", "qs": ["पुत्रकारक ग्रह कोणता आहे? (हा चर कारकांपैकी एक आहे).", "PK जन्म कुंडलीत कुठे स्थित आहे आणि त्यावर कोणत्या ग्रहांची दृष्टी आहे?"]}]}, {"num": "2", "title": "आत्मकारक (AK) आणि पुत्रकारक (PK) यांचे संबंध:", "subs": [{"label": null, "title": "", "qs": ["AK आणि PK एकमेकांपासून शुभ भावांत (केंद्र, त्रिकोण) आहेत का?"]}]}, {"num": "3", "title": "पुत्र पद (A5) - संतानाची प्रतिमा आणि त्यांच्याकडून मिळणारे सुख:", "subs": [{"label": null, "title": "", "qs": ["A5 (पंचम भावाचे आरूढ पद) कोणत्या भावात स्थित आहे?", "A5 मध्ये कोणते ग्रह बसले आहेत किंवा त्यावर कोणत्या ग्रहांची जैमिनी राशी दृष्टी आहे? (शुभ ग्रहांचा प्रभाव संतानाला प्रसिद्धी आणि सुख देतो, पाप ग्रहांचा प्रभाव संघर्ष किंवा बदनामी देऊ शकतो).", "A5 चा संबंध लग्न आरूढ (AL), आत्मकारक (AK) किंवा पुत्रकारक (PK) शी बनत आहे का?"]}]}, {"num": "4", "title": "अर्गला विश्लेषण:", "subs": [{"label": null, "title": "", "qs": ["पंचम भावावर अर्गला: संतान प्राप्ती आणि त्यांच्या जीवनाला कोणत्या शक्ती सहाय्य करत आहेत किंवा अडथळा टाकत आहेत?", "पुत्रकारक (PK) वर अर्गला: संतानाला वैयक्तिकरित्या मिळणाऱ्या सहाय्याचे किंवा आव्हानांचे विश्लेषण.", "A5 (पुत्र पद) वर अर्गला: संतानाची सामाजिक प्रतिमा आणि त्यांच्याकडून मिळणाऱ्या सुखावर कोणत्या अदृश्य शक्ती प्रभाव टाकत आहेत?"]}]}]}, {"title": "भाग 3: भृगु नंदी नाड़ी (BNN) नुसार संतानाचे विश्लेषण", "sections": [{"num": "1", "title": "गुरु (संतानाचा मुख्य कारक) ची स्थिती:", "subs": [{"label": null, "title": "", "qs": ["गुरूपासून पंचम भावात कोणता ग्रह आहे?", "गुरुच्या त्रिकोणात (1-5-9) कोणते ग्रह आहेत? (विशेषतः शुक्र, चंद्र)."]}]}, {"num": "2", "title": "पुरुष आणि स्त्री संतान:", "subs": [{"label": null, "title": "", "qs": ["गुरूचा संबंध सूर्य/मंगळ/केतूशी असेल तर पुरुष संतानाची शक्यता.", "गुरूचा संबंध शुक्र/चंद्र/राहूशी असेल तर स्त्री संतानाची शक्यता."]}]}]}, {"title": "भाग 4: कृष्णमूर्ति पद्धति (KP) नुसार संतानाचे विश्लेषण", "sections": [{"num": "1", "title": "संतानाचे वचन (Promise of Progeny):", "subs": [{"label": null, "title": "", "qs": ["5व्या भावाचा कस्पल सब-लॉर्ड (CSL) कोण आहे?", "हा CSL कोणत्या भावांना सैगनिफाई करत आहे? (संतानासाठी 2, 5, 11 भावांचा संबंध आवश्यक आहे).", "हा CSL संतानाला नाकारणाऱ्या भावांनाही (1, 4, 10) सैगनिफाई करत आहे का?"]}]}, {"num": "2", "title": "IVF किंवा दत्तक ग्रहण (Adoption):", "subs": [{"label": null, "title": "", "qs": ["जर 5वा CSL 4, 8, 12 सारख्या भावांशी संबंध बनवत असेल आणि 2, 5, 11 लाही सैगनिफाई करत असेल, तर हे कृत्रिम गर्भाधान किंवा दत्तक घेण्याचे संकेत असू शकते."]}]}]}]};
+
+// ===== CHB Paste v4 builders (helpers reused from CR v5 engine) =====
+const CR_W_HI={none:'कोई नहीं',yes:'हाँ',no:'नहीं',na:'लागू नहीं',yuti:'युति',rel212:'2-12 संबंध',tri:'त्रिकोण (1-5-9) संबंध',norel:'कोई सीधा युति/2-12/त्रिकोण संबंध नहीं',uchcha:'उच्च',neecha:'नीच',vakri:'वक्री',asta:'अस्त',swa:'स्वराशि',mitra:'मित्र राशि',shatru:'शत्रु राशि',sama:'सम राशि',rv:'राशि वर्गोत्तम',bv:'भाव वर्गोत्तम'};
+function crPl(L,p){return L==='hi'?V6_PL[p]:v63pl(L,p);}
+function crRa(L,i){return L==='hi'?V6_RASHI[i]:v63ra(L,i);}
+function crBh(L,n){return L==='hi'?V6_BHAVA[n]:v63bh(L,n);}
+function crNakName(L,idx){return L==='hi'?V6_NAK[idx]:V63_NAK[L][idx];}
+function crW(L){return L==='hi'?CR_W_HI:V63_W[L];}
+function crQ(L,q,a){return '➤ '+q+'\n'+(L==='en'?'Answer: ':'उत्तर: ')+a+'\n';}
+function crSec(num,title,body){return num+' '+String(title).replace(/:\s*$/,'')+':\n'+body+'\n';}
+function crList(L,arr){if(!arr||!arr.length) return crW(L).none; return arr.map(p=>crPl(L,p)).join(', ');}
+function crListNak(L,arr){if(!arr||!arr.length) return crW(L).none; return arr.map(p=>{const n=V6_CHART.nak[p]; return crPl(L,p)+' ('+crNakName(L,n.idx)+(L==='en'?' nakshatra, lord: ':' नक्षत्र, स्वामी: ')+crPl(L,n.lord)+')';}).join(', ');}
+function crDrishti(L,entries){if(L==='hi') return v6drishtiList(entries); return v63drishti(L,entries);}
+function crAva(L,p){return L==='hi'?v6ava(p):v63ava(L,p);}
+function crPos(L,p){return L==='hi'?v6pPos(p):v63pos(L,p);}
+function crNakStr(L,p){return L==='hi'?v6pNak(p):v63nakStr(L,p);}
+function crFriend(L,a,b){return L==='hi'?v6friendTwo(a,b):v63friend(L,a,b);}
+function crRel(L,a,b){return L==='hi'?v6rel(a,b):v63rel(L,a,b);}
+function crJDr(L,sign){
+  if(L!=='hi') return v63jaiminiDrishti(L,sign);
+  const C=V6_CHART, aspecting=v6rashiDrishti(sign), out=[];
+  for(const r of aspecting){const pls=v6jaiminiPlanetsInSign(r,'D1'); out.push(V6_RASHI[r]+' राशि ('+V6_BHAVA[C.bhava(r)]+' भाव) ['+(pls.length?v6listPlanets(pls):'कोई ग्रह नहीं')+']');}
+  return out.length?out.join(' | '):'कोई नहीं';
+}
+function crArgala(L,bhavaNum,label){
+  if(L!=='hi') return v63argala(L,bhavaNum,label);
+  const C=V6_CHART; let out='';
+  const argHouses=[2,4,11,5], virodhHouses=[12,10,3,9];
+  for(const off of argHouses){const hb=((bhavaNum+off-2)%12)+1; out+=label+' '+V6_BHAVA[off]+' भाव में ('+V6_BHAVA[hb]+' भाव, '+V6_RASHI[C.rashiOfBhava(hb)]+' राशि): '+v6listPlanets(C.planetsInBhava[hb])+'. ';}
+  out+='विरोध: ';
+  for(const off of virodhHouses){const hb=((bhavaNum+off-2)%12)+1; out+=label+' '+V6_BHAVA[off]+' भाव में ('+V6_BHAVA[hb]+' भाव): '+v6listPlanets(C.planetsInBhava[hb])+'. ';}
+  return out;
+}
+function crSigHouses(p){const s=v6kpSigHousesForPlanet(p); return [...new Set([...s.A,...s.B,...s.C,...s.D])].sort((a,b)=>a-b);}
+function crSigText(L,house){
+  const res={A:[],B:[],C:[],D:[]};
+  for(const p of V6_PL_EN){const s=v6kpSigHousesForPlanet(p); if(s.A.includes(house)) res.A.push(p); if(s.B.includes(house)) res.B.push(p); if(s.C.includes(house)) res.C.push(p); if(s.D.includes(house)) res.D.push(p);}
+  const f=arr=>arr.length?arr.map(p=>crPl(L,p)).join(', '):'-';
+  return 'A: '+f(res.A)+' | B: '+f(res.B)+' | C: '+f(res.C)+' | D: '+f(res.D);
+}
+function crCsl(bhavaNum){const c=V6_CHART.kpCusps[bhavaNum-1]; return {planet:V6_KP_FULL[c.sl]||c.sl, cusp:c};}
+function crCslKP(p){return v6kpPlanetKP(p);}
+function crD10Obj(){
+  const C=V6_CHART, d10={}, d10Lon={};
+  for(const p of [...V6_PL_EN,'Lagna']){d10[p]=v6varga(C.pos[p], C.posDeg[p]%30, 10); const padaSize=3; const lonIn=(C.posDeg[p]%30)%padaSize; d10Lon[p]=(d10[p]*30 + lonIn*10)%360;}
+  const bhava=r=>((r-d10.Lagna)%12+12)%12+1; const planetsInBhava={}; for(let b=1;b<=12;b++) planetsInBhava[b]=[];
+  for(const p of V6_PL_EN) planetsInBhava[bhava(d10[p])].push(p);
+  const aspectedBy={}; for(let b=1;b<=12;b++) aspectedBy[b]=[];
+  for(const p of V6_PL_EN){const pb=bhava(d10[p]); for(const asp of (V6_ASPECT[p]||[7])){const tb=((pb+asp-2)%12)+1; aspectedBy[tb].push({p:p,asp:asp});}}
+  return {sign:d10, lon:d10Lon, bhava:bhava, planetsInBhava:planetsInBhava, aspectedBy:aspectedBy};
+}
+function crInduObj(){
+  const C=V6_CHART, kala={Sun:30,Moon:16,Mars:6,Mercury:8,Jupiter:10,Venus:12,Saturn:1};
+  const lagna9=(C.lagnaSign+8)%12, moonSign=C.pos.Moon, moon9=(moonSign+8)%12;
+  const l1=V6_LORD[lagna9], l2=V6_LORD[moon9]; let rem=(kala[l1]+kala[l2])%12; if(rem===0) rem=12;
+  const sign=(moonSign+rem-1)%12, bhava=C.bhava(sign), lord=V6_LORD[sign];
+  return {sign:sign,bhava:bhava,lord:lord,lagna9:lagna9,moon9:moon9,l1:l1,l2:l2,kalaSum:kala[l1]+kala[l2],rem:rem};
+}
+function crSunriseJD(ad){
+  const swe=window._swe; if(!swe) return null;
+  const eps=23.4392811*Math.PI/180, latRad=ad.lat*Math.PI/180;
+  function sunAlt(jd){
+    const r=swe.calculatePosition(jd, 0); const lam=r.longitude*Math.PI/180;
+    const dec=Math.asin(Math.sin(eps)*Math.sin(lam)); const ra=Math.atan2(Math.cos(eps)*Math.sin(lam), Math.cos(lam));
+    let gmst=(280.46061837 + 360.98564736629*(jd-2451545.0))%360; if(gmst<0) gmst+=360;
+    const gst=gmst*Math.PI/180; let H=gst - ra + ad.lon*Math.PI/180; H=((H+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI;
+    return Math.asin(Math.sin(latRad)*Math.sin(dec)+Math.cos(latRad)*Math.cos(dec)*Math.cos(H))*180/Math.PI;
+  }
+  function jdAtUT(y,mo,d,utH){const dt=new Date(Date.UTC(y,mo-1,d,0,0,0)+utH*3600000); return dt.getTime()/86400000+2440587.5;}
+  const target=-0.833; let lo=jdAtUT(ad.y,ad.mo,ad.d,0), hi=jdAtUT(ad.y,ad.mo,ad.d,24);
+  // find rising crossing by scan then bisect
+  let prevJd=lo, prevA=sunAlt(lo), found=null;
+  for(let i=1;i<=48;i++){const jd=lo+(hi-lo)*i/48, a=sunAlt(jd); if(prevA<target && a>=target){found=[prevJd,jd]; break;} prevJd=jd; prevA=a;}
+  if(!found) return null;
+  let a=found[0], b=found[1];
+  for(let i=0;i<30;i++){const m=(a+b)/2; if(sunAlt(m)<target) a=m; else b=m;}
+  return (a+b)/2;
+}
+function crGLObj(){
+  const C=V6_CHART; try{
+    const ad=C.ad; const srJd=crSunriseJD(ad); if(!srJd) return null;
+    const swe=window._swe; const ayan=swe.getAyanamsa(srJd); const hs=swe.calculateHouses(srJd, ad.lat, ad.lon, 'P');
+    const srAscSign=Math.floor(v6norm(hs.ascendant-ayan)/30);
+    const srDate=new Date((srJd-2440587.5)*86400000); const srLocalMin=srDate.getUTCHours()*60+srDate.getUTCMinutes()+ad.tzH*60;
+    let birthMin=ad.hh*60+ad.mm+ad.ss/60; let elapsed=birthMin-srLocalMin; if(elapsed<0) elapsed+=1440;
+    const ghat=Math.floor(elapsed/24); const sign=(srAscSign+ghat)%12; const bhava=C.bhava(sign);
+    return {sign:sign,bhava:bhava,srAscSign:srAscSign,ghat:ghat,elapsedMin:Math.round(elapsed)};
+  }catch(e){ return null; }
+}
+const CR_MONTH={hi:['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],mr:['जानेवारी','फेब्रुवारी','मार्च','एप्रिल','मे','जून','जुलै','ऑगस्ट','सप्टेंबर','ऑक्टोबर','नोव्हेंबर','डिसेंबर']};
+function crFmtDate(L,dt){return dt.getDate()+' '+CR_MONTH[L][dt.getMonth()]+' '+dt.getFullYear();}
+const CR_DAYS_PER_YEAR=365.256364;
+function crDashaObj(){
+  const C=V6_CHART; const moonLon=C.posDeg.Moon; const nakIdx=Math.floor(moonLon/(360/27))%27; const prog=((moonLon%(360/27))/(360/27));
+  const lordFull=V6_NAK_LORD[nakIdx]; const shortMap={Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
+  const startShort=shortMap[lordFull]; const si=V6_KP_ORDER.indexOf(startShort);
+  const birthMs=Date.UTC(C.ad.y,C.ad.mo-1,C.ad.d,C.ad.hh,C.ad.mm,C.ad.ss)-C.ad.tzH*3600000;
+  const dayMs=86400000; let cursor=birthMs - prog*V6_KP_YEARS[startShort]*CR_DAYS_PER_YEAR*dayMs; const mds=[];
+  for(let i=0;i<9;i++){const lord=V6_KP_ORDER[(si+i)%9]; const yrs=V6_KP_YEARS[lord]; const start=new Date(cursor); const end=new Date(cursor+yrs*CR_DAYS_PER_YEAR*dayMs); const ads=[]; let ac=cursor;
+    for(let j=0;j<9;j++){const al=V6_KP_ORDER[(V6_KP_ORDER.indexOf(lord)+j)%9]; const adur=yrs*V6_KP_YEARS[al]/120*CR_DAYS_PER_YEAR*dayMs; ads.push({lord:al,start:new Date(ac),end:new Date(ac+adur)}); ac+=adur;}
+    mds.push({lord:lord,full:V6_KP_FULL[lord],start:start,end:end,ads:ads}); cursor=end.getTime();}
+  const now=new Date(); let curMD=mds[0], curAD=mds[0].ads[0];
+  for(const md of mds){if(now>=md.start && now<md.end){curMD=md; for(const ad of md.ads){if(now>=ad.start && now<ad.end) curAD=ad;} break;}}
+  return {nakIdx:nakIdx,prog:prog,birthLord:lordFull,mds:mds,curMD:curMD,curAD:curAD,now:now};
+}
+function crDashaForSet(L,sigSet){
+  const D=crDashaObj(); const setNames=sigSet.map(p=>crPl(L,p)).join(', ');
+  const mdLines=D.mds.filter(md=>sigSet.includes(md.full)).map(md=>crPl(L,md.full)+': '+crFmtDate(L,md.start)+' - '+crFmtDate(L,md.end)).join(' | ');
+  const upcoming=[];
+  for(const md of D.mds){for(const ad of md.ads){if(ad.start>D.now && sigSet.includes(V6_KP_FULL[ad.lord])) upcoming.push(ad);}}
+  upcoming.sort((a,b)=>a.start-b.start); const up=upcoming.slice(0,5).map(ad=>crPl(L,V6_KP_FULL[ad.lord])+': '+crFmtDate(L,ad.start)+' - '+crFmtDate(L,ad.end)).join(' | ');
+  if(L==='en') return 'Significators: '+setNames+'. Mahadasha periods of significators: '+(mdLines||'None')+'. Current: '+crPl(L,D.curMD.full)+' MD, '+crPl(L,V6_KP_FULL[D.curAD.lord])+' AD. Upcoming significator antardashas: '+(up||'None')+'.';
+  if(L==='mr') return 'सिग्निफिकेटर: '+setNames+' . सिग्निफिकेटरांच्या महादशा: '+(mdLines||'कोणीही नाही')+' . सध्याची: '+crPl(L,D.curMD.full)+' महादशा, '+crPl(L,V6_KP_FULL[D.curAD.lord])+' अंतर्दशा . येणाऱ्या सिग्निफिकेटर अंतर्दशा: '+(up||'कोणीही नाही')+' .';
+  return 'सिग्निफिकेटर: '+setNames+'। सिग्निफिकेटर ग्रहों की महादशाएँ: '+(mdLines||'कोई नहीं')+'। वर्तमान: '+crPl(L,D.curMD.full)+' महादशा, '+crPl(L,V6_KP_FULL[D.curAD.lord])+' अंतर्दशा। आगामी सिग्निफिकेटर अंतर्दशाएँ: '+(up||'कोई नहीं')+'।';
+}
+function crStrongSig(L,houses){
+  const counts={}; for(const h of houses){const res={A:[],B:[],C:[],D:[]}; for(const p of V6_PL_EN){const s=v6kpSigHousesForPlanet(p); if(s.A.includes(h)) res.A.push(p); if(s.B.includes(h)) res.B.push(p); if(s.C.includes(h)) res.C.push(p); if(s.D.includes(h)) res.D.push(p);} for(const k of ['A','B','C','D']) for(const p of res[k]) counts[p]=(counts[p]||0)+1;}
+  const arr=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]); return {counts:counts,top:arr.slice(0,3),union:[...new Set(houses.flatMap(h=>{const u=[]; for(const p of V6_PL_EN){if(crSigHouses(p).includes(h)) u.push(p);} return u;}))]};
+}
+// ===== CHB Paste v4 builders (Parashari 7, Jaimini 4, BNN 2, KP 2; first set only) =====
+function chbIsMale(){ const g=document.getElementById('gender'); return !g || g.value==='जातक'; }
+function chbD7Obj(){
+  const C=V6_CHART, sign={}, lon={}, bhava={}, planetsInBhava={}, aspectedBy={};
+  for(let b=1;b<=12;b++){ planetsInBhava[b]=[]; aspectedBy[b]=[]; }
+  for(const p of [...V6_PL_EN,'Lagna']){
+    sign[p]=v6varga(C.pos[p], C.posDeg[p]%30, 7);
+    const padaSize=30/7, lonIn=(C.posDeg[p]%30)%padaSize;
+    lon[p]=(sign[p]*30 + lonIn*7)%360;
+  }
+  const bf=r=>((r-sign.Lagna)%12+12)%12+1;
+  for(const p of V6_PL_EN){ planetsInBhava[bf(sign[p])].push(p); }
+  for(const p of V6_PL_EN){ const pb=bf(sign[p]); for(const asp of (V6_ASPECT[p]||[7])){ const tb=((pb+asp-2)%12)+1; aspectedBy[tb].push({p:p,asp:asp}); } }
+  return {sign:sign, lon:lon, bhava:bf, planetsInBhava:planetsInBhava, aspectedBy:aspectedBy};
+}
+function chbNakFromLon(L, lon){
+  const n=v6nak(v6norm(lon));
+  return crNakName(L,n.idx)+(L==='en'?' nakshatra, lord: ':' नक्षत्र, स्वामी: ')+crPl(L,n.lord);
+}
+function chbCuspNak(L, lagnaLon, bhavaNum){
+  const cusp=v6norm(lagnaLon+(bhavaNum-1)*30), n=v6nak(cusp);
+  return crNakName(L,n.idx)+(L==='en'?' nakshatra, lord: ':' नक्षत्र, स्वामी: ')+crPl(L,n.lord);
+}
+function chbListLonNak(L, arr, lonMap){
+  if(!arr||!arr.length) return crW(L).none;
+  return arr.map(p=>crPl(L,p)+' ('+chbNakFromLon(L, lonMap[p])+')').join(', ');
+}
+function chbDegStr(L, lon){
+  const sign=Math.floor(v6norm(lon)/30), d=Math.floor(v6norm(lon)%30);
+  const rem=(v6norm(lon)%30-d)*60, m=Math.floor(rem), s=Math.round((rem-m)*60);
+  return d+'°'+m+"'"+s+'" '+crRa(L,sign);
+}
+function chbSphut(){
+  const C=V6_CHART, male=chbIsMale();
+  const parts = male? ['Sun','Venus','Jupiter'] : ['Moon','Mars','Jupiter'];
+  const lon=v6norm(parts.reduce((a,p)=>a+C.posDeg[p],0));
+  const sign=Math.floor(lon/30), degIn=lon%30;
+  const d9sign=v6varga(sign, degIn, 9);
+  return {male:male, parts:parts, lon:lon, sign:sign, degIn:degIn, d9sign:d9sign,
+    name: male? (document.getElementById('lang').value==='en'?'Beeja Sphuta':'बीज स्फुट') : (document.getElementById('lang').value==='en'?'Kshetra Sphuta':'क्षेत्र स्फुट')};
+}
+function chbVargaSec(L, V, secLabel){
+  // V: {sign, lon, bhava, planetsInBhava, aspectedBy} for D9 or D7; returns answers for a 14-q section (subs A6+B5+C3)
+  const C=V6_CHART;
+  const bhavaSign=b=>(V.sign.Lagna+b-1)%12;
+  const lordOfSign=s=>V6_LORD[s];
+  const nakCusp=b=>chbCuspNak(L, V.lon.Lagna, b);
+  const posInV=(p)=>{ const b=V.bhava(V.sign[p]); return crPl(L,p)+' '+crBh(L,b)+' '+(L==='en'?'house':'भाव')+', '+crRa(L,V.sign[p])+' '+(L==='en'?'sign':'राशि')+', '+chbNakFromLon(L, V.lon[p]); };
+  const yutiDrishti=(p)=>{ const b=V.bhava(V.sign[p]); const y=V.planetsInBhava[b].filter(x=>x!==p); return (L==='en'?('Yuti: '+crList(L,y)+'. Drishti: '+crDrishti(L,V.aspectedBy[b])+'.'):(L==='mr'?('युती: '+crList(L,y)+' . दृष्टी: '+crDrishti(L,V.aspectedBy[b])+' .'):('युति: '+crList(L,y)+'। दृष्टि: '+crDrishti(L,V.aspectedBy[b])+'।'))); };
+  const out=[];
+  // A: 5th bhava + lord in V
+  const s5=bhavaSign(5), l5=lordOfSign(s5);
+  out.push(crRa(L,s5)+' '+(L==='en'?'sign':'राशि')+', '+nakCusp(5));
+  out.push(chbListLonNak(L, V.planetsInBhava[5], V.lon));
+  out.push(crDrishti(L,V.aspectedBy[5]));
+  out.push(posInV(l5));
+  out.push(yutiDrishti(l5));
+  out.push(chbListLonNak(L, V.planetsInBhava[V.bhava(V.sign[l5])].filter(x=>x!==l5), V.lon));
+  // B: lagna + lord in V
+  out.push(crRa(L,V.sign.Lagna)+' '+(L==='en'?'sign':'राशि')+', '+chbNakFromLon(L, V.lon.Lagna));
+  out.push(chbListLonNak(L, V.planetsInBhava[1], V.lon));
+  const ll=lordOfSign(V.sign.Lagna);
+  out.push(posInV(ll));
+  out.push(yutiDrishti(ll));
+  out.push(posInV('Jupiter'));
+  // C: D1 panchamesh in V
+  const p5=V6_LORD[C.rashiOfBhava(5)];
+  out.push(posInV(p5));
+  out.push(crList(L, V.planetsInBhava[V.bhava(V.sign[p5])].filter(x=>x!==p5)));
+  out.push(crDrishti(L,V.aspectedBy[V.bhava(V.sign[p5])]));
+  return out;
+}
+function chbBuildParashari(L){
+  const C=V6_CHART, D7=chbD7Obj();
+  const lagnaLord=V6_LORD[C.lagnaSign], p5sign=C.rashiOfBhava(5), p5=V6_LORD[p5sign];
+  const D9={sign:C.d9, lon:C.d9Lon, bhava:C.d9bhava, planetsInBhava:C.planetsInD9Bhava, aspectedBy:C.aspectedByD9};
+  return chbRenderPart(L,0,(si,sec)=>{
+    if(si===0){
+      const yuti=C.planetsInBhava[C.bhava(C.pos[p5])].filter(p=>p!==p5);
+      return [crPl(L,p5), crPos(L,p5), crNakStr(L,p5), crList(L,yuti), crListNak(L,yuti), crDrishti(L,C.aspectedBy[C.bhava(C.pos[p5])]), crFriend(L,lagnaLord,p5)];
+    }
+    if(si===1){
+      return [crRa(L,p5sign)+' '+(L==='en'?'sign':'राशि')+', '+chbCuspNak(L, C.lagnaDeg, 5), crList(L,C.planetsInBhava[5]), crListNak(L,C.planetsInBhava[5]), crDrishti(L,C.aspectedBy[5])];
+    }
+    if(si===2) return chbVargaSec(L, D9);
+    if(si===3) return chbVargaSec(L, D7);
+    if(si===4){
+      const relJ=crRel(L,'Jupiter',p5);
+      const in5=C.bhava(C.pos.Jupiter)===5;
+      const asp5=C.aspectedBy[5].some(e=>e.p==='Jupiter');
+      const relTxt = L==='en'? ('Relation with 5th lord: '+relJ+'. Jupiter in 5th house: '+(in5?'Yes':'No')+'. Jupiter aspects 5th house: '+(asp5?'Yes':'No')+'.') : (L==='mr'? ('पंचमेशाशी संबंध: '+relJ+' . गुरू पंचम भावात आहे: '+(in5?'होय':'नाही')+' . गुरूची पंचम भावावर दृष्टी आहे: '+(asp5?'होय':'नाही')+' .') : ('पंचमेश से संबंध: '+relJ+'। गुरु पंचम भाव में है: '+(in5?'हाँ':'नहीं')+'। गुरु की पंचम भाव पर दृष्टि है: '+(asp5?'हाँ':'नहीं')+'।'));
+      return [crPos(L,'Jupiter'), relTxt, crNakStr(L,'Jupiter'), crPl(L,'Jupiter')+' D9 '+(L==='en'?'in':'में')+' '+crBh(L,C.d9bhava(C.d9.Jupiter))+' '+(L==='en'?'house':'भाव')+', '+crRa(L,C.d9.Jupiter)+' '+(L==='en'?'sign':'राशि')+', '+chbNakFromLon(L, C.d9Lon.Jupiter)];
+    }
+    if(si===5){
+      const s7=C.rashiOfBhava(7), l7=V6_LORD[s7];
+      return [L==='en'? ('7th house sign: '+crRa(L,s7)+', lord: '+crPl(L,l7)+'. Lord position: '+crPos(L,l7)+'.') : (L==='mr'? ('सप्तम भावाची राशी: '+crRa(L,s7)+', स्वामी: '+crPl(L,l7)+' . स्वामीची स्थिती: '+crPos(L,l7)+' .') : ('सप्तम भाव की राशि: '+crRa(L,s7)+', स्वामी: '+crPl(L,l7)+'। स्वामी की स्थिति: '+crPos(L,l7)+'।'))];
+    }
+    if(si===6){
+      const S=chbSphut();
+      const degAns=S.parts.map(p=>crPl(L,p)+': '+chbDegStr(L, C.posDeg[p]));
+      const sphAns=chbDegStr(L, S.lon);
+      const oddTxt = (S.sign%2===0) ? (L==='en'?'odd sign':(L==='mr'?'विषम राशी':'विषम राशि')) : (L==='en'?'even sign':(L==='mr'?'सम राशी':'सम राशि'));
+      const sphBhava=C.bhava(S.sign);
+      const yuti=C.planetsInBhava[sphBhava].filter(p=>C.pos[p]===S.sign);
+      const yd = L==='en'? ('Yuti (same sign): '+crList(L,yuti)+'. Drishti on its bhava ('+crBh(L,sphBhava)+' house): '+crDrishti(L,C.aspectedBy[sphBhava])+'.') : (L==='mr'? ('युती (त्याच राशीत): '+crList(L,yuti)+' . त्याच्या भावावर ( '+crBh(L,sphBhava)+' भाव) दृष्टी: '+crDrishti(L,C.aspectedBy[sphBhava])+' .') : ('युति (उसी राशि में): '+crList(L,yuti)+'। उसके भाव ('+crBh(L,sphBhava)+' भाव) पर दृष्टि: '+crDrishti(L,C.aspectedBy[sphBhava])+'।'));
+      return [...degAns, sphAns, oddTxt, yd, crRa(L,S.d9sign)+' '+(L==='en'?'sign':'राशि')];
+    }
+    return [];
+  });
+}
+function chbBuildJaimini(L){
+  const C=V6_CHART, kar=C.karakas, PK=kar.Putrakaraka, AK=kar.Atmakaraka;
+  const a5Bhava=C.arudha[5], a5Sign=C.rashiOfBhava(a5Bhava);
+  return chbRenderPart(L,1,(si,sec)=>{
+    if(si===0){
+      return [crPl(L,PK), crPos(L,PK)+' '+(L==='en'?('Drishti on PK bhava: '+crDrishti(L,C.aspectedBy[C.bhava(C.pos[PK])])+'.'):(L==='mr'?('PK भावावर दृष्टी: '+crDrishti(L,C.aspectedBy[C.bhava(C.pos[PK])])+' .'):('PK भाव पर दृष्टि: '+crDrishti(L,C.aspectedBy[C.bhava(C.pos[PK])])+'।')))];
+    }
+    if(si===1){
+      const dist=((C.bhava(C.pos[PK])-C.bhava(C.pos[AK]))%12+12)%12+1;
+      const kind=(dist===1||dist===4||dist===7||dist===10)?(L==='en'?'kendra':(L==='mr'?'केंद्र':'केंद्र')):((dist===5||dist===9)?(L==='en'?'trikona':(L==='mr'?'त्रिकोण':'त्रिकोण')):(L==='en'?'not kendra/trikona':(L==='mr'?'केंद्र/त्रिकोण नाही':'केंद्र/त्रिकोण नहीं')));
+      return [L==='en'? ('From AK, PK is in the '+crBh(L,dist)+' house: '+kind+'.') : (L==='mr'? ('AK पासून PK '+crBh(L,dist)+' भावात आहे: '+kind+' .') : ('AK से PK '+crBh(L,dist)+' भाव में है: '+kind+' है।'))];
+    }
+    if(si===2){
+      const alBhava=C.arudha[1];
+      const relAL=((alBhava-a5Bhava)%12+12)%12+1, relAK=((C.bhava(C.pos[AK])-a5Bhava)%12+12)%12+1, relPK=((C.bhava(C.pos[PK])-a5Bhava)%12+12)%12+1;
+      return [L==='en'? ('A5 is in '+crRa(L,a5Sign)+' sign, in the '+crBh(L,a5Bhava)+' house.') : (L==='mr'? ('A5 '+crRa(L,a5Sign)+' राशीत, '+crBh(L,a5Bhava)+' भावात आहे.') : ('A5 '+crRa(L,a5Sign)+' राशि में, '+crBh(L,a5Bhava)+' भाव में स्थित है।')),
+        crList(L,C.planetsInBhava[a5Bhava])+' | '+(L==='en'?'Jaimini rashi drishti on A5 sign: ':'जैमिनी राशि दृष्टि A5 राशि पर: ')+crJDr(L,a5Sign),
+        L==='en'? ('From A5: AL is in the '+crBh(L,relAL)+' house, AK in the '+crBh(L,relAK)+' house, PK in the '+crBh(L,relPK)+' house.') : (L==='mr'? ('A5 पासून: AL '+crBh(L,relAL)+' भावात, AK '+crBh(L,relAK)+' भावात, PK '+crBh(L,relPK)+' भावात आहे.') : ('A5 से: AL '+crBh(L,relAL)+' भाव में, AK '+crBh(L,relAK)+' भाव में, PK '+crBh(L,relPK)+' भाव में है।'))];
+    }
+    if(si===3){
+      const lab5=L==='en'?'from the 5th house':(L==='mr'?'पंचम भावापासून':'पंचम भाव से');
+      const labPK=L==='en'?'from Putrakaraka':(L==='mr'?'पुत्रकारकापासून':'पुत्रकारक से');
+      const labA5=L==='en'?'from A5':(L==='mr'?'A5 पासून':'A5 से');
+      return [crArgala(L,5,lab5), crArgala(L,C.bhava(C.pos[PK]),labPK), crArgala(L,a5Bhava,labA5)];
+    }
+    return [];
+  });
+}
+function chbBuildBNN(L){
+  const C=V6_CHART;
+  return chbRenderPart(L,2,(si,sec)=>{
+    if(si===0){
+      const fifthFromJu=(C.pos.Jupiter+4)%12;
+      const inFifth=C.planetsInBhava[C.bhava(fifthFromJu)].filter(p=>p!=='Jupiter');
+      const triSigns=[C.pos.Jupiter,(C.pos.Jupiter+4)%12,(C.pos.Jupiter+8)%12];
+      const triPls=[]; for(const s of triSigns){ for(const p of V6_PL_EN){ if(C.pos[p]===s && p!=='Jupiter') triPls.push(p); } }
+      const hasVe=triPls.includes('Venus'), hasMo=triPls.includes('Moon');
+      return [crList(L,inFifth), L==='en'? ('Trikona (1-5-9) from Jupiter signs: '+triSigns.map(s=>crRa(L,s)).join(', ')+'. Planets there: '+crList(L,triPls)+'. Venus present: '+(hasVe?'Yes':'No')+'. Moon present: '+(hasMo?'Yes':'No')+'.') : (L==='mr'? ('गुरूपासून त्रिकोण (1-5-9) राशी: '+triSigns.map(s=>crRa(L,s)).join(', ')+' . तेथील ग्रह: '+crList(L,triPls)+' . शुक्र आहे: '+(hasVe?'होय':'नाही')+' . चंद्र आहे: '+(hasMo?'होय':'नाही')+' .') : ('गुरु से त्रिकोण (1-5-9) राशियाँ: '+triSigns.map(s=>crRa(L,s)).join(', ')+'। वहाँ के ग्रह: '+crList(L,triPls)+'। शुक्र है: '+(hasVe?'हाँ':'नहीं')+'। चंद्रमा है: '+(hasMo?'हाँ':'नहीं')+'।'))];
+    }
+    if(si===1){
+      const maleRel=['Sun','Mars','Ketu'].map(p=>crPl(L,p)+': '+crRel(L,'Jupiter',p)).join(' | ');
+      const femaleRel=['Venus','Moon','Rahu'].map(p=>crPl(L,p)+': '+crRel(L,'Jupiter',p)).join(' | ');
+      return [maleRel, femaleRel];
+    }
+    return [];
+  });
+}
+function chbBuildKP(L){
+  const C=V6_CHART;
+  const c5=crCsl(5), sig=crSigHouses(c5.planet);
+  const sigText=p=>{const s=v6kpSigHousesForPlanet(p); return 'A: '+s.A.join(', ')+' | B: '+s.B.join(', ')+' | C: '+s.C.join(', ')+' | D: '+s.D.join(', ');};
+  return chbRenderPart(L,3,(si,sec)=>{
+    if(si===0){
+      const fav=[2,5,11].filter(h=>sig.includes(h)), deny=[1,4,10].filter(h=>sig.includes(h));
+      return [crPl(L,c5.planet),
+        L==='en'? ('5th CSL ('+crPl(L,c5.planet)+') signifying houses: '+sigText(c5.planet)+'. Of 2, 5, 11: '+(fav.join(', ')||crW(L).none)+'.') : (L==='mr'? ('5th CSL ('+crPl(L,c5.planet)+') सिग्निफाय करणारे भाव: '+sigText(c5.planet)+' . 2, 5, 11 पैकी: '+(fav.join(', ')||crW(L).none)+' .') : ('5वाँ CSL ('+crPl(L,c5.planet)+') जिन भावों को सिग्निफाई कर रहा है: '+sigText(c5.planet)+'। 2, 5, 11 में से: '+(fav.join(', ')||crW(L).none)+'।')),
+        L==='en'? ('Denying houses signified (1, 4, 10): '+(deny.join(', ')||crW(L).none)+'.') : (L==='mr'? ('नाकारणारे भाव सिग्निफाय केलेले (1, 4, 10): '+(deny.join(', ')||crW(L).none)+' .') : ('नकारने वाले भाव सिग्निफाई किए गए (1, 4, 10): '+(deny.join(', ')||crW(L).none)+'।'))];
+    }
+    if(si===1){
+      const hasAlt=[4,8,12].filter(h=>sig.includes(h)), hasFav=[2,5,11].filter(h=>sig.includes(h));
+      const cond = hasAlt.length>0 && hasFav.length>0;
+      return [L==='en'? ('Condition check - 5th CSL shows 4/8/12: '+(hasAlt.join(', ')||crW(L).none)+'; shows 2/5/11: '+(hasFav.join(', ')||crW(L).none)+'. IVF/adoption indication: '+(cond?'possible':'not indicated by this CSL condition')+'.') : (L==='mr'? ('अट तपासणी - 5th CSL 4/8/12 दर्शवतो: '+(hasAlt.join(', ')||crW(L).none)+' ; 2/5/11 दर्शवतो: '+(hasFav.join(', ')||crW(L).none)+' . IVF/दत्तक ग्रहण संकेत: '+(cond?'शक्य':'या CSL अटीने दर्शवलेला नाही')+' .') : ('शर्त जाँच - 5वाँ CSL 4/8/12 दर्शाता है: '+(hasAlt.join(', ')||crW(L).none)+'। 2/5/11 दर्शाता है: '+(hasFav.join(', ')||crW(L).none)+'। IVF/दत्तक ग्रहण संकेत: '+(cond?'संभव है':'इस CSL शर्त से संकेत नहीं मिलता')+'।'))];
+    }
+    return [];
+  });
+}
+function chbRenderPart(L,partIdx,answerFn){
+  const part=CHB_Q[L][partIdx]; let out=part.title.replace(/:\s*$/,'')+':\n\n';
+  const isMale=chbIsMale();
+  part.sections.forEach((sec,si)=>{
+    const ans=answerFn(si,sec); let body=''; let ai=0;
+    sec.subs.forEach(sub=>{
+      if(partIdx===0 && si===6){
+        if((isMale && sub.label!=='M') || (!isMale && sub.label!=='F')) return;
+        body+=(sub.title||'')+'\n';
+      } else if(sub.label) body+=sub.label+'] '+(sub.title||'')+'\n';
+      sub.qs.forEach(q=>{body+=crQ(L,q, ans[ai]!==undefined?ans[ai]:crW(L).na); ai++;});
+    });
+    out+=crSec(String(sec.num)+']', sec.title, body);
+  });
+  return out;
+}
+async function chbFillAuto(force){
+  const btn=document.getElementById('astroFillBtn'); if(btn) btn.disabled=true;
+  const chart=await v6calcChart(); if(!chart){ if(btn) btn.disabled=false; return; }
+  const _lang=document.getElementById('lang').value||'hi';
+  const data={dataParashari:chbBuildParashari(_lang), dataJaimini:chbBuildJaimini(_lang), dataBNN:chbBuildBNN(_lang), dataKP:chbBuildKP(_lang)};
+  const filled=[], skipped=[];
+  for(const id of Object.keys(data)){const el=document.getElementById(id); if(!el) continue; if(!force && el.value.trim()!==''){skipped.push(id); continue;} el.value=data[id]; filled.push(id);}
+  v6setMsg('astroMsg', 'ऑटो-फिल हो गया। भरे गए: '+filled.join(', ')+(skipped.length? '। पहले से भरे हुए (नहीं छेड़े गए): '+skipped.join(', ')+'। इन्हें बदलने के लिए नीचे दिए गए दो-टैप बटन का उपयोग करें।' : '।'), true);
+  if(btn) btn.disabled=false; const gen=document.getElementById('createBtn'); if(gen) gen.disabled=false;
+}
+let chbRefillArmed=false, chbRefillTimer=null;
+function chbRefillTap(){
+  const btn=document.getElementById('astroRefillBtn'); if(!btn) return;
+  if(!chbRefillArmed){ chbRefillArmed=true; btn.textContent='पक्का? फिर दबाएं'; if(chbRefillTimer) clearTimeout(chbRefillTimer); chbRefillTimer=setTimeout(()=>{ chbRefillArmed=false; btn.textContent='ऑटो-फिल से फिर से भरें (दो-टैप)'; }, 3000); return; }
+  chbRefillArmed=false; if(chbRefillTimer) clearTimeout(chbRefillTimer); btn.textContent='ऑटो-फिल से फिर से भरें (दो-टैप)'; chbFillAuto(true);
+}
+
+</script>
 </body>
 </html>
