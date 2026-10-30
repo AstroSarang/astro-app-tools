@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KP BTR v1.1 — 1st Cusp SSL Timeline</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;background:#f0f2f5;color:#1d2129;margin:0;padding:14px}
+.container{max-width:880px;margin:8px auto;background:#fff;padding:22px 24px;border-radius:10px;box-shadow:0 2px 15px rgba(0,0,0,.08);border:1px solid #e0e0e0}
+h1{text-align:center;color:#0d3b66;font-size:1.35em;margin:0 0 2px}
+.ver{display:inline-block;background:#1a73e8;color:#fff;font-size:.6em;padding:2px 10px;border-radius:12px;vertical-align:middle;margin-left:8px}
+.sub{text-align:center;color:#666;font-size:.85em;margin-bottom:12px}
+.card{background:#f8fafc;border:1px solid #e0e0e0;border-radius:8px;padding:14px;margin-bottom:12px}
+.card h2{font-size:1em;color:#0d3b66;margin:0 0 10px}
+label{font-size:.85em;font-weight:600;color:#444;display:block;margin:8px 0 4px}
+input[type=text]{width:100%;padding:9px 10px;border:1px solid #ccc;border-radius:6px;font-size:.95em}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{background:#1a73e8;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:.95em;font-weight:600;cursor:pointer;margin-top:10px}
+.btn:hover{background:#1558b0}
+.shot{display:block;margin:14px auto;background:#ff9800;color:#fff;border:none;border-radius:8px;padding:10px 26px;font-size:.95em;font-weight:600;cursor:pointer}
+.txtb{display:block;margin:10px auto;background:#1a73e8;color:#fff;border:none;border-radius:8px;padding:10px 26px;font-size:.95em;font-weight:600;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:.88em;margin-top:8px}
+th{background:#0d3b66;color:#fff;padding:8px;text-align:left}
+td{border-bottom:1px solid #e8eaed;padding:7px 8px}
+tr:nth-child(even) td{background:#f8fafc}
+h3{color:#0d3b66;font-size:1em;margin:16px 0 6px}
+.note{background:#e3f2fd;border:1px solid #90caf9;border-radius:6px;padding:8px 12px;font-size:.85em;color:#0d47a1;margin:10px 0}
+.err{background:#ffebee;border:1px solid #ef9a9a;color:#b71c1c;border-radius:6px;padding:8px 12px;font-size:.88em;margin:10px 0;display:none}
+.status{font-size:.85em;color:#555;margin-top:8px;min-height:1.2em}
+.tgl{width:52px;height:26px;border-radius:13px;background:#ccc;position:relative;cursor:pointer;transition:.2s;display:inline-block;vertical-align:middle}
+.tgl.on{background:#2e7d32}
+.tgl::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s}
+.tgl.on::after{left:28px}
+.tgl-row{display:flex;align-items:center;gap:10px;margin:10px 0;font-size:.9em}
+.pr-box{position:relative}
+.pr-results{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:0 0 6px 6px;max-height:220px;overflow-y:auto;z-index:50;display:none;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.pr-item{padding:9px 12px;font-size:.88em;cursor:pointer;border-bottom:1px solid #f0f0f0}
+.pr-item:hover{background:#e3f2fd}
+.pr-none{padding:9px 12px;font-size:.85em;color:#888}
+.foot{text-align:center;color:#888;font-size:.78em;margin-top:12px}
+@media(max-width:700px){.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>KP BTR <span class="ver">v1.1</span></h1>
+<div class="sub">BTR रिपोर्ट Sec 25/26/27 के लिए KP data — सिर्फ data, judgement Gemini करेगा</div>
+
+<div class="card">
+<h2>📋 जन्म विवरण</h2>
+<label>Astro Code (optional — भरने पर तिथि/समय/स्थान auto):</label>
+<div style="display:flex;gap:8px">
+<input type="text" id="astro" placeholder="AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W" style="flex:1">
+<button class="btn" style="margin-top:0" onclick="fillAstro()">भरो</button>
+</div>
+<div class="row2">
+<div><label>जन्म तिथि (dd-mm-yyyy):</label><input type="text" id="b-date" placeholder="14-02-1995" value="14-02-1995"></div>
+<div><label>जन्म समय (HH:MM:SS):</label><input type="text" id="b-time" placeholder="03:00:00" value="03:00:00"></div>
+</div>
+<label>जन्म स्थान (English में type करें — worldwide search):</label>
+<div class="pr-box">
+<input type="text" id="b-city" placeholder="Gondia" autocomplete="off" value="Gondia">
+<div class="pr-results" id="b-city-results"></div>
+</div>
+<div class="row2">
+<div><label>Latitude:</label><input type="text" id="b-lat" value="21.3167"></div>
+<div><label>Longitude:</label><input type="text" id="b-lon" value="79.8500"></div>
+</div>
+<div class="status" id="birth-status"></div>
+</div>
+
+<div class="card">
+<h2>⏱️ Window</h2>
+<div class="row2">
+<div><label>से (HH:MM:SS):</label><input type="text" id="w-from" placeholder="03:00:00" value="03:00:00"></div>
+<div><label>तक (HH:MM:SS):</label><input type="text" id="w-to" placeholder="auto +90 sec" value="03:01:30"></div>
+</div>
+<div class="tgl-row"><span>लिंग:</span><span class="tgl on" id="gender-tgl" onclick="tglGender(this)"></span><span id="gender-lab" style="font-weight:700">पुरुष</span></div>
+<button class="btn" onclick="calcKP()">KP Data निकालें</button>
+<div class="err" id="kp-err"></div>
+</div>
+
+<div id="kp-out"></div>
+<div class="foot">KP BTR v1.1 • KP Ayanamsa (Lahiri − 5'26.22") • Placidus • tools give data, judgement Gemini करेगा</div>
+</div>
+
+<script type="module">
+
+/* ================= Swiss ================= */
+const EPHEM_CDN='https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+let _swe=null,_sweLoading=null,_SEP=null,_SLP=null;
+async function ensureSwe(){
+    if(_swe)return _swe;
+    if(_sweLoading)return _sweLoading;
+    _sweLoading=(async()=>{
+        const m=await import(/* @vite-ignore */EPHEM_CDN);
+        const swe=new m.SwissEphemeris();await swe.init();
+        swe.setSiderealMode(m.SiderealMode.Lahiri);
+        _swe=swe;_SEP=m.Planet;_SLP=m.LunarPoint;return swe;
+    })();
+    return _sweLoading;
+}
+const norm360=x=>((x%360)+360)%360;
+
+/* ================= KP constants (v26 verified) ================= */
+const VIM_ORDER=['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const VIM_YEARS={Ke:7,Ve:20,Su:6,Mo:10,Ma:7,Ra:18,Ju:16,Sa:19,Me:17};
+const NAK_LORDS=['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const NAK_HI=['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','अश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वभाद्रपद','उत्तरभाद्रपद','रेवती'];
+const SIGN_LORD=['Ma','Ve','Me','Mo','Su','Me','Ve','Ma','Ju','Sa','Sa','Ju'];
+const RASHI_HI=['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुम्भ','मीन'];
+const GRAHA_HI={Su:'सूर्य',Mo:'चंद्र',Ma:'मंगल',Me:'बुध',Ju:'गुरु',Ve:'शुक्र',Sa:'शनि',Ra:'राहु',Ke:'केतु'};
+const GENDER_HI={Su:'पुरुष',Ma:'पुरुष',Ju:'पुरुष',Mo:'स्त्री',Ve:'स्त्री',Ra:'स्त्री',Me:'तटस्थ',Sa:'तटस्थ',Ke:'तटस्थ'};
+const TATTVA_HI={Su:'अग्नि',Ma:'अग्नि',Ke:'अग्नि',Mo:'जल',Ve:'जल',Me:'पृथ्वी',Sa:'वायु',Ra:'वायु',Ju:'आकाश'};
+const KP_AYA_OFFSET=5+26.22/60;
+const DAY_LORD_HI={Su:'सूर्य',Mo:'चंद्र',Ma:'मंगल',Me:'बुध',Ju:'गुरु',Ve:'शुक्र',Sa:'शनि'};
+const DAY_ORDER=['Su','Mo','Ma','Me','Ju','Ve','Sa']; // Sunday first
+
+function getSubLords(nakIdx){
+    const total=800.0,start=nakIdx%9,res=[];let pos=0;
+    for(let i=0;i<9;i++){
+        const lord=VIM_ORDER[(start+i)%9],w=VIM_YEARS[lord]/120*total;
+        res.push({lord,s:pos,e:pos+w});pos+=w;
+    }
+    return res;
+}
+function getLords(absMin,nakIdx){
+    const nakStart=nakIdx*800,din=absMin-nakStart,subs=getSubLords(nakIdx);
+    for(const sub of subs){
+        if(sub.s<=din&&din<sub.e){
+            const si=VIM_ORDER.indexOf(sub.lord),wtot=sub.e-sub.s;
+            let pos=sub.s;
+            for(let i=0;i<9;i++){
+                const ssl=VIM_ORDER[(si+i)%9],w=VIM_YEARS[ssl]/120*wtot;
+                if(pos<=din&&din<pos+w)return{sl:sub.lord,ssl};
+                pos+=w;
+            }
+        }
+    }
+    return{sl:'?',ssl:'?'};
+}
+
+/* ================= Date utils ================= */
+function parseDMY(s){
+    const m=String(s||'').trim().match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if(!m)return null;
+    return{y:+m[3],mo:+m[2],d:+m[1]};
+}
+function parseHMS(s){
+    const m=String(s||'').trim().match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+    if(!m)return null;
+    return{h:+m[1],mi:+m[2],s:+(m[3]||0)};
+}
+function jdFromYMDH(y,mo,d,utH){
+    let Y=y,M=mo;
+    if(M<=2){Y--;M+=12;}
+    const A=Math.floor(Y/100),B=2-A+Math.floor(A/4);
+    return Math.floor(365.25*(Y+4716))+Math.floor(30.6001*(M+1))+d+B-1524.5+utH/24;
+}
+function jdToIST(jd){
+    const j=jd+5.5/24+0.5,Z=Math.floor(j),F=j-Z;
+    let A=Z;
+    if(Z>=2299161){const a=Math.floor((Z-1867216.25)/36524.25);A=Z+1+a-Math.floor(a/4);}
+    const B=A+1524,C=Math.floor((B-122.1)/365.25),D=Math.floor(365.25*C),E=Math.floor((B-D)/30.6001);
+    const day=B-D-Math.floor(30.6001*E)+F;
+    const mo=E<14?E-1:E-13,yr=mo>2?C-4716:C-4715;
+    const dd=Math.floor(day),fh=(day-dd)*24,hh=Math.floor(fh),mi=Math.floor((fh-hh)*60),ss=Math.round((((fh-hh)*60)-mi)*60);
+    return{y:yr,mo,dd,hh,mi,ss};
+}
+const p2=n=>String(n).padStart(2,'0');
+function fmtHMS(jd){const t=jdToIST(jd);return `${p2(t.hh)}:${p2(t.mi)}:${p2(t.ss)}`;}
+function fmtD(jd){const t=jdToIST(jd);return `${p2(t.dd)}-${p2(t.mo)}-${t.y}`;}
+function showErr(id,msg){const e=document.getElementById(id);e.textContent=msg;e.style.display=msg?'block':'none';}
+
+/* Sunrise (NOAA) — returns UT hours on given date, null if polar */
+function sunriseUT(y,mo,d,lat,lon){
+    const rad=Math.PI/180;
+    const N=Math.floor(275*mo/9)-Math.floor((mo+9)/12*(1+Math.floor((y-4*Math.floor(y/4)+2)/3)))+d-30;
+    const lngHour=lon/15,t=N+((6-lngHour)/24);
+    const M=(0.9856*t)-3.289;
+    let L=M+(1.916*Math.sin(M*rad))+(0.020*Math.sin(2*M*rad))+282.634;
+    L=norm360(L);
+    let RA=Math.atan(0.91764*Math.tan(L*rad))/rad;
+    RA=norm360(RA);
+    RA+=Math.floor(L/90)*90-Math.floor(RA/90)*90;
+    RA/=15;
+    const sinDec=0.39782*Math.sin(L*rad),cosDec=Math.cos(Math.asin(sinDec));
+    const cosH=(Math.cos(90.833*rad)-sinDec*Math.sin(lat*rad))/(cosDec*Math.cos(lat*rad));
+    if(cosH>1||cosH<-1)return null;
+    const H=(360-Math.acos(cosH)/rad)/15;
+    const T=H+RA-(0.06571*t)-6.622;
+    return((T-lngHour)%24+24)%24;
+}
+
+/* ================= KP engine ================= */
+function kpAyaAt(jd){return _swe.getAyanamsa(jd)-KP_AYA_OFFSET/60;}
+function kpAsc(jd,lat,lon,aya){
+    const hs=_swe.calculateHouses(jd,lat,lon,'P');
+    return norm360(hs.ascendant-aya);
+}
+function kpCuspN(jd,lat,lon,n,aya){
+    // n: 1-12; handle v26 rotation quirk
+    const hs=_swe.calculateHouses(jd,lat,lon,'P');
+    let arr=(hs&&(hs.cusps||hs.houses))||[];
+    if(arr.length>=12){
+        const ascCheck=norm360(arr[1]-aya),ascSid=norm360(hs.ascendant-aya);
+        if(Math.abs(ascCheck-ascSid)<1.0)arr=arr.slice(1).concat([arr[0]]);
+    }
+    return norm360(arr[n-1]-aya);
+}
+function sslOf(lon){
+    const nakIdx=Math.floor(lon/(360/27))%27;
+    const nl=NAK_LORDS[nakIdx];
+    const{sl,ssl}=getLords(lon*60,nakIdx);
+    return{nl,sl,ssl,nakIdx};
+}
+const PLANET_MAP=()=>({Su:_SEP.Sun,Mo:_SEP.Moon,Ma:_SEP.Mars,Me:_SEP.Mercury,Ju:_SEP.Jupiter,Ve:_SEP.Venus,Sa:_SEP.Saturn,Ra:_SLP.MeanNode});
+function planetSid(jd,sh,aya){
+    let trop;
+    if(sh==='Ke')trop=norm360(_swe.calculatePosition(jd,_SLP.MeanNode,0).longitude+180);
+    else trop=_swe.calculatePosition(jd,PLANET_MAP()[sh],0).longitude;
+    return norm360(trop-aya);
+}
+
+/* ================= UI ================= */
+let _isMale=true;
+window.tglGender=function(el){
+    _isMale=!_isMale;
+    el.classList.toggle('on',_isMale);
+    document.getElementById('gender-lab').textContent=_isMale?'पुरुष':'स्त्री';
+};
+let _lastTXT='';
+window.calcKP=async function(){
+    showErr('kp-err','');
+    try{
+        const dm=parseDMY(document.getElementById('b-date').value);
+        if(!dm)throw 'जन्म तिथि dd-mm-yyyy में लिखें।';
+        const bt=parseHMS(document.getElementById('b-time').value);
+        if(!bt)throw 'जन्म समय HH:MM:SS में लिखें।';
+        const lat=parseFloat(document.getElementById('b-lat').value),lon=parseFloat(document.getElementById('b-lon').value);
+        if(!(lat>-90&&lat<90&&lon>-180&&lon<180))throw 'Latitude/Longitude सही भरें।';
+        const wf=parseHMS(document.getElementById('w-from').value);
+        if(!wf)throw 'Window का शुरुआती समय HH:MM:SS में लिखें।';
+        let wt=parseHMS(document.getElementById('w-to').value);
+        const jdB=jdFromYMDH(dm.y,dm.mo,dm.d,bt.h+bt.mi/60+bt.s/3600-5.5);
+        const jd0=jdFromYMDH(dm.y,dm.mo,dm.d,wf.h+wf.mi/60+wf.s/3600-5.5);
+        let jd1;
+        if(wt)jd1=jdFromYMDH(dm.y,dm.mo,dm.d,wt.h+wt.mi/60+wt.s/3600-5.5);
+        else jd1=jd0+90/86400;
+        if(jd1<=jd0)throw 'Window का अंतिम समय शुरुआती से आगे होना चाहिए।';
+        if(jd1-jd0>3600/86400)throw 'Window 60 मिनट से बड़ी नहीं होनी चाहिए।';
+
+        const swe=await ensureSwe();
+        const aya=kpAyaAt((jd0+jd1)/2);
+
+        /* --- SSL timeline sweep (per second) --- */
+        const segs=[];
+        let prevSSL=null,segStart=jd0;
+        const total=Math.round((jd1-jd0)*86400);
+        for(let s=0;s<=total;s++){
+            const j2=jd0+s/86400;
+            const asc=kpAsc(j2,lat,lon,aya);
+            const{ssl}=sslOf(asc);
+            if(ssl!==prevSSL){
+                if(prevSSL!==null)segs.push({from:segStart,to:j2-1/86400,ssl:prevSSL});
+                segStart=j2;prevSSL=ssl;
+            }
+        }
+        segs.push({from:segStart,to:jd1,ssl:prevSSL});
+
+        /* --- planet signs for SSL planets --- */
+        const sslPlanets=[...new Set(segs.map(s=>s.ssl))];
+        const plSign={};
+        sslPlanets.forEach(sh=>{plSign[sh]=Math.floor(planetSid(jd0,sh,aya)/30);});
+
+        /* --- Ruling Planets --- */
+        const asc0=kpAsc(jd0,lat,lon,aya);
+        const ascL=sslOf(asc0);
+        const moonLon=planetSid(jd0,'Mo',aya);
+        const moonL=sslOf(moonLon);
+        const moonSignLord=SIGN_LORD[Math.floor(moonLon/30)%12];
+        // day lord with Vedic sunrise rule
+        const srUT=sunriseUT(dm.y,dm.mo,dm.d,lat,lon);
+        const birthUT=bt.h+bt.mi/60+bt.s/3600-5.5;
+        const usePrevDay=(srUT!==null&&birthUT<srUT);
+        const effJD=usePrevDay?jdB-1:jdB;
+        const wd=Math.floor(effJD+5.5/24+1.5)%7; // IST calendar weekday, 0=Sunday
+        const dayLord=DAY_ORDER[wd];
+
+        /* --- 4th / 9th cusp SL --- */
+        const c4=kpCuspN(jd0,lat,lon,4,aya),c9=kpCuspN(jd0,lat,lon,9,aya);
+        const sl4=sslOf(c4).sl,sl9=sslOf(c9).sl;
+
+        /* --- render --- */
+        const gender=_isMale?'पुरुष':'स्त्री';
+        let h=`<div class="note">📌 Window: <b>${fmtHMS(jd0)} → ${fmtHMS(jd1)}</b> (${total} sec) &nbsp;|&nbsp; लिंग: <b>${gender}</b> &nbsp;|&nbsp; KP ayanamsa (Lahiri − 5'26.22"), Placidus</div>`;
+        h+=`<h3>1st Cusp SSL Timeline (${segs.length} segments) — Sec 25/26</h3>`;
+        h+=`<table><tr><th>समय</th><th>SSL</th><th>राशि</th><th>ग्रह-लिंग</th><th>तत्व</th><th>राशि-लिंग</th></tr>`;
+        segs.forEach(sg=>{
+            const sh=sg.ssl,si=plSign[sh],signHi=RASHI_HI[si];
+            const signGender=(si%2===0)?'पुरुष':'स्त्री';
+            h+=`<tr><td>${fmtHMS(sg.from)} → ${fmtHMS(sg.to)}</td><td><b>${GRAHA_HI[sh]}</b></td><td>${signHi}</td><td>${GENDER_HI[sh]}</td><td>${TATTVA_HI[sh]}</td><td>${signGender}</td></tr>`;
+        });
+        h+='</table>';
+        h+=`<div class="note">Section 25 (तत्त्व शोधन): ऊपर के ग्रह-लिंग/तत्व/राशि-लिंग से Gemini SSL filter करेगा। Section 26: नीचे के RP से match करके 15-20 sec चुनेगा।</div>`;
+        h+=`<h3>Ruling Planets — Sec 26</h3><table><tr><th>RP</th><th>ग्रह</th></tr>`;
+        h+=`<tr><td>लग्न नक्षत्र स्वामी</td><td><b>${GRAHA_HI[ascL.nl]}</b></td></tr>`;
+        h+=`<tr><td>चंद्र नक्षत्र स्वामी</td><td><b>${GRAHA_HI[moonL.nl]}</b> (चंद्र: ${NAK_HI[moonL.nakIdx]})</td></tr>`;
+        h+=`<tr><td>चंद्र राशि स्वामी</td><td><b>${GRAHA_HI[moonSignLord]}</b></td></tr>`;
+        h+=`<tr><td>दिन स्वामी (sunrise rule)</td><td><b>${DAY_LORD_HI[dayLord]}</b>${usePrevDay?' — जन्म सूर्योदय से पहले, वैदिक तिथि एक दिन पहले':''}</td></tr></table>`;
+        h+=`<h3>Genetic Verification — Sec 27</h3><table><tr><th>भाव</th><th>Sub-Lord</th></tr>`;
+        h+=`<tr><td>4th (माता)</td><td><b>${GRAHA_HI[sl4]}</b></td></tr>`;
+        h+=`<tr><td>9th (पिता)</td><td><b>${GRAHA_HI[sl9]}</b></td></tr></table>`;
+        h+=`<button class="shot" onclick="shot('kp-out')">📸 PNG स्क्रीनशॉट</button>`;
+        h+=`<button class="txtb" onclick="dlTXT()">📝 TXT डाउनलोड</button>`;
+        document.getElementById('kp-out').innerHTML=h;
+
+        /* --- TXT --- */
+        let t=`KP BTR DATA\n`;
+        t+=`जन्म: ${fmtD(jdB)} ${fmtHMS(jdB)} IST, ${document.getElementById('b-city').value||''} (${lat}, ${lon})\n`;
+        t+=`Window: ${fmtHMS(jd0)} → ${fmtHMS(jd1)} IST (${total} sec)\nलिंग: ${gender}\n`;
+        t+=`KP Ayanamsa: Lahiri - 5'26.22", Placidus\n\n`;
+        t+=`1ST CUSP SSL TIMELINE (Sec 25/26):\n`;
+        segs.forEach(sg=>{
+            const sh=sg.ssl,si=plSign[sh];
+            t+=`${fmtHMS(sg.from)} → ${fmtHMS(sg.to)} : ${GRAHA_HI[sh]} (${RASHI_HI[si]}, ${GENDER_HI[sh]}, ${TATTVA_HI[sh]}, राशि-लिंग: ${(si%2===0)?'पुरुष':'स्त्री'})\n`;
+        });
+        t+=`\nRULING PLANETS (Sec 26):\n`;
+        t+=`लग्न नक्षत्र स्वामी: ${GRAHA_HI[ascL.nl]}\n`;
+        t+=`चंद्र नक्षत्र स्वामी: ${GRAHA_HI[moonL.nl]} (चंद्र: ${NAK_HI[moonL.nakIdx]})\n`;
+        t+=`चंद्र राशि स्वामी: ${GRAHA_HI[moonSignLord]}\n`;
+        t+=`दिन स्वामी: ${DAY_LORD_HI[dayLord]}${usePrevDay?' (sunrise rule: जन्म सूर्योदय से पहले)':''}\n`;
+        t+=`\nGENETIC VERIFICATION (Sec 27):\n4th house (माता) SL: ${GRAHA_HI[sl4]}\n9th house (पिता) SL: ${GRAHA_HI[sl9]}\n`;
+        _lastTXT=t;
+        document.getElementById('birth-status').textContent=`चंद्र: ${NAK_HI[moonL.nakIdx]} (${GRAHA_HI[moonL.nl]}) — Swiss ✓`;
+        document.getElementById('kp-out').scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(e){showErr('kp-err',typeof e==='string'?e:'गणना में त्रुटि — '+e.message);}
+};
+
+/* ================= Screenshot + TXT ================= */
+window.shot=function(elId){
+    const el=document.getElementById(elId);
+    html2canvas(el,{backgroundColor:'#ffffff',scale:2}).then(canvas=>{
+        const a=document.createElement('a');
+        a.download='kp-btr-'+Date.now()+'.png';
+        a.href=canvas.toDataURL('image/png');a.click();
+    }).catch(()=>alert('स्क्रीनशॉट में त्रुटि'));
+};
+window.dlTXT=function(){
+    if(!_lastTXT){alert('पहले KP Data निकालें');return;}
+    const blob=new Blob([_lastTXT],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download='KP-BTR-Data.txt';a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+
+/* ================= Astro Code ================= */
+window.fillAstro=function(){
+    const c=document.getElementById('astro').value.trim();
+    const m=c.match(/^AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-])(\d{2})(\d{2})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])$/);
+    if(!m){document.getElementById('birth-status').textContent='Astro Code का format सही नहीं है।';return;}
+    document.getElementById('b-date').value=`${m[3]}-${m[2]}-${m[1]}`;
+    document.getElementById('b-time').value=`${m[4]}:${m[5]}:${m[6]}`;
+    const lat=(+m[10]+(+m[11])/60)*(m[12]==='N'?1:-1),lon=(+m[13]+(+m[14])/60)*(m[15]==='E'?1:-1);
+    document.getElementById('b-lat').value=lat.toFixed(4);
+    document.getElementById('b-lon').value=lon.toFixed(4);
+    document.getElementById('b-city').value='';
+    document.getElementById('w-from').value=`${m[4]}:${m[5]}:${m[6]}`;
+    document.getElementById('birth-status').textContent='Astro Code से भर दिया ✓';
+};
+
+/* ================= City search (BTR v13 pattern) ================= */
+(function(){
+    const place=document.getElementById('b-city'),box=document.getElementById('b-city-results');
+    let timer=null,ctrl=null;
+    function closeBox(){box.style.display='none';box.innerHTML='';}
+    function pick(label,la,lo){
+        clearTimeout(timer);place.value=label;
+        document.getElementById('b-lat').value=la.toFixed(4);
+        document.getElementById('b-lon').value=lo.toFixed(4);
+        closeBox();
+    }
+    function render(items){
+        if(!items.length)box.innerHTML='<div class="pr-none">कोई शहर नहीं मिला — lat/long manual भरें</div>';
+        else{
+            box.innerHTML=items.map((it,i)=>`<div class="pr-item" data-i="${i}">${it.label}</div>`).join('');
+            box.querySelectorAll('.pr-item').forEach(el=>{
+                el.addEventListener('mousedown',e=>{e.preventDefault();const it=items[+el.dataset.i];pick(it.label,it.lat,it.lon);});
+            });
+        }
+        box.style.display='block';
+    }
+    async function apiSearch(q){
+        const providers=[
+            {url:'https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=8&language=en&format=json',
+             parse:j=>(j.results||[]).map(g=>{const p=[g.name];if(g.admin1)p.push(g.admin1);if(g.country)p.push(g.country);return{label:p.join(', '),lat:+g.latitude.toFixed(4),lon:+g.longitude.toFixed(4)};})},
+            {url:'https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=8&lang=en',
+             parse:j=>(j.features||[]).map(f=>{const pr=f.properties||{},p=[pr.name];if(pr.state)p.push(pr.state);if(pr.country)p.push(pr.country);const c=f.geometry&&f.geometry.coordinates;return c?{label:p.join(', '),lat:+c[1].toFixed(4),lon:+c[0].toFixed(4)}:null;}).filter(Boolean)},
+            {url:'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=8',
+             parse:j=>(Array.isArray(j)?j:[]).map(n=>({label:String(n.display_name).split(',').slice(0,3).join(','),lat:+parseFloat(n.lat).toFixed(4),lon:+parseFloat(n.lon).toFixed(4)}))}
+        ];
+        for(const pv of providers){
+            try{
+                if(ctrl)ctrl.abort();ctrl=new AbortController();
+                const r=await fetch(pv.url,{signal:ctrl.signal});
+                if(!r.ok)continue;
+                const out=pv.parse(await r.json());
+                if(out.length)return out;
+            }catch(e){}
+        }
+        return [];
+    }
+    place.addEventListener('input',()=>{
+        const q0=place.value;clearTimeout(timer);
+        if(q0.trim().length<2){closeBox();return;}
+        box.innerHTML='<div class="pr-none">खोजा जा रहा है…</div>';box.style.display='block';
+        timer=setTimeout(async()=>{
+            if(place.value!==q0||place.value.trim().length<2)return;
+            const remote=await apiSearch(place.value);
+            if(place.value===q0)render(remote);
+        },350);
+    });
+    place.addEventListener('blur',()=>setTimeout(closeBox,150));
+    place.addEventListener('focus',()=>{if(box.innerHTML)box.style.display='block';});
+})();
+
+/* w-to auto +90 sec */
+let _toAuto=true;
+function fillToAuto(){
+    const wf=parseHMS(document.getElementById('w-from').value),to=document.getElementById('w-to');
+    if(wf&&(!to.value.trim()||_toAuto)){
+        const dm=parseDMY(document.getElementById('b-date').value)||{y:1995,mo:2,d:14};
+        const jd=jdFromYMDH(dm.y,dm.mo,dm.d,wf.h+wf.mi/60+wf.s/3600-5.5)+90/86400;
+        to.value=fmtHMS(jd);_toAuto=true;
+    }
+}
+document.getElementById('w-from').addEventListener('change',fillToAuto);
+document.getElementById('w-from').addEventListener('input',fillToAuto);
+document.getElementById('w-to').addEventListener('input',()=>{_toAuto=false;});
+document.getElementById('b-date').addEventListener('change',()=>{_toAuto=false;document.getElementById('w-to').value='';fillToAuto();});
+fillToAuto();
+</script>
+</body>
+</html>
