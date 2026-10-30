@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BTR सहायक v2 — Event-Dasha + Kunda + KP BTR</title>
+<title>BTR सहायक v2.1 — Event-Dasha + Kunda + KP BTR</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -57,7 +57,7 @@ h3{color:#0d3b66;font-size:1em;margin:16px 0 6px}
 </head>
 <body>
 <div class="container">
-<h1>BTR सहायक <span class="ver">v2</span></h1>
+<h1>BTR सहायक <span class="ver">v2.1</span></h1>
 <div class="sub">Event-Dasha + Kunda + KP BTR — BTR रिपोर्ट के लिए data tools (3 tabs)</div>
 
 <div class="card">
@@ -122,7 +122,7 @@ h3{color:#0d3b66;font-size:1em;margin:16px 0 6px}
 <div id="kp-out"></div>
 </div>
 
-<div class="foot">BTR सहायक v2 • Swiss Ephemeris (Lahiri + KP) • tools give data, judgement Gemini करेगा</div>
+<div class="foot">BTR सहायक v2.1 • Swiss Ephemeris (Lahiri + KP) • tools give data, judgement Gemini करेगा</div>
 </div>
 
 <script type="module">
@@ -178,8 +178,9 @@ function jdToIST(jd){
     const B=A+1524,C=Math.floor((B-122.1)/365.25),D=Math.floor(365.25*C),E=Math.floor((B-D)/30.6001);
     const day=B-D-Math.floor(30.6001*E)+F;
     const mo=E<14?E-1:E-13,yr=mo>2?C-4716:C-4715;
-    const dd=Math.floor(day),fh=(day-dd)*24,hh=Math.floor(fh),mi=Math.floor((fh-hh)*60);
-    return {y:yr,mo,dd,hh,mi};
+    let dd=Math.floor(day);const fh=(day-dd)*24;let hh=Math.floor(fh);const miF=(fh-hh)*60;let mi=Math.floor(miF);let ss=Math.round((miF-mi)*60);
+    if(ss===60){ss=0;mi++;if(mi===60){mi=0;hh++;if(hh===24){hh=0;dd++;}}}
+    return {y:yr,mo,dd,hh,mi,ss};
 }
 const p2=n=>String(n).padStart(2,'0');
 function fmtDT(jd){const t=jdToIST(jd);return `${p2(t.dd)}-${p2(t.mo)}-${t.y} ${p2(t.hh)}:${p2(t.mi)}`;}
@@ -551,7 +552,7 @@ window.calcKP=async function(){
         const sl4=sslOf(c4).sl,sl9=sslOf(c9).sl;
 
         /* --- render --- */
-        const fmtHMS=jd=>{const t=jdToIST(jd);return `${p2(t.hh)}:${p2(t.mi)}:00`;};
+        const fmtHMS=jd=>{const t=jdToIST(jd);return `${p2(t.hh)}:${p2(t.mi)}:${p2(t.ss)}`;};
         const gender=_isMale?'पुरुष':'स्त्री';
         let h=`<div class="note">📌 Window: <b>${fmtHMS(jd0)} → ${fmtHMS(jd1)}</b> (${total} sec) &nbsp;|&nbsp; लिंग: <b>${gender}</b> &nbsp;|&nbsp; KP ayanamsa (Lahiri − 5'26.22"), Placidus</div>`;
         h+=`<h3>1st Cusp SSL Timeline (${segs.length} segments) — Sec 25/26</h3>`;
