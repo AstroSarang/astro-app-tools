@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>अरूढ़ लग्न कैलकुलेटर v1.3 - Astro Sarang</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans Devanagari','Mangal',sans-serif;background:#f3e9d7;color:#2b1a12;min-height:100vh;display:flex;justify-content:center;padding:16px}
+  .wrap{width:100%;max-width:460px}
+  .head{background:linear-gradient(135deg,#6d071a,#9c1c2e 55%,#c98a1b);color:#fff;border-radius:16px;padding:20px 18px;text-align:center;box-shadow:0 4px 14px rgba(109,7,26,.3)}
+  .head h1{font-size:24px;line-height:1.3}
+  .head p{font-size:13px;opacity:.92;margin-top:5px}
+  .card{background:#fff;border-radius:16px;padding:18px;margin-top:14px;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+  label{display:block;font-size:15px;font-weight:700;margin:14px 0 6px;color:#6d071a}
+  label:first-child{margin-top:0}
+  select{width:100%;font-size:17px;padding:12px;border:2px solid #d9c39a;border-radius:10px;background:#fffdf7;font-family:inherit;color:#2b1a12}
+  select:focus{outline:none;border-color:#9c1c2e}
+  .out-label{font-size:15px;font-weight:700;color:#6d071a;margin-bottom:6px}
+  textarea{width:100%;font-size:17px;line-height:1.55;padding:12px;border:2px solid #9c1c2e;border-radius:10px;background:#fff8ec;font-family:inherit;color:#2b1a12;resize:none}
+  .copy-btn{width:100%;margin-top:12px;font-size:18px;font-weight:700;padding:13px;border:none;border-radius:10px;background:#1e7d32;color:#fff;cursor:pointer;font-family:inherit}
+  .copy-btn:active{transform:scale(.99)}
+  .copied{font-size:14px;color:#1e7d32;font-weight:700;text-align:center;min-height:20px;margin-top:8px}
+  .note{font-size:12.5px;line-height:1.6;color:#6b5540;margin-top:14px}
+  .ver{text-align:center;font-size:12px;color:#9a8468;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>🔯 अरूढ़ लग्न कैलकुलेटर</h1>
+    <p>लग्न और लग्नेश की स्थिति चुनो - अरूढ़ लग्न तुरंत तैयार</p>
+  </div>
+
+  <div class="card">
+    <label for="lagna">१. लग्न कौन सा है?</label>
+    <select id="lagna"></select>
+
+    <label for="lordHouse">२. लग्नेश किस भाव में स्थित है?</label>
+    <select id="lordHouse"></select>
+  </div>
+
+  <div class="card">
+    <div class="out-label">आउटपुट - Hinglish (कॉपी करके कमेंट में चिपकाने के लिए)</div>
+    <textarea id="output" rows="3" readonly></textarea>
+    <button class="copy-btn" id="copyBtn" type="button">📋 कॉपी करो</button>
+    <div class="copied" id="copiedMsg"></div>
+    <div class="out-label" style="margin-top:18px">आउटपुट - English (कॉपी करके कमेंट में चिपकाने के लिए)</div>
+    <textarea id="outputEn" rows="3" readonly></textarea>
+    <button class="copy-btn" id="copyBtnEn" type="button">📋 Copy (English)</button>
+    <div class="copied" id="copiedMsgEn"></div>
+    <div class="note">नियम : लग्न से लग्नेश तक गिनती (लग्न = पहला कदम), फिर लग्नेश को पहला कदम मानकर उतने ही कदम आगे - वही अरूढ़ लग्न। अपवाद : अरूढ़ लग्न कभी लग्न (पहले भाव) या सप्तम भाव में नहीं रहता; वहाँ आने पर पहले की जगह दसवाँ भाव और सप्तम की जगह चौथा भाव लिया जाता है।</div>
+  </div>
+
+  <div class="ver">अरूढ़ लग्न कैलकुलेटर v1.3 - Astro Sarang</div>
+</div>
+
+<script>
+var RASHI = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'];
+var RASHI_EN = ['Mesh','Vrishabh','Mithun','Kark','Singh','Kanya','Tula','Vrishchik','Dhanu','Makar','Kumbh','Meen'];
+var BHAVA_EN = ['Pehla','Dusra','Tisra','Chautha','Panchva','Chhatha','Saatva','Aathva','Nauva','Dasva','Gyarahva','Barahva'];
+var SIGN_EN = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+var ORD_EN = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
+var BHAVA = ['पहला','दूसरा','तीसरा','चौथा','पाँचवाँ','छठा','सातवाँ','आठवाँ','नौवाँ','दसवाँ','ग्यारहवाँ','बारहवाँ'];
+
+var lagnaSel = document.getElementById('lagna');
+var lordSel = document.getElementById('lordHouse');
+var out = document.getElementById('output');
+var outEn = document.getElementById('outputEn');
+var copiedMsg = document.getElementById('copiedMsg');
+var copiedMsgEn = document.getElementById('copiedMsgEn');
+
+RASHI.forEach(function(r, i){
+  var o = document.createElement('option');
+  o.value = i; o.textContent = r + ' लग्न';
+  lagnaSel.appendChild(o);
+});
+BHAVA.forEach(function(b, i){
+  var o = document.createElement('option');
+  o.value = i + 1; o.textContent = b + ' भाव (' + (i + 1) + ')';
+  lordSel.appendChild(o);
+});
+
+function calcArudha(){
+  var lagna = parseInt(lagnaSel.value, 10);      // 0-11
+  var d = parseInt(lordSel.value, 10);           // लग्नेश का भाव 1-12
+  // पहला चरण: लग्न से लग्नेश तक कदम = d
+  // दूसरा चरण: लग्नेश को पहला कदम मानकर d कदम आगे
+  var alHouse = ((2 * d - 2) % 12) + 1;          // लग्न से अरूढ़ लग्न का भाव
+  // अपवाद: अरूढ़ लग्न पहले या सप्तम भाव में नहीं रहता
+  if (alHouse === 1) alHouse = 10;
+  if (alHouse === 7) alHouse = 4;
+  var alRashi = (lagna + alHouse - 1) % 12;
+  out.value = 'Aapka AL : ' + RASHI_EN[alRashi] + ' Rashi\n' +
+              'Lagna Se Bhav : ' + BHAVA_EN[alHouse - 1] + ' Bhav (' + alHouse + ')';
+  outEn.value = 'Your AL : ' + SIGN_EN[alRashi] + ' Sign : ' + ORD_EN[alHouse - 1] + ' House';
+  copiedMsg.textContent = '';
+  copiedMsgEn.textContent = '';
+}
+
+lagnaSel.addEventListener('change', calcArudha);
+lordSel.addEventListener('change', calcArudha);
+calcArudha();
+
+function copyBox(box, msgEl, msg){
+  box.select();
+  box.setSelectionRange(0, box.value.length);
+  function done(){ msgEl.textContent = msg; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(box.value).then(done, function(){
+      document.execCommand('copy'); done();
+    });
+  } else {
+    document.execCommand('copy'); done();
+  }
+}
+document.getElementById('copyBtn').addEventListener('click', function(){
+  copyBox(out, copiedMsg, 'कॉपी हो गया ✓ अब कमेंट में चिपका दो');
+});
+document.getElementById('copyBtnEn').addEventListener('click', function(){
+  copyBox(outEn, copiedMsgEn, 'Copied ✓ Now paste it in the comment');
+});
+</script>
+</body>
+</html>
