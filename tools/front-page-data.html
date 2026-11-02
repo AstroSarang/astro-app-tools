@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>फ्रंट पेज डेटा v1.2</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Noto Sans Devanagari', sans-serif; background:#f7f2e4; margin:0; padding:16px; color:#222; }
+  .wrap { max-width:780px; margin:0 auto; background:#fff; border:2px solid #b8860b; border-radius:14px; padding:20px 22px; box-shadow:0 2px 10px rgba(0,0,0,.12); }
+  h1 { text-align:center; color:#7b1e1e; margin:2px 0 4px; font-size:25px; }
+  .ver { text-align:center; color:#888; font-size:12.5px; margin-bottom:12px; }
+  #ephem-status { text-align:center; font-size:13.5px; margin-bottom:10px; color:#b45309; }
+  #ephem-status.ok { color:#2e7d32; }
+  label { font-weight:bold; font-size:14px; display:block; margin:10px 0 4px; }
+  input[type=text], select { width:100%; padding:9px; font-size:15px; border:1px solid #c9b458; border-radius:8px; background:#fff; }
+  input.mono { font-family: monospace; font-size:13.5px; }
+  .row { display:flex; gap:10px; } .row > div { flex:1; }
+  .tabs { display:flex; gap:8px; margin:12px 0 6px; }
+  .tab { flex:1; text-align:center; padding:10px; border-radius:8px; background:#eee; font-weight:bold; cursor:pointer; border:1px solid #ccc; font-size:15px; }
+  .tab.on { background:#2e7d32; color:#fff; border-color:#2e7d32; }
+  .btn { background:#2e7d32; color:#fff; border:none; padding:10px 18px; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer; margin-top:12px; }
+  .btn.copy { background:#7b1e1e; width:100%; }
+  .btn:active { opacity:.85; }
+  textarea.out { width:100%; height:430px; margin-top:12px; background:#263238; color:#e8f5e9; padding:14px 16px; border-radius:10px; font-size:14px; line-height:1.55; font-family:'Courier New', monospace; border:none; resize:vertical; }
+  textarea.out.pair { height:460px; }
+  .status { font-size:13.5px; margin-top:8px; min-height:18px; }
+  .status.ok { color:#2e7d32; } .status.err { color:#b91c1c; }
+  .pcard { border:1.5px solid #c9b458; border-radius:10px; padding:12px 14px; margin-top:12px; }
+  .pcard h3 { margin:2px 0 6px; color:#7b1e1e; font-size:16.5px; }
+  .citybox { position:relative; }
+  .sugg { position:absolute; left:0; right:0; top:100%; background:#fff; border:1px solid #c9b458; border-radius:0 0 8px 8px; z-index:30; max-height:210px; overflow:auto; display:none; }
+  .sugg div { padding:8px 10px; cursor:pointer; font-size:14px; border-top:1px solid #f0e6c8; }
+  .sugg div:first-child { border-top:none; }
+  .sugg div:hover { background:#fdf6dd; }
+  .note { font-size:12.5px; color:#666; margin-top:4px; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>फ्रंट पेज डेटा</h1>
+  <div class="ver">v1.2</div>
+  <div id="ephem-status">⏳ Engine लोड हो रहा है…</div>
+
+  <label>भाषा / Language</label>
+  <select id="langSel">
+    <option value="hi" selected>हिंदी</option>
+    <option value="en">English</option>
+    <option value="mr">मराठी</option>
+  </select>
+
+  <div class="tabs">
+    <div class="tab on" id="tabBtn1">एक व्यक्ति</div>
+    <div class="tab" id="tabBtn2">लड़का - लड़की</div>
+  </div>
+
+  <!-- TAB 1: single -->
+  <div id="panel1">
+    <div class="pcard">
+      <label style="margin-top:0;">एस्ट्रो कोड</label>
+      <div class="row">
+        <div style="flex:3;"><input type="text" class="mono" id="s_code" placeholder="AS1-..." autocomplete="off"></div>
+        <div style="flex:1;"><button class="btn" id="s_fill" style="margin-top:0; width:100%;">📥 भरो</button></div>
+      </div>
+      <div class="row">
+        <div><label>नाम</label><input type="text" id="s_name" autocomplete="off"></div>
+        <div><label>जन्म स्थान (शहर खोजें)</label>
+          <div class="citybox"><input type="text" id="s_city" autocomplete="off"><div class="sugg" id="s_sugg"></div></div>
+        </div>
+      </div>
+      <div class="note">शहर सिर्फ स्थान के नाम के लिए है - गणना एस्ट्रो कोड से ही होगी।</div>
+      <div class="status" id="s_status"></div>
+    </div>
+    <textarea class="out" id="s_out" readonly placeholder="एस्ट्रो कोड भरते ही आउटपुट यहाँ आएगा…"></textarea>
+    <button class="btn copy" id="s_copy">📋 आउटपुट कॉपी करें</button>
+    <div class="status" id="s_copystatus"></div>
+  </div>
+
+  <!-- TAB 2: pair -->
+  <div id="panel2" class="hidden">
+    <div class="pcard">
+      <h3>लड़का</h3>
+      <label style="margin-top:0;">एस्ट्रो कोड</label>
+      <div class="row">
+        <div style="flex:3;"><input type="text" class="mono" id="b_code" placeholder="AS1-..." autocomplete="off"></div>
+        <div style="flex:1;"><button class="btn" id="b_fill" style="margin-top:0; width:100%;">📥 भरो</button></div>
+      </div>
+      <div class="row">
+        <div><label>नाम</label><input type="text" id="b_name" autocomplete="off"></div>
+        <div><label>जन्म स्थान (शहर खोजें)</label>
+          <div class="citybox"><input type="text" id="b_city" autocomplete="off"><div class="sugg" id="b_sugg"></div></div>
+        </div>
+      </div>
+      <div class="status" id="b_status"></div>
+    </div>
+    <div class="pcard">
+      <h3>लड़की</h3>
+      <label style="margin-top:0;">एस्ट्रो कोड</label>
+      <div class="row">
+        <div style="flex:3;"><input type="text" class="mono" id="g_code" placeholder="AS1-..." autocomplete="off"></div>
+        <div style="flex:1;"><button class="btn" id="g_fill" style="margin-top:0; width:100%;">📥 भरो</button></div>
+      </div>
+      <div class="row">
+        <div><label>नाम</label><input type="text" id="g_name" autocomplete="off"></div>
+        <div><label>जन्म स्थान (शहर खोजें)</label>
+          <div class="citybox"><input type="text" id="g_city" autocomplete="off"><div class="sugg" id="g_sugg"></div></div>
+        </div>
+      </div>
+      <div class="status" id="g_status"></div>
+    </div>
+    <textarea class="out pair" id="p_out" readonly placeholder="दोनों के एस्ट्रो कोड भरते ही आउटपुट यहाँ आएगा…"></textarea>
+    <button class="btn copy" id="p_copy">📋 आउटपुट कॉपी करें</button>
+    <div class="status" id="p_copystatus"></div>
+  </div>
+</div>
+
+<script type="module">
+/* ================= Swiss Ephemeris engine (मुख्य कुंडली टूल वाला ही) ================= */
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+const ephemStatus = document.getElementById('ephem-status');
+let SE=null, SEP=null, SEF=null, SEH=null;
+try {
+  const m = await import(/* @vite-ignore */EPHEM_CDN);
+  SE = m.SwissEphemeris; SEP = m.Planet; SEF = m.CalculationFlag; SEH = m.HouseSystem;
+  const swe = new SE();
+  await swe.init();
+  swe.setSiderealMode(m.SiderealMode.Lahiri);
+  window._swe = swe;
+  ephemStatus.textContent = '✅ Engine तैयार - एस्ट्रो कोड डालकर "📥 भरो" दबाएं';
+  ephemStatus.className = 'ok';
+} catch(e) {
+  ephemStatus.textContent = '⚠️ Engine लोड नहीं हुआ - इंटरनेट चालू करके पेज reload करें';
+}
+const FLAGS = () => SEF.MoshierEphemeris | SEF.Speed;
+const norm360 = d => ((d % 360) + 360) % 360;
+
+/* ================= शब्दकोश (लेबल - सारंग की दी हुई सूची, अक्षरशः) ================= */
+const LABELS = {
+  hi: ['पूरा नाम','जन्म तिथि','जन्म समय','जन्म स्थान','अयनांश का नाम','अयनांश मान','वार (वैदिक दिन)','तिथि','योग','करण','होरा','जुलियन दिन','लग्न राशि','जन्म राशि (चंद्र राशि)','सूर्य राशि','जन्म नक्षत्र','नक्षत्र चरण','जन्म अक्षर','पाया','वर्ण','वश्य','योनि','वैर / शत्रु योनि','गण','नाड़ी','नाड़ी पद','तत्व','विहग'],
+  en: ['Full Name','Date of Birth','Time of Birth','Place of Birth','Ayanamsa Name','Ayanamsa Value','Day (Vedic)','Tithi','Yoga','Karana','Hora','Julian Day','Ascendant (Lagna)','Moon Sign (Rashi)','Sun Sign','Birth Nakshatra','Nakshatra Pada','Birth Letter','Paya','Varna','Vashya','Yoni','Enemy Yoni','Gana','Nadi','Nadi Pada','Element (Tattva)','Vihaga'],
+  mr: ['पूर्ण नाव','जन्म तारीख','जन्म वेळ','जन्म ठिकाण','अयनांश नाव','अयनांश मूल्य','वार (वैदिक)','तिथी','योग','करण','होरा','ज्युलियन दिवस','लग्न रास','जन्म रास (चंद्र रास)','सूर्य रास','जन्म नक्षत्र','नक्षत्र चरण','जन्म अक्षर','पाया','वर्ण','वश्य','योनी','वैर / शत्रू योनी','गण','नाडी','नाडी पद','तत्व','विहग']
+};
+
+/* ================= मानों की तालिकाएँ (JyotishApp से जाँची हुई) ================= */
+const SIGNS = {
+  hi: ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'],
+  en: ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'],
+  mr: ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन']
+};
+const NAK = {
+  hi: ['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','अश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती'],
+  en: ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Aridra','Punarvasu','Pushyami','Ashlesha','Makha','Purva Phalguni','Uttara Phalguni','Hasta','Chitta','Swati','Vishakha','Anuradha','Jyeshta','Moola','Poorva Ashadha','Uttara Ashadha','Shravana','Dhanishta','Shatabhisha','Poorva Bhadrapada','Uttara Bhadrapada','Revati'],
+  mr: ['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','अश्लेषा','मघा','पूर्वाफाल्गुनी','उत्तराफाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढा','उत्तराषाढा','श्रवण','धनिष्ठा','शतभिषा','पूर्वाभाद्रपद','उत्तराभाद्रपद','रेवती']
+};
+const WEEKDAY = { /* index 0 = रविवार */
+  hi: ['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'],
+  en: ['Ravivara','Somavara','Mangalavara','Budhavara','Guruvara','Shukravara','Shanivara'],
+  mr: ['रविवार','सोमवार','मंगळवार','बुधवार','गुरुवार','शुक्रवार','शनिवार']
+};
+const WEEKDAY_LORD = [0,1,2,3,4,5,6]; /* graha index: 0 सूर्य,1 चंद्र,2 मंगल,3 बुध,4 गुरु,5 शुक्र,6 शनि */
+const GRAHA = {
+  hi: ['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि'],
+  en: ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'],
+  mr: ['सूर्य','चंद्र','मंगळ','बुध','गुरु','शुक्र','शनि']
+};
+const HORA_SEQ = [0,5,3,1,6,4,2]; /* सूर्य, शुक्र, बुध, चंद्र, शनि, गुरु, मंगल (चक्रीय क्रम) */
+const TITHI_N = {
+  hi: ['प्रतिपदा','द्वितीया','तृतीया','चतुर्थी','पंचमी','षष्ठी','सप्तमी','अष्टमी','नवमी','दशमी','एकादशी','द्वादशी','त्रयोदशी','चतुर्दशी','पूर्णिमा'],
+  en: ['Prathama','Dwithiya','Thrithiya','Chathurthi','Panchami','Shashti','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dwadashi','Trayodashi','Chaturdashi','Paurnami'],
+  mr: ['प्रतिपदा','द्वितीया','तृतीया','चतुर्थी','पंचमी','षष्ठी','सप्तमी','अष्टमी','नवमी','दशमी','एकादशी','द्वादशी','त्रयोदशी','चतुर्दशी','पौर्णिमा']
+};
+const PAKSHA = { hi:['शुक्ल','कृष्ण'], en:['Shukla','Krishna'], mr:['शुक्ल','कृष्ण'] };
+const AMV = { hi:'अमावस्या', en:'Amavasya', mr:'अमावस्या' };
+const YOGA_N = {
+  hi: ['विष्कंभ','प्रीति','आयुष्मान','सौभाग्य','शोभन','अतिगंड','सुकर्मा','धृति','शूल','गंड','वृद्धि','ध्रुव','व्याघात','हर्षण','वज्र','सिद्धि','व्यतीपात','वरीयान','परिघ','शिव','सिद्ध','साध्य','शुभ','शुक्ल','ब्रह्म','इंद्र','वैधृति'],
+  en: ['Vishkambha','Preeti','Ayushman','Saubhagya','Sobhana','Atiganda','Sukarman','Dhriti','Shoola','Ganda','Vriddhi','Dhruva','Vyaghata','Harshana','Vajra','Siddhi','Vyatipata','Variyan','Parigha','Shiva','Siddha','Sadhya','Shubha','Shukla','Brahma','Indra','Vaidhriti'],
+  mr: ['विष्कंभ','प्रीती','आयुष्मान','सौभाग्य','शोभन','अतिगंड','सुकर्मा','धृती','शूल','गंड','वृद्धी','ध्रुव','व्याघात','हर्षण','वज्र','सिद्धी','व्यतीपात','वरीयान','परिघ','शिव','सिद्ध','साध्य','शुभ','शुक्ल','ब्रह्म','इंद्र','वैधृती']
+};
+/* करण क्रम: 1 किंस्तुघ्न, 2..57 चल चक्र, 58 शकुनि, 59 चतुष्पद, 60 नाग */
+const KARANA_MOV = {
+  hi: ['बव','बालव','कौलव','तैतिल','गरज','वणिज','विष्टि'],
+  en: ['Bava','Balava','Kaulava','Taitula','Garija','Vanija','Vishti'],
+  mr: ['बव','बालव','कौलव','तैतिल','गरज','वणिज','विष्टी']
+};
+const KARANA_FIX = {
+  hi: {1:'किंस्तुघ्न',58:'शकुनि',59:'चतुष्पद',60:'नाग'},
+  en: {1:'Kimstughna',58:'Sakuna',59:'Chatushpada',60:'Naga'},
+  mr: {1:'किंस्तुघ्न',58:'शकुनी',59:'चतुष्पद',60:'नाग'}
+};
+const AYAN_NAME = { hi:'[लाहिरी (चित्रपक्ष)]', en:'[Lahiri (Chitrapaksha)]', mr:'[लाहिरी (चित्रपक्ष)]' };
+const GRAHA9 = {
+  hi: ['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि','राहु','केतु'],
+  en: ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'],
+  mr: ['सूर्य','चंद्र','मंगळ','बुध','गुरु','शुक्र','शनी','राहु','केतु']
+};
+/* ऐप की स्वामी तालिकाएँ (APK से निकाली हुई, 5 कुंडलियों पर जाँची) */
+const TITHI_LORD30 = [0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,0,1,2,3,4,5,6,7,0,1,2,3,4,5,7]; /* मान GRAHA9 क्रम में (0 सूर्य..7 राहु) */
+const YOGA_LORD_CYCLE = [6,3,8,5,0,1,2,7,4]; /* योग क्रमांक % 9 */
+const NADI_PADA_TABLE = {0:[2,2,1,0], 1:[1,0,0,1], 2:[0,1,2,2]}; /* [नाड़ी][चरण-1] -> नाड़ी पद क्रमांक - ऐप की k1 तालिका */
+const YONI_MEAN_EN = ['Horse','Elephant','Sheep','Serpent','Dog','Cat','Rat','Cow','Buffalo','Tiger','Deer','Monkey','Mongoose','Lion'];
+const VASHYA_MEAN_EN = ['Quadruped','Biped','Aquatic'];
+const NADI_FULL_EN = ['Aadi (Begin) (Vata Dosha)','Madhya (Middle) (Pitta Dosha)','Antya (End) (Kapha Dosha)'];
+const GANA_MEAN_EN = ['Divine','Human','Demon'];
+const BASED_ON = {
+  hi: {lagna:' (लग्न आधारित)', rashi:' (जन्म राशि आधारित)', nak:' (नक्षत्र आधारित)'},
+  en: {lagna:' (Based on Lagna)', rashi:' (Based on Janma Rashi)', nak:' (Based on Nakshatra)'},
+  mr: {lagna:' (लग्नावर आधारित)', rashi:' (जन्म राशीवर आधारित)', nak:' (नक्षत्रावर आधारित)'}
+};
+function payaByBhavaIdx(moonSign, lagnaSign){
+  const house = (moonSign - lagnaSign + 12) % 12 + 1;
+  if([1,6,11].includes(house)) return 0; /* स्वर्ण */
+  if([2,5,9].includes(house)) return 1;  /* रजत */
+  if([3,7,10].includes(house)) return 2; /* ताम्र */
+  return 3; /* लोह */
+}
+const PADA_SYL = {
+  hi: [['चु','चे','चो','ला'],['ली','लू','ले','लो'],['अ','ई','उ','ए'],['ओ','वा','वी','वू'],['वे','वो','का','की'],['कु','घ','ङ','छ'],['के','को','हा','ही'],['हु','हे','हो','ड'],['डी','डू','डे','डो'],['मा','मी','मू','मे'],['मो','टा','टी','टू'],['टे','टो','पा','पी'],['पू','ष','ण','ठ'],['पे','पो','रा','री'],['रू','रे','रो','ता'],['ती','तू','ते','तो'],['ना','नी','नू','ने'],['नो','या','यी','यू'],['ये','यो','भा','भी'],['भू','धा','फा','ढा'],['भे','भो','जा','जी'],['खी','खू','खे','खो'],['गा','गी','गू','गे'],['गो','सा','सी','सू'],['से','सो','दा','दी'],['दू','थ','झ','त्र'],['दे','दो','चा','ची']],
+  en: [['Chu','Chey','Cho','La'],['Li','Lu','Ley','Lo'],['Aa','Ee','U','A'],['O','Va','Vee','Vu'],['Vay','Vo','Kaa','Ke'],['Koo','Ghaa','Jha','Cha'],['Kay','Ko','Haa','Hee'],['Hoo','Hay','Ho','Daa'],['Dee','Doo','Day','Do'],['Maa','Mee','Moo','May'],['Mo','Taa','Tee','Tu'],['Tay','To','Paa','Pee'],['Pu','Shaa','Naa','Thaa'],['Pay','Po','Raa','Ree'],['Ru','Ray','Ro','Tha'],['Thee','Thoo','Thay','Tho'],['Naa','Nee','Noo','Nay'],['No','Yaa','Yee','Yoo'],['Yay','Yo','Bha','Bee'],['Bu','Dhaa','Bha','Dha'],['Bay','Bo','Jaa','Jee'],['Shi','Shu','She','Sho'],['Ga','Gee','Goo','Gay'],['Go','Saa','See','Soo'],['Say','So','Daa','Dee'],['Du','Kha','Jha','Tha'],['De','Do','Chaa','Chee']],
+  mr: null /* mr = hi */
+};
+PADA_SYL.mr = PADA_SYL.hi;
+const PAYA_N = { hi:['स्वर्ण','रजत','ताम्र','लोह'], en:['Gold','Silver','Copper','Iron'], mr:['स्वर्ण','रजत','ताम्र','लोह'] };
+function payaIdx(ni){ if([0,1,26].includes(ni)) return 0; if([2,3,4].includes(ni)) return 3; if(ni>=5 && ni<=16) return 1; return 2; }
+const VARNA_BY_SIGN = [1,2,3,0,1,2,3,0,1,2,3,0]; /* 0 ब्राह्मण,1 क्षत्रिय,2 वैश्य,3 शूद्र - चंद्र राशि से */
+const VARNA_N = { hi:['ब्राह्मण','क्षत्रिय','वैश्य','शूद्र'], en:['Brahmin','Kshatriya','Vaishya','Shudra'], mr:['ब्राह्मण','क्षत्रिय','वैश्य','शूद्र'] };
+const VASHYA_N = { hi:['चतुष्पद','मानव','जलचर'], en:['Chatushpada','Manava','Jalachara'], mr:['चतुष्पद','मानव','जलचर'] };
+function vashyaIdx(sign, degInSign){
+  const base = [0,0,1,2,0,1,1,2,-1,-1,1,2];
+  if(sign===8) return degInSign<15 ? 0 : 2;   /* धनु: पूर्वार्ध चतुष्पद, उत्तरार्ध जलचर */
+  if(sign===9) return degInSign<15 ? 0 : 2;   /* मकर: पूर्वार्ध चतुष्पद, उत्तरार्ध जलचर */
+  return base[sign];
+}
+const YONI_BY_NAK = [0,1,2,3,3,4,5,2,5,6,6,7,8,9,8,9,10,10,4,11,12,11,13,0,13,7,1]; /* U0 क्रम: अश्व,गज,मेष,सर्प,श्वान,मार्जार,मूषक,गौ,महिष,व्याघ्र,मृग,वानर,नकुल,सिंह */
+const YONI_N = {
+  hi: ['अश्व','गज','मेष','सर्प','श्वान','मार्जार','मूषक','गौ','महिषी','व्याघ्र','मृग','वानर','नकुल','सिंह'],
+  en: ['Ashwa','Gaja','Mesha','Sarpa','Shwana','Marjara','Mushaka','Gau','Mahisha','Vyaghra','Mriga','Vanara','Nakula','Simha'],
+  mr: ['अश्व','गज','मेष','सर्प','श्वान','मार्जार','मूषक','गौ','महिषी','व्याघ्र','मृग','वानर','नकुल','सिंह']
+};
+const YONI_VAIR = {0:8, 8:0, 1:13, 13:1, 2:11, 11:2, 3:12, 12:3, 4:10, 10:4, 5:6, 6:5, 7:9, 9:7};
+const GANA_BY_NAK = [0,1,2,1,0,1,0,0,2,2,1,1,0,2,0,2,0,2,2,1,1,0,2,2,1,1,0]; /* 0 देव,1 मनुष्य,2 राक्षस */
+const GANA_N = { hi:['देव','मनुष्य','राक्षस'], en:['Deva','Manushya','Rakshasa'], mr:['देव','मनुष्य','राक्षस'] };
+const NADI_BY_NAK = [0,1,2,2,1,0,0,1,2,2,1,0,0,1,2,2,1,0,0,1,2,2,1,0,0,1,2]; /* 0 आदि,1 मध्य,2 अंत्य */
+const NADI_N = { hi:['आदि','मध्य','अंत्य'], en:['Aadi','Madhya','Antya'], mr:['आदी','मध्य','अंत्य'] };
+const NADI_GROUPS = [[0,5,6,11,12,17,18,23,24],[1,4,7,10,13,16,19,22,25],[2,3,8,9,14,15,20,21,26]];
+function nadiPadaIdx(nakIdx, pada){
+  return NADI_PADA_TABLE[NADI_BY_NAK[nakIdx]][pada-1];
+}
+const SIGN_LORD_GRAHA = [2,5,3,1,0,3,5,2,4,6,6,4]; /* राशि स्वामी (ग्रह क्रमांक) */
+const GRAHA_TATTVA = [0,1,0,2,3,1,4]; /* सूर्य अग्नि, चंद्र जल, मंगल अग्नि, बुध पृथ्वी, गुरु आकाश, शुक्र जल, शनि वायु */
+const TATTVA_N = { hi:['अग्नि','जल','पृथ्वी','आकाश','वायु'], en:['Agni','Jala','Bhoo','Aakaasha','Vaayu'], mr:['अग्नी','जल','पृथ्वी','आकाश','वायू'] };
+const VIHAGA_N = {
+  hi: ['भेरुण्ड','पिंगल','वायस','करण्ड','शिक्कावल'],
+  en: ['Bherund','Pingala','Vayas','Karanda','Shikkaval'],
+  mr: ['भेरुण्ड','पिंगल','वायस','करण्ड','शिक्कावल']
+};
+function vihagaIdx(ni){ if(ni>=25) return 4; return ni % 5; } /* ऐप तालिका: 0-24 चक्र, 25-26 शिक्कावल */
+
+/* ================= सूर्योदय / सूर्यास्त (जन्म अक्षर टूल वाली NOAA विधि) ================= */
+function sunTimes(Y,M,D,lat,lon,tzMin){
+  const N = Math.floor((Date.UTC(Y,M-1,D) - Date.UTC(Y,0,0)) / 86400000);
+  const gamma = 2*Math.PI/365*(N-1);
+  const eqtime = 229.18*(0.000075+0.001868*Math.cos(gamma)-0.032077*Math.sin(gamma)-0.014615*Math.cos(2*gamma)-0.040849*Math.sin(2*gamma));
+  const decl = 0.006918-0.399912*Math.cos(gamma)+0.070257*Math.sin(gamma)-0.006758*Math.cos(2*gamma)+0.000907*Math.sin(2*gamma)-0.002697*Math.cos(3*gamma)+0.00148*Math.sin(3*gamma);
+  const latR = lat*Math.PI/180, zen = 1.5853;
+  let cosH = Math.cos(zen)/(Math.cos(latR)*Math.cos(decl)) - Math.tan(latR)*Math.tan(decl);
+  cosH = Math.max(-1, Math.min(1, cosH));
+  const ha = Math.acos(cosH)*180/Math.PI;
+  return { rise: 720 - 4*lon - eqtime - ha*4 + tzMin, set: 720 - 4*lon - eqtime + ha*4 + tzMin };
+}
+function addDays(Y,M,D,delta){ const t = new Date(Date.UTC(Y,M-1,D+delta)); return [t.getUTCFullYear(), t.getUTCMonth()+1, t.getUTCDate()]; }
+
+/* ================= एक व्यक्ति की गणना ================= */
+function parseCode(str){
+  const m = /^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/.exec((str||'').trim());
+  if(!m) return null;
+  const d8=m[1], t6=m[2], tz=m[3];
+  const Y=+d8.slice(0,4), mo=+d8.slice(4,6), dy=+d8.slice(6,8);
+  const hh=+t6.slice(0,2), mm=+t6.slice(2,4), ss=+t6.slice(4,6);
+  const tzMin=(tz[0]==='-'?-1:1)*(+tz.slice(1,3)*60 + +tz.slice(3,5));
+  let lat=+m[4].slice(0,2)+(+m[4].slice(2,4))/60; if(m[5]==='S') lat=-lat;
+  let lon=+m[6].slice(0,3)+(+m[6].slice(3,5))/60; if(m[7]==='W') lon=-lon;
+  return {Y,mo,dy,hh,mm,ss,tzMin,lat,lon};
+}
+function computePerson(p){
+  const swe = window._swe;
+  const utc = new Date(Date.UTC(p.Y,p.mo-1,p.dy,p.hh,p.mm,p.ss) - p.tzMin*60000);
+  const jd = swe.julianDay(utc.getUTCFullYear(), utc.getUTCMonth()+1, utc.getUTCDate(), utc.getUTCHours()+utc.getUTCMinutes()/60+utc.getUTCSeconds()/3600);
+  const ayan = swe.getAyanamsa(jd), F = FLAGS();
+  const lonOf = b => norm360(swe.calculatePosition(jd,b,F).longitude - ayan);
+  const sunLon = lonOf(SEP.Sun), moonLon = lonOf(SEP.Moon);
+  const lagnaLon = norm360(swe.calculateHouses(jd,p.lat,p.lon,SEH.Placidus).ascendant - ayan);
+  const lagnaSign = Math.floor(lagnaLon/30), moonSign = Math.floor(moonLon/30), sunSign = Math.floor(sunLon/30);
+  const span = 360/27;
+  const nakIdx = Math.floor(moonLon/span);
+  const pada = Math.floor((moonLon - nakIdx*span)/(span/4)) + 1;
+  const diff = norm360(moonLon - sunLon);
+  const tithiNum = Math.floor(diff/12)+1;
+  const yogaIdx = Math.floor(norm360(sunLon+moonLon)/span) % 27;
+  const kNum = Math.floor(diff/6)+1;
+  /* वैदिक दिन + होरा */
+  const birthMin = p.hh*60 + p.mm + p.ss/60;
+  let vY=p.Y, vM=p.mo, vD=p.dy;
+  let st = sunTimes(vY,vM,vD,p.lat,p.lon,p.tzMin);
+  if(birthMin < st.rise){ [vY,vM,vD] = addDays(vY,vM,vD,-1); st = sunTimes(vY,vM,vD,p.lat,p.lon,p.tzMin); }
+  const vedicWeekday = new Date(Date.UTC(vY,vM-1,vD)).getUTCDay(); /* 0 रविवार */
+  const [nY,nM,nD] = addDays(vY,vM,vD,1);
+  const stNext = sunTimes(nY,nM,nD,p.lat,p.lon,p.tzMin);
+  const absBirth = (p.Y===vY && p.mo===vM && p.dy===vD) ? birthMin : birthMin + 1440;
+  let horaIdx;
+  if(absBirth < st.set) horaIdx = Math.floor((absBirth - st.rise) / ((st.set - st.rise)/12));
+  else horaIdx = 12 + Math.floor((absBirth - st.set) / ((stNext.rise + 1440 - st.set)/12));
+  horaIdx = Math.max(0, Math.min(23, horaIdx));
+  const dayLordGraha = WEEKDAY_LORD[vedicWeekday];
+  const startPos = HORA_SEQ.indexOf(dayLordGraha);
+  const horaGraha = HORA_SEQ[(startPos + horaIdx) % 7];
+  /* अयनांश प्रारूप: 23:47:20.83 */
+  const aD = Math.floor(ayan), aMf = (ayan-aD)*60, aM = Math.floor(aMf), aS = (aMf-aM)*60;
+  const ayanStr = aD + ':' + String(aM).padStart(2,'0') + ':' + aS.toFixed(2).padStart(5,'0');
+  const jdn = Math.floor(jd + 0.5);
+  const dobStr = String(p.dy).padStart(2,'0') + '-' + String(p.mo).padStart(2,'0') + '-' + p.Y;
+  const h12 = ((p.hh+11)%12)+1, ampm = p.hh<12 ? 'AM' : 'PM';
+  const tobStr = String(h12).padStart(2,'0') + ':' + String(p.mm).padStart(2,'0') + ':' + String(p.ss).padStart(2,'0') + ' ' + ampm;
+  const sunNakIdx = Math.floor(sunLon/span) % 27;
+  return { dobStr, tobStr, ayanStr, jdn, vedicWeekday, tithiNum, yogaIdx, kNum, horaGraha,
+           lagnaSign, moonSign, sunSign, sunNakIdx, nakIdx, pada, moonDegInSign: moonLon - moonSign*30 };
+}
+
+/* ================= भाषा अनुसार मान बनाना ================= */
+function valuesFor(lang, c){
+  const v = [];
+  v.push(null); /* नाम - बाहर से */
+  v.push(c.dobStr);
+  v.push(c.tobStr);
+  v.push(null); /* स्थान - बाहर से */
+  v.push(AYAN_NAME[lang]);
+  v.push(c.ayanStr);
+  v.push(WEEKDAY[lang][c.vedicWeekday] + ' (' + GRAHA9[lang][c.vedicWeekday] + ')');
+  const tLord = ' (' + GRAHA9[lang][TITHI_LORD30[c.tithiNum-1]] + ')';
+  if(c.tithiNum===30) v.push(AMV[lang] + tLord);
+  else { const pk = c.tithiNum<=15 ? 0 : 1; const tn = c.tithiNum<=15 ? c.tithiNum-1 : c.tithiNum-16; v.push(PAKSHA[lang][pk] + '-' + TITHI_N[lang][tn] + tLord); }
+  v.push(YOGA_N[lang][c.yogaIdx] + ' (' + GRAHA9[lang][YOGA_LORD_CYCLE[c.yogaIdx % 9]] + ')');
+  if(KARANA_FIX[lang][c.kNum]) v.push(KARANA_FIX[lang][c.kNum]); else v.push(KARANA_MOV[lang][(c.kNum-2)%7] + ' (' + GRAHA9[lang][(c.kNum-2)%7] + ')');
+  v.push(GRAHA[lang][c.horaGraha]);
+  v.push(String(c.jdn));
+  v.push(SIGNS[lang][c.lagnaSign]);
+  v.push(SIGNS[lang][c.moonSign]);
+  v.push(SIGNS[lang][c.sunSign] + ' - ' + NAK[lang][c.sunNakIdx]);
+  v.push(NAK[lang][c.nakIdx]);
+  v.push(String(c.pada));
+  v.push(PADA_SYL[lang][c.nakIdx][c.pada-1]);
+  v.push(PAYA_N[lang][payaIdx(c.nakIdx)] + BASED_ON[lang].nak + ' / ' + PAYA_N[lang][payaByBhavaIdx(c.moonSign, c.lagnaSign)] + BASED_ON[lang].lagna);
+  v.push(VARNA_N[lang][VARNA_BY_SIGN[c.lagnaSign]] + BASED_ON[lang].lagna + ' / ' + VARNA_N[lang][VARNA_BY_SIGN[c.moonSign]] + BASED_ON[lang].rashi);
+  const vashI = vashyaIdx(c.moonSign, c.moonDegInSign);
+  let vashS = VASHYA_N[lang][vashI];
+  if(lang==='en'){ if(vashI===1) vashS = 'Manava (Nara)'; vashS += ' (' + VASHYA_MEAN_EN[vashI] + ')'; }
+  v.push(vashS);
+  const yoni = YONI_BY_NAK[c.nakIdx];
+  v.push(lang==='en' ? YONI_N[lang][yoni] + ' (' + YONI_MEAN_EN[yoni] + ')' : YONI_N[lang][yoni]);
+  v.push(YONI_N[lang][YONI_VAIR[yoni]]);
+  v.push(lang==='en' ? GANA_N[lang][GANA_BY_NAK[c.nakIdx]] + ' (' + GANA_MEAN_EN[GANA_BY_NAK[c.nakIdx]] + ')' : GANA_N[lang][GANA_BY_NAK[c.nakIdx]]);
+  v.push(lang==='en' ? NADI_FULL_EN[NADI_BY_NAK[c.nakIdx]] : NADI_N[lang][NADI_BY_NAK[c.nakIdx]]);
+  v.push(NADI_N[lang][nadiPadaIdx(c.nakIdx, c.pada)]);
+  v.push(TATTVA_N[lang][GRAHA_TATTVA[SIGN_LORD_GRAHA[c.lagnaSign]]] + BASED_ON[lang].lagna + ' / ' + TATTVA_N[lang][GRAHA_TATTVA[SIGN_LORD_GRAHA[c.moonSign]]] + BASED_ON[lang].rashi);
+  v.push(VIHAGA_N[lang][vihagaIdx(c.nakIdx)]);
+  return v;
+}
+function renderSingle(lang, comp, name, place){
+  const vals = valuesFor(lang, comp); vals[0]=name||''; vals[3]=place||'';
+  return LABELS[lang].map((l,i)=> l + ', ' + vals[i]).join('\n');
+}
+function renderPair(lang, boy, girl){
+  const bv = valuesFor(lang, boy.comp); bv[0]=boy.name||''; bv[3]=(boy.place||'').replace(/,\s*/g, ' - ');
+  const gv = valuesFor(lang, girl.comp); gv[0]=girl.name||''; gv[3]=(girl.place||'').replace(/,\s*/g, ' - ');
+  const lines = [LABELS[lang][0] + ', ' + (boy.name||'') + ', ' + (girl.name||'')];
+  for(let i=1;i<28;i++) lines.push(LABELS[lang][i] + ', ' + bv[i] + ', ' + gv[i]);
+  return lines.join('\n');
+}
+
+/* ================= UI ================= */
+const $ = id => document.getElementById(id);
+const state = { single:null, boy:null, girl:null };
+function lang(){ return $('langSel').value; }
+function refreshSingle(){ if(state.single) $('s_out').value = renderSingle(lang(), state.single, $('s_name').value.trim(), $('s_city').value.trim()); }
+function refreshPair(){
+  if(state.boy && state.girl){
+    $('p_out').value = renderPair(lang(),
+      {comp:state.boy, name:$('b_name').value.trim(), place:$('b_city').value.trim()},
+      {comp:state.girl, name:$('g_name').value.trim(), place:$('g_city').value.trim()});
+  }
+}
+async function fill(prefix, key){
+  const stEl = $(prefix+'_status');
+  if(!window._swe){ stEl.textContent='⚠️ Engine अभी तैयार नहीं है - थोड़ा रुककर फिर दबाएं'; stEl.className='status err'; return; }
+  const parsed = parseCode($(prefix+'_code').value);
+  if(!parsed){ stEl.textContent='❌ सही एस्ट्रो कोड डालें (AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W)'; stEl.className='status err'; return; }
+  try {
+    state[key] = computePerson(parsed);
+    stEl.textContent = '✅ भर गया - आउटपुट तैयार है'; stEl.className='status ok';
+    if(key==='single') refreshSingle(); else refreshPair();
+  } catch(e){ stEl.textContent='❌ गणना नहीं हो पाई: ' + (e.message||e); stEl.className='status err'; }
+}
+$('s_fill').addEventListener('click', ()=>fill('s','single'));
+$('b_fill').addEventListener('click', ()=>fill('b','boy'));
+$('g_fill').addEventListener('click', ()=>fill('g','girl'));
+['s_name','s_city'].forEach(id=> $(id).addEventListener('input', refreshSingle));
+['b_name','b_city','g_name','g_city'].forEach(id=> $(id).addEventListener('input', refreshPair));
+$('langSel').addEventListener('change', ()=>{ refreshSingle(); refreshPair(); });
+function doCopy(outId, stId){
+  const ta = $(outId);
+  if(!ta.value){ $(stId).textContent='पहले एस्ट्रो कोड भरें'; $(stId).className='status err'; return; }
+  const done = ()=>{ $(stId).textContent='✅ कॉपी हो गया'; $(stId).className='status ok'; };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(ta.value).then(done).catch(()=>{ ta.select(); document.execCommand('copy'); done(); }); }
+  else { ta.select(); document.execCommand('copy'); done(); }
+}
+$('s_copy').addEventListener('click', ()=>doCopy('s_out','s_copystatus'));
+$('p_copy').addEventListener('click', ()=>doCopy('p_out','p_copystatus'));
+$('tabBtn1').addEventListener('click', ()=>{ $('tabBtn1').classList.add('on'); $('tabBtn2').classList.remove('on'); $('panel1').classList.remove('hidden'); $('panel2').classList.add('hidden'); });
+$('tabBtn2').addEventListener('click', ()=>{ $('tabBtn2').classList.add('on'); $('tabBtn1').classList.remove('on'); $('panel2').classList.remove('hidden'); $('panel1').classList.add('hidden'); });
+
+/* ================= शहर खोज (सिर्फ नाम के लिए, गणना से कोई संबंध नहीं) ================= */
+function attachCity(inputId, suggId){
+  const inp = $(inputId), box = $(suggId);
+  let timer = null;
+  inp.addEventListener('input', ()=>{
+    clearTimeout(timer);
+    const q = inp.value.trim();
+    if(q.length<3){ box.style.display='none'; return; }
+    timer = setTimeout(async ()=>{
+      try {
+        const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q=' + encodeURIComponent(q), {headers:{'Accept':'application/json'}});
+        const data = await r.json();
+        if(!data.length){ box.style.display='none'; return; }
+        box.innerHTML='';
+        data.forEach(d=>{
+          const a = d.address||{};
+          const city = a.city||a.town||a.village||a.state_district||d.display_name.split(',')[0];
+          const parts = [city, a.state || a.country].filter(Boolean);
+          const label = [...new Set(parts)].join(', ');
+          const div = document.createElement('div');
+          div.textContent = label;
+          div.addEventListener('click', ()=>{ inp.value = label; box.style.display='none'; inp.dispatchEvent(new Event('input')); });
+          box.appendChild(div);
+        });
+        box.style.display='block';
+      } catch(e){ box.style.display='none'; }
+    }, 450);
+  });
+  document.addEventListener('click', e=>{ if(e.target!==inp) box.style.display='none'; });
+}
+attachCity('s_city','s_sugg'); attachCity('b_city','b_sugg'); attachCity('g_city','g_sugg');
+</script>
+</body>
+</html>
