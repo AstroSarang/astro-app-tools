@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ताजिक वर्षफल Calculator v6.2</title>
+<title>ताजिक वर्षफल Calculator v6.3</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--primary:#8e44ad;--dark:#2c3e50;--bg:#f4f6f8;--ok:#27ae60;}
@@ -56,7 +56,7 @@ td:first-child{text-align:left;font-weight:bold}
 <body>
 <div class="container" id="capture-area">
 <h1>🗓️ ताजिक वर्षफल Calculator</h1>
-<div class="sub">9 तालिकाएँ + मासिक भविष्यफल — Solar Return से संपूर्ण ताजिक गणना — v6.2</div>
+<div class="sub">9 तालिकाएँ + मासिक भविष्यफल — Solar Return से संपूर्ण ताजिक गणना — v6.3</div>
 <div class="tab-bar">
 <button class="tab-btn active" id="tb-varshphal" onclick="swTab('varshphal')">🗓️ वर्षफल</button>
 <button class="tab-btn" id="tb-monthly" onclick="swTab('monthly')">📅 मासिक भविष्यफल</button>
@@ -134,7 +134,7 @@ td:first-child{text-align:left;font-weight:bold}
 </div>
 </div><!-- /pg-monthly -->
 
-<div class="foot">ताजिक वर्षफल v6.2 • Swiss Ephemeris (Lahiri) • B.V. Raman / Tajika Neelkanthi आधारित • tools give data, judgement Gemini करेगा</div>
+<div class="foot">ताजिक वर्षफल v6.3 • Swiss Ephemeris (Lahiri) • B.V. Raman / Tajika Neelkanthi आधारित • tools give data, judgement Gemini करेगा</div>
 
 <script>
 /* ================= Swiss Ephemeris ================= */
@@ -659,20 +659,21 @@ window.downloadTxt=function(){
     let t=`ताजिक वर्षफल ${r.ty} — संपूर्ण गणना\n${'='.repeat(50)}\n`;
     t+=`वर्ष प्रवेश: ${fmtDT(r.srJD,5.5)} IST (${r.isDay?'दिन':'रात'})\n`;
     t+=`वर्ष लग्न: ${degFmt(r.vLagna)} (${RASHI[r.vLagnaSign]})\n`;
-    t+=`मुंथा: ${RASHI[r.munthaSign]} राशि, भाव ${r.munthaBhava}\n`;
+    t+=`मुंथा: ${RASHI[r.munthaSign]} राशि, भाव ${r.munthaBhava}, मुंथेश: ${SIGN_LORD[r.munthaSign]}\n`;
     t+=`वर्षेश: ${r.varshesh.planet} (${r.varshesh.role})\n\n`;
     t+=`--- ग्रह स्थिति ---\n`;
     for(const p of r.planetRows)t+=`${p.hi}: ${degFmt(p.lon)}, भाव ${p.bhava}, ${nakInfo(p.lon)}\n`;
     t+=`\n--- पंचाधिकारी ---\n`;
     r.panch.forEach((p,i)=>{t+=`${i+1}. ${p.role}: ${p.planet} (${(r.balaRows.find(b=>b.hi===p.planet)?.virupa||0).toFixed(2)} विरुपा)\n`;});
     t+=`\n--- पंच-वर्गीय बल ---\n`;
-    for(const b of r.balaRows)t+=`${b.hi}: ${b.virupa.toFixed(2)} विरुपा (${b.grade})\n`;
+    for(const b of r.balaRows)t+=`${b.hi}: क्षेत्र ${b.kshetra.toFixed(1)}, उच्च ${b.uccha.toFixed(1)}, हद्दा ${b.hadda.toFixed(1)}, द्रेष्काण ${b.drek.toFixed(1)}, नवांश ${b.nav.toFixed(1)} = कुल ${b.virupa.toFixed(2)} विरुपा (${b.grade})\n`;
     t+=`\n--- ताजिक योग ---\n`;
     for(const y of r.yogas)t+=`${y.name}: ${y.yes?'हाँ':'नहीं'} ${y.planets}\n`;
     t+=`\n--- सहम ---\n`;
-    for(const s of r.sahams)t+=`${s.name}: ${degFmt(s.lon)}\n`;
+    for(const s of r.sahams)t+=`${s.name}: ${degFmt(s.lon)}, भाव ${((Math.floor(s.lon/30)-r.vLagnaSign)%12+12)%12+1}\n`;
     t+=`\n--- मुद्दा दशा ---\n`;
     for(const d of r.mudda.rows)t+=`${d.planet}: ${fmtD(d.start)} → ${fmtD(d.end)} (${d.days.toFixed(1)} दिन)\n`;
+    t+=`कुल: ${r.mudda.totalDays.toFixed(1)} दिन | आरंभ ग्रह: ${r.mudda.startPlanet}\n`;
     const blob=new Blob([t],{type:'text/plain;charset=utf-8'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
@@ -910,7 +911,12 @@ function buildMonthlyTxt(){
     t+=`${'='.repeat(50)}\n`;
     t+=`वर्षेश: ${r.varshesh.planet} (${r.varshesh.role})\n`;
     t+=`मुंथा: ${RASHI[r.munthaSign]} (भाव ${r.munthaBhava})\n`;
-    t+=`वर्षफल लग्न: ${RASHI[r.vLagnaSign]}\n\n`;
+    t+=`वर्षफल लग्न: ${RASHI[r.vLagnaSign]}\n`;
+    const yesYogas=r.yogas.filter(y=>y.yes).map(y=>y.name.split(' ')[0]).slice(0,4).join(', ')||'—';
+    t+=`मुख्य योग: ${yesYogas}\n`;
+    const vivahSaham=r.sahams.find(s=>s.name.includes('विवाह'));
+    if(vivahSaham)t+=`विवाह सहम: ${degFmt(vivahSaham.lon)}\n`;
+    t+=`\n`;
     for(const row of d.rows){
         t+=`--- ${MONTH_HI[row.m-1]} ${row.y} ---\n`;
         t+=`विंशोत्तरी: ${VIM_H[row.vim.md]} MD / ${VIM_H[row.vim.ad]} AD / ${row.vim.pd?VIM_H[row.vim.pd]:'—'} PD\n`;
@@ -918,7 +924,8 @@ function buildMonthlyTxt(){
         t+=`मुद्दा दशा: ${row.muddaP} (${row.muddaD.toFixed(0)} दिन)\n`;
         for(const pl of ['सूर्य','मंगल','बुध','शुक्र','गुरु','शनि','राहु','केतु']){
             const g=row.go[pl];
-            t+=`${pl}: ${RASHI[g.sign]} | जन्म भाव ${((g.sign-d.nSign)%12+12)%12+1} | चंद्र भाव ${((g.sign-d.cSign)%12+12)%12+1} | वर्षफल भाव ${((g.sign-d.vSign)%12+12)%12+1}\n`;
+            const isSlow=(pl==='गुरु'||pl==='शनि'||pl==='राहु'||pl==='केतु');
+            t+=`${pl}: ${RASHI[g.sign]} | जन्म भाव ${((g.sign-d.nSign)%12+12)%12+1} | चंद्र भाव ${((g.sign-d.cSign)%12+12)%12+1} | वर्षफल भाव ${((g.sign-d.vSign)%12+12)%12+1}${isSlow?' | '+nakInfo(g.lon):''}\n`;
         }
         t+=`\n`;
     }
@@ -1085,11 +1092,13 @@ window.renderSingleMonth=async function(){
             return `${sg.s}-${sg.e} ${MONTH_SHORT[m-1]}`;
         };
 
+        const allSegs={};
         // Fast planets (no Moon)
         h+='<div class="card"><h2>⚡ तेज ग्रह गोचर</h2><table>';
         h+='<tr><th>ग्रह</th><th>अवधि</th><th>राशि</th><th>भाव (जन्म)</th><th>भाव (चंद्र)</th><th>भाव (वर्षफल)</th><th>नक्षत्र</th></tr>';
         for(const pl of ['सूर्य','मंगल','बुध','शुक्र']){
             const segs=await monthSegments(row.y,row.m,pl,swe,ad.tzH);
+            allSegs[pl]=segs;
             segs.forEach((sg,ix)=>{
                 h+='<tr>';
                 h+=ix===0?`<td rowspan="${segs.length}"><b>${pl}</b></td>`:'';
@@ -1109,6 +1118,7 @@ window.renderSingleMonth=async function(){
         h+='<tr><th>ग्रह</th><th>अवधि</th><th>राशि</th><th>भाव (जन्म)</th><th>भाव (चंद्र)</th><th>भाव (वर्षफल)</th><th>नक्षत्र</th></tr>';
         for(const pl of ['गुरु','शनि','राहु','केतु']){
             const segs=await monthSegments(row.y,row.m,pl,swe,ad.tzH);
+            allSegs[pl]=segs;
             segs.forEach((sg,ix)=>{
                 h+='<tr>';
                 h+=ix===0?`<td rowspan="${segs.length}"><b>${pl}</b></td>`:'';
@@ -1125,7 +1135,7 @@ window.renderSingleMonth=async function(){
 
         out.innerHTML=h;
         // Store for TXT download
-        window._singleMonthData={row,vim,yog,mud,y:row.y,m:row.m};
+        window._singleMonthData={row,vim,yog,mud,y:row.y,m:row.m,segs:allSegs};
     }catch(err){
         out.innerHTML='<div class="err" style="display:block">त्रुटि: '+(err.message||err)+'</div>';
     }
@@ -1143,9 +1153,23 @@ function buildSingleMonthTxt(){
     t+=`योगिनी: ${YOG_H[yog.md]} / ${YOG_H[yog.ad]} / ${yog.pd?YOG_H[yog.pd]+' PD':'—'}\n`;
     t+=`मुद्दा दशा: ${mud.md} / ${mud.ad} / ${mud.pd?mud.pd+' PD':'—'}\n\n`;
     t+=`--- गोचर ---\n`;
+    const dim=new Date(row.y,row.m,0).getDate();
+    const segLbl=sg=>{
+        if(sg.s===1&&sg.e===dim)return 'पूरा महीना';
+        if(sg.s===sg.e)return `${sg.s} ${MONTH_SHORT[row.m-1]}`;
+        return `${sg.s}-${sg.e} ${MONTH_SHORT[row.m-1]}`;
+    };
+    const bhavaOf=(sign,lagna)=>((sign-lagna)%12+12)%12+1;
     for(const pl of ['सूर्य','मंगल','बुध','शुक्र','गुरु','शनि','राहु','केतु']){
-        const g=row.go[pl];
-        t+=`${pl}: ${RASHI[g.sign]} | जन्म भाव ${((g.sign-d.nSign)%12+12)%12+1} | चंद्र भाव ${((g.sign-d.cSign)%12+12)%12+1} | वर्षफल भाव ${((g.sign-d.vSign)%12+12)%12+1} | ${nakInfo(g.lon)}\n`;
+        const list=smd.segs&&smd.segs[pl];
+        if(list&&list.length){
+            for(const sg of list){
+                t+=`${pl} (${segLbl(sg)}): ${RASHI[sg.sign]} | जन्म भाव ${bhavaOf(sg.sign,d.nSign)} | चंद्र भाव ${bhavaOf(sg.sign,d.cSign)} | वर्षफल भाव ${bhavaOf(sg.sign,d.vSign)} | ${nakInfo(sg.lon)}\n`;
+            }
+        }else{
+            const g=row.go[pl];
+            t+=`${pl}: ${RASHI[g.sign]} | जन्म भाव ${bhavaOf(g.sign,d.nSign)} | चंद्र भाव ${bhavaOf(g.sign,d.cSign)} | वर्षफल भाव ${bhavaOf(g.sign,d.vSign)} | ${nakInfo(g.lon)}\n`;
+        }
     }
     return t;
 }
