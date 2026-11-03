@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ताजिक वर्षफल Calculator v6.1</title>
+<title>ताजिक वर्षफल Calculator v6.2</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--primary:#8e44ad;--dark:#2c3e50;--bg:#f4f6f8;--ok:#27ae60;}
@@ -56,7 +56,7 @@ td:first-child{text-align:left;font-weight:bold}
 <body>
 <div class="container" id="capture-area">
 <h1>🗓️ ताजिक वर्षफल Calculator</h1>
-<div class="sub">9 तालिकाएँ + मासिक भविष्यफल — Solar Return से संपूर्ण ताजिक गणना — v6.1</div>
+<div class="sub">9 तालिकाएँ + मासिक भविष्यफल — Solar Return से संपूर्ण ताजिक गणना — v6.2</div>
 <div class="tab-bar">
 <button class="tab-btn active" id="tb-varshphal" onclick="swTab('varshphal')">🗓️ वर्षफल</button>
 <button class="tab-btn" id="tb-monthly" onclick="swTab('monthly')">📅 मासिक भविष्यफल</button>
@@ -97,8 +97,8 @@ td:first-child{text-align:left;font-weight:bold}
 <div class="note">पहले 🗓️ वर्षफल टैब में गणना करें — उसी डेटा से 12 महीने का दशा+गोचर टेबल बनेगा।</div>
 <div class="row2">
 <div>
-<label>अवधि चुनें:</label>
-<select id="m-year"></select>
+<label>अवधि:</label>
+<div id="m-period" style="padding:10px 12px;border:2px solid #8e44ad;border-radius:8px;background:#faf5ff;font-weight:600">वर्षफल वर्ष (जन्म माह से 12 महीने)</div>
 </div>
 <div>
 <label>&nbsp;</label>
@@ -134,7 +134,7 @@ td:first-child{text-align:left;font-weight:bold}
 </div>
 </div><!-- /pg-monthly -->
 
-<div class="foot">ताजिक वर्षफल v6.1 • Swiss Ephemeris (Lahiri) • B.V. Raman / Tajika Neelkanthi आधारित • tools give data, judgement Gemini करेगा</div>
+<div class="foot">ताजिक वर्षफल v6.2 • Swiss Ephemeris (Lahiri) • B.V. Raman / Tajika Neelkanthi आधारित • tools give data, judgement Gemini करेगा</div>
 
 <script>
 /* ================= Swiss Ephemeris ================= */
@@ -760,22 +760,6 @@ async function getGochar(jd,swe){
 
 let monthlyData=null;
 
-function populateYearSel(){
-    const sel=document.getElementById('m-year');
-    if(sel.options.length>0||!lastResult)return;
-    const ty=lastResult.ty;
-    const opts=[
-        {v:ty+',1',t:ty+' (Jan-Dec)'},
-        {v:ty+',3',t:ty+'-'+(ty+1)+' (Mar-Feb)'},
-        {v:(ty+1)+',1',t:(ty+1)+' (Jan-Dec)'}
-    ];
-    for(const o of opts){
-        const el=document.createElement('option');
-        el.value=o.v;el.textContent=o.t;
-        sel.appendChild(el);
-    }
-    sel.selectedIndex=1;
-}
 
 window.genMonthly=async function(){
     const out=document.getElementById('monthly-output');
@@ -785,7 +769,6 @@ window.genMonthly=async function(){
         document.getElementById('m-dl-row').style.display='none';
         return;
     }
-    populateYearSel();
     try{
         st.textContent='गणना हो रही है…';
         const swe=await ensureSwe();
@@ -806,7 +789,9 @@ window.genMonthly=async function(){
         const cSign=Math.floor(natalMoon/30);
         const vSign=r.vLagnaSign;
         // Months
-        const [sy,sm]=document.getElementById('m-year').value.split(',').map(Number);
+        const sy=r.ty, sm=r.ad.mo;
+        const eM=sm+11, eMo=((eM-1)%12)+1, eY=sy+Math.floor((eM-1)/12);
+        document.getElementById('m-period').textContent='वर्षफल वर्ष: '+MONTH_HI[sm-1]+' '+sy+' - '+MONTH_HI[eMo-1]+' '+eY;
         const rows=[];
         for(let i=0;i<12;i++){
             let y=sy,m=sm+i;
