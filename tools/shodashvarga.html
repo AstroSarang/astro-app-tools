@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>षोडशवर्ग विश्लेषक v3.4</title>
+    <title>षोडशवर्ग विश्लेषक v3.5</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; line-height: 1.6; padding: 20px; background-color: #f0f2f5; color: #1d2129; margin: 0; }
@@ -117,7 +117,7 @@
 <body>
 
 <div class="container">
-    <h1>षोडशवर्ग विश्लेषक <span style="font-size:0.5em; color:#888; vertical-align:middle;">v3.4</span></h1>
+    <h1>षोडशवर्ग विश्लेषक <span style="font-size:0.5em; color:#888; vertical-align:middle;">v3.5</span></h1>
 
     <!-- Mode Toggle -->
     <div class="mode-toggle">
@@ -197,21 +197,12 @@
     <!-- ============ MODE 2: D1-वर्ग तुलना (Tool 2) ============ -->
     <div id="mode2-panel" style="display: none;">
         <div class="input-instruction blue">
-            <strong>निर्देश:</strong> D1 और चुने हुए वर्ग के <strong>लग्न + 9 ग्रहों</strong> की राशि संख्या (1-12) कॉमा (,) से अलग करके दर्ज करें। (प्रत्येक में 10 संख्याएँ)
-            <ul>
-                <li><strong>क्रम अनिवार्य है:</strong> लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु।</li>
-                <li>जन्म विवरण से auto-fill भी हो सकता है — ऊपर 🪐 बटन दबाएं।</li>
-            </ul>
+            <strong>निर्देश:</strong> ऊपर Astro Code डालकर <strong>📥 भरो</strong> दबाएं - D1 और नीचे चुने हुए वर्ग की तुलना अपने आप बन जाएगी। हाथ से नंबर भरने की ज़रूरत नहीं है।
         </div>
 
         <div class="form-group">
-            <label class="main-label" for="m2-d1-input">1. D1 (राशि कुंडली) के लग्न और ग्रहों की स्थिति:</label>
-            <input type="text" id="m2-d1-input" placeholder="उदा. 1,5,10,1,3,11,9,7,2,8">
-        </div>
-
-        <div class="form-group">
-            <label class="main-label" for="m2-varga-select">2. तुलना के लिए वर्ग कुंडली चुनें:</label>
-            <select id="m2-varga-select" onchange="m2_updateLabel(); m2_onVargaChange();">
+            <label class="main-label" for="m2-varga-select">तुलना के लिए वर्ग कुंडली चुनें:</label>
+            <select id="m2-varga-select" onchange="m2_onVargaChange();">
                 <option value="D2">D2 - होरा कुंडली</option>
                 <option value="D3">D3 - द्रेष्काण कुंडली</option>
                 <option value="D4">D4 - चतुर्थांश कुंडली</option>
@@ -232,11 +223,6 @@
                 <option value="D45">D45 - अक्षवेदांश कुंडली</option>
                 <option value="D60">D60 - षष्ट्यंश कुंडली</option>
             </select>
-        </div>
-
-        <div class="form-group">
-            <label class="main-label" id="m2-varga-label" for="m2-varga-input">3. D9 (नवमांश कुंडली) के लग्न और ग्रहों की स्थिति:</label>
-            <input type="text" id="m2-varga-input" placeholder="उदा. 4,6,12,3,4,8,10,1,11,5">
         </div>
 
         <div class="action-buttons">
@@ -727,20 +713,9 @@ async function m1_bulkZip() {
 /* ============================================================
    MODE 2: D1-वर्ग तुलना (Tool 2 logic — unchanged)
    ============================================================ */
-function m2_updateLabel() {
-    const selectBox = document.getElementById('m2-varga-select');
-    const selectedText = selectBox.options[selectBox.selectedIndex].text.split('-')[0].trim();
-    document.getElementById('m2-varga-label').innerText = `3. ${selectedText} कुंडली के लग्न और ग्रहों की स्थिति दर्ज करें:`;
-}
-/* Auto-fill varga input when dropdown changes (if ephemeris data available) */
+/* Varga badalte hi tulna apne aap do-bara banti hai (Astro Code se) */
 function m2_onVargaChange() {
     if (!window._vargaLons) return;
-    const vargaCode = document.getElementById('m2-varga-select').value;
-    const nums = computeVargaNumbers(window._vargaLons, vargaCode);
-    document.getElementById('m2-varga-input').value = nums.join(',');
-    // D1 भी भर दो (हमेशा)
-    const d1nums = computeVargaNumbers(window._vargaLons, 'D1');
-    document.getElementById('m2-d1-input').value = d1nums.join(',');
     m2_analyze();
 }
 function m2_getLordships(planetKey, lagnaRashiIndex) {
@@ -765,29 +740,18 @@ function m2_analyze() {
     const outputDiv = document.getElementById('output');
     const copyBtn = document.getElementById('m2-copy-btn');
     const downBtn = document.getElementById('m2-download-btn');
-    const d1InputElem = document.getElementById('m2-d1-input');
-    const vargaInputElem = document.getElementById('m2-varga-input');
-
     outputDiv.innerHTML = '';
     copyBtn.style.display = 'none';
     downBtn.style.display = 'none';
-    d1InputElem.style.borderColor = '#ccc';
-    vargaInputElem.style.borderColor = '#ccc';
 
-    const d1Values = m2_parseInput(d1InputElem.value);
-    if (!d1Values) {
-        outputDiv.innerHTML = `<div class="error-message">अमान्य D1 इनपुट! कृपया कॉमा से अलग करके 1 से 12 तक की ठीक 10 संख्याएँ दर्ज करें।</div>`;
-        d1InputElem.style.borderColor = '#dc2626';
-        return;
-    }
-    const vargaValues = m2_parseInput(vargaInputElem.value);
-    if (!vargaValues) {
-        outputDiv.innerHTML = `<div class="error-message">अमान्य वर्ग कुंडली इनपुट! कृपया कॉमा से अलग करके 1 से 12 तक की ठीक 10 संख्याएँ दर्ज करें।</div>`;
-        vargaInputElem.style.borderColor = '#dc2626';
+    if (!window._vargaLons) {
+        outputDiv.innerHTML = `<div class="error-message">कृपया पहले ऊपर Astro Code डालकर "📥 भरो" दबाएं।</div>`;
         return;
     }
     const vargaSelect = document.getElementById('m2-varga-select');
     const vargaCode = vargaSelect.value;
+    const d1Values = computeVargaNumbers(window._vargaLons, 'D1').map(v => v - 1);
+    const vargaValues = computeVargaNumbers(window._vargaLons, vargaCode).map(v => v - 1);
     const vargaNameFull = vargaSelect.options[vargaSelect.selectedIndex].text;
     const d1Lagna = d1Values[0];
     const vargaLagna = vargaValues[0];
@@ -850,12 +814,7 @@ function m2_analyze() {
     downBtn.style.display = 'inline-block';
 }
 function m2_reset() {
-    document.getElementById('m2-d1-input').value = '';
-    document.getElementById('m2-d1-input').style.borderColor = '#ccc';
-    document.getElementById('m2-varga-input').value = '';
-    document.getElementById('m2-varga-input').style.borderColor = '#ccc';
     document.getElementById('m2-varga-select').value = 'D9';
-    m2_updateLabel();
     document.getElementById('output').innerHTML = 'परिणाम यहाँ प्रदर्शित होंगे...';
     document.getElementById('output-text-for-copy').value = '';
     document.getElementById('m2-copy-btn').style.display = 'none';
@@ -951,18 +910,12 @@ async function calcFromAstroCode(){
   window._vargaLons = lons10;
   window._vargaSpeeds = [0].concat(order.map(k=>S[k]));
 
-  /* Fill D1 everywhere */
-  const d1nums = computeVargaNumbers(lons10, 'D1');
-  document.getElementById('m2-d1-input').value = d1nums.join(',');
-
-  /* Fill selected varga in current mode + auto-run */
+  /* Auto-run in current mode */
   if (currentMode === 1) {
       m1_analyze();
       setStatus('✅ भरा गया — गणना तैयार है', true);
   } else {
       const vc = document.getElementById('m2-varga-select').value;
-      const vnums = computeVargaNumbers(lons10, vc);
-      document.getElementById('m2-varga-input').value = vnums.join(',');
       m2_analyze();
       setStatus('✅ भरा गया: D1 + '+vc+' — गणना तैयार है', true);
   }
@@ -997,7 +950,7 @@ function _parseNums(id){
 }
 function drawCharts(){
   const box=document.getElementById('charts-box');
-  const d1=_parseNums('m2-d1-input');
+  const d1 = window._vargaLons ? computeVargaNumbers(window._vargaLons, 'D1') : null;
   let varga=null, vargaName='';
   if(currentMode===1){
     if(!window._vargaLons){ box.style.display='none'; box.innerHTML=''; return; }
@@ -1016,7 +969,7 @@ function drawCharts(){
   }
   /* Tab 2: D1 + वर्ग दोनों charts */
   const vc=document.getElementById('m2-varga-select').value;
-  varga=_parseNums('m2-varga-input'); vargaName=vc;
+  varga = window._vargaLons ? computeVargaNumbers(window._vargaLons, vc) : null; vargaName=vc;
   if(!d1 || !varga){ box.style.display='none'; box.innerHTML=''; return; }
   box.innerHTML=_drawOneChart(d1,'📊 D1 - राशि')+_drawOneChart(varga,'📊 '+vargaName);
   box.style.display='block';
