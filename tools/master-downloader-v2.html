@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>मास्टर डेटा डाउनलोडर v2.7 - Astro Sarang</title>
+<title>मास्टर डेटा डाउनलोडर v2.8 - Astro Sarang</title>
 <style>
 *{box-sizing:border-box}
 body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;background:#f5f0e8;margin:0;padding:16px;color:#333}
@@ -54,7 +54,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <body>
 <div class="con">
 <div class="head">
-<h1>📦 मास्टर डेटा डाउनलोडर v2.7</h1>
+<h1>📦 मास्टर डेटा डाउनलोडर v2.8</h1>
 <div class="sub">13 टूल्स का डेटा एक साथ - PDF, एक TXT या ZIP में</div>
 </div>
 
@@ -124,6 +124,7 @@ function shodashPick(vk) {
 }
 const VARGA20_SHODASH = ['D1','D2','D3','D4','D5','D6','D7','D8','D9','D10','D11','D12','D16','D20','D24','D27','D30','D40','D45','D60'];
 const VARGA20_NAMES = {D1:'D1 - जन्म कुंडली',D2:'D2 - होरा',D3:'D3 - द्रेष्काण',D4:'D4 - चतुर्थांश',D5:'D5 - पंचमांश',D6:'D6 - षष्ठांश',D7:'D7 - सप्तमांश',D8:'D8 - अष्टमांश',D9:'D9 - नवमांश',D10:'D10 - दशमांश',D11:'D11 - रुद्रांश',D12:'D12 - द्वादशांश',D16:'D16 - षोडशांश',D20:'D20 - विंशांश',D24:'D24 - चतुर्विंशांश',D27:'D27 - सप्तविंशांश',D30:'D30 - त्रिंशांश',D40:'D40 - खवेदांश',D45:'D45 - अक्षवेदांश',D60:'D60 - षष्ट्यंश'};
+const VV_FN = {D9:'विवाह',D10:'करियर',D7:'संतान',D2:'धन',D4:'संपत्ति',D12:'माता-पिता',D24:'शिक्षा',D16:'वाहन व सुख',D6:'रोग व शत्रु',D8:'आयु व आकस्मिक',D1:'संपूर्ण जीवन',D3:'भाई-बहन व साहस',D5:'शक्ति व यश',D11:'लाभ व आय',D20:'आध्यात्म',D27:'शारीरिक बल',D30:'अरिष्ट',D40:'मातृ पक्ष',D45:'पितृ पक्ष व चरित्र',D60:'पूर्व कर्म'};
 const VV_TABS = [['D9','D9 - विवाह (नवमांश)'],['D10','D10 - करियर (दशमांश)'],['D7','D7 - संतान (सप्तमांश)'],['D2','D2 - धन (होरा)'],['D4','D4 - संपत्ति (चतुर्थांश)'],['D12','D12 - माता-पिता (द्वादशांश)'],['D24','D24 - शिक्षा (चतुर्विंशांश)'],['D16','D16 - वाहन (षोडशांश)'],['D6','D6 - रोग (षष्ठांश)'],['D8','D8 - आयु (अष्टमांश)'],['D1','D1 - संपूर्ण जीवन'],['D3','D3 - भाई-बहन (द्रेष्काण)'],['D5','D5 - शक्ति (पंचमांश)'],['D11','D11 - लाभ (रुद्रांश)'],['D20','D20 - साधना (विंशांश)'],['D27','D27 - बल (सप्तविंशांश)'],['D30','D30 - अशुभ (त्रिंशांश)'],['D40','D40 - शुभाशुभ (खवेदांश)'],['D45','D45 - चरित्र (अक्षवेदांश)'],['D60','D60 - पूर्व कर्म (षष्ट्यंश)']];
 
 // अवधि भरने वाले helpers (iframe के असली inputs में setting लगाते हैं)
@@ -137,106 +138,106 @@ const TOOLS = [
   {id:'d1', name:'D1 विश्लेषण', en:'D1 Analysis', file:'d1.html', input:'astro-code-text',
    prep:[{fill:1},{clickId:'btn-fillcode'},{wait:700},{clickText:'ग्रह स्थिति निकालें'},{wait:2500},{fn:'calculateAstrology'},{waitFor:{sel:'#output',min:400}}],
    sections:[
-     {key:'bhava', name:'D1 विश्लेषण (दोनों Tab - मुख्य + विस्तृत)', en:'D1 Analysis (Both Tabs)',
+     {key:'bhava', fn:'D1_Analysis', name:'D1 विश्लेषण (दोनों Tab - मुख्य + विस्तृत)', en:'D1 Analysis (Both Tabs)',
        steps:[{js:"var p=document.getElementById('d1-panel-detail'); if(p) p.style.display='block'; var o=document.getElementById('output'); if(o) o.style.display='block';"},{waitFor:{sel:'#detailed-bhava-display',min:1500}}],
        cap:['#output','#detailed-bhava-display'],
        mergeHead:'========================================================\nविस्तृत D1 विश्लेषण (12 भाव)\n========================================================'}
    ]},
   {id:'shodash', name:'षोडशवर्ग विश्लेषण', en:'Shodashvarga Analysis', file:'shodashvarga.html', input:'astro-code-in',
    prep:[{fill:1},{clickText:'📥 भरो'},{wait:1200},{js:"var r=document.querySelector('input[name=out-opt][value=analysis]'); if(r) r.click();"},{wait:400}],
-   sections: VARGA20_SHODASH.map(vk => ({key:vk.toLowerCase(), name:VARGA20_NAMES[vk], en:vk + ' Varga',
+   sections: VARGA20_SHODASH.map(vk => ({key:vk.toLowerCase(), fn:(vk === 'D1' ? 'D1_Analysis_Shodashvarga' : vk + '_Analysis'), name:VARGA20_NAMES[vk], en:vk + ' Varga',
      steps:[shodashPick(vk),{fn:'m1_analyze'},{waitFor:{sel:'#output',min:150,contains:vk}}], cap:['#output']}))},
   {id:'shodashTbl', name:'षोडशवर्ग सारणी', en:'Shodashvarga Tables', file:'shodashvarga.html', input:'astro-code-in',
    prep:[{fill:1},{clickText:'📥 भरो'},{wait:1200},{js:"var r=document.querySelector('input[name=out-opt][value=tables]'); if(r) r.click();"},{wait:400}],
-   sections: VARGA20_SHODASH.map(vk => ({key:vk.toLowerCase(), name:VARGA20_NAMES[vk], en:vk + ' Varga Table',
+   sections: VARGA20_SHODASH.map(vk => ({key:vk.toLowerCase(), fn:vk + '_Graha_Sthiti_Sarani', name:VARGA20_NAMES[vk], en:vk + ' Varga Table',
      steps:[shodashPick(vk),{fn:'m1_analyze'},{waitFor:{sel:'#output',min:150,contains:'D-' + vk.slice(1)}}], cap:['#output']}))},
   {id:'shodashM2', name:'षोडशवर्ग विश्लेषक', en:'Shodashvarga Mode 2', file:'shodashvarga.html', input:'astro-code-in',
    prep:[{fill:1},{clickText:'📥 भरो'},{wait:1200},{clickText:'⚖️ D1-वर्ग तुलना'},{wait:800}],
-   sections: VARGA20_SHODASH.map(vk => ({key:vk.toLowerCase(), name:VARGA20_NAMES[vk], en:vk + ' Comparison',
+   sections: VARGA20_SHODASH.map(vk => ({key:vk.toLowerCase(), fn:'D1_to_' + vk + '_Analysis', name:VARGA20_NAMES[vk], en:vk + ' Comparison',
      steps:[{select:['#m2-varga-select',vk]},{wait:700},{waitFor:{sel:'#output',min:150,contains:vk}}], cap:['#output']}))},
   {id:'chalit', name:'चलित / PN-PB-MB', en:'Chalit PN-PB-MB', file:'Chalit-PN-PB-MB.html', input:'astro-code-in',
    prep:[{fill:1},{clickText:'📥 भरो'},{wait:1500},{clickText:'गणना करें'},{waitFor:{sel:'#output',min:800}}],
    sections:[
-     {key:'chalit', name:'भाव चलित कुंडली', en:'Bhava Chalit', cap:['#chalit-section']},
-     {key:'pnpb', name:'PN/PB/MB रिपोर्ट (2A + 2B + 2C)', en:'PN PB MB Report', cap:['#pnpmmb-section']}
+     {key:'chalit', fn:'Chalit_Report', name:'भाव चलित कुंडली', en:'Bhava Chalit', cap:['#chalit-section']},
+     {key:'pnpb', fn:'PN_PB_MB_Report', name:'PN/PB/MB रिपोर्ट (2A + 2B + 2C)', en:'PN PB MB Report', cap:['#pnpmmb-section']}
    ]},
   {id:'jaimini', name:'जैमिनी', en:'Jaimini', file:'jaimini.html', input:'astro-code-in',
    prep:[{fill:1},{clickText:'📥 भरो'},{wait:900},{clickText:'गणना करें'},{waitFor:{sel:'#output-container',min:1000}}],
    sections:[
-     {key:'full', name:'जैमिनी पूर्ण विश्लेषण', en:'Jaimini Full Analysis', cap:['#output-container']}
+     {key:'full', fn:'Jaimini_Complete_Report', name:'जैमिनी पूर्ण विश्लेषण', en:'Jaimini Full Analysis', cap:['#output-container']}
    ]},
   {id:'bnn', name:'BNN - योग दोष', en:'BNN Yoga Dosha', file:'bnn.html', input:'astro-code-in',
    prep:[{fill:1},{clickText:'📥 भरो'},{waitFor:{sel:'#bnn-output',min:500}}],
    sections:[
-     {key:'bnn', name:'BNN विश्लेषण', en:'BNN Analysis', cap:['#bnn-output']},
-     {key:'yd', name:'योग-दोष रिपोर्ट', en:'Yoga Dosha Report',
+     {key:'bnn', fn:'BNN_Analysis', name:'BNN विश्लेषण', en:'BNN Analysis', cap:['#bnn-output']},
+     {key:'yd', fn:'Vedic_Yoga_Dosha_Report', name:'योग-दोष रिपोर्ट', en:'Yoga Dosha Report',
        steps:[{clickText:'योग-दोष रिपोर्ट'},{wait:700},{clickTextIn:['#mode2-panel','गणना करें']},{waitFor:{sel:'#yd-output-area',min:250}}], cap:['#yd-output-area']}
    ]},
   {id:'kp', name:'KP', en:'KP', file:'kp.html', input:'astroCode',
    prep:[{fill:1},{clickText:'📥 भरो'},{waitFor:{sel:'#mode-kptables',min:400}}],
    sections:[
-     {key:'tables', name:'KP Tables (ग्रह / भाव / सैगनिफिकेटर)', en:'KP Tables',
+     {key:'tables', fn:'KP-Tables', name:'KP Tables (ग्रह / भाव / सैगनिफिकेटर)', en:'KP Tables',
        steps:[{clickText:'KP विश्लेषण'},{wait:900}], cap:['#mode-kptables']},
      ...[['विवाह','Marriage','💒विवाह'],['दूसरा विवाह','Second Marriage','💒💒दूसराविवाह'],['संतान','Children','👶संतान'],['करियर','Career','💼करियर'],['धन','Wealth','💰धन'],['शिक्षा','Education','📚शिक्षा'],['विदेश','Foreign','✈️विदेश'],['स्वास्थ्य','Health','🏥स्वास्थ्य'],['कोर्ट','Court','⚖️कोर्ट'],['वाहन','Vehicle','🚗वाहन']].map(m => ({
-       key:'q-' + m[1].replace(/\s/g,''), name:'प्रश्न: ' + m[0], en:'KP ' + m[1],
+       key:'q-' + m[1].replace(/\s/g,''), fn:'KP-Verdicts_' + m[1].replace(/\s/g,'_'), name:'प्रश्न: ' + m[0], en:'KP ' + m[1],
        steps:[{clickText:'Events Verdicts'},{wait:500},{clickText:m[2]},{waitFor:{sel:'#verdictContent',min:80,contains:m[0]}}], cap:['#verdictContent']}))
    ]},
   {id:'extractor', name:'डेटा एक्सट्रैक्टर', en:'Data Extractor', file:'data-extractor.html', input:'astroCode',
    prep:[{fill:1},{clickText:'📥 भरो'},{waitFor:{sel:'#marriageOut',min:800}}],
    sections:[
-     {key:'marriage', name:'विवाह डेटा', en:'Marriage Data', steps:[{clickText:'💍 विवाह'},{wait:600}], cap:['#marriageOut']},
-     {key:'children', name:'संतान डेटा', en:'Children Data', steps:[{clickText:'👶 संतान'},{wait:600}], cap:['#childrenOut']},
-     {key:'career', name:'करियर डेटा', en:'Career Data', steps:[{clickText:'💼 करियर'},{wait:600}], cap:['#careerOut']}
+     {key:'marriage', fn:'Data-marriage', name:'विवाह डेटा', en:'Marriage Data', steps:[{clickText:'💍 विवाह'},{wait:600}], cap:['#marriageOut']},
+     {key:'children', fn:'Data-children', name:'संतान डेटा', en:'Children Data', steps:[{clickText:'👶 संतान'},{wait:600}], cap:['#childrenOut']},
+     {key:'career', fn:'Data-career', name:'करियर डेटा', en:'Career Data', steps:[{clickText:'💼 करियर'},{wait:600}], cap:['#careerOut']}
    ]},
   {id:'job', name:'नौकरी व्यवसाय', en:'Job Business', file:'job-business.html', input:'astroCode',
    prep:[{fill:1},{clickText:'📥 भरो'},{waitFor:{sel:'#savOut',min:80}}],
    sections:[
-     {key:'sav', name:'SAV तुलना', en:'SAV Comparison', steps:[{clickText:'SAV'},{wait:500}], cap:['#savOut']},
-     {key:'bav', name:'BAV विश्लेषण', en:'BAV Analysis', steps:[{clickText:'BAV'},{wait:500}], cap:['#bavOut']},
-     {key:'bal', name:'इष्ट / कष्ट', en:'Ishta Kashta', steps:[{clickText:'इष्ट'},{wait:500}], cap:['#balOut']},
-     {key:'verdict', name:'निष्कर्ष', en:'Verdict', steps:[{clickText:'निष्कर्ष'},{wait:500}], cap:['#verdictOut']}
+     {key:'sav', fn:'Job-vs-Business_SAV', name:'SAV तुलना', en:'SAV Comparison', steps:[{clickText:'SAV'},{wait:500}], cap:['#savOut']},
+     {key:'bav', fn:'Job-vs-Business_BAV', name:'BAV विश्लेषण', en:'BAV Analysis', steps:[{clickText:'BAV'},{wait:500}], cap:['#bavOut']},
+     {key:'bal', fn:'Job-vs-Business_Ishta_Kashta', name:'इष्ट / कष्ट', en:'Ishta Kashta', steps:[{clickText:'इष्ट'},{wait:500}], cap:['#balOut']},
+     {key:'verdict', fn:'Job-vs-Business_Verdict', name:'निष्कर्ष', en:'Verdict', steps:[{clickText:'निष्कर्ष'},{wait:500}], cap:['#verdictOut']}
    ]},
   {id:'dasha', name:'दशा', en:'Dasha', file:'dashas.html', input:'astro-code',
    prep:[{fill:1},{clickText:'📥 भरो'},{waitFor:{sel:'#vimshottari-out',min:1000}}],
    postPrep:[{jsFn:(win) => trimDashaWindow(win)}],
    sections:[
-     {key:'vim', name:'विंशोत्तरी दशा', en:'Vimshottari Dasha', steps:[{clickText:'विंशोत्तरी'},{wait:600}], cap:['#vimshottari-out']},
-     {key:'yog', name:'योगिनी दशा', en:'Yogini Dasha', steps:[{clickText:'योगिनी'},{wait:600}], cap:['#yogini-out']},
-     {key:'tri', name:'त्रिभागी दशा', en:'Tribhagi Dasha', steps:[{clickText:'त्रिभागी'},{wait:600}], cap:['#tribhagi-out']},
-     {key:'ash', name:'अष्टोत्तरी दशा', en:'Ashtottari Dasha', steps:[{clickText:'अष्टोत्तरी'},{wait:600}], cap:['#ashtottari-out']},
-     {key:'chara', name:'चर दशा', en:'Chara Dasha', steps:[{clickText:'चर दशा'},{wait:600}], cap:['#chara-out']},
-     {key:'tl', name:'मास्टर Timeline', en:'Master Timeline',
+     {key:'vim', fn:'vimshottari_dasha', name:'विंशोत्तरी दशा', en:'Vimshottari Dasha', steps:[{clickText:'विंशोत्तरी'},{wait:600}], cap:['#vimshottari-out']},
+     {key:'yog', fn:'yogini_dasha', name:'योगिनी दशा', en:'Yogini Dasha', steps:[{clickText:'योगिनी'},{wait:600}], cap:['#yogini-out']},
+     {key:'tri', fn:'tribhagi_dasha', name:'त्रिभागी दशा', en:'Tribhagi Dasha', steps:[{clickText:'त्रिभागी'},{wait:600}], cap:['#tribhagi-out']},
+     {key:'ash', fn:'ashtottari_dasha', name:'अष्टोत्तरी दशा', en:'Ashtottari Dasha', steps:[{clickText:'अष्टोत्तरी'},{wait:600}], cap:['#ashtottari-out']},
+     {key:'chara', fn:'Chara_Dasha', name:'चर दशा', en:'Chara Dasha', steps:[{clickText:'चर दशा'},{wait:600}], cap:['#chara-out']},
+     {key:'tl', fn:'Master-Timeline', name:'मास्टर Timeline', en:'Master Timeline',
        steps:[{clickText:'मास्टर Timeline'},{wait:700},{jsFn:setTlRange},{fn:'buildTimeline'},{waitFor:{sel:'#tl-out',min:400}}], cap:['#tl-out']}
    ]},
   {id:'gochar', name:'गोचर', en:'Gochar', file:'gochars.html', input:'astro-code',
    prep:[{fill:1},{clickText:'📥 भरो'},{wait:800},{clickText:'ग्रह स्थिति निकालें'},{wait:1800}],
    sections:[
-     {key:'samanya', name:'सामान्य गोचर', en:'General Transit',
+     {key:'samanya', fn:'Gochar_Samanya', name:'सामान्य गोचर', en:'General Transit',
        steps:[{fn:'setMode',args:['normal']},{jsFn:setGdRange},{fn:'calcGochar'},{waitFor:{sel:'#gochar-out',min:300,contains:'गोचर अवधि'}}], cap:['#gochar-out']},
-     {key:'vivah', name:'विवाह गोचर विश्लेषण', en:'Marriage Transit',
+     {key:'vivah', fn:'Gochar_Vivah', name:'विवाह गोचर विश्लेषण', en:'Marriage Transit',
        steps:[{fn:'setMode',args:['vivah']},{jsFn:setAnRange},{fn:'calcAnalysis'},{waitFor:{sel:'#gochar-out',min:300,contains:'विवाह'}}], cap:['#gochar-out']},
-     {key:'santan', name:'संतान गोचर विश्लेषण', en:'Children Transit',
+     {key:'santan', fn:'Gochar_Santan', name:'संतान गोचर विश्लेषण', en:'Children Transit',
        steps:[{fn:'setMode',args:['santan']},{jsFn:setAnRange},{fn:'calcAnalysis'},{waitFor:{sel:'#gochar-out',min:300,contains:'संतान'}}], cap:['#gochar-out']},
-     {key:'double', name:'Double Transit', en:'Double Transit',
+     {key:'double', fn:'Gochar_Double_Transit', name:'Double Transit', en:'Double Transit',
        steps:[{fn:'setMode',args:['double']},{wait:500},{jsFn:setAnRange},{js:"['dt-vivah','dt-santan'].forEach(function(id){ var c = document.getElementById(id); if (c && !c.checked) c.click(); });"},{fn:'calcAnalysis'},{waitFor:{sel:'#gochar-out',min:250}}], cap:['#gochar-out']},
-     {key:'indepth', name:'इंडेप्थ गोचर', en:'Indepth Transit', special:'indepthYears',
+     {key:'indepth', fn:'Gochar_Indepth', name:'इंडेप्थ गोचर', en:'Indepth Transit', special:'indepthYears',
        steps:[{fn:'setMode',args:['indepth']},{wait:500},{jsFn:setIndepthPlanet}], cap:['#gochar-out']}
    ]},
   {id:'pstrength', name:'प्लैनेट स्ट्रेंथ', en:'Planet Strength', file:'planet-strength.html', input:'astroCode',
    prep:[{fill:1},{clickText:'विश्लेषण करें'},{waitFor:{sel:'#results2',min:1000}}],
    sections:[
-     {key:'graha', name:'ग्रह बल', en:'Planet Strength', steps:[{fn:'switchTab',args:[1]},{wait:700}], cap:['#results']},
-     {key:'bhava', name:'भाव बल', en:'Bhava Strength', steps:[{fn:'switchTab',args:[2]},{wait:700}], cap:['#results2']}
+     {key:'graha', fn:'Graha_Bala_Auto_v1', name:'ग्रह बल', en:'Planet Strength', steps:[{fn:'switchTab',args:[1]},{wait:700}], cap:['#results']},
+     {key:'bhava', fn:'Bhava_Bala_Auto_v1', name:'भाव बल', en:'Bhava Strength', steps:[{fn:'switchTab',args:[2]},{wait:700}], cap:['#results2']}
    ]},
   {id:'vv', name:'वर्ग विशेष विश्लेषण', en:'Varga Vishesh', file:'varga-vishesh.html', input:'astro-code-in',
    prep:[{fill:1},{clickId:'btn-applycode'},{waitFor:{sel:'#tab-content',min:400}}],
-   sections: VV_TABS.map(v => ({key:v[0].toLowerCase(), name:v[1], en:'VV ' + v[0],
+   sections: VV_TABS.map(v => ({key:v[0].toLowerCase(), fn:'Varga_' + v[0] + '_' + VV_FN[v[0]], name:v[1], en:'VV ' + v[0],
      steps:[{fn:'renderTab',args:[v[0]]},{waitFor:{sel:'#tab-content',min:400}}], cap:['#shot-area']}))},
   {id:'upagraha', name:'उपग्रह व विशेष लग्न', en:'Upagraha Vishesh', file:'../upagraha-vishesh.html', input:'astrocode',
    prep:[{waitFor:{sel:'#status',min:10,contains:'तैयार'}},{fill:1},{clickId:'btn-fill'},{waitFor:{sel:'#upbody',min:200}}],
    sections:[
-     {key:'upagraha', name:'उपग्रह स्थिति व फलित', en:'Upagraha', cap:['#tab1body']},
-     {key:'vishesh', name:'विशेष लग्न स्थिति व फलित', en:'Vishesh Lagna',
+     {key:'upagraha', fn:'upagraha', name:'उपग्रह स्थिति व फलित', en:'Upagraha', cap:['#tab1body']},
+     {key:'vishesh', fn:'vishesh-lagna', name:'विशेष लग्न स्थिति व फलित', en:'Vishesh Lagna',
        steps:[{clickText:'⭐ विशेष लग्न'},{wait:800}], cap:['#tab2body']}
    ]}
 ];
@@ -548,7 +549,7 @@ async function generateAll() {
               const elY = doc.querySelector(sec.cap[0]);
               txts.push('=== इंडेप्थ गोचर - वर्ष ' + yr + ' ===\n\n' + extractText(win, elY));
             }
-            generatedData.push({toolName: tool.name, secName: sec.name + ' (' + ctx.indepthYrs + ' वर्ष)', en: tool.en + ' - ' + sec.en, txt: txts.join('\n\n')});
+            generatedData.push({toolName: tool.name, secName: sec.name + ' (' + ctx.indepthYrs + ' वर्ष)', en: tool.en + ' - ' + sec.en, fn: sec.fn, txt: txts.join('\n\n')});
             okCount++;
             setRow(tool, sec, '✅ बना', 'st-ok');
             continue;
@@ -556,7 +557,7 @@ async function generateAll() {
           if (sec.steps) await runSteps(win, doc, tool, sec.steps, code, ctx);
           const got = await captureSection(win, doc, tool, sec);
           if (!got.txt) throw new Error('खाली output');
-          generatedData.push({toolName: tool.name, secName: sec.name, en: tool.en + ' - ' + sec.en, txt: got.txt});
+          generatedData.push({toolName: tool.name, secName: sec.name, en: tool.en + ' - ' + sec.en, fn: sec.fn, txt: got.txt});
           okCount++;
           setRow(tool, sec, '✅ बना', 'st-ok');
         } catch (e) {
@@ -594,7 +595,7 @@ function downloadOneTXT() {
     generatedData.forEach((d, i) => {
       lines.push('');
       lines.push('='.repeat(60));
-      lines.push('भाग ' + (i + 1) + ': ' + d.toolName + ' - ' + d.secName);
+      lines.push((i + 1) + '] ' + (d.fn || (d.toolName + ' - ' + d.secName)));
       lines.push('='.repeat(60));
       lines.push('');
       lines.push(d.txt || '');
