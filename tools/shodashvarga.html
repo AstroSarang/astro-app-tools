@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>षोडशवर्ग विश्लेषक</title>
+    <title>षोडशवर्ग विश्लेषक v3.3</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; line-height: 1.6; padding: 20px; background-color: #f0f2f5; color: #1d2129; margin: 0; }
@@ -46,6 +46,16 @@
         .error-msg { color: #c62828; font-size: 0.88em; margin-top: 8px; font-weight: 600; }
         .instruction { font-size: 0.85em; color: #555; margin-top: 5px; }
 
+
+        /* Output option + Tables (v3.0) */
+        .opt-card { background: #ffffff; border: 1.5px solid #2e7d32; border-radius: 8px; padding: 14px 16px; margin-bottom: 22px; }
+        .opt-radios { display: flex; gap: 12px; flex-wrap: wrap; margin: 10px 0 4px; }
+        .opt-radio { flex: 1; min-width: 170px; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 9px 12px; cursor: pointer; background: #f8fafc; font-weight: 600; font-size: 0.95rem; }
+        .opt-radio .opt-desc { display: block; font-weight: 400; font-size: 0.8em; color: #666; margin-top: 2px; }
+        .opt-radio.sel { border-color: #2e7d32; background: #e8f5e9; }
+        .tbl-mini-btn { padding: 6px 14px; border: 1px solid #2e7d32; background: #fff; color: #2e7d32; border-radius: 6px; cursor: pointer; font-size: 0.88rem; margin-right: 8px; }
+        .tbl-pre { font-family: 'Courier New', monospace; font-size: 0.8rem; line-height: 1.45; white-space: pre; overflow-x: auto; text-align: left; }
+
         /* Checkbox Layout (Tool 1) */
         .checkbox-container-wrapper { background: #ffffff; padding: 20px; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 25px; overflow-x: auto; }
         .checkbox-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; min-width: 700px; }
@@ -68,6 +78,8 @@
         .action-buttons { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; margin-bottom: 20px; flex-wrap: wrap; }
         .action-buttons button { display: block; width: auto; min-width: 150px; padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 1.05rem; font-weight: 500; transition: background-color 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.1); color: white; }
         .action-buttons button:hover { box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+        #m1-actions { flex-wrap: nowrap; gap: 8px; overflow-x: auto; justify-content: center; justify-content: safe center; padding-bottom: 4px; }
+        #m1-actions button { min-width: 0; padding: 8px 12px; font-size: 0.88rem; white-space: nowrap; }
         .btn-analyze { background-color: #1a73e8; }
         .btn-analyze:hover { background-color: #1558b0; }
         .btn-reset { background-color: #dc3545; }
@@ -105,7 +117,7 @@
 <body>
 
 <div class="container">
-    <h1>षोडशवर्ग विश्लेषक</h1>
+    <h1>षोडशवर्ग विश्लेषक <span style="font-size:0.5em; color:#888; vertical-align:middle;">v3.3</span></h1>
 
     <!-- Mode Toggle -->
     <div class="mode-toggle">
@@ -128,50 +140,51 @@
 
     <!-- ============ MODE 1: वर्ग विश्लेषण (Tool 1) ============ -->
     <div id="mode1-panel">
-        <div class="form-group">
-            <label class="main-label">वर्ग कुंडली चुनें (कोई एक चुनें):</label>
-            <div class="checkbox-container-wrapper">
-                <div class="checkbox-row">
-                    <label class="checkbox-item" title="राशि कुंडली"><input type="checkbox" class="varga-cb" value="D1" data-name="D1 - राशि कुंडली"> D1</label>
-                    <label class="checkbox-item" title="होरा कुंडली"><input type="checkbox" class="varga-cb" value="D2" data-name="D2 - होरा कुंडली"> D2</label>
-                    <label class="checkbox-item" title="द्रेष्काण कुंडली"><input type="checkbox" class="varga-cb" value="D3" data-name="D3 - द्रेष्काण कुंडली"> D3</label>
-                    <label class="checkbox-item" title="चतुर्थांश कुंडली"><input type="checkbox" class="varga-cb" value="D4" data-name="D4 - चतुर्थांश कुंडली"> D4</label>
-                    <label class="checkbox-item" title="पंचमांश कुंडली"><input type="checkbox" class="varga-cb" value="D5" data-name="D5 - पंचमांश कुंडली"> D5</label>
-                    <label class="checkbox-item" title="षष्ठमांश कुंडली"><input type="checkbox" class="varga-cb" value="D6" data-name="D6 - षष्ठमांश कुंडली"> D6</label>
-                    <label class="checkbox-item" title="सप्तमांश कुंडली"><input type="checkbox" class="varga-cb" value="D7" data-name="D7 - सप्तमांश कुंडली"> D7</label>
-                    <label class="checkbox-item" title="अष्टमांश कुंडली"><input type="checkbox" class="varga-cb" value="D8" data-name="D8 - अष्टमांश कुंडली"> D8</label>
-                    <label class="checkbox-item" title="नवमांश कुंडली"><input type="checkbox" class="varga-cb" value="D9" data-name="D9 - नवमांश कुंडली"> D9</label>
-                    <label class="checkbox-item" title="दशमांश कुंडली"><input type="checkbox" class="varga-cb" value="D10" data-name="D10 - दशमांश कुंडली"> D10</label>
-                </div>
-                <div class="checkbox-row">
-                    <label class="checkbox-item" title="रुद्रांश कुंडली"><input type="checkbox" class="varga-cb" value="D11" data-name="D11 - रुद्रांश कुंडली"> D11</label>
-                    <label class="checkbox-item" title="द्वादशांश कुंडली"><input type="checkbox" class="varga-cb" value="D12" data-name="D12 - द्वादशांश कुंडली"> D12</label>
-                    <label class="checkbox-item" title="षोडशांश कुंडली"><input type="checkbox" class="varga-cb" value="D16" data-name="D16 - षोडशांश कुंडली"> D16</label>
-                    <label class="checkbox-item" title="विशांशा कुंडली"><input type="checkbox" class="varga-cb" value="D20" data-name="D20 - विशांशा कुंडली"> D20</label>
-                    <label class="checkbox-item" title="चतुर्विंशांश कुंडली"><input type="checkbox" class="varga-cb" value="D24" data-name="D24 - चतुर्विंशांश कुंडली"> D24</label>
-                    <label class="checkbox-item" title="सप्तविंशांश कुंडली"><input type="checkbox" class="varga-cb" value="D27" data-name="D27 - सप्तविंशांश कुंडली"> D27</label>
-                    <label class="checkbox-item" title="त्रिंशांश कुंडली"><input type="checkbox" class="varga-cb" value="D30" data-name="D30 - त्रिंशांश कुंडली"> D30</label>
-                    <label class="checkbox-item" title="खवेदांश कुंडली"><input type="checkbox" class="varga-cb" value="D40" data-name="D40 - खवेदांश कुंडली"> D40</label>
-                    <label class="checkbox-item" title="अक्षवेदांश कुंडली"><input type="checkbox" class="varga-cb" value="D45" data-name="D45 - अक्षवेदांश कुंडली"> D45</label>
-                    <label class="checkbox-item" title="षष्ट्यंश कुंडली"><input type="checkbox" class="varga-cb" value="D60" data-name="D60 - षष्ट्यंश कुंडली"> D60</label>
-                </div>
+        <!-- Output option + ग्रह स्थिति सारणी (v3.0) -->
+        <div class="opt-card">
+            <label class="main-label">🎛️ Output में क्या चाहिए?</label>
+            <div class="opt-radios">
+                <label class="opt-radio sel" id="opt-lbl-both"><input type="radio" name="out-opt" value="both" checked> दोनों<span class="opt-desc">पहले वर्ग विश्लेषण, फिर ग्रह स्थिति सारणी</span></label>
+                <label class="opt-radio" id="opt-lbl-analysis"><input type="radio" name="out-opt" value="analysis"> सिर्फ वर्ग विश्लेषण<span class="opt-desc">सिर्फ चुने हुए वर्गों का विश्लेषण</span></label>
+                <label class="opt-radio" id="opt-lbl-tables"><input type="radio" name="out-opt" value="tables"> सिर्फ ग्रह स्थिति सारणी<span class="opt-desc">app-जैसी स्थिति व भाव सारणी, विश्लेषण नहीं</span></label>
             </div>
+            <div style="border-top:1px dashed #bbb; margin:12px 0 10px;"></div>
+            <label class="main-label">📋 कौन से वर्ग output में हों (कितने भी चुनें)</label>
+            <div class="checkbox-container-wrapper" style="margin-bottom:12px;">
+                <div class="checkbox-row">
+                    <label class="checkbox-item" title="राशि कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D1" value="D1"> D1</label>
+                    <label class="checkbox-item" title="होरा कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D2" value="D2"> D2</label>
+                    <label class="checkbox-item" title="द्रेष्काण कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D3" value="D3"> D3</label>
+                    <label class="checkbox-item" title="चतुर्थांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D4" value="D4"> D4</label>
+                    <label class="checkbox-item" title="पंचमांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D5" value="D5"> D5</label>
+                    <label class="checkbox-item" title="षष्ठमांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D6" value="D6"> D6</label>
+                    <label class="checkbox-item" title="सप्तमांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D7" value="D7"> D7</label>
+                    <label class="checkbox-item" title="अष्टमांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D8" value="D8"> D8</label>
+                    <label class="checkbox-item" title="नवमांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D9" value="D9" checked> D9</label>
+                    <label class="checkbox-item" title="दशमांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D10" value="D10" checked> D10</label>
+                </div>
+                <div class="checkbox-row">
+                    <label class="checkbox-item" title="रुद्रांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D11" value="D11"> D11</label>
+                    <label class="checkbox-item" title="द्वादशांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D12" value="D12"> D12</label>
+                    <label class="checkbox-item" title="षोडशांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D16" value="D16"> D16</label>
+                    <label class="checkbox-item" title="विशांशा कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D20" value="D20"> D20</label>
+                    <label class="checkbox-item" title="चतुर्विंशांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D24" value="D24"> D24</label>
+                    <label class="checkbox-item" title="सप्तविंशांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D27" value="D27"> D27</label>
+                    <label class="checkbox-item" title="त्रिंशांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D30" value="D30"> D30</label>
+                    <label class="checkbox-item" title="खवेदांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D40" value="D40"> D40</label>
+                    <label class="checkbox-item" title="अक्षवेदांश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D45" value="D45"> D45</label>
+                    <label class="checkbox-item" title="षष्ट्यंश कुंडली"><input type="checkbox" class="tbl-cb" id="tbl-cb-D60" value="D60" checked> D60</label>
+                </div>
+            <div style="margin-top:10px;">
+                <button type="button" class="tbl-mini-btn" onclick="tblSelectAll(true)">सभी चुनें</button>
+                <button type="button" class="tbl-mini-btn" onclick="tblSelectAll(false)">सभी हटाएँ</button>
+            </div>
+            <div class="instruction">जितने वर्ग चुनोगे, उतनों का ही output बनेगा - विश्लेषण भी, सारणी भी। वर्ग चुनने के लिए पहले ऊपर Astro Code से भरना ज़रूरी है।</div>
         </div>
 
-        <div class="input-instruction">
-            <strong>निर्देश:</strong> चुने हुए वर्ग के <strong>लग्न</strong> और 9 ग्रहों की <strong>राशि संख्या (1-12)</strong> कॉमा (,) से अलग करके दर्ज करें। (कुल 10 संख्याएँ)
-            <ul>
-                <li><strong>क्रम अनिवार्य है:</strong> लग्न, सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु।</li>
-                <li>जन्म विवरण से auto-fill भी हो सकता है — ऊपर 🪐 बटन दबाएं।</li>
-            </ul>
-        </div>
 
-        <div class="form-group">
-            <label class="main-label" for="m1-planet-input">चुने हुए वर्ग के लग्न और 9 ग्रहों की राशि संख्या:</label>
-            <input type="text" id="m1-planet-input" placeholder="उदा. 1,5,10,1,3,11,9,7,2,8">
-        </div>
 
-        <div class="action-buttons">
+        <div class="action-buttons" id="m1-actions">
             <button class="btn-analyze" onclick="m1_analyze()">विश्लेषण करें</button>
             <button class="btn-reset" onclick="m1_reset()">रीसेट करें</button>
             <button class="btn-copy" id="m1-copy-btn" onclick="m1_copy()" style="display: none;">आउटपुट कॉपी करें</button>
@@ -365,28 +378,6 @@ function hideAllActionButtons() {
 /* ============================================================
    MODE 1: वर्ग विश्लेषण (Tool 1 logic — unchanged)
    ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
-    const checkboxes = document.querySelectorAll('.varga-cb');
-    checkboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            if (this.checked) {
-                checkboxes.forEach(otherCb => {
-                    if (otherCb !== this) {
-                        otherCb.disabled = true;
-                        otherCb.parentElement.classList.add('disabled');
-                    }
-                });
-                // Auto-fill varga numbers if longitudes available
-                m1_onVargaSelect(this.value);
-            } else {
-                checkboxes.forEach(otherCb => {
-                    otherCb.disabled = false;
-                    otherCb.parentElement.classList.remove('disabled');
-                });
-            }
-        });
-    });
-});
 
 function getVargaLordships(planetKey, vargaLagnaRashiIndex) {
     const lordships = [];
@@ -399,51 +390,123 @@ function getVargaLordships(planetKey, vargaLagnaRashiIndex) {
     return lordships.length > 0 ? lordships.join('/') : '';
 }
 
-/* Auto-fill varga input when checkbox ticked (if ephemeris data available) */
-function m1_onVargaSelect(vargaCode) {
-    if (!window._vargaLons) return; // no birth data yet — manual entry
-    const nums = computeVargaNumbers(window._vargaLons, vargaCode);
-    document.getElementById('m1-planet-input').value = nums.join(',');
-    m1_analyze(); // auto-run
+/* Mode 1 (v3.2): one checkbox set drives both analysis and tables */
+function m1ActiveVargas() {
+    if (window._m1BulkVarga) return [window._m1BulkVarga];
+    return tblSelected();
 }
 
-function m1_analyze() {
-    drawCharts();
-    const outputDiv = document.getElementById('output');
-    const copyButton = document.getElementById('m1-copy-btn');
-    const downloadButton = document.getElementById('m1-download-btn');
-    const planetInput = document.getElementById('m1-planet-input');
-    const checkedBox = document.querySelector('.varga-cb:checked');
+/* ============================================================
+   ग्रह स्थिति सारणी (v3.0) — app-style tables from ephemeris longitudes
+   ============================================================ */
+const TBL_VARGAS = ['D1','D2','D3','D4','D5','D6','D7','D8','D9','D10','D11','D12','D16','D20','D24','D27','D30','D40','D45','D60'];
+const TBL_EN = { D1:'Rashi Chart', D2:'Hora', D3:'Drekkana', D4:'Chaturthamsha', D5:'Panchamsha', D6:'Shashtamsha', D7:'Saptamsha', D8:'Ashtamsha', D9:'Navamsha', D10:'Dashamsha', D11:'Ekadashamsha', D12:'Dwadashamsha', D16:'Shodashamsha', D20:'Vimshamsha', D24:'Chaturvimshamsha', D27:'Saptavimshamsha', D30:'Trimshamsha', D40:'Khavedamsha', D45:'Akshavedamsha', D60:'Shashtiamsha' };
+const TBL_N = { D1:1, D2:2, D3:3, D4:4, D5:5, D6:6, D7:7, D8:8, D9:9, D10:10, D11:11, D12:12, D16:16, D20:20, D24:24, D27:27, D30:30, D40:40, D45:45, D60:60 };
+const TBL_PLANETS = ['Lagna','Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+const RASHI_EN_T = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const NAK_EN_T = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Aridra','Punarvasu','Pushyami','Ashlesha','Makha','P.Phalguni','U.Phalguni','Hasta','Chitta','Swati','Vishakha','Anuradha','Jyeshta','Moola','P.Ashadha','U.Ashadha','Shravana','Dhanishta','Shatabhisha','P.Bhadrapada','U.Bhadrapada','Revati'];
+const _n360 = d => ((d % 360) + 360) % 360;
+const _pad = (s, n) => String(s).padEnd(n, ' ');
 
-    planetInput.style.borderColor = '#ccc';
-    outputDiv.innerHTML = '';
-    copyButton.style.display = 'none';
-    downloadButton.style.display = 'none';
+function tblVargaAbsLon(lon, varga) {
+    const n = TBL_N[varga];
+    const d = _n360(lon) % 30;
+    const vsign = vargaSign(lon, varga);
+    return vsign * 30 + (d % (30 / n)) * n;
+}
+function tblNakPaad(absLon) {
+    const span = 360 / 27;
+    const L = _n360(absLon);
+    const idx = Math.floor(L / span) % 27;
+    const rem = L % span;
+    return { nak: NAK_EN_T[idx], paad: Math.min(4, Math.floor(rem / (span / 4)) + 1) };
+}
+function tblFmtDMS(deg) {
+    deg = Math.max(0, Math.min(29.999999, deg));
+    let D = Math.floor(deg);
+    let mF = (deg - D) * 60;
+    let M = Math.floor(mF);
+    let S = Math.round((mF - M) * 60);
+    if (S === 60) { S = 0; M++; }
+    if (M === 60) { M = 0; D++; if (D === 30) D = 29; }
+    const p2 = x => String(x).padStart(2, '0');
+    return D + ':' + p2(M) + ':' + p2(S);
+}
+function tblEscapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function tblTableText(v) {
+    const lons = window._vargaLons, spds = window._vargaSpeeds || [];
+    const lines = [];
+    lines.push(`Planetary Positions for ${TBL_EN[v]} (${v.replace('D','D-')})`);
+    lines.push(_pad('Planet', 10) + ' ' + _pad('Degree', 10) + ' ' + _pad('Rashi', 12) + ' ' + _pad('Nakshatra', 14) + ' Paad');
+    TBL_PLANETS.forEach((p, i) => {
+        const va = tblVargaAbsLon(lons[i], v);
+        const np = tblNakPaad(va);
+        let retro = '';
+        if (p !== 'Lagna' && (p === 'Rahu' || p === 'Ketu' || (spds[i] || 0) < 0)) retro = ' (R)';
+        lines.push(_pad(p + retro, 10) + ' ' + _pad(tblFmtDMS(va % 30), 10) + ' ' + _pad(RASHI_EN_T[Math.floor(va / 30) % 12], 12) + ' ' + _pad(np.nak, 14) + ' ' + np.paad);
+    });
+    lines.push('');
+    lines.push(`Bhava [Equal Houses] details for (${v.replace('D','D-')})`);
+    lines.push(_pad('Bhava', 6) + ' ' + _pad('Bhava Start', 26) + ' Bhava Cusp');
+    const lagnaV = tblVargaAbsLon(lons[0], v);
+    for (let b = 1; b <= 12; b++) {
+        const cusp = _n360(lagnaV + (b - 1) * 30);
+        const start = _n360(cusp - 15);
+        const cnp = tblNakPaad(cusp), snp = tblNakPaad(start);
+        const startStr = `(${RASHI_EN_T[Math.floor(start / 30) % 12]} - ${snp.nak})`;
+        lines.push(_pad(b, 6) + ' ' + _pad(startStr, 26) + ' ' + tblFmtDMS(cusp % 30) + ` (${RASHI_EN_T[Math.floor(cusp / 30) % 12]} - ${cnp.nak})`);
+    }
+    return lines.join('\n');
+}
+function tblSelected() {
+    return TBL_VARGAS.filter(v => { const el = document.getElementById('tbl-cb-' + v); return el && el.checked; });
+}
+function buildTablesText() {
+    if (!window._vargaLons) return '';
+    const sel = tblSelected();
+    if (!sel.length) return '';
+    return sel.map(tblTableText).join('\n\n' + '='.repeat(60) + '\n\n');
+}
+function getOutOpt() {
+    const r = document.querySelector('input[name="out-opt"]:checked');
+    return r ? r.value : 'both';
+}
+function tblSelectAll(on) {
+    TBL_VARGAS.forEach(v => { const el = document.getElementById('tbl-cb-' + v); if (el) el.checked = on; });
+}
+function tblSyncOptUI() {
+    const opt = getOutOpt();
+    ['both', 'analysis', 'tables'].forEach(k => {
+        const lbl = document.getElementById('opt-lbl-' + k);
+        if (lbl) lbl.classList.toggle('sel', k === opt);
+    });
+}
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('input[name="out-opt"]').forEach(r => r.addEventListener('change', tblSyncOptUI));
+    tblSyncOptUI();
+    document.querySelectorAll('.tbl-cb').forEach(c => c.addEventListener('change', () => {
+        if (currentMode === 1 && window._vargaLons) m1_analyze();
+    }));
+});
+function m1_renderTablesOnly(outputDiv, copyButton, downloadButton) {
+    if (!window._vargaLons) {
+        outputDiv.innerHTML = `<div class="error-message">ग्रह स्थिति सारणी के लिए पहले ऊपर Astro Code डालकर "📥 भरो" दबाएं।</div>`;
+        return;
+    }
+    const tt = buildTablesText();
+    if (!tt) {
+        outputDiv.innerHTML = `<div class="error-message">कृपया सारणी के लिए कम से कम एक वर्ग चुनें।</div>`;
+        return;
+    }
+    outputDiv.innerHTML = `<div class="output-section"><div class="output-title">ग्रह स्थिति सारणी</div><pre class="tbl-pre">${tblEscapeHtml(tt)}</pre></div>`;
+    document.getElementById('output-text-for-copy').value = tt;
+    copyButton.style.display = 'inline-block';
+    downloadButton.style.display = 'inline-block';
+}
 
-    if (!checkedBox) {
-        outputDiv.innerHTML = `<div class="error-message">कृपया विश्लेषण के लिए ऊपर दी गई सूची में से कोई एक वर्ग कुंडली चुनें।</div>`;
-        return;
-    }
-    const vargaChartFullName = checkedBox.getAttribute('data-name');
-    const inputString = planetInput.value.trim();
-    if (inputString === '') {
-        outputDiv.innerHTML = `<div class="error-message">कृपया लग्न और ग्रहों की राशि संख्या दर्ज करें।</div>`;
-        return;
-    }
-    const rashiStrings = inputString.split(',').map(s => s.trim());
-    if (rashiStrings.length !== 10) {
-        outputDiv.innerHTML = `<div class="error-message">अमान्य इनपुट। कृपया कॉमा से अलग करके ठीक 10 संख्याएँ (1 लग्न + 9 ग्रह) दर्ज करें। (आपने ${rashiStrings.length} संख्याएं दर्ज की हैं)</div>`;
-        planetInput.style.borderColor = '#d93025';
-        return;
-    }
-    const allRashiValues = rashiStrings.map(s => parseInt(s, 10));
-    const hasInvalidInput = allRashiValues.some(val => isNaN(val) || val < 1 || val > 12);
-    if (hasInvalidInput) {
-        outputDiv.innerHTML = `<div class="error-message">अमान्य राशि संख्या दर्ज की गई है। कृपया केवल 1 से 12 के बीच की संख्याएँ दर्ज करें।</div>`;
-        planetInput.style.borderColor = '#d93025';
-        return;
-    }
-
+function buildVargaAnalysis(allRashiValues, vargaChartFullName) {
     const vargaLagnaRashiIndex = allRashiValues[0] - 1;
     const planetRashiValues = allRashiValues.slice(1);
     const vargaPlanetBhavaPositions = {};
@@ -519,24 +582,71 @@ function m1_analyze() {
         outputText += `${lineText}\n`;
     }
     outputHTML += `</div>`;
+    return { html: outputHTML, text: outputText };
+}
 
+function m1_analyze() {
+    drawCharts();
+    const outputDiv = document.getElementById('output');
+    const copyButton = document.getElementById('m1-copy-btn');
+    const downloadButton = document.getElementById('m1-download-btn');
+    outputDiv.innerHTML = '';
+    copyButton.style.display = 'none';
+    downloadButton.style.display = 'none';
+
+    const outOpt = window._m1ForceAnalysis ? 'analysis' : getOutOpt();
+    if (outOpt === 'tables') { m1_renderTablesOnly(outputDiv, copyButton, downloadButton); return; }
+
+    if (!window._vargaLons) {
+        outputDiv.innerHTML = `<div class="error-message">कृपया पहले ऊपर Astro Code डालकर "📥 भरो" दबाएं।</div>`;
+        return;
+    }
+    const vlist = m1ActiveVargas();
+    if (!vlist.length) {
+        outputDiv.innerHTML = `<div class="error-message">कृपया कम से कम एक वर्ग चुनें।</div>`;
+        return;
+    }
+    let outputHTML = '';
+    let outputText = '';
+    {
+        const htmlParts = [], textParts = [];
+        for (const vc of vlist) {
+            const part = buildVargaAnalysis(computeVargaNumbers(window._vargaLons, vc), VARGA_NAMES[vc] || vc);
+            htmlParts.push(part.html);
+            textParts.push(part.text);
+        }
+        outputHTML = htmlParts.join('');
+        outputText = textParts.length === 1 ? textParts[0] : textParts.map(s => s.replace(/\s+$/, '')).join('\n\n' + '='.repeat(60) + '\n\n');
+    }
+
+
+    let finalText = outputText;
+    if (outOpt === 'both') {
+        const tt = buildTablesText();
+        if (tt) {
+            finalText = outputText.replace(/\s+$/, '') + '\n\n' + '='.repeat(60) + '\n\n' + tt;
+            outputHTML += `<div class="output-section"><div class="output-title">ग्रह स्थिति सारणी</div><pre class="tbl-pre">${tblEscapeHtml(tt)}</pre></div>`;
+        }
+    }
     outputDiv.innerHTML = outputHTML;
-    document.getElementById('output-text-for-copy').value = outputText;
+    document.getElementById('output-text-for-copy').value = finalText;
     copyButton.style.display = 'inline-block';
     downloadButton.style.display = 'inline-block';
     document.getElementById('m1-bulkzip-btn').style.display = 'inline-block';
 }
 
 function m1_reset() {
-    const checkboxes = document.querySelectorAll('.varga-cb');
-    checkboxes.forEach(cb => { cb.checked = false; cb.disabled = false; cb.parentElement.classList.remove('disabled'); });
-    const planetInput = document.getElementById('m1-planet-input');
-    planetInput.value = ''; planetInput.style.borderColor = '#ccc';
     document.getElementById('output').innerHTML = 'परिणाम यहाँ प्रदर्शित होंगे...';
     document.getElementById('output-text-for-copy').value = '';
     document.getElementById('m1-copy-btn').style.display = 'none';
     document.getElementById('m1-download-btn').style.display = 'none';
     document.getElementById('m1-bulkzip-btn').style.display = 'none';
+    const cbox = document.getElementById('charts-box');
+    if (cbox) { cbox.style.display = 'none'; cbox.innerHTML = ''; }
+    const bothRadio = document.querySelector('input[name="out-opt"][value="both"]');
+    if (bothRadio) bothRadio.checked = true;
+    tblSyncOptUI();
+    TBL_VARGAS.forEach(v => { const el = document.getElementById('tbl-cb-' + v); if (el) el.checked = (v === 'D9' || v === 'D10' || v === 'D60'); });
 }
 
 function m1_copy() {
@@ -556,12 +666,13 @@ function m1_fallbackCopy(text, btn, done) {
 }
 function m1_download() {
     const textToDownload = document.getElementById('output-text-for-copy').value;
-    const checkedBox = document.querySelector('.varga-cb:checked');
-    const chartValue = checkedBox ? checkedBox.value : 'Chart';
+    const dlOpt = window._m1ForceAnalysis ? 'analysis' : getOutOpt();
+    const actV = m1ActiveVargas();
+    const chartValue = actV.length === 1 ? actV[0] : 'Varga';
     const blob = new Blob([textToDownload], { type: 'text/plain;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `${chartValue}_Analysis.txt`;
+    link.download = (dlOpt === 'tables') ? 'Graha_Sthiti_Sarani.txt' : `${chartValue}_Analysis.txt`;
     document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
 
@@ -582,32 +693,22 @@ async function m1_bulkZip() {
     try {
         const vargaList = ['D1','D2','D3','D4','D5','D6','D7','D8','D9','D10','D11','D12','D16','D20','D24','D27','D30','D40','D45','D60'];
         // Save current UI state
-        const checkboxes = document.querySelectorAll('.varga-cb');
-        const savedChecked = Array.from(checkboxes).map(cb => cb.checked);
-        const planetInput = document.getElementById('m1-planet-input');
-        const savedInput = planetInput.value;
         const outputDiv = document.getElementById('output');
         const savedOutput = outputDiv.innerHTML;
 
+        window._m1ForceAnalysis = true;
         const zip = new JSZip();
-        // Map varga code -> checkbox element for data-name
-        const cbByValue = {};
-        checkboxes.forEach(cb => { cbByValue[cb.value] = cb; });
 
         for (const vc of vargaList) {
-            const nums = computeVargaNumbers(window._vargaLons, vc);
-            // Select this varga's checkbox and set input, then run existing analysis
-            checkboxes.forEach(cb => { cb.checked = (cb.value === vc); });
-            planetInput.value = nums.join(',');
+            window._m1BulkVarga = vc;
             m1_analyze();
             const text = document.getElementById('output-text-for-copy').value;
-            const fullName = cbByValue[vc] ? cbByValue[vc].getAttribute('data-name') : vc;
             zip.file(`${vc}_Analysis.txt`, text);
         }
 
+        window._m1ForceAnalysis = false;
+        window._m1BulkVarga = null;
         // Restore UI state
-        checkboxes.forEach((cb, i) => { cb.checked = savedChecked[i]; });
-        planetInput.value = savedInput;
         outputDiv.innerHTML = savedOutput;
         m1_analyze(); // re-run to restore buttons/text area state
 
@@ -832,17 +933,22 @@ async function calcFromAstroCode(){
                          utc.getUTCHours()+utc.getUTCMinutes()/60+utc.getUTCSeconds()/3600);
   const ayan=swe.getAyanamsa(jd), F=FLAGS();
   const calc=(body)=>{ const p=swe.calculatePosition(jd,body,F); return norm360(p.longitude-ayan); };
+  const calcSpd=(body)=>{ const p=swe.calculatePosition(jd,body,F); return p.longitudeSpeed || 0; };
   const order=['Surya','Chandra','Mangal','Budh','Guru','Shukra','Shani','Rahu','Ketu'];
   const bodyMap={Surya:SEP.Sun,Chandra:SEP.Moon,Mangal:SEP.Mars,Budh:SEP.Mercury,Guru:SEP.Jupiter,Shukra:SEP.Venus,Shani:SEP.Saturn,Rahu:SEL.MeanNode};
   const L={};
   order.forEach(k=>{ L[k]=calc(bodyMap[k]); });
   L.Ketu=norm360(L.Rahu+180);
+  const S={};
+  order.forEach(k=>{ S[k]=calcSpd(bodyMap[k]); });
+  S.Ketu=S.Rahu;
   const hs=swe.calculateHouses(jd,bc.lat,bc.lon,SEH.Placidus);
   const lagna=norm360(hs.ascendant-ayan);
 
   /* Store 10 sidereal longitudes for varga computation */
   const lons10=[lagna].concat(order.map(k=>L[k]));
   window._vargaLons = lons10;
+  window._vargaSpeeds = [0].concat(order.map(k=>S[k]));
 
   /* Fill D1 everywhere */
   const d1nums = computeVargaNumbers(lons10, 'D1');
@@ -850,15 +956,8 @@ async function calcFromAstroCode(){
 
   /* Fill selected varga in current mode + auto-run */
   if (currentMode === 1) {
-      const cb = document.querySelector('.varga-cb:checked');
-      if (cb) {
-          const vnums = computeVargaNumbers(lons10, cb.value);
-          document.getElementById('m1-planet-input').value = vnums.join(',');
-          m1_analyze();
-          setStatus('✅ भरा गया: D1 + '+cb.value+' — गणना तैयार है', true);
-      } else {
-          setStatus('✅ D1 भरा गया — अब ऊपर से कोई वर्ग चुनें', true);
-      }
+      m1_analyze();
+      setStatus('✅ भरा गया — गणना तैयार है', true);
   } else {
       const vc = document.getElementById('m2-varga-select').value;
       const vnums = computeVargaNumbers(lons10, vc);
@@ -900,8 +999,14 @@ function drawCharts(){
   const d1=_parseNums('m2-d1-input');
   let varga=null, vargaName='';
   if(currentMode===1){
-    const cb=document.querySelector('.varga-cb:checked');
-    if(cb){ varga=_parseNums('m1-planet-input'); vargaName=cb.value; }
+    if(!window._vargaLons){ box.style.display='none'; box.innerHTML=''; return; }
+    {
+      const act = window._m1BulkVarga ? [window._m1BulkVarga] : tblSelected();
+      if(!act.length){ box.style.display='none'; box.innerHTML=''; return; }
+      box.innerHTML = act.map(vc => _drawOneChart(computeVargaNumbers(window._vargaLons, vc), '📊 '+vc)).join('');
+      box.style.display='block';
+      return;
+    }
     /* Tab 1: सिर्फ चुने हुए वर्ग का chart */
     if(!varga){ box.style.display='none'; box.innerHTML=''; return; }
     box.innerHTML=_drawOneChart(varga,'📊 '+vargaName);
