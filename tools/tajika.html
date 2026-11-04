@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ताजिक वर्षफल Calculator v6.3</title>
+<title>ताजिक वर्षफल Calculator v7.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--primary:#8e44ad;--dark:#2c3e50;--bg:#f4f6f8;--ok:#27ae60;}
@@ -56,7 +56,7 @@ td:first-child{text-align:left;font-weight:bold}
 <body>
 <div class="container" id="capture-area">
 <h1>🗓️ ताजिक वर्षफल Calculator</h1>
-<div class="sub">9 तालिकाएँ + मासिक भविष्यफल — Solar Return से संपूर्ण ताजिक गणना — v6.3</div>
+<div class="sub">9 तालिकाएँ + मासिक भविष्यफल — Solar Return से संपूर्ण ताजिक गणना — v7.1</div>
 <div class="tab-bar">
 <button class="tab-btn active" id="tb-varshphal" onclick="swTab('varshphal')">🗓️ वर्षफल</button>
 <button class="tab-btn" id="tb-monthly" onclick="swTab('monthly')">📅 मासिक भविष्यफल</button>
@@ -83,11 +83,11 @@ td:first-child{text-align:left;font-weight:bold}
 
 <button class="btn" onclick="calculate()">🗓️ संपूर्ण वर्षफल गणना करें</button>
 
-<div id="output"></div>
 <div class="btn-row" id="dl-row" style="display:none">
 <button class="btn btn-green" onclick="downloadTxt()">📝 TXT डाउनलोड</button>
 <button class="btn btn-green" onclick="downloadPng()">📸 PNG स्क्रीनशॉट</button>
 </div>
+<div id="output"></div>
 </div>
 </div><!-- /pg-varshphal -->
 
@@ -112,6 +112,10 @@ td:first-child{text-align:left;font-weight:bold}
 <button class="tab-btn active" id="mv-12" onclick="swMonthlyView('12')">📊 12 महीने</button>
 <button class="tab-btn" id="mv-1" onclick="swMonthlyView('1')">📅 एक महीना</button>
 </div>
+<div class="btn-row" id="m-dl-row" style="display:none">
+<button class="btn btn-green" onclick="downloadMonthlyPng()">📸 PNG स्क्रीनशॉट</button>
+<button class="btn btn-green" onclick="downloadMonthlyTxt()">💾 TXT डाउनलोड</button>
+</div>
 <div id="monthly-output"></div>
 <!-- Single-month detail view -->
 <div id="single-month-wrap" style="display:none">
@@ -121,20 +125,16 @@ td:first-child{text-align:left;font-weight:bold}
 <select id="sm-month" onchange="renderSingleMonth()" style="font-size:1rem;padding:10px 14px;border:2px solid #8e44ad;border-radius:8px;flex:1;max-width:400px"></select>
 <button class="tab-btn" onclick="singleMonthNav(1)" style="padding:10px 18px">▶</button>
 </div>
-<div id="single-month-output"></div>
-</div>
 <div class="btn-row" id="sm-dl-row">
 <button class="btn btn-green" onclick="downloadSingleMonthPng()">📸 PNG स्क्रीनशॉट</button>
 <button class="btn btn-green" onclick="downloadSingleMonthTxt()">💾 TXT डाउनलोड</button>
 </div>
+<div id="single-month-output"></div>
 </div>
-<div class="btn-row" id="m-dl-row" style="display:none">
-<button class="btn btn-green" onclick="downloadMonthlyPng()">📸 PNG स्क्रीनशॉट</button>
-<button class="btn btn-green" onclick="downloadMonthlyTxt()">💾 TXT डाउनलोड</button>
 </div>
 </div><!-- /pg-monthly -->
 
-<div class="foot">ताजिक वर्षफल v6.3 • Swiss Ephemeris (Lahiri) • B.V. Raman / Tajika Neelkanthi आधारित • tools give data, judgement Gemini करेगा</div>
+<div class="foot">ताजिक वर्षफल v7.1 • Swiss Ephemeris (Lahiri) • B.V. Raman / Tajika Neelkanthi आधारित • tools give data, judgement Gemini करेगा</div>
 
 <script>
 /* ================= Swiss Ephemeris ================= */
@@ -387,57 +387,208 @@ function planetSpeed(jd,planetKey,swe){
     return s; // deg per day
 }
 function checkYogas(planets,lagnaSign,swe,srJD){
-    // planets: [{hi,lon}]; returns [{name,planets,yes,note}]
+    // v7.0: सभी 16 ताजिक योगों की असली गणना (Charak, A Textbook of Varshaphala, Ch. X आधारित)
+    // ढांचा: लग्नेश बनाम हर ग्रह के pair पर नियम; pair = mean deeptamsa, link जांच = linker का व्यक्तिगत deeptamsa
     const out=[];
     const lonOf=h=>planets.find(p=>p.hi===h).lon;
     const signOf=h=>Math.floor(lonOf(h)/30);
-    // Chart-level: Ishkabala & Induvara
+    const degOf=h=>lonOf(h)%30;
+    const houseOf=h=>((signOf(h)-lagnaSign)%12+12)%12+1;
+    // गति व वक्री (असली गति से)
+    const spd={},retro={};
+    for(const h of GRAHA_HI){ const s=planetSpeed(srJD,GRAHA_EN[GRAHA_HI.indexOf(h)],swe); spd[h]=s; retro[h]=s<0; }
+    // बल सहायक
+    const EXSIGN={'सूर्य':0,'चंद्र':1,'मंगल':9,'बुध':5,'गुरु':3,'शुक्र':11,'शनि':6};
+    const isExalted=h=>signOf(h)===EXSIGN[h];
+    const isDebil=h=>signOf(h)===(EXSIGN[h]+6)%12;
+    const isOwn=h=>SIGN_LORD[signOf(h)]===h;
+    const isEnemySign=h=>{ const lord=SIGN_LORD[signOf(h)]; return lord!==h && FRIEND[h].e.includes(lord); };
+    const isStrong=h=>isExalted(h)||isOwn(h);
+    const COMB={'चंद्र':12,'मंगल':17,'बुध':14,'गुरु':11,'शुक्र':10,'शनि':15};
+    function isCombust(h){ if(h==='सूर्य')return false; return Math.abs(angDiff(lonOf(h),lonOf('सूर्य')))<=(COMB[h]||12); }
+    const isWeak=h=>isDebil(h)||isEnemySign(h)||isCombust(h);
+    // ताजिक दृष्टि: राशि-दूरी से स्वभाव; 2/12 व 6/8 में दृष्टि नहीं
+    function natureBySigns(sa,sb){ const r=((sb-sa)%12+12)%12; if([4,8].includes(r))return 'mitraP'; if([2,10].includes(r))return 'mitraG'; if([3,9].includes(r))return 'shatruG'; if([0,6].includes(r))return 'shatruP'; return null; }
+    const aspectNature=(a,b)=>natureBySigns(signOf(a),signOf(b));
+    // दो ग्रहों की pair स्थिति (दी गई longitudes पर - राशि-प्रवेश जांच के लिए भी)
+    function pairByLon(a,lonA,b,lonB){
+        const nat=natureBySigns(Math.floor(lonA/30),Math.floor(lonB/30));
+        if(!nat) return {aspect:false,ithasala:false,eesarapha:false};
+        const f = Math.abs(spd[a])>Math.abs(spd[b])?a:b, s = f===a?b:a;
+        if(retro[f]) return {aspect:true,nature:nat,ithasala:false,eesarapha:false,faster:f,slower:s};
+        const dDeg=(f===a?lonA%30:lonB%30)-(s===a?lonA%30:lonB%30);
+        const meanOrb=(ORB[a]+ORB[b])/2;
+        if(Math.abs(dDeg)>meanOrb) return {aspect:true,nature:nat,ithasala:false,eesarapha:false,faster:f,slower:s};
+        return {aspect:true,nature:nat,ithasala:dDeg<=0,eesarapha:dDeg>0,faster:f,slower:s};
+    }
+    const pairStatus=(a,b)=>pairByLon(a,lonOf(a),b,lonOf(b));
+    // Chart-level: Ishkabala & Induvara (पूर्ववत - सभी 9 ग्रहों पर)
     const houses=planets.map(p=>((signOf(p.hi)-lagnaSign)%12+12)%12+1);
     const kendra=houses.filter(h=>[1,4,7,10].includes(h)).length;
     const panapara=houses.filter(h=>[2,5,8,11].includes(h)).length;
     const apoklima=houses.filter(h=>[3,6,9,12].includes(h)).length;
     out.push({name:'इश्कबाल (Ishkabala)',planets:'सभी ग्रह',yes:(kendra+panapara===planets.length&&apoklima===0),note:'केंद्र+पणफर में सब'});
     out.push({name:'इंदुवार (Induvara)',planets:'सभी ग्रह',yes:(apoklima===planets.length),note:'सब आपोक्लिम में'});
-    // Pair yogas: Lagna lord vs each planet
-    const lagnaLord=SIGN_LORD[lagnaSign];
-    const others=planets.filter(p=>p.hi!==lagnaLord&&GRAHA_HI.includes(p.hi));
-    let ithasalaFound=false,eesaraphaFound=false;
-    const ithasalaPairs=[];
-    for(const o of others){
-        const lLon=lonOf(lagnaLord), oLon=o.lon;
-        const diff=Math.abs(angDiff(oLon,lLon));
-        const orbSum=ORB[lagnaLord]+ORB[o.hi];
-        // aspect? (conjunction or opposition or trine/square/sextile within orb)
-        const aspects=[0,60,90,120,180];
-        let inAspect=false;
-        for(const a of aspects){ if(Math.abs(diff-a)<=orbSum){inAspect=true;break;} }
-        if(!inAspect)continue;
-        // faster behind = applying (Ithasala); faster ahead = separating (Eesarapha)
-        // Use mean speeds: Moon fastest ... Saturn slowest
-        const speedOrder=['चंद्र','बुध','शुक्र','सूर्य','मंगल','गुरु','शनि'];
-        const lSpd=speedOrder.indexOf(lagnaLord), oSpd=speedOrder.indexOf(o.hi);
-        const faster=oSpd<lSpd?o.hi:lagnaLord;
-        const slower=oSpd<lSpd?lagnaLord:o.hi;
-        const fLon=faster===o.hi?oLon:lLon, sLon=slower===o.hi?oLon:lLon;
-        const sep=angDiff(sLon,fLon); // positive = faster behind (applying)
-        if(sep>0&&sep<=orbSum){ithasalaFound=true;ithasalaPairs.push(`${lagnaLord}-${o.hi}`);}
-        else if(sep<0){eesaraphaFound=true;}
+    // लग्नेश pairs
+    const LL=SIGN_LORD[lagnaSign];
+    const others=GRAHA_HI.filter(h=>h!==LL);
+    const pairMap={}; for(const o of others) pairMap[o]=pairStatus(LL,o);
+    const ithPairs=others.filter(o=>pairMap[o].ithasala);
+    const eesPairs=others.filter(o=>pairMap[o].eesarapha);
+    out.push({name:'इत्थशाल (Ithasala)',planets:ithPairs.map(o=>`${LL}-${o}`).join(', ')||'—',yes:ithPairs.length>0,note:'लग्नेश applying योग'});
+    out.push({name:'ईशराफ (Eesarapha)',planets:eesPairs.map(o=>`${LL}-${o}`).join(', ')||'—',yes:eesPairs.length>0,note:'separating'});
+    // नक्त / यमय: दृष्टि-रहित pair को तीसरा ग्रह जोड़े (तेज़ = नक्त, धीमा = यमय); दोनों linker के व्यक्तिगत दीप्तांश में
+    function linkSearch(fast){
+        const hits=[];
+        for(const o of others){
+            if(pairMap[o].aspect) continue;
+            for(const L of GRAHA_HI){
+                if(L===LL||L===o) continue;
+                const ok = fast ? (Math.abs(spd[L])>Math.abs(spd[LL])&&Math.abs(spd[L])>Math.abs(spd[o]))
+                                : (Math.abs(spd[L])<Math.abs(spd[LL])&&Math.abs(spd[L])<Math.abs(spd[o]));
+                if(!ok) continue;
+                if(!aspectNature(L,LL)||!aspectNature(L,o)) continue;
+                if(Math.abs(degOf(LL)-degOf(L))>ORB[L]) continue;
+                if(Math.abs(degOf(o)-degOf(L))>ORB[L]) continue;
+                hits.push(`${LL}-${o} (${L} जोड़ता है)`); break;
+            }
+        }
+        return hits;
     }
-    out.push({name:'इत्थशाल (Ithasala)',planets:ithasalaPairs.join(', ')||'—',yes:ithasalaFound,note:'लग्नेश applying योग'});
-    out.push({name:'ईशराफ (Eesarapha)',planets:'—',yes:eesaraphaFound,note:'separating'});
-    // Others: simplified chart checks
-    out.push({name:'नक्त (Nakta)',planets:'—',yes:false,note:'manual check'});
-    out.push({name:'यमय (Yamaya)',planets:'—',yes:false,note:'manual check'});
-    out.push({name:'मनऊ (Manahoo)',planets:'—',yes:false,note:'मंगल+शनि दृष्टि में'});
-    out.push({name:'कंबूल (Kamboola)',planets:'—',yes:false,note:'चंद्र सहित इत्थशाल'});
-    out.push({name:'रद्दा (Radda)',planets:'—',yes:false,note:'वक्री/अस्त ग्रह योग में'});
-    out.push({name:'दुप्परिकुथ (Dupparikutha)',planets:'—',yes:false,note:'manual check'});
-    out.push({name:'दुत्तोत (Duttota)',planets:'—',yes:false,note:'manual check'});
-    out.push({name:'खल्लासर (Khallasara)',planets:'—',yes:false,note:'manual check'});
-    out.push({name:'थंबिर (Thambira)',planets:'—',yes:false,note:'manual check'});
-    out.push({name:'कुत्थ (Kuttha)',planets:'—',yes:false,note:'manual check'});
-    out.push({name:'दुरुफ (Durupha)',planets:'—',yes:false,note:'manual check'});
-    out.push({name:'गैरी-कंबूल',planets:'—',yes:false,note:'manual check'});
+    const naktaHits=linkSearch(true), yamayaHits=linkSearch(false);
+    out.push({name:'नक्त (Nakta)',planets:naktaHits.join(', ')||'—',yes:naktaHits.length>0,note:'तेज़ ग्रह जोड़ता है'});
+    out.push({name:'यमय (Yamaya)',planets:yamayaHits.join(', ')||'—',yes:yamayaHits.length>0,note:'धीमा ग्रह जोड़ता है'});
+    // मनऊ: इत्थशाल pair के तेज़ partner पर मंगल/शनि की युति या शत्रु-दृष्टि, उस पापी के व्यक्तिगत दीप्तांश में
+    const manauHits=[];
+    for(const o of ithPairs){
+        const f=pairMap[o].faster;
+        for(const M of ['मंगल','शनि']){
+            if(M===LL||M===o) continue;
+            const nat=aspectNature(M,f);
+            if(nat!=='shatruP'&&nat!=='shatruG') continue;
+            if(Math.abs(degOf(f)-degOf(M))>ORB[M]) continue;
+            manauHits.push(`${LL}-${o} (${f} पर ${M})`); break;
+        }
+    }
+    out.push({name:'मनऊ (Manahoo)',planets:manauHits.join(', ')||'—',yes:manauHits.length>0,note:'इत्थशाल को निष्फल करता है'});
+    // कंबूल: इत्थशाल pair + चंद्र का किसी partner से इत्थशाल
+    const kamHits=[];
+    for(const o of ithPairs){
+        if(LL==='चंद्र'||o==='चंद्र'){ kamHits.push(`${LL}-${o} (चंद्र pair में)`); continue; }
+        if(pairStatus('चंद्र',LL).ithasala||pairStatus('चंद्र',o).ithasala) kamHits.push(`${LL}-${o} (चंद्र से इत्थशाल)`);
+    }
+    out.push({name:'कंबूल (Kamboola)',planets:kamHits.join(', ')||'—',yes:kamHits.length>0,note:'चंद्र सहित इत्थशाल'});
+    // रद्दा: इत्थशाल pair के किसी partner में दोष (वक्री धीमा partner दोष नहीं - Charak)
+    function maleficAffliction(h){
+        for(const M of ['मंगल','शनि']){ if(M===h) continue; const nat=aspectNature(M,h); if((nat==='shatruP'||nat==='shatruG')&&Math.abs(degOf(h)-degOf(M))<=ORB[M]) return M; }
+        for(const N of ['राहु','केतु']){ if(signOf(N)===signOf(h)&&Math.abs(degOf(h)-degOf(N))<=12) return N; }
+        return null;
+    }
+    const raddaHits=[];
+    for(const o of ithPairs){
+        const defects=[];
+        for(const partner of [LL,o]){
+            if(isCombust(partner)) defects.push(partner+' अस्त');
+            if(isDebil(partner)) defects.push(partner+' नीच');
+            if([6,8,12].includes(houseOf(partner))) defects.push(partner+' त्रिक में');
+            if(isEnemySign(partner)) defects.push(partner+' शत्रु राशि में');
+            const aff=maleficAffliction(partner); if(aff) defects.push(partner+' पर '+aff);
+        }
+        if(defects.length) raddaHits.push(`${LL}-${o} (${defects.join(', ')})`);
+    }
+    out.push({name:'रद्दा (Radda)',planets:raddaHits.join(', ')||'—',yes:raddaHits.length>0,note:'दोषयुक्त partner इत्थशाल रद्द करता है'});
+    // दुप्परिकुथ: इत्थशाल pair - धीमा partner बलवान (उच्च/स्व), तेज़ partner उच्च/स्व नहीं
+    const dupHits=[];
+    for(const o of ithPairs){
+        const st=pairMap[o];
+        if(isStrong(st.slower)&&!isStrong(st.faster)) dupHits.push(`${LL}-${o} (बलवान ${st.slower})`);
+    }
+    out.push({name:'दुप्परिकुथ (Dupparikutha)',planets:dupHits.join(', ')||'—',yes:dupHits.length>0,note:'बलवान धीमा + कमज़ोर तेज़'});
+    // दुत्तोत: लग्नेश व pair-ग्रह दोनों कमज़ोर + आपसी दृष्टि + किसी एक का बलवान तीसरे ग्रह से इत्थशाल
+    const dutHits=[];
+    for(const o of others){
+        if(!isWeak(LL)||!isWeak(o)) continue;
+        if(!pairMap[o].aspect) continue;
+        let ok=false;
+        for(const T of GRAHA_HI){ if(T===LL||T===o||!isStrong(T)) continue;
+            if(pairStatus(LL,T).ithasala||pairStatus(o,T).ithasala){ ok=true; break; } }
+        if(ok) dutHits.push(`${LL}-${o}`);
+    }
+    out.push({name:'दुत्तोत (Duttota)',planets:dutHits.join(', ')||'—',yes:dutHits.length>0,note:'दोनों कमज़ोर, बलवान का सहारा'});
+    // चंद्र की unqualified स्थिति (गैरी-कंबूल व खल्लासर के लिए)
+    function moonUnqualified(){
+        const M='चंद्र';
+        if(isExalted(M)||isDebil(M)) return false;
+        for(const g of GRAHA_HI){ if(g!==M&&aspectNature(g,M)) return false; }
+        const s=signOf(M), d=degOf(M);
+        const drekSign=(s+[0,4,8][Math.floor(d/10)])%12;
+        if(SIGN_LORD[drekSign]===M) return false;
+        const start = [0,3,6,9].includes(s)?s:([1,4,7,10].includes(s)?(s+8)%12:(s+4)%12);
+        const navSign=(start+Math.floor(d/(10/3)))%12;
+        if(SIGN_LORD[navSign]===M) return false;
+        return true;
+    }
+    const moonUQ = GRAHA_HI.includes('चंद्र') && LL!=='चंद्र' ? moonUnqualified() : false;
+    // खल्लासर: इत्थशाल pair + unqualified चंद्र (Rashyanta नहीं) जिसका किसी partner से न संबंध न इत्थशाल
+    const khalHits=[];
+    if(moonUQ && degOf('चंद्र')<29 && LL!=='चंद्र'){
+        for(const o of ithPairs){
+            if(o==='चंद्र') continue;
+            if(!aspectNature('चंद्र',LL)&&!aspectNature('चंद्र',o)) khalHits.push(`${LL}-${o}`);
+        }
+    }
+    out.push({name:'खल्लासर (Khallasara)',planets:khalHits.join(', ')||'—',yes:khalHits.length>0,note:'चंद्र का साथ नहीं - फल क्षीण'});
+    // राशि-प्रवेश (ingress) पर इत्थशाल जांच: ग्रह अगली राशि के 0° पर
+    function ingressIthasala(planet,other){
+        const nextLon=(Math.floor(lonOf(planet)/30)+1)*30;
+        return pairByLon(planet,nextLon,other,lonOf(other)).ithasala;
+    }
+    // थंबिर: दृष्टि-रहित pair + कायेश Rashyanta + प्रवेश पर लग्नेश व एक बलवान ग्रह से इत्थशाल
+    const thamHits=[];
+    for(const o of others){
+        if(pairMap[o].aspect) continue;
+        if(degOf(o)<29) continue;
+        if(!ingressIthasala(o,LL)) continue;
+        let strongOk=false;
+        for(const T of GRAHA_HI){ if(T===LL||T===o||!isStrong(T)) continue;
+            const nextLon=(Math.floor(lonOf(o)/30)+1)*30;
+            if(pairByLon(o,nextLon,T,lonOf(T)).ithasala){ strongOk=true; break; } }
+        if(strongOk) thamHits.push(`${LL}-${o} (${o} राशि-अंत पर)`);
+    }
+    out.push({name:'थंबिर (Thambira)',planets:thamHits.join(', ')||'—',yes:thamHits.length>0,note:'राशि-प्रवेश पर इत्थशाल'});
+    // कुत्थ: लग्नेश व pair-ग्रह दोनों बलवान, केंद्र/पणफर में, शुभ दृष्टि हो व पाप दृष्टि न हो
+    const kutHits=[];
+    for(const o of others){
+        if(!isStrong(LL)||!isStrong(o)) continue;
+        if(![1,4,7,10,2,5,8,11].includes(houseOf(LL))) continue;
+        if(![1,4,7,10,2,5,8,11].includes(houseOf(o))) continue;
+        // दृष्टि तीसरे ग्रहों से ही गिनी जाएगी - pair के दोनों ग्रह एक-दूसरे के लिए स्रोत नहीं (Charak की 'उन पर दृष्टि' का अर्थ)
+        const maleficOn=h=>['मंगल','शनि'].some(M=>M!==h&&M!==LL&&M!==o&&!!aspectNature(M,h));
+        const beneficOn=h=>['गुरु','शुक्र','बुध','चंद्र'].some(B=>B!==h&&B!==LL&&B!==o&&!!aspectNature(B,h));
+        if(maleficOn(LL)||maleficOn(o)) continue;
+        if(beneficOn(LL)||beneficOn(o)) kutHits.push(`${LL}-${o}`);
+    }
+    out.push({name:'कुत्थ (Kuttha)',planets:kutHits.join(', ')||'—',yes:kutHits.length>0,note:'दोनों बलवान, शुभ स्थान-दृष्टि'});
+    // दुरुफ: लग्नेश व pair-ग्रह दोनों कमज़ोर + त्रिक में + अस्त + वक्री (कुत्थ का उल्टा)
+    const durHits=[];
+    for(const o of others){
+        const cond=h=>isWeak(h)&&[6,8,12].includes(houseOf(h))&&isCombust(h)&&retro[h];
+        if(cond(LL)&&cond(o)) durHits.push(`${LL}-${o}`);
+    }
+    out.push({name:'दुरुफ (Durupha)',planets:durHits.join(', ')||'—',yes:durHits.length>0,note:'दोनों दुर्बल, त्रिक-अस्त-वक्री'});
+    // गैरी-कंबूल: इत्थशाल pair + unqualified चंद्र Rashyanta पर + प्रवेश पर partner व बलवान ग्रह से इत्थशाल
+    const gairiHits=[];
+    if(moonUQ && degOf('चंद्र')>=29 && LL!=='चंद्र'){
+        for(const o of ithPairs){
+            if(o==='चंद्र') continue;
+            if(!ingressIthasala('चंद्र',LL)&&!ingressIthasala('चंद्र',o)) continue;
+            let strongOk=false;
+            for(const T of GRAHA_HI){ if(T==='चंद्र'||!isStrong(T)) continue;
+                if(ingressIthasala('चंद्र',T)){ strongOk=true; break; } }
+            if(strongOk) gairiHits.push(`${LL}-${o} (चंद्र प्रवेश पर)`);
+        }
+    }
+    out.push({name:'गैरी-कंबूल',planets:gairiHits.join(', ')||'—',yes:gairiHits.length>0,note:'Rashyanta चंद्र प्रवेश से'});
     return out;
 }
 
