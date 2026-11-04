@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>मास्टर डेटा डाउनलोडर v2.5 - Astro Sarang</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<title>मास्टर डेटा डाउनलोडर v2.7 - Astro Sarang</title>
 <style>
 *{box-sizing:border-box}
 body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;background:#f5f0e8;margin:0;padding:16px;color:#333}
@@ -56,7 +54,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <body>
 <div class="con">
 <div class="head">
-<h1>📦 मास्टर डेटा डाउनलोडर v2.5</h1>
+<h1>📦 मास्टर डेटा डाउनलोडर v2.7</h1>
 <div class="sub">13 टूल्स का डेटा एक साथ - PDF, एक TXT या ZIP में</div>
 </div>
 
@@ -103,11 +101,9 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <div class="card" style="text-align:center;display:none" id="dlCard">
 <h3>📥 डाउनलोड</h3>
 <div class="row" style="justify-content:center">
-<button class="btn-pdf" onclick="downloadPDF()">📄 PDF डाउनलोड</button>
-<button class="btn-txt" onclick="downloadOneTXT()">📝 एक TXT डाउनलोड</button>
-<button class="btn-zip" onclick="downloadZIP()">📦 ZIP डाउनलोड</button>
+<button class="btn-txt" onclick="downloadOneTXT()">📝 TXT डाउनलोड</button>
 </div>
-<div class="note">PDF: सब images एक file में | एक TXT: सबका text एक file में | ZIP: हर भाग की अलग PNG + TXT</div>
+<div class="note">सभी चुने भागों का text एक ही TXT file में मिलेगा</div>
 </div>
 </div>
 
@@ -146,18 +142,18 @@ const TOOLS = [
        cap:['#output','#detailed-bhava-display'],
        mergeHead:'========================================================\nविस्तृत D1 विश्लेषण (12 भाव)\n========================================================'}
    ]},
-  {id:'vshot', name:'D7/D9/D10/D60 स्क्रीनशॉट', en:'Varga Screenshots', file:'d9d7d10d60.html', input:'astro-code',
-   prep:[{fill:1},{clickText:'भरो व गणना करें'},{waitFor:{sel:'#varga-tables',min:300}}],
-   sections:[
-     {key:'d7', name:'D7 - सप्तमांश', en:'D7 Saptamsha', steps:[{clickText:'D-7'},{wait:1200}], cap:['#out-card']},
-     {key:'d9', name:'D9 - नवमांश', en:'D9 Navamsha', steps:[{clickText:'D-9'},{wait:1200}], cap:['#out-card']},
-     {key:'d10', name:'D10 - दशमांश', en:'D10 Dashamsha', steps:[{clickText:'D-10'},{wait:1200}], cap:['#out-card']},
-     {key:'d60', name:'D60 - षष्ट्यंश', en:'D60 Shashtyamsha', steps:[{clickText:'D-60'},{wait:1200}], cap:['#out-card']}
-   ]},
-  {id:'shodash', name:'षोडशवर्ग', en:'Shodashvarga', file:'shodashvarga.html', input:'astro-code-in',
-   prep:[{fill:1},{clickText:'📥 भरो'},{wait:1200}],
+  {id:'shodash', name:'षोडशवर्ग विश्लेषण', en:'Shodashvarga Analysis', file:'shodashvarga.html', input:'astro-code-in',
+   prep:[{fill:1},{clickText:'📥 भरो'},{wait:1200},{js:"var r=document.querySelector('input[name=out-opt][value=analysis]'); if(r) r.click();"},{wait:400}],
    sections: VARGA20_SHODASH.map(vk => ({key:vk.toLowerCase(), name:VARGA20_NAMES[vk], en:vk + ' Varga',
      steps:[shodashPick(vk),{fn:'m1_analyze'},{waitFor:{sel:'#output',min:150,contains:vk}}], cap:['#output']}))},
+  {id:'shodashTbl', name:'षोडशवर्ग सारणी', en:'Shodashvarga Tables', file:'shodashvarga.html', input:'astro-code-in',
+   prep:[{fill:1},{clickText:'📥 भरो'},{wait:1200},{js:"var r=document.querySelector('input[name=out-opt][value=tables]'); if(r) r.click();"},{wait:400}],
+   sections: VARGA20_SHODASH.map(vk => ({key:vk.toLowerCase(), name:VARGA20_NAMES[vk], en:vk + ' Varga Table',
+     steps:[shodashPick(vk),{fn:'m1_analyze'},{waitFor:{sel:'#output',min:150,contains:'D-' + vk.slice(1)}}], cap:['#output']}))},
+  {id:'shodashM2', name:'षोडशवर्ग विश्लेषक', en:'Shodashvarga Mode 2', file:'shodashvarga.html', input:'astro-code-in',
+   prep:[{fill:1},{clickText:'📥 भरो'},{wait:1200},{clickText:'⚖️ D1-वर्ग तुलना'},{wait:800}],
+   sections: VARGA20_SHODASH.map(vk => ({key:vk.toLowerCase(), name:VARGA20_NAMES[vk], en:vk + ' Comparison',
+     steps:[{select:['#m2-varga-select',vk]},{wait:700},{waitFor:{sel:'#output',min:150,contains:vk}}], cap:['#output']}))},
   {id:'chalit', name:'चलित / PN-PB-MB', en:'Chalit PN-PB-MB', file:'Chalit-PN-PB-MB.html', input:'astro-code-in',
    prep:[{fill:1},{clickText:'📥 भरो'},{wait:1500},{clickText:'गणना करें'},{waitFor:{sel:'#output',min:800}}],
    sections:[
@@ -235,7 +231,14 @@ const TOOLS = [
   {id:'vv', name:'वर्ग विशेष विश्लेषण', en:'Varga Vishesh', file:'varga-vishesh.html', input:'astro-code-in',
    prep:[{fill:1},{clickId:'btn-applycode'},{waitFor:{sel:'#tab-content',min:400}}],
    sections: VV_TABS.map(v => ({key:v[0].toLowerCase(), name:v[1], en:'VV ' + v[0],
-     steps:[{fn:'renderTab',args:[v[0]]},{waitFor:{sel:'#tab-content',min:400}}], cap:['#shot-area']}))}
+     steps:[{fn:'renderTab',args:[v[0]]},{waitFor:{sel:'#tab-content',min:400}}], cap:['#shot-area']}))},
+  {id:'upagraha', name:'उपग्रह व विशेष लग्न', en:'Upagraha Vishesh', file:'../upagraha-vishesh.html', input:'astrocode',
+   prep:[{waitFor:{sel:'#status',min:10,contains:'तैयार'}},{fill:1},{clickId:'btn-fill'},{waitFor:{sel:'#upbody',min:200}}],
+   sections:[
+     {key:'upagraha', name:'उपग्रह स्थिति व फलित', en:'Upagraha', cap:['#tab1body']},
+     {key:'vishesh', name:'विशेष लग्न स्थिति व फलित', en:'Vishesh Lagna',
+       steps:[{clickText:'⭐ विशेष लग्न'},{wait:800}], cap:['#tab2body']}
+   ]}
 ];
 
 let generatedData = []; // [{toolName, secName, en, png, txt}]
@@ -443,38 +446,6 @@ async function runSteps(win, doc, tool, steps, code, ctx) {
     }
   }
 }
-function ensureH2C(win, srcUrl) {
-  return new Promise(resolve => {
-    if (win.html2canvas) { resolve(true); return; }
-    const s = win.document.createElement('script');
-    s.src = new URL('../vendor/html2canvas.min.js', srcUrl).href;
-    s.onload = () => resolve(true);
-    s.onerror = () => resolve(false);
-    win.document.head.appendChild(s);
-    setTimeout(() => resolve(!!win.html2canvas), 9000);
-  });
-}
-async function capturePNGParts(win, el) {
-  const H = el.scrollHeight, W = el.scrollWidth || el.offsetWidth || 1100;
-  if (!H || !W) return [];
-  // browser canvas की ऊंचाई सीमा ~16384px है - लंबे output को पूरी चौड़ाई के हिस्सों में काटो
-  const SLICE = 3200, PART = 12800;
-  const parts = [];
-  for (let py = 0; py < H; py += PART) {
-    const ph = Math.min(PART, H - py);
-    const cv = document.createElement('canvas');
-    cv.width = W; cv.height = ph;
-    const cx = cv.getContext('2d');
-    cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, W, ph);
-    for (let y = py; y < py + ph; y += SLICE) {
-      const h = Math.min(SLICE, py + ph - y);
-      const c = await win.html2canvas(el, {scale: 1, backgroundColor: '#ffffff', logging: false, y: y, height: h});
-      cx.drawImage(c, 0, y - py);
-    }
-    parts.push({data: cv.toDataURL('image/png'), w: W, h: ph});
-  }
-  return parts;
-}
 function extractText(win, el) {
   try {
     const clone = el.cloneNode(true);
@@ -490,16 +461,14 @@ function extractText(win, el) {
   } catch (e) { return (el.innerText || '').trim(); }
 }
 async function captureSection(win, doc, tool, sec) {
-  const pngParts = [], txtParts = [];
+  const txtParts = [];
   for (const sel of sec.cap) {
     const el = doc.querySelector(sel);
     if (!el) continue;
-    const shots = await capturePNGParts(win, el).catch(() => []);
-    pngParts.push(...shots);
     const t = extractText(win, el);
     if (t) txtParts.push(t);
   }
-  return {pngParts, txt: txtParts.join(sec.mergeHead ? ('\n\n' + sec.mergeHead + '\n\n') : '\n\n')};
+  return {txt: txtParts.join(sec.mergeHead ? ('\n\n' + sec.mergeHead + '\n\n') : '\n\n')};
 }
 
 async function generateAll() {
@@ -559,7 +528,6 @@ async function generateAll() {
       });
       const win = iframe.contentWindow, doc = iframe.contentDocument;
       await waitForEngine(win, doc, tool, 30000);
-      await ensureH2C(win, srcUrl);
       await runSteps(win, doc, tool, tool.prep, code, ctx);
       if (tool.postPrep) await runSteps(win, doc, tool, tool.postPrep, code, ctx);
       for (const sec of s.secs) {
@@ -567,7 +535,7 @@ async function generateAll() {
         try {
           if (sec.special === 'indepthYears') {
             if (sec.steps) await runSteps(win, doc, tool, sec.steps, code, ctx);
-            const parts = [], txts = [];
+            const txts = [];
             const startYear = new Date().getFullYear();
             for (let yi = 0; yi < ctx.indepthYrs; yi++) {
               const yr = startYear + yi;
@@ -578,19 +546,17 @@ async function generateAll() {
               if (!okY) throw new Error('वर्ष ' + yr + ' का output नहीं आया');
               await sleep(400);
               const elY = doc.querySelector(sec.cap[0]);
-              const shotsY = await capturePNGParts(win, elY).catch(() => []);
-              parts.push(...shotsY);
               txts.push('=== इंडेप्थ गोचर - वर्ष ' + yr + ' ===\n\n' + extractText(win, elY));
             }
-            generatedData.push({toolName: tool.name, secName: sec.name + ' (' + ctx.indepthYrs + ' वर्ष)', en: tool.en + ' - ' + sec.en, pngParts: parts, txt: txts.join('\n\n')});
+            generatedData.push({toolName: tool.name, secName: sec.name + ' (' + ctx.indepthYrs + ' वर्ष)', en: tool.en + ' - ' + sec.en, txt: txts.join('\n\n')});
             okCount++;
             setRow(tool, sec, '✅ बना', 'st-ok');
             continue;
           }
           if (sec.steps) await runSteps(win, doc, tool, sec.steps, code, ctx);
           const got = await captureSection(win, doc, tool, sec);
-          if (!got.pngParts.length && !got.txt) throw new Error('खाली output');
-          generatedData.push({toolName: tool.name, secName: sec.name, en: tool.en + ' - ' + sec.en, pngParts: got.pngParts, txt: got.txt});
+          if (!got.txt) throw new Error('खाली output');
+          generatedData.push({toolName: tool.name, secName: sec.name, en: tool.en + ' - ' + sec.en, txt: got.txt});
           okCount++;
           setRow(tool, sec, '✅ बना', 'st-ok');
         } catch (e) {
@@ -613,52 +579,6 @@ async function generateAll() {
 }
 document.getElementById('btnGo').addEventListener('click', generateAll);
 
-// ============ PDF DOWNLOAD ============
-function loadImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
-async function downloadPDF() {
-  if (!generatedData.length) return;
-  setStatus('⏳ PDF बन रहा है...', 'working');
-  try {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageW = 210, pageH = 297, M = 10;
-    const code = document.getElementById('astroCode').value.trim();
-    pdf.setFontSize(20);
-    pdf.text('Astro Sarang - Master Data Report', pageW / 2, 45, {align: 'center'});
-    pdf.setFontSize(12);
-    pdf.text('Astro Code: ' + code, pageW / 2, 60, {align: 'center'});
-    pdf.text('Sections: ' + generatedData.length + ' | Date: ' + new Date().toLocaleDateString('en-IN'), pageW / 2, 70, {align: 'center'});
-    for (const d of generatedData) {
-      if (!d.pngParts || !d.pngParts.length) continue;
-      let sectionFirstPage = true;
-      for (const part of d.pngParts) {
-        const img = await loadImg(part.data);
-        const imgWmm = pageW - 2 * M;
-        const pxPerMm = img.width / imgWmm;
-        let yPx = 0;
-        while (yPx < img.height) {
-          pdf.addPage();
-          pdf.setFontSize(13);
-          pdf.text(d.en, M, 15);
-          const availMm = sectionFirstPage ? (pageH - 2 * M - 10) : (pageH - 2 * M - 4);
-          const stripPx = Math.min(img.height - yPx, Math.floor(availMm * pxPerMm));
-          const cv = document.createElement('canvas');
-          cv.width = img.width; cv.height = stripPx;
-          const cx = cv.getContext('2d');
-          cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, cv.width, cv.height);
-          cx.drawImage(img, 0, yPx, img.width, stripPx, 0, 0, img.width, stripPx);
-          pdf.addImage(cv.toDataURL('image/jpeg', 0.88), 'JPEG', M, sectionFirstPage ? 20 : 14, imgWmm, stripPx / pxPerMm);
-          yPx += stripPx;
-          sectionFirstPage = false;
-        }
-      }
-    }
-    pdf.save('Master-Data-Report.pdf');
-    setStatus('✅ PDF डाउनलोड हो गया!', 'done');
-  } catch (e) {
-    setStatus('❌ PDF बनाने में error: ' + e.message, 'error');
-  }
-}
 
 // ============ ONE TXT DOWNLOAD ============
 function downloadOneTXT() {
@@ -677,7 +597,7 @@ function downloadOneTXT() {
       lines.push('भाग ' + (i + 1) + ': ' + d.toolName + ' - ' + d.secName);
       lines.push('='.repeat(60));
       lines.push('');
-      lines.push(d.txt ? d.txt : '(इस भाग का data केवल image में है)');
+      lines.push(d.txt || '');
     });
     const blob = new Blob(['\ufeff' + lines.join('\n')], {type: 'text/plain;charset=utf-8'});
     const a = document.createElement('a');
@@ -690,33 +610,6 @@ function downloadOneTXT() {
   }
 }
 
-// ============ ZIP DOWNLOAD ============
-async function downloadZIP() {
-  if (!generatedData.length) return;
-  setStatus('⏳ ZIP बन रहा है...', 'working');
-  try {
-    const zip = new JSZip();
-    const code = document.getElementById('astroCode').value.trim();
-    generatedData.forEach((d, i) => {
-      const fname = String(i + 1).padStart(2, '0') + '_' + d.en.replace(/[^a-zA-Z0-9]+/g, '_');
-      if (d.pngParts && d.pngParts.length) {
-        d.pngParts.forEach((part, pi) => {
-          const suffix = d.pngParts.length > 1 ? ('_part' + (pi + 1)) : '';
-          zip.file(fname + suffix + '.png', part.data.split(',')[1], {base64: true});
-        });
-      }
-      if (d.txt) zip.file(fname + '.txt', 'Astro Sarang - मास्टर डेटा डाउनलोडर v2.5\nTool: ' + d.toolName + '\nभाग: ' + d.secName + '\nAstro Code: ' + code + '\n' + '='.repeat(50) + '\n\n' + d.txt);
-    });
-    const blob = await zip.generateAsync({type: 'blob'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'Master-Data-' + code.replace(/[^a-zA-Z0-9]/g, '_') + '.zip';
-    a.click();
-    setStatus('✅ ZIP डाउनलोड हो गया!', 'done');
-  } catch (e) {
-    setStatus('❌ ZIP बनाने में error: ' + e.message, 'error');
-  }
-}
 
 // ============ INIT ============
 buildToolList();
