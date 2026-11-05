@@ -95,7 +95,7 @@
 </head>
 <body>
 
-    <h1>❓ प्रश्न कुंडली Prompts v1.8 (मराठी - झटपट प्रक्रिया)</h1>
+    <h1>❓ प्रश्न कुंडली Prompts v1.9 (मराठी - झटपट प्रक्रिया)</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -114,7 +114,8 @@
         // यहाँ आपका पूरा डेटा है
         const rawData_hi = `या भाषेसाठी (हिंदी विस्तृत प्रक्रिया) prompts अजून बनवलेले नाहीत - नंतर जोडले जातील.`;
         const rawData_en = `Prompts for this language (English detailed process) are not made yet - they will be added later.`;
-        const rawData_mr = `कृपया संलग्न (Attached) असलेला PDF आणि सर्व txt फाइल्समधील ज्योतिषीय डेटा तुमच्या मेमरीमध्ये जतन करा.
+        const rawData_mr = `
+कृपया संलग्न (Attached) असलेला PDF आणि सर्व txt फाइल्समधील ज्योतिषीय डेटा तुमच्या मेमरीमध्ये जतन करा.
 
 निर्देश:
 
@@ -1314,7 +1315,10 @@ C) जन्म कुंडली (D1) च्या ग्रहांचे D7
 2] स्वतः करावयाचे धार्मिक आणि ज्योतिषीय उपाय
 3] तज्ज्ञ ब्राह्मणाकडून करून घ्यावयाचे उपाय (लागू असल्यास)
 
-➤ अंतिम निष्कर्ष: संपूर्ण विश्लेषणाचा संक्षिप्त सारांश आणि जातकासाठी सर्वात महत्त्वाचा सल्ला.`;
+➤ अंतिम निष्कर्ष: संपूर्ण विश्लेषणाचा संक्षिप्त सारांश आणि जातकासाठी सर्वात महत्त्वाचा सल्ला.
+----------
+आतापर्यंत विचारलेल्या सर्व पुढील प्रश्नांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल, यामुळे जातक प्रथमच थोडक्यात उत्तरे वाचेल आणि त्याला ज्या विषयाचे विश्लेषण संदर्भासह वाचायचे आहे, तो विभाग शोधेल...
+`;
         let currentLang = 'hi';
         function getRawData() {
             if (currentLang === 'en') return rawData_en;
