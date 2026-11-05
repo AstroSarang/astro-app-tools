@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BTR सहायक v2.2 — Event-Dasha + Kunda + KP BTR</title>
+<title>BTR सहायक v2.3 — Event-Dasha + Kunda + KP BTR</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -122,7 +122,7 @@ h3{color:#0d3b66;font-size:1em;margin:16px 0 6px}
 <div id="kp-out"></div>
 </div>
 
-<div class="foot">BTR सहायक v2.2 • Swiss Ephemeris (Lahiri + KP) • tools give data, judgement Gemini करेगा</div>
+<div class="foot">BTR सहायक v2.3 • Swiss Ephemeris (Lahiri + KP) • tools give data, judgement Gemini करेगा</div>
 </div>
 
 <script type="module">
@@ -337,19 +337,46 @@ window.calcKunda=async function(){
         h+=`<tr><td>कुंदा नक्षत्र</td><td>${NAK[ni0]} (${LORD_HI[kl0]})</td></tr>`;
         h+=`<tr><td>जन्म चंद्र नक्षत्र</td><td>${NAK[BD.nakIdx]} (${LORD_HI[BD.moonLord]})</td></tr></table>`;
         h+=`<div class="verdict ${ok0?'ok':'no'}">${ok0?'✅ VERIFIED — कुंदा सिद्धांत से समय सटीक':'⚠️ सुधार चाहिए — कुंदा match नहीं'}</div>`;
-        h+=`<h3>60-Second Checker (exact Swiss, per-second)</h3><table><tr><th>Sec</th><th>लग्न°</th><th>कुंदा°</th><th>नक्षत्र</th><th>स्वामी</th><th></th></tr>`;
-        for(let s=0;s<=60;s++){
+        h+=`<h3>±60-Second Checker (exact Swiss, per-second)</h3><table><tr><th>Sec</th><th>लग्न°</th><th>कुंदा°</th><th>नक्षत्र</th><th>स्वामी</th><th></th></tr>`;
+        for(let s=-60;s<=60;s++){
             const j2=jd0+s/86400;
             const a=norm360(swe.calculateHouses(j2,BD.lat,BD.lon,'P').ascendant-swe.getAyanamsa(j2));
             const kp=(a*81)%360,ni=Math.floor(kp/(360/27)),kl=NAK_LORD[ni];
             const ok=(kl===BD.moonLord)||trik.includes(ni);
-            h+=`<tr class="${ok?'match':''}"><td>+${s}s</td><td>${a.toFixed(4)}°</td><td>${kp.toFixed(2)}°</td><td>${NAK[ni]}</td><td>${LORD_HI[kl]}</td><td>${ok?'✅':''}</td></tr>`;
-            if(ok&&s>0)break;
+            h+=`<tr class="${ok?'match':''}"><td>${s>0?'+':''}${s}s</td><td>${a.toFixed(4)}°</td><td>${kp.toFixed(2)}°</td><td>${NAK[ni]}</td><td>${LORD_HI[kl]}</td><td>${ok?'✅':''}</td></tr>`;
         }
-        h+=`</table><button class="shot" onclick="shot('ku-out')">📸 PNG स्क्रीनशॉट</button>`;
+        h+=`</table><button class="shot" onclick="shot('ku-out')">📸 PNG स्क्रीनशॉट</button><button class="txtb" onclick="dlKundaTXT()">📝 TXT डाउनलोड (सिर्फ जानकारी)</button>`;
+        /* --- TXT: सिर्फ जानकारी (लग्न स्पष्ट + नक्षत्र विवरण) - कुंद गणना Gemini करेगा --- */
+        const RN=['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुम्भ','मीन'];
+        const dms=abs=>{const sg=Math.floor(abs/30),ins=abs-sg*30;let d=Math.floor(ins);const mf=(ins-d)*60;let mi=Math.floor(mf),ss=Math.round((mf-mi)*60);if(ss===60){ss=0;mi++;if(mi===60){mi=0;d++;}}return {sg,txt:d+'°'+p2(mi)+"'"+p2(ss)+'"'};};
+        const nakOf=abs=>({ni:Math.floor(abs/(360/27)),pd:Math.floor((abs%(360/27))/(360/108))+1});
+        const row=(nm,abs)=>{const dm=dms(abs),nk=nakOf(abs);return nm+' | '+RN[dm.sg]+' | '+dm.txt+' | '+NAK[nk.ni]+' | चरण '+nk.pd+' | '+LORD_HI[NAK_LORD[nk.ni]];};
+        let kt='BTR KUNDA DATA (सिर्फ जानकारी - कुंद गणना Gemini करेगा)\n';
+        kt+='जन्म: '+fmtD(jd0)+' '+String(tm[1]).padStart(2,'0')+':'+tm[2]+':'+String(tm[3]||'00').padStart(2,'0')+' IST, स्थान: ('+BD.lat.toFixed(4)+', '+BD.lon.toFixed(4)+')\n';
+        kt+='Ayanamsa: Lahiri (Swiss)\n\n';
+        const adm=dms(asc0);
+        kt+='लग्न स्पष्ट: '+RN[adm.sg]+' '+adm.txt+' (निरपेक्ष अंश: '+asc0.toFixed(4)+'°)\n\n';
+        kt+='नक्षत्र विवरण (Base समय पर):\nग्रह | राशि | अंश | नक्षत्र | चरण | नक्षत्र स्वामी\n';
+        kt+=row('लग्न',asc0)+'\n';
+        const ay0=swe.getAyanamsa(jd0);
+        [['सूर्य',_SEP.Sun],['चंद्र',_SEP.Moon],['मंगल',_SEP.Mars],['बुध',_SEP.Mercury],['गुरु',_SEP.Jupiter],['शुक्र',_SEP.Venus],['शनि',_SEP.Saturn]].forEach(pr=>{
+            kt+=row(pr[0],norm360(swe.calculatePosition(jd0,pr[1],0).longitude-ay0))+'\n';
+        });
+        const raLon=norm360(swe.calculatePosition(jd0,_SLP.MeanNode,0).longitude-ay0);
+        kt+=row('राहु',raLon)+'\n';
+        kt+=row('केतु',norm360(raLon+180))+'\n';
+        window._kundaTXT=kt;
         document.getElementById('ku-out').innerHTML=h;
         document.getElementById('ku-out').scrollIntoView({behavior:'smooth',block:'start'});
     }catch(e){showErr('ku-err',typeof e==='string'?e:'गणना में त्रुटि — '+e.message);}
+};
+
+window.dlKundaTXT=function(){
+    if(!window._kundaTXT){alert('पहले कुंदा जांचें');return;}
+    const blob=new Blob([window._kundaTXT],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download='BTR-Kunda-Data.txt';a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),2000);
 };
 
 /* ================= Screenshot ================= */
