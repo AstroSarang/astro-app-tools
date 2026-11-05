@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>मास्टर डेटा डाउनलोडर v2.8 - Astro Sarang</title>
+<title>मास्टर डेटा डाउनलोडर v2.9 - Astro Sarang</title>
 <style>
 *{box-sizing:border-box}
 body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;background:#f5f0e8;margin:0;padding:16px;color:#333}
@@ -54,7 +54,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <body>
 <div class="con">
 <div class="head">
-<h1>📦 मास्टर डेटा डाउनलोडर v2.8</h1>
+<h1>📦 मास्टर डेटा डाउनलोडर v2.9</h1>
 <div class="sub">13 टूल्स का डेटा एक साथ - PDF, एक TXT या ZIP में</div>
 </div>
 
@@ -233,7 +233,7 @@ const TOOLS = [
    prep:[{fill:1},{clickId:'btn-applycode'},{waitFor:{sel:'#tab-content',min:400}}],
    sections: VV_TABS.map(v => ({key:v[0].toLowerCase(), fn:'Varga_' + v[0] + '_' + VV_FN[v[0]], name:v[1], en:'VV ' + v[0],
      steps:[{fn:'renderTab',args:[v[0]]},{waitFor:{sel:'#tab-content',min:400}}], cap:['#shot-area']}))},
-  {id:'upagraha', name:'उपग्रह व विशेष लग्न', en:'Upagraha Vishesh', file:'../upagraha-vishesh.html', input:'astrocode',
+  {id:'upagraha', name:'उपग्रह व विशेष लग्न', en:'Upagraha Vishesh', file:'upagraha-vishesh.html', input:'astrocode',
    prep:[{waitFor:{sel:'#status',min:10,contains:'तैयार'}},{fill:1},{clickId:'btn-fill'},{waitFor:{sel:'#upbody',min:200}}],
    sections:[
      {key:'upagraha', fn:'upagraha', name:'उपग्रह स्थिति व फलित', en:'Upagraha', cap:['#tab1body']},
