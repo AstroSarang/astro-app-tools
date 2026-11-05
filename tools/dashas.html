@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>दशा कैलकुलेटर v4 (App-Verified + Master Timeline)</title>
+<title>दशा कैलकुलेटर v6.1 (App-Verified + Master Timeline)</title>
 <style>
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;padding:15px;background:#f0f2f5;color:#1d2129;margin:0}
 .container{max-width:950px;margin:15px auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 15px rgba(0,0,0,.08)}
@@ -53,7 +53,7 @@ th{background:#e3f2fd}
 </head>
 <body>
 <div class="container">
-<h1>🪐 दशा कैलकुलेटर v5</h1>
+<h1>🪐 दशा कैलकुलेटर v6.1</h1>
 <p style="text-align:center;color:#666;font-size:.9em">App-verified logic • 365.256364 days/year • Master Timeline</p>
 
 <!-- Birth Details (Astro-Code-only v5) -->
@@ -517,9 +517,7 @@ function charaCalc() {
         // FWD: Mesha(0), Vrishabha(1), Mithuna(2), Tula(6), Vrishchika(7), Dhanu(8)
         // Verified 10/10 on 1995 + 2009 charts
         const CHARA_BWD = [3, 4, 5, 9, 10, 11];
-        function rashiYears(rashi) {
-            const lord = KN_LORD[rashi];
-            const lordRashi = pRashi[lord];
+        function countToLord(rashi, lordRashi) {
             if (lordRashi === rashi) return 12;
             let count;
             if (CHARA_BWD.includes(rashi)) {
@@ -529,6 +527,37 @@ function charaCalc() {
             }
             if (count === 0) count = 12;
             return count;
+        }
+        // KN Rao dual lordship (v6.1, app-verified on 7 charts):
+        // Scorpio = Mars + Ketu, Aquarius = Saturn + Rahu
+        // both lords in the sign itself -> 12; one in the sign -> count from the other;
+        // both outside -> stronger lord: (1) more conjunctions (2) higher degree in sign
+        // (3) dual sign > fixed sign > movable sign; final tie -> primary lord
+        function dualYears(rashi) {
+            const coName = rashi === 7 ? 'ketu' : 'rahu';
+            const primIdx = KN_LORD[rashi];
+            const primSign = pRashi[primIdx];
+            const coSign = birthData.nodes[coName];
+            if (primSign === rashi && coSign === rashi) return 12;
+            if (primSign === rashi) return countToLord(rashi, coSign);
+            if (coSign === rashi) return countToLord(rashi, primSign);
+            const allSigns = pRashi.concat([birthData.nodes.rahu, birthData.nodes.ketu]);
+            const conj = s => allSigns.filter(x => x === s).length - 1;
+            const primDeg = primIdx === 2 ? birthData.planetDeg.mars : birthData.planetDeg.saturn;
+            const coDeg = birthData.planetDeg[coName];
+            const typeRank = s => [2, 5, 8, 11].includes(s) ? 3 : ([1, 4, 7, 10].includes(s) ? 2 : 1);
+            let usePrim;
+            if (conj(primSign) !== conj(coSign)) usePrim = conj(primSign) > conj(coSign);
+            else if (Math.abs(primDeg - coDeg) > 1e-9) usePrim = primDeg > coDeg;
+            else if (typeRank(primSign) !== typeRank(coSign)) usePrim = typeRank(primSign) > typeRank(coSign);
+            else usePrim = true;
+            return countToLord(rashi, usePrim ? primSign : coSign);
+        }
+        function rashiYears(rashi) {
+            if ((rashi === 7 || rashi === 10) && birthData.nodes && birthData.planetDeg) {
+                return dualYears(rashi);
+            }
+            return countToLord(rashi, pRashi[KN_LORD[rashi]]);
         }
         
         // === GEMINI SPEC: Base Sequence Formula ===
@@ -835,13 +864,24 @@ async function calcFromBirth() {
             saturn: Math.floor(calcLon(SEP.Saturn) / 30),
         };
         
+        // Chara dual-lord data (v6.1): Scorpio = Mars+Ketu, Aquarius = Saturn+Rahu
+        const rahuLonFull = calcLon(10);
+        const pDeg = {
+            mars: calcLon(SEP.Mars) % 30,
+            saturn: calcLon(SEP.Saturn) % 30,
+            rahu: rahuLonFull % 30,
+            ketu: rahuLonFull % 30
+        };
+        const rahuSign = Math.floor(rahuLonFull / 30);
+        const nodeSigns = { rahu: rahuSign, ketu: (rahuSign + 6) % 12 };
+
         // Lagna - use lat/lon from Astro Code
         const lat = ad.lat;
         const lon = ad.lon;
         const hs = swe.calculateHouses(jd, lat, lon, 'P');
         const lagnaRashi = Math.floor(norm360(hs.ascendant - ayan) / 30);
         
-        eval(`birthData = {birthDate: new Date(yr, mon-1, day), moonLon: ${moonLon}, nakIdx: ${nakIdx}, remFrac: ${remFrac}, planets: ${JSON.stringify(pLon)}, lagnaRashi: ${lagnaRashi}}`);
+        eval(`birthData = {birthDate: new Date(yr, mon-1, day), moonLon: ${moonLon}, nakIdx: ${nakIdx}, remFrac: ${remFrac}, planets: ${JSON.stringify(pLon)}, lagnaRashi: ${lagnaRashi}, planetDeg: ${JSON.stringify(pDeg)}, nodes: ${JSON.stringify(nodeSigns)}}`);
         st.textContent = `✅ चंद्र: ${moonLon.toFixed(2)}° • ${NAKSHATRAS[nakIdx]} • लग्न: ${['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'][lagnaRashi]}`;
         vimCalc(); yogCalc(); triCalc(); ashCalc(); charaCalc();
     } catch(e) { st.textContent = 'त्रुटि: ' + e.message; }
