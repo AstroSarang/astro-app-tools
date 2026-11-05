@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>मास्टर डेटा डाउनलोडर v2.10 - Astro Sarang</title>
+<title>मास्टर डेटा डाउनलोडर v2.11 - Astro Sarang</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 *{box-sizing:border-box}
 body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;background:#f5f0e8;margin:0;padding:16px;color:#333}
@@ -54,8 +55,8 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <body>
 <div class="con">
 <div class="head">
-<h1>📦 मास्टर डेटा डाउनलोडर v2.10</h1>
-<div class="sub">13 टूल्स का डेटा एक साथ - PDF, एक TXT या ZIP में</div>
+<h1>📦 मास्टर डेटा डाउनलोडर v2.11</h1>
+<div class="sub">सभी टूल्स का डेटा एक साथ - एक TXT या ZIP में</div>
 </div>
 
 <div class="card">
@@ -102,8 +103,9 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <h3>📥 डाउनलोड</h3>
 <div class="row" style="justify-content:center">
 <button class="btn-txt" onclick="downloadOneTXT()">📝 TXT डाउनलोड</button>
+<button class="btn-zip" onclick="downloadZIP()">📦 ZIP डाउनलोड</button>
 </div>
-<div class="note">सभी चुने भागों का text एक ही TXT file में मिलेगा</div>
+<div class="note">TXT में सभी चुने भागों का text एक ही file में मिलेगा, ZIP में हर भाग की अलग TXT file मिलेगी</div>
 </div>
 </div>
 
@@ -608,6 +610,31 @@ function downloadOneTXT() {
     setStatus('✅ TXT डाउनलोड हो गया!', 'done');
   } catch (e) {
     setStatus('❌ TXT बनाने में error: ' + e.message, 'error');
+  }
+}
+
+async function downloadZIP() {
+  if (!generatedData.length) return;
+  if (typeof JSZip === 'undefined') { setStatus('❌ ZIP लाइब्रेरी लोड नहीं हुई - internet जांचकर फिर कोशिश करें', 'error'); return; }
+  setStatus('⏳ ZIP बन रहा है...', 'working');
+  try {
+    const zip = new JSZip();
+    const code = document.getElementById('astroCode').value.trim();
+    const used = {};
+    generatedData.forEach((d, i) => {
+      if (!d.txt) return;
+      let fname = String(i + 1).padStart(2, '0') + '_' + (d.en || (d.toolName + ' - ' + d.secName)).replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+      if (used[fname]) { used[fname]++; fname = fname + '_' + used[fname]; } else used[fname] = 1;
+      zip.file(fname + '.txt', '\ufeff' + 'Astro Sarang - मास्टर डेटा डाउनलोडर v2.11\nTool: ' + d.toolName + '\nभाग: ' + d.secName + '\nAstro Code: ' + code + '\n' + '='.repeat(50) + '\n\n' + d.txt);
+    });
+    const blob = await zip.generateAsync({type: 'blob'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Master-Data-' + code.replace(/[^a-zA-Z0-9]/g, '_') + '.zip';
+    a.click();
+    setStatus('✅ ZIP डाउनलोड हो गया!', 'done');
+  } catch (e) {
+    setStatus('❌ ZIP बनाने में error: ' + e.message, 'error');
   }
 }
 
