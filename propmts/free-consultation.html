@@ -97,7 +97,7 @@
 </head>
 <body>
 
-    <h1>Free Consultation Prompts</h1>
+    <h1>Free Consultation Prompts v2</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -114,9 +114,306 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData_hi = ``;
-        const rawData_en = ``;
-        const rawData_mr = ``;
+        const rawData_hi = `
+कृपया संलग्न (Attached) PDF और सभी txt फाइल्स का ज्योतिषीय डेटा अपनी मेमोरी में सेव करें।
+
+निर्देश:
+
+1] यह डेटा अभी चैट में दोबारा लिखने की ज़रूरत नहीं है।
+2] बस डेटा का विश्लेषण करें और पुष्टि करें कि आपने इसे पढ़ लिया है।
+3] पुष्टि के लिए (Verification): बस यह बताएं कि कौन-कौन सा डेटा सेव किया गया है - PDF और सभी txt फाइल्स की सूची दें।
+
+इसके बाद मैं सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूँगी, तब आपको इस पूरे डेटा का उपयोग करना है।
+----------
+कृपया उपरोक्त सभी चैट और PDF में दिए गए जन्म विवरण के आधार पर सभी 9 ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) के ज्योतिषीय तथ्यों/आँकड़ों की सूची दें। जानकारी संक्षिप्त और बिंदुवार हो, विस्तृत स्पष्टीकरण की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक (षोडश वर्ग), अष्टकवर्ग और जैमिनी कारकत्व के आधार पर हो।
+
+प्रत्येक ग्रह के लिए निम्नलिखित जानकारी दें:
+1. [ग्रह का नाम]
+➤ जैमिनी कारकत्व:
+➤ भाव स्वामित्व: (किन भावों का स्वामी है)
+➤ स्थिति: (किस भाव और राशि में)
+➤ राशि में स्थिति: (मित्र, शत्रु, सम, उच्च, नीच, मूलत्रिकोण, स्वराशि)
+➤ नक्षत्र और पद: (ग्रह किस नक्षत्र और किस पद में है, और नक्षत्र स्वामी का प्रभाव।)
+➤ दृष्टि: (किन भावों/ग्रहों पर दृष्टि)
+➤ [ग्रह का नाम] पर दृष्टि: (किन ग्रहों की दृष्टि है)
+➤ युति: (किन ग्रहों के साथ युति में है)
+➤ अवस्था (डिग्री): (डिग्री और अवस्था का नाम जैसे बाल, कुमार आदि)
+➤ वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिति: (हाँ/नहीं या स्थिति का नाम)
+➤ नवमांश स्थिति: (नवमांश कुंडली में ग्रह किस राशि, नक्षत्र (स्वामी) में है और उसका प्रभाव।)
+➤ नवमांश में बल: पीड़ित/बलवान
+➤ चलित में स्थिति परिवर्तन और प्रभाव
+➤ भावबल: (केवल मूल्य)
+➤ षड्बल: (रूपा में मूल्य और उसका बल कैसा है - औसत से अच्छा, रैंक आदि।)
+➤ भिन्नाष्टक वर्ग (BAV) बिंदु: (0-8 के बीच मूल्य) : (बिंदुओं के आधार पर: व्यावहारिक बल - कमज़ोर/औसत/शक्तिशाली)
+➤ विमशोपक (षोडश वर्ग): (मूल्य और ग्रहों में उसका रैंक, यदि लागू हो।)
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB)/मृत्यु भाग (MB) में स्थिति और प्रभाव :
+➤ नवतारा स्थिति और प्रभाव: (जन्म नक्षत्र के आधार पर यह ग्रह किस तारा में - जैसे संपत, विपत, साधक आदि - बैठा है, और उस विशिष्ट तारा के कारण उसके नैसर्गिक और भाव फलों में क्या शुभता या बाधाएँ आएँगी।)
+➤ गोचर और दशा में संभाव्य फल का संक्षिप्त उत्तर : (सामान्यतः वह ग्रह अपनी दशा/अंतर्दशा और गोचर में कैसा फल देगा - अच्छा, बुरा, या मध्यम।)
+
+➤ निष्कर्ष : कुल मिलाकर ग्रह मज़बूत है या पीड़ित है? (प्रतिशत)
+
+➤ अंत में सभी ग्रहों के बलवान और पीड़ित होने के बारे में निष्कर्ष (प्रतिशत के आधार पर)
+
+अब भाव प्रोफाइल:
+
+कृपया उपरोक्त सभी चैट और PDF में दिए गए जन्म विवरण के आधार पर D1 के सभी 12 भावों के ज्योतिषीय तथ्यों/आँकड़ों की सूची दें। जानकारी संक्षिप्त और बिंदुवार हो, विस्तृत स्पष्टीकरण की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल, अष्टकवर्ग के आधार पर हो।
+
+प्रत्येक भाव के लिए निम्नलिखित जानकारी दें:
+
+1. पहला भाव (लग्न): राशि का नाम [आरूढ़ पद]
+➤ कारकत्व:
+➤ भाव स्वामी (लग्नेश):
+➤ भावेश की स्थिति:
+➤ स्थित ग्रह:
+➤ भाव पर दृष्टि:
+➤ भाव बल: रूपा में मूल्य और उसका बल कैसा है - औसत से अच्छा, रैंक आदि। (कुंडली में कमज़ोर या मज़बूत भाव)।
+➤ सर्वाष्टकवर्ग (SAV) बिंदु: (कुल बिंदु) (भाव की क्षमता: 28 से अधिक होने पर 'उत्तम', 25 से कम होने पर 'चुनौतीपूर्ण')
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB) में स्थिति और प्रभाव :
+➤ निष्कर्ष : कुल मिलाकर भाव मज़बूत है या पीड़ित है? (प्रतिशत)
+
+➤ अंत में सभी भावों के मज़बूत और पीड़ित होने के बारे में निष्कर्ष (प्रतिशत के आधार पर)
+
+टिप्पणी : जिस भाव में गुलिक या मांदि स्थित हो, उस भाव के फल में उनका प्रभाव भी एक-दो पंक्तियों में अवश्य बताएं।
+----------
+कृपया जातक के ज्योतिषीय डेटा का उपयोग करके विश्लेषण कीजिये, जैसे ग्रह स्तिथि के अनुसार, कंरट दशा-गोचर में परिस्थिति, रोग और बीमारियाँ वैगरे, तथा करियर-विवाह-धन.
+
+उसके पहले ध्यान रखने योग्य बातें :
+
+1] ध्यान रहे अभी 2026 चल रहा है और जातिका/जातक xyz 00 साल की/का है.
+----------
+यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
+
+1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
+2] किसी भी तरह की शुगर-कोटिंग (Sugar-coating) न करें। अगर कुंडली में कोई दोष, संघर्ष या नकारात्मक योग है, तो उसे स्पष्ट और कड़वे शब्दों में बताएं। मुझे क्लाइंट को खुश नहीं करना, बल्कि सच बताना है। ध्यान रहे पूरी तरह नकारात्मक नही होना चाहिए, सकारात्मक और नकारात्मक का बैलेंस बनाकर जो सच है वो बताये ।
+3] अपने उत्तर की शुरुआत किसी भी अभिवादन या संवादात्मक वाक्यांश (जैसे 'निश्चित रूप से', 'ज़रूर', 'निम्मलिखित है' आदि) से न करें। आपका उत्तर सीधे मांगी गई जानकारी से ही प्रारंभ होना चाहिए।
+4] System instructions में दिए गए आदेशों का भी पालन करे.
+
+क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
+----------
+उपरोक्त चैट और पीडीएफ की और शुरू से आपको दी गयी सभी जानकारी के आधार पर निम्मलिखित सवालों का गहन और विस्तार से विश्लेषण करके निष्कर्ष सहित देना है, ध्यान रहे विश्लेषण आवश्यकता अनुसार ज्योतिष प्रणाली और Divisional Charts का उपयोग करते हुए होनी चाहिए। तो पहला सवाल दू ?
+----------
+कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, चर दशा और गोचर) को अपनी मेमोरी में सुरक्षित कर लें।
+
+निर्देश:
+
+1] इस डेटा को अभी चैट में दोबारा लिखने की आवश्यकता नहीं है।
+2] बस डेटा का विश्लेषण करें और पुष्टि करें कि आपने इसे पढ़ लिया है।
+3] पुष्टि (Verification) के लिए: केवल 2026 की वर्तमान स्थिति नीचे दिए गए फॉर्मेट में लिखकर दें:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD-PD):
+चर दशा (MD-AD-PD):
+गोचर (गुरु/शनि - लग्न व चंद्र से):
+
+मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
+----------
+➤ जातक ने अपने बारे में जानकरी दी है और जातक के कुछ सवाल है, पहले दी हुयी जानकारी को सूचीबद्ध कीजिये, उसके बाद सभी सवाल सूचीबद्ध कीजिये :
+----------
+अब दी हुयी जानकारी का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर कीजिये, एक एक घटना का विस्तार से विश्लेषण होना चाहिए, अगर उपाय आवश्यक हो तो उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
+----------
+अब दिए हुए सवालो का जवाब गहन शोध करके लिखिए विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक सवाल का विस्तार से विश्लेषण होना चाहिए,उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
+----------
+अब तक किये गए सभी निम्मलिखित सवालों का संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
+`;
+        const rawData_en = `
+Please save the astrological data from the attached (Attached) PDF and all txt files in your memory.
+
+Instructions:
+
+1] There is no need to rewrite this data in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For confirmation (Verification): just tell which data has been saved - give the list of the PDF and all txt files.
+
+After this, I will directly ask specific questions related to the analysis, then you have to use this entire data.
+----------
+Please give a list of the astrological facts/data of all 9 planets (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu) based on the birth details given in all the above chat and PDF. The information should be brief and point-wise, no detailed explanation is needed. This list should be based on the kundali's phalit, Shadbala, Vimshopaka (Shodash Varga), Ashtakavarga and Jaimini Karakatva.
+
+Give the following information for each planet:
+1. [Planet Name]
+➤ Jaimini Karakatva:
+➤ House lordship: (lord of which houses)
+➤ Position: (in which house and sign)
+➤ Position in sign: (friend, enemy, neutral, exalted, debilitated, Mooltrikona, own sign)
+➤ Nakshatra and Pada: (in which nakshatra and which pada the planet is, and the influence of the nakshatra lord.)
+➤ Aspect (Drishti): (on which houses/planets)
+➤ Aspect on [Planet Name]: (aspects of which planets)
+➤ Conjunction (Yuti): (in conjunction with which planets)
+➤ Avastha (Degree): (degree and name of the avastha, such as Bal, Kumar, etc.)
+➤ Retrograde/Combust/Debilitated/Neechbhanga/Vargottam status: (Yes/No or name of the status)
+➤ Navamsha position: (in the Navamsha kundali, in which sign, nakshatra (lord) the planet is, and its influence.)
+➤ Strength in Navamsha: Afflicted/Strong
+➤ Change of position in Chalit and its influence
+➤ Bhavabala: (value only)
+➤ Shadbala: (value in Rupas and how its strength is - better than average, rank, etc.)
+➤ Bhinnashtak Varga (BAV) points: (value between 0-8) : (based on the points: practical strength - Weak/Average/Powerful)
+➤ Vimshopaka (Shodash Varga): (value and its rank among the planets, if applicable.)
+➤ Position and influence in Pushkar Navamsha (PN)/Pushkar Bhaga (PB)/Mrityu Bhaga (MB) :
+➤ Navatara position and influence: (based on the birth nakshatra, in which Tara - such as Sampat, Vipat, Sadhak, etc. - this planet is placed, and what auspiciousness or obstacles will come in its natural and house results due to that specific Tara.)
+➤ Brief answer on the probable result in transit and dasha : (generally, what result that planet will give in its dasha/antardasha and transit - good, bad, or medium.)
+
+➤ Conclusion : Overall, is the planet strong or afflicted? (Percentage)
+
+➤ Finally, a conclusion about all planets being strong and afflicted (based on percentage)
+
+Now the House Profile:
+
+Please give a list of the astrological facts/data of all 12 houses of D1 based on the birth details given in all the above chat and PDF. The information should be brief and point-wise, no detailed explanation is needed. This list should be based on Karakatva, Bhava Bala and Ashtakavarga.
+
+Give the following information for each house:
+
+1. First House (Lagna): Name of the sign [Arudha Pada]
+➤ Karakatva:
+➤ House lord (Lagnesh):
+➤ Position of the house lord:
+➤ Placed planets:
+➤ Aspect on the house:
+➤ Bhava Bala: Value in Rupas and how its strength is - better than average, rank, etc. (weak or strong house in the kundali).
+➤ Sarvashtakavarga (SAV) points: (total points) (capacity of the house: 'Excellent' if more than 28, 'Challenging' if less than 25)
+➤ Position and influence in Pushkar Navamsha (PN)/Pushkar Bhaga (PB) :
+➤ Conclusion : Overall, is the house strong or afflicted? (Percentage)
+
+➤ Finally, a conclusion about all houses being strong and afflicted (based on percentage)
+
+Note : Whichever house has Gulik or Mandi placed in it, please also mention their influence in that house's results in one or two lines.
+----------
+Please analyze using the native's astrological data - such as per planetary positions, the situation in current dasha-transit, diseases and ailments etc., as well as career-marriage-wealth.
+
+Before that, points to keep in mind:
+
+1] Note that the year is currently 2026 and the native (female/male) xyz is 00 years old (female/male).
+----------
+Ensure that you will strictly follow the following orders,
+
+1] Cross-check the data before giving the output.
+2] Do not do any kind of sugar-coating (Sugar-coating). If there is any dosha, conflict or negative yoga in the kundali, state it in clear and bitter words. I do not have to please the client, but tell the truth. Note that it should not be completely negative; keeping a balance of positive and negative, tell what is true.
+3] Do not begin your answer with any greeting or conversational phrase (like 'definitely', 'sure', 'the following is', etc.). Your answer should begin directly with the requested information.
+4] Also follow the orders given in the System instructions.
+
+Are you ready - just tell which orders you will follow.
+----------
+Based on all the information given to you from the start from the above chat and PDF, the following questions must be analyzed deeply and in detail with conclusions; note that the analysis should be done using the required jyotish systems and Divisional Charts as needed. So, shall I give the first question?
+----------
+Please save the astrological data (Vimshottari, Yogini, Chara dasha and Gochar) given in all the attached text files securely in your memory.
+
+Instructions:
+
+1] This data does not need to be rewritten in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification (Verification): Give only the current status of 2026 in the format given below:
+Vimshottari (MD-AD-PD):
+Yogini (MD-AD-PD):
+Chara dasha (MD-AD-PD):
+Gochar (Jupiter/Saturn - from lagna and Moon):
+
+After this, I will ask specific questions directly related to the analysis, then you must use all this data.
+----------
+➤ The native has given information about himself, and the native has some questions. First, list the information given, then list all the questions :
+----------
+Now conduct in-depth research on the given information and do the astrological analysis in detail, with conclusions. Analyze each event in detail; include remedies if remedies are necessary. First, answer the first question; I will ask the rest later.
+----------
+Now write the answers to the given questions after in-depth research, doing the analysis and conclusions in detail. Analyze each question in detail, with remedies. First, answer the first question; I will ask the rest later.
+----------
+Give brief answers to all the following questions asked so far, because this list will be placed at the very beginning of this analysis. This way the native will first read the answers in short, and he will find the section for the matter whose analysis he wants to read with references...
+`;
+        const rawData_mr = `
+कृपया संलग्न (Attached) असलेला PDF आणि सर्व txt फाइल्समधील ज्योतिषीय डेटा तुमच्या मेमरीमध्ये जतन करा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला असल्याची पुष्टी करा.
+3] पुष्टीसाठी (Verification): फक्त हे सांगा की कोणकोणता डेटा सेव केला गेला आहे - PDF आणि सर्व txt फाइल्सची यादी द्या.
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांच्या आधारे सर्व ९ ग्रहांचे (सूर्य, चंद्र, मंगळ, बुध, गुरु, शुक्र, शनी, राहू, केतू) ज्योतिषीय तथ्ये/आकडेवारीची यादी द्या. माहिती संक्षिप्त आणि मुद्देनिहाय असावी, सविस्तर स्पष्टीकरणाची गरज नाही. ही यादी कुंडलीच्या फलित, षड्बल, विमशोपक (षोडश वर्ग), अष्टकवर्ग आणि जैमिनी कारकत्व यांच्या आधारावर असावी.
+
+प्रत्येक ग्रहासाठी पुढील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ जैमिनी कारकत्व:
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रू, सम, उच्च, नीच, मूलत्रिकोण, स्वराशी)
+➤ नक्षत्र आणि पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी)
+➤ [ग्रहाचे नाव] वर दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांसोबत युतीत आहे)
+➤ अवस्था (डिग्री): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इत्यादी)
+➤ वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (होय/नाही किंवा स्थितीचे नाव)
+➤ नवमांश स्थिती: (नवमांश कुंडलीत ग्रह कोणत्या राशीत, नक्षत्रात (स्वामी) आहे आणि त्याचा प्रभाव.)
+➤ नवमांशातील बल: पीडित/बलवान
+➤ चलितमधील स्थिती बदल आणि प्रभाव
+➤ भावबल: (फक्त मूल्य)
+➤ षड्बल: (रूपात मूल्य आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी.)
+➤ भिन्नाष्टक वर्ग (BAV) बिंदू: (0-8 दरम्यान मूल्य) : (बिंदूंच्या आधारे: व्यावहारिक बल - कमकुवत/सरासरी/शक्तिशाली)
+➤ विमशोपक (षोडश वर्ग): (मूल्य आणि ग्रहांमध्ये त्याचा रँक, लागू असल्यास.)
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB)/मृत्यु भाग (MB) मध्ये स्थिती आणि प्रभाव :
+➤ नवतारा स्थिती आणि प्रभाव: (जन्म नक्षत्राच्या आधारे हा ग्रह कोणत्या ताऱ्यात - जसे संपत, विपत, साधक इत्यादी - बसला आहे, आणि त्या विशिष्ट ताऱ्यामुळे त्याच्या नैसर्गिक व भाव फलांत कोणती शुभता किंवा अडथळे येतील.)
+➤ गोचर आणि दशेत संभाव्य फलाचे संक्षिप्त उत्तर : (साधारणपणे तो ग्रह आपल्या दशा/अंतर्दशा आणि गोचरात कसे फल देईल - चांगले, वाईट, किंवा मध्यम.
+
+➤ निष्कर्ष : एकूणच ग्रह मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रहांच्या बलवान आणि पीडित असण्याबद्दल निष्कर्ष (टक्केवारीच्या आधारावर)
+
+आता भाव प्रोफाइल:
+
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांच्या आधारे D1 च्या सर्व 12 भावांचे ज्योतिषीय तथ्ये/आकडेवारीची यादी द्या. माहिती संक्षिप्त आणि मुद्देनिहाय असावी, सविस्तर स्पष्टीकरणाची गरज नाही. ही यादी कारकत्व, भाव बल, अष्टकवर्ग यांच्या आधारावर असावी.
+
+प्रत्येक भावासाठी पुढील माहिती द्या:
+
+1. पहिला भाव (लग्न): राशीचे नाव [आरूढ पद]
+➤ कारकत्व:
+➤ भाव स्वामी (लग्नेश):
+➤ भावेशाची स्थिती:
+➤ स्थित ग्रह:
+➤ भावावर दृष्टी:
+➤ भाव बल: रूपात मूल्य आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी. (कुंडलीत कमकुवत किंवा मजबूत भाव).
+➤ सर्वाष्टकवर्ग (SAV) बिंदू: (एकूण बिंदू) (भावाची क्षमता: 28 पेक्षा जास्त असल्यास 'उत्तम', 25 पेक्षा कमी असल्यास 'आव्हानात्मक')
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB) मध्ये स्थिती आणि प्रभाव :
+➤ निष्कर्ष : एकूणच भाव मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व भावांच्या बळकट आणि पीडित असण्याबद्दल निष्कर्ष (टक्केवारीच्या आधारावर)
+
+टीप : ज्या भावात गुलिक किंवा मांदि स्थित असेल, त्या भावाच्या फलात त्यांचा प्रभावही एक-दोन ओळींमध्ये अवश्य सांगा.
+----------
+कृपया जातकाच्या ज्योतिषीय डेटाचा वापर करून विश्लेषण करा, जसे ग्रहस्थितीनुसार, करंट दशा-गोचरातील परिस्थिती, रोग आणि आजार वगैरे, तसेच करियर-विवाह-धन.
+
+त्याआधी लक्षात ठेवण्यासारख्या गोष्टी:
+
+1] लक्षात ठेवा सध्या 2026 सुरू आहे आणि जातिका/जातक xyz 00 वर्षांची/चा आहे.
+----------
+तुम्ही पुढील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटा क्रॉसचेक करून घ्या.
+2] कोणत्याही प्रकारचे शुगर-कोटिंग (Sugar-coating) करू नका. कुंडलीत कोणताही दोष, संघर्ष किंवा नकारात्मक योग असेल, तर तो स्पष्ट आणि कडू शब्दांत सांगा. मला क्लायंटला खुश करायचे नाही, तर सत्य सांगायचे आहे. लक्षात ठेवा पूर्णपणे नकारात्मक नसावे, सकारात्मक आणि नकारात्मक यांचा बॅलन्स ठेवून जे सत्य आहे ते सांगा.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'निश्चितच', 'जरूर', 'पुढील आहे' इत्यादी) करू नका. तुमचे उत्तर थेट मागितलेल्या माहितीनेच सुरू झाले पाहिजे.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का - फक्त इतके सांगा की कोणत्या आदेशांचे पालन कराल.
+----------
+वरील चॅट आणि PDF ची आणि सुरुवातीपासून तुम्हाला दिलेल्या सर्व माहितीच्या आधारे पुढील प्रश्नांचे सखोल आणि सविस्तर विश्लेषण निष्कर्षासह द्यायचे आहे, लक्षात ठेवा विश्लेषण आवश्यकतेनुसार ज्योतिष प्रणाली आणि Divisional Charts वापरून व्हायला हवे. तर पहिला प्रश्न देऊ ?
+----------
+कृपया संलग्न (Attached) सर्व टेक्स्ट फायलींमध्ये दिलेला ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, चर दशा आणि गोचर) आपल्या मेमोरीत सुरक्षित करून ठेवा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची आवश्यकता नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि आपण तो वाचला आहे याची पुष्टी करा.
+3] पडताळणीसाठी (Verification): फक्त 2026 ची सध्याची स्थिती खाली दिलेल्या फॉरमॅटमध्ये लिहून द्या:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD-PD):
+चर दशा (MD-AD-PD):
+गोचर (गुरु/शनि - लग्न व चंद्रापासून):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+➤ जातकाने स्वतःबद्दल माहिती दिली आहे आणि जातकाचे काही प्रश्न आहेत, प्रथम दिलेली माहिती सूचीबद्ध करा, त्यानंतर सर्व प्रश्न सूचीबद्ध करा :
+----------
+आता दिलेल्या माहितीचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, प्रत्येक घटनेचे विस्ताराने विश्लेषण झाले पाहिजे, जर उपाय आवश्यक असेल तर उपायांसह, सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+----------
+आता दिलेल्या प्रश्नांची उत्तरे सखोल संशोधन करून लिहा, विस्ताराने विश्लेषण आणि निष्कर्ष देऊन करा, प्रत्येक प्रश्नाचे विस्ताराने विश्लेषण झाले पाहिजे, उपायांसह, सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+----------
+आतापर्यंत विचारलेल्या सर्व पुढील प्रश्नांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल, यामुळे जातक प्रथमच थोडक्यात उत्तरे वाचेल आणि त्याला ज्या विषयाचे विश्लेषण संदर्भासह वाचायचे आहे, तो विभाग शोधेल...
+`;
         let currentLang = 'hi';
         function getRawData() {
             if (currentLang === 'en') return rawData_en;
