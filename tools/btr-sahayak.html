@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BTR सहायक v2.1 — Event-Dasha + Kunda + KP BTR</title>
+<title>BTR सहायक v2.2 — Event-Dasha + Kunda + KP BTR</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -122,7 +122,7 @@ h3{color:#0d3b66;font-size:1em;margin:16px 0 6px}
 <div id="kp-out"></div>
 </div>
 
-<div class="foot">BTR सहायक v2.1 • Swiss Ephemeris (Lahiri + KP) • tools give data, judgement Gemini करेगा</div>
+<div class="foot">BTR सहायक v2.2 • Swiss Ephemeris (Lahiri + KP) • tools give data, judgement Gemini करेगा</div>
 </div>
 
 <script type="module">
@@ -555,7 +555,7 @@ window.calcKP=async function(){
         const fmtHMS=jd=>{const t=jdToIST(jd);return `${p2(t.hh)}:${p2(t.mi)}:${p2(t.ss)}`;};
         const gender=_isMale?'पुरुष':'स्त्री';
         let h=`<div class="note">📌 Window: <b>${fmtHMS(jd0)} → ${fmtHMS(jd1)}</b> (${total} sec) &nbsp;|&nbsp; लिंग: <b>${gender}</b> &nbsp;|&nbsp; KP ayanamsa (Lahiri − 5'26.22"), Placidus</div>`;
-        h+=`<h3>1st Cusp SSL Timeline (${segs.length} segments) — Sec 25/26</h3>`;
+        h+=`<h3>1st Cusp SSL Timeline (${segs.length} segments) — तत्त्व शोधन और RP मिलान</h3>`;
         h+=`<table><tr><th>समय</th><th>SSL</th><th>राशि</th><th>ग्रह-लिंग</th><th>तत्व</th><th>राशि-लिंग</th></tr>`;
         segs.forEach(sg=>{
             const sh=sg.ssl,si=plSign[sh],signHi=RASHI_HI_KP[si];
@@ -563,13 +563,13 @@ window.calcKP=async function(){
             h+=`<tr><td>${fmtHMS(sg.from)} → ${fmtHMS(sg.to)}</td><td><b>${GRAHA_HI_KP[sh]}</b></td><td>${signHi}</td><td>${GENDER_HI_KP[sh]}</td><td>${TATTVA_HI_KP[sh]}</td><td>${signGender}</td></tr>`;
         });
         h+='</table>';
-        h+=`<div class="note">Section 25 (तत्त्व शोधन): ऊपर के ग्रह-लिंग/तत्व/राशि-लिंग से Gemini SSL filter करेगा। Section 26: नीचे के RP से match करके 15-20 sec चुनेगा।</div>`;
-        h+=`<h3>Ruling Planets — Sec 26</h3><table><tr><th>RP</th><th>ग्रह</th></tr>`;
+        h+=`<div class="note">तत्त्व शोधन: ऊपर के ग्रह-लिंग/तत्व/राशि-लिंग से Gemini SSL filter करेगा। RP मिलान: नीचे के RP से match करके 15-20 sec चुनेगा।</div>`;
+        h+=`<h3>Ruling Planets — अंतिम SSL निर्धारण</h3><table><tr><th>RP</th><th>ग्रह</th></tr>`;
         h+=`<tr><td>लग्न नक्षत्र स्वामी</td><td><b>${GRAHA_HI_KP[ascL.nl]}</b></td></tr>`;
         h+=`<tr><td>चंद्र नक्षत्र स्वामी</td><td><b>${GRAHA_HI_KP[moonL.nl]}</b> (चंद्र: ${NAK_HI_KP[moonL.nakIdx]})</td></tr>`;
         h+=`<tr><td>चंद्र राशि स्वामी</td><td><b>${GRAHA_HI_KP[moonSignLord]}</b></td></tr>`;
         h+=`<tr><td>दिन स्वामी (sunrise rule)</td><td><b>${DAY_LORD_HI_KP[dayLord]}</b>${usePrevDay?' — जन्म सूर्योदय से पहले, वैदिक तिथि एक दिन पहले':''}</td></tr></table>`;
-        h+=`<h3>Genetic Verification — Sec 27</h3><table><tr><th>भाव</th><th>Sub-Lord</th></tr>`;
+        h+=`<h3>Genetic Verification — माता-पिता भाव मिलान</h3><table><tr><th>भाव</th><th>Sub-Lord</th></tr>`;
         h+=`<tr><td>4th (माता)</td><td><b>${GRAHA_HI_KP[sl4]}</b></td></tr>`;
         h+=`<tr><td>9th (पिता)</td><td><b>${GRAHA_HI_KP[sl9]}</b></td></tr></table>`;
         h+=`<button class="shot" onclick="shot('kp-out')">📸 PNG स्क्रीनशॉट</button>`;
@@ -581,17 +581,17 @@ window.calcKP=async function(){
         t+=`जन्म: ${ad.d}-${ad.mo}-${ad.y} ${bt.h}:${bt.mi}:${bt.s} (UTC${tz>=0?'+':''}${tz}), (${lat}, ${lon})\n`;
         t+=`Window: ${fmtHMS(jd0)} → ${fmtHMS(jd1)} (${total} sec)\nलिंग: ${gender}\n`;
         t+=`KP Ayanamsa: Lahiri - 5'26.22", Placidus\n\n`;
-        t+=`1ST CUSP SSL TIMELINE (Sec 25/26):\n`;
+        t+=`1ST CUSP SSL TIMELINE (तत्त्व शोधन और RP मिलान के लिए):\n`;
         segs.forEach(sg=>{
             const sh=sg.ssl,si=plSign[sh];
             t+=`${fmtHMS(sg.from)} → ${fmtHMS(sg.to)} : ${GRAHA_HI_KP[sh]} (${RASHI_HI_KP[si]}, ${GENDER_HI_KP[sh]}, ${TATTVA_HI_KP[sh]}, राशि-लिंग: ${(si%2===0)?'पुरुष':'स्त्री'})\n`;
         });
-        t+=`\nRULING PLANETS (Sec 26):\n`;
+        t+=`\nRULING PLANETS (अंतिम SSL निर्धारण के लिए):\n`;
         t+=`लग्न नक्षत्र स्वामी: ${GRAHA_HI_KP[ascL.nl]}\n`;
         t+=`चंद्र नक्षत्र स्वामी: ${GRAHA_HI_KP[moonL.nl]} (चंद्र: ${NAK_HI_KP[moonL.nakIdx]})\n`;
         t+=`चंद्र राशि स्वामी: ${GRAHA_HI_KP[moonSignLord]}\n`;
         t+=`दिन स्वामी: ${DAY_LORD_HI_KP[dayLord]}${usePrevDay?' (sunrise rule: जन्म सूर्योदय से पहले)':''}\n`;
-        t+=`\nGENETIC VERIFICATION (Sec 27):\n4th house (माता) SL: ${GRAHA_HI_KP[sl4]}\n9th house (पिता) SL: ${GRAHA_HI_KP[sl9]}\n`;
+        t+=`\nGENETIC VERIFICATION (माता-पिता भाव मिलान के लिए):\n4th house (माता) SL: ${GRAHA_HI_KP[sl4]}\n9th house (पिता) SL: ${GRAHA_HI_KP[sl9]}\n`;
         _lastTXT=t;
         document.getElementById('kp-out').scrollIntoView({behavior:'smooth',block:'start'});
     }catch(e){showErr('kp-err',typeof e==='string'?e:'गणना में त्रुटि — '+e.message);}
