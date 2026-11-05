@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>मास्टर डेटा डाउनलोडर v2.9 - Astro Sarang</title>
+<title>मास्टर डेटा डाउनलोडर v2.10 - Astro Sarang</title>
 <style>
 *{box-sizing:border-box}
 body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;background:#f5f0e8;margin:0;padding:16px;color:#333}
@@ -54,7 +54,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <body>
 <div class="con">
 <div class="head">
-<h1>📦 मास्टर डेटा डाउनलोडर v2.9</h1>
+<h1>📦 मास्टर डेटा डाउनलोडर v2.10</h1>
 <div class="sub">13 टूल्स का डेटा एक साथ - PDF, एक TXT या ZIP में</div>
 </div>
 
@@ -153,7 +153,7 @@ const TOOLS = [
      steps:[shodashPick(vk),{fn:'m1_analyze'},{waitFor:{sel:'#output',min:150,contains:'D-' + vk.slice(1)}}], cap:['#output']}))},
   {id:'shodashM2', name:'षोडशवर्ग विश्लेषक', en:'Shodashvarga Mode 2', file:'shodashvarga.html', input:'astro-code-in',
    prep:[{fill:1},{clickText:'📥 भरो'},{wait:1200},{clickText:'⚖️ D1-वर्ग तुलना'},{wait:800}],
-   sections: VARGA20_SHODASH.map(vk => ({key:vk.toLowerCase(), fn:'D1_to_' + vk + '_Analysis', name:VARGA20_NAMES[vk], en:vk + ' Comparison',
+   sections: VARGA20_SHODASH.filter(vk => vk !== 'D1').map(vk => ({key:vk.toLowerCase(), fn:'D1_to_' + vk + '_Analysis', name:VARGA20_NAMES[vk], en:vk + ' Comparison',
      steps:[{select:['#m2-varga-select',vk]},{wait:700},{waitFor:{sel:'#output',min:150,contains:vk}}], cap:['#output']}))},
   {id:'chalit', name:'चलित / PN-PB-MB', en:'Chalit PN-PB-MB', file:'Chalit-PN-PB-MB.html', input:'astro-code-in',
    prep:[{fill:1},{clickText:'📥 भरो'},{wait:1500},{clickText:'गणना करें'},{waitFor:{sel:'#output',min:800}}],
