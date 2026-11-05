@@ -97,7 +97,7 @@
 </head>
 <body>
 
-    <h1>Free Consultation Prompts v2</h1>
+    <h1>Free Consultation Prompts v2.1</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -213,6 +213,16 @@
 अब दिए हुए सवालो का जवाब गहन शोध करके लिखिए विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक सवाल का विस्तार से विश्लेषण होना चाहिए,उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
 ----------
 अब तक किये गए सभी निम्मलिखित सवालों का संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
+----------
+अब तक हुए सभी विश्लेषणों के आधार पर जातक के लिए उपाय दें और अंतिम निष्कर्ष दें:
+
+1] गैर-धार्मिक और व्यावहारिक उपाय
+2] स्वयं करने वाले धार्मिक और ज्योतिषीय उपाय
+3] विशेषज्ञ ब्राह्मण से करवाने वाले उपाय (यदि लागू हो)
+
+➤ अंतिम निष्कर्ष: संपूर्ण विश्लेषण का संक्षिप्त सारांश और जातक के लिए सबसे महत्वपूर्ण सलाह।
+----------
+शुरुआत से जातक द्वारा पूछे गए सभी सवालों के विश्लेषण का शोर्ट में निष्कर्ष दीजिए
 `;
         const rawData_en = `
 Please save the astrological data from the attached (Attached) PDF and all txt files in your memory.
@@ -313,6 +323,16 @@ Now conduct in-depth research on the given information and do the astrological a
 Now write the answers to the given questions after in-depth research, doing the analysis and conclusions in detail. Analyze each question in detail, with remedies. First, answer the first question; I will ask the rest later.
 ----------
 Give brief answers to all the following questions asked so far, because this list will be placed at the very beginning of this analysis. This way the native will first read the answers in short, and he will find the section for the matter whose analysis he wants to read with references...
+----------
+Based on all the analyses done so far, give remedies for the native and give the final conclusion:
+
+1] Non-religious and practical remedies
+2] Religious and astrological remedies to be done by oneself
+3] Remedies to be got done through an expert Brahmin (if applicable)
+
+➤ Final Conclusion: A brief summary of the entire analysis and the most important advice for the native.
+----------
+Give in brief the conclusion of the analysis of all the questions asked by the native since the beginning.
 `;
         const rawData_mr = `
 कृपया संलग्न (Attached) असलेला PDF आणि सर्व txt फाइल्समधील ज्योतिषीय डेटा तुमच्या मेमरीमध्ये जतन करा.
@@ -413,6 +433,16 @@ Give brief answers to all the following questions asked so far, because this lis
 आता दिलेल्या प्रश्नांची उत्तरे सखोल संशोधन करून लिहा, विस्ताराने विश्लेषण आणि निष्कर्ष देऊन करा, प्रत्येक प्रश्नाचे विस्ताराने विश्लेषण झाले पाहिजे, उपायांसह, सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
 ----------
 आतापर्यंत विचारलेल्या सर्व पुढील प्रश्नांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल, यामुळे जातक प्रथमच थोडक्यात उत्तरे वाचेल आणि त्याला ज्या विषयाचे विश्लेषण संदर्भासह वाचायचे आहे, तो विभाग शोधेल...
+----------
+आतापर्यंत झालेल्या सर्व विश्लेषणांच्या आधारे जातकासाठी उपाय द्या आणि अंतिम निष्कर्ष द्या:
+
+1] गैर-धार्मिक आणि व्यावहारिक उपाय
+2] स्वतः करावयाचे धार्मिक आणि ज्योतिषीय उपाय
+3] तज्ज्ञ ब्राह्मणाकडून करून घ्यावयाचे उपाय (लागू असल्यास)
+
+➤ अंतिम निष्कर्ष: संपूर्ण विश्लेषणाचा संक्षिप्त सारांश आणि जातकासाठी सर्वात महत्त्वाचा सल्ला.
+----------
+सुरुवातीपासून जातकाने विचारलेल्या सर्व प्रश्नांच्या विश्लेषणाचा थोडक्यात निष्कर्ष द्या
 `;
         let currentLang = 'hi';
         function getRawData() {
