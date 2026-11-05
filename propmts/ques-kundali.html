@@ -95,7 +95,7 @@
 </head>
 <body>
 
-    <h1>❓ प्रश्न कुंडली Prompts v2.1</h1>
+    <h1>❓ प्रश्न कुंडली Prompts v3</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -112,35 +112,227 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData_hi = `कृपया संलग्न (Attached) PDF और सभी txt फाइल्स का ज्योतिषीय डेटा अपनी मेमोरी में सेव करें। इस डेटा में जातक की D1 से D60 तक की सभी वर्ग कुंडलियाँ, ग्रहों की स्थिति, नक्षत्र, विभिन्न दशा प्रणालियाँ (विंशोत्तरी, जैमिनी चर), अष्टकवर्ग (SAV/BAV), षड्बल, KP प्रणाली (सैगनिफिकेटर, सब-लॉर्ड), ग्रहों की अवस्था (जाग्रत/बाल आदि) जैसी विस्तृत जानकारी शामिल है।
+        const rawData_hi = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+
+1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तालिका
+3] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+4] भाव बल तालिका 
+5] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग और दश वर्ग)
+6] जैमिनी आरूढ़ पद (राशी आधारित)
+7] विशोंतरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] चर दशा अंतर्दशा चार्ट
+10] कृष्णमूर्ति पद्धति (KP) भाव स्थिति तालिका {भाव-राशि-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशि-नक्षत्र-पद}
+11] कृष्णमूर्ति पद्धति (KP) ग्रह स्थिति तालिका {भाव-राशि-स्वामी-नक्षत्र स्वामी-उप स्वामी-उप-उप स्वामी-Cusp-राशि-नक्षत्र-पद}
+12] कृष्णमूर्ति पद्धति (KP) घर के कारक ग्रह स्थिति तालिका
+13] कृष्णमूर्ति पद्धति (KP) ग्रह कारकत्व स्थिति तालिका
+14] D1 के 12 भाव के राशी-नक्षत्र (Bhava Cusp)
+15] D9 ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+16] D9  के 12 भाव के राशी-नक्षत्र (Bhava Cusp) (स्क्रीनशॉट)
+
+
+कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
+
+---
+
+Next Task :
+
+उपरोक्त चैट और  PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
+
+लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
+
+"पहला भाव (लग्न):
+इस भाव में सिंह राशि है, इसलिए लग्नेश सूर्य हैं।
+इस भाव में सूर्य और राहु ग्रह स्थित हैं।
+सूर्य: सिंह राशि में स्वगृही (अपने ही घर में) हैं। सूर्य मघा नक्षत्र में स्थित हैं। सूर्य प्रथम भाव (सिंह) के स्वामी होकर लग्न में बैठे हैं। सूर्य की दृष्टि सातवें भाव (कुम्भ) पर है।
+राहु: सिंह राशि में (राहु के लिए शत्रु राशि मानी जाती है)। राहु मघा नक्षत्र में स्थित है। राहु की दृष्टि पांचवें भाव (धनु), सातवें भाव (कुम्भ) और नौवें भाव (मेष) पर है।
+इस भाव पर केतु (सातवें भाव से) की पूर्ण दृष्टि है।"
+
+
+आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
+----------
+txt फाइल से निम्मलिखित जानकारी को एक के बाद एक बिना बदलाव के जैसी की वैसी लिखे :
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D10 Analysis
+5] D60 Analysis
+6] D1_to_D9_Analysis
+7] D1_to_D10_Analysis
+8] D1_to_D60_Analysis
+----------
+चलित कुंडली देखकर बताईये की चलित कुंडली में D1 कुंडली से क्या बदला है और इसका क्या प्रभाव पड़ेगा :
+
+---
+
+Next Task :
+
+➤ PN, PB, MB का जीवन पर प्रभाव (Impact on Life)
+
+विषय: वैदिक ज्योतिष - ग्रह एवं भावों के लिए पुष्कर नवांश (PN), पुष्कर भाग (PB) और मृत्यु भाग (MB) की गणना एवं फलादेश।
+
+छवि और TXT गणनाओं के आधार पर निम्नलिखित क्षेत्रों पर प्रभाव लिखें:
+
+​▸ दैवीय सुरक्षा (Divine Protection): कौन से भाव/ग्रह पुष्कर ऊर्जा से सुरक्षित हैं और जीवन के किन क्षेत्रों में 'बिना मांगे' मदद मिलेगी?
+
+​▸ संघर्ष एवं बाधाएं (MB Impact): मृत्यु भाग वाले ग्रह जीवन के किन क्षेत्रों में 'लैंडमाइन' की तरह बाधा पैदा कर सकते हैं?
+
+​▸ शुरुआत बनाम परिणाम (Start vs Middle): भाव 'प्रारंभ' और 'मध्य' के पुष्कर अंतर के आधार पर बताएं कि कार्य की शुरुआत कैसी होगी और उसका अंत कैसा होगा?
+
+▸ PN और PB की गणना में देखें कि क्या उनका 'भावेश' MB में है ?
+(यदि भाव का स्वामी (Bhavesh) मृत्यु भाग में है, तो भाव के पुष्कर होने पर भी फल बाधित होगा)
+
+​▸ दशा फल: वर्तमान या आगामी महादशा में इन अमृत/विष बिंदुओं का क्या प्रभाव पड़ेगा?
+
+​▸ ​निष्कर्ष: समग्र रूप से कुंडली में 'अमृत' (PB) और 'विष' (MB) का संतुलन कितना है?
+----------
+1] जातक के कुंडली के सभी शुभ योगो की पहले सूचि तयार करें, बाद में सभी शुभ योगों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो शुभ योग है वो भी लेने है.txt से भी लेने है.
+2] जातक के कुंडली के सभी दोषों की पहले सूचि तयार करें, बाद में सभी दोषों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक विश्लेषण कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो दोष है वो भी लेने है.txt से भी लेने है.
+
+---
+
+Next Task :
+
+जन्म नक्षत्र को आधार मानकर नवतारा चक्र बनाइए और विश्लेषण कीजिए कि कुंडली के सभी 9 ग्रह किन-किन ताराओं (संपत, विपत, वध आदि) के नक्षत्रों में बैठे हैं, और उस तारा के अनुसार प्रत्येक ग्रह अपना कैसा (शुभ/अशुभ) फल देगा? [PDF पेज No 28]
+----------
+कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), अष्टकवर्ग और जैमिनी कारकत्व के आधार पर होना चाहिए।
+
+प्रत्येक ग्रह के लिए निम्नलिखित जानकारी प्रदान करें:
+1. [ग्रह का नाम]
+➤ जैमिनी कारकत्व:
+➤ भाव स्वामित्व: (किन भावों का स्वामी है)
+➤ स्थिति: (किस भाव और राशि में)
+➤ राशि में स्थिति: (मित्र, शत्रु, सम, उच्च, नीच, मूलत्रिकोण, स्वराशि)
+➤ नक्षत्र एवं पद: (वह ग्रह किस नक्षत्र और किस पद में है, और नक्षत्र स्वामी का प्रभाव।)
+➤ दृष्टि: (किन भावों/ग्रहों पर दृष्टि) 
+➤ [ग्रह का नाम] पर दृष्टि: (किन ग्रहों की दृष्टि है)
+➤ युति: (किन ग्रहों के साथ युति में है)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री और अवस्था का नाम जैसे बाल, कुमार आदि)
+➤ भावनात्मक/अवस्था शक्ति: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिति: (हाँ/नहीं या स्थिति का नाम)
+➤ नवमांश स्थिति:  (नवमांश कुंडली में ग्रह किस राशि, नक्षत्र (स्वामी) में है और उसका प्रभाव।)
+➤ नवमांश में शक्ति: पीड़ित/बलवान
+➤ चलित में स्थिति परिवर्तन और प्रभाव 
+➤ भावबल: (केवल मान)
+➤ षड्बल :  (रूप में मान और उसका बल कैसा है - औसत से बेहतर, रैंक आदि।)
+➤ भिन्नाष्टक वर्ग (BAV) बिंदु: (0-8 के बीच मान) : (बिंदुओं के आधार पर: व्यावहारिक शक्ति - कमजोर/औसत/शक्तिशाली)
+➤ विमशोपक आषांश (षोडश वर्ग): (मान और ग्रहों में उसका रैंक, यदि लागू हो।)
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB)/मृत्यु भाग (MB) में स्तिथि और प्रभाव :
+​➤ नवतारा स्थिति एवं प्रभाव: (जन्म नक्षत्र के आधार पर यह ग्रह किस तारा-जैसे संपत, विपत, साधक आदि-में बैठा है, और उस विशिष्ट तारा के कारण इसके नैसर्गिक व भाव फलों में कैसी शुभता या बाधाएं आएंगी।)
+➤ गोचर और दशा में संभावित फल का संक्षिप्त जवाब : (सामान्य तौर पर वह ग्रह अपनी दशा/अंतर्दशा और गोचर में कैसा फल देगा - अच्छा, खराब, या मध्यम।
+
+➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
+
+➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
+----------
+कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर D1 के सभी 12 भावों का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल, अष्टकवर्ग के आधार पर होना चाहिए।
+
+
+प्रत्येक भाव के लिए निम्नलिखित जानकारी प्रदान करें:
+
+1. पहला भाव (लग्न):  राशि का नाम [आरूढ़ पद]
+➤ कारकत्व: 
+➤ भाव स्वामी (लग्नेश):
+➤ भावेश की स्थिति: 
+➤ स्थित ग्रह: 
+➤ भाव पर दृष्टि: 
+➤ भाव बल: रूप में मान और उसका बल कैसा है - औसत से बेहतर, रैंक आदि। (कुंडली में कमजोर अथवा मजबूत भाव)।
+➤ सर्वाष्टकवर्ग (SAV) बिंदु: (कुल बिंदु) (भाव की क्षमता:28 से अधिक होने पर 'उत्तम', 25 से कम होने पर 'चुनौतीपूर्ण')
+➤ पुष्कर नवांश (PN)/पुष्कर भाग (PB)में स्तिथि और प्रभाव :
+➤ निष्कर्ष : समग्र रूप से भाव मजबूत है या पीड़ित है ? (प्रतिशत)
+
+➤ अंत मे सभी भाव के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
+
+नोट : जिस भाव में गुलिक या मांदि स्थित हो, उस भाव के फल में उनका प्रभाव भी एक-दो पंक्तियों में अवश्य बतायें।
+----------
+➤ समान्य जानकारी तालिका बनाइये :
+
+►D1 लग्न भाव राशी और नक्षत्र
+►D1 सप्तम भाव राशी और नक्षत्र
+►D9 लग्न भाव राशी और नक्षत्र
+►D9 सप्तम भाव राशी और नक्षत्र
+
+
+►चन्द्र राशी 
+►चन्द्र नक्षत्र
+►चन्द्र नक्षत्र स्वामी
+
+►D1 लग्न भाव नक्षत्र स्वामी
+►D1 लग्नेश  
+►D1 सप्तम भाव नक्षत्र स्वामी
+►D1 सप्तमेश
+►D9 लग्न भाव नक्षत्र स्वामी
+►D9 लग्नेश  
+►D9 सप्तम भाव नक्षत्र स्वामी
+►D9 सप्तमेश
+
+➤ तालिका बनाने के बाद निम्मलिखित बिन्दुओ का विश्लेषण कीजिये. 
+
+▸ दोनों D1 और  D9 के  लग्न में बैठा ग्रह, लग्नेश और लग्न नक्षत्र स्वामी में कौन मजबूत है ? 
+▸ D1 और D9 में लग्न में बैठा ग्रह, लग्नेश, और लग्न नक्षत्र स्वामी में से कौन सा ग्रह सबसे प्रभावशाली है और व्यक्ति के व्यक्तित्व को अंतिम रूप से निर्देशित करता है ?
+
+▸ दोनों D1 और  D9 के  सप्तम भाव में बैठा ग्रह, सप्तमेश और सप्तम भाव नक्षत्र स्वामी में कौन मजबूत है ? 
+▸ D1 और D9 में सप्तम भाव में बैठा ग्रह, सप्तमेश और सप्तम भाव नक्षत्र स्वामी में से कौन सा ग्रह सबसे प्रभावशाली है और व्यक्ति के विवाह को अंतिम रूप से निर्देशित करता है ?
+
+➤ निष्कर्ष : 
+▸ D1 के लग्न के प्रभावशाली ग्रह और  D9 के लग्न के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ? 
+▸ D1 के सप्तम भाव के प्रभावशाली ग्रह और  D9 के सप्तम भाव के प्रभावशाली ग्रह में कौन अधिक प्रभावशाली है ?
+----------
+कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (षोडशवर्ग कुंडलिया) को अपनी मेमोरी में सुरक्षित कर लें।
+
+निर्देश:
+
+1] इस डेटा को अभी चैट में दोबारा लिखने की आवश्यकता नहीं है।
+2] बस डेटा का विश्लेषण करें और पुष्टि करें कि आपने इसे पढ़ लिया है।
+3] पुष्टि (Verification) के लिए: केवल यह बताएं कि कौन-कौन सी षोडशवर्ग कुंडलिया सेव की गयी है।
+
+मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
+----------
+कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (विंशोत्तरी, योगिनी, चर दशा और गोचर) को अपनी मेमोरी में सुरक्षित कर लें।
+
+निर्देश:
+
+1] इस डेटा को अभी चैट में दोबारा लिखने की आवश्यकता नहीं है।
+2] बस डेटा का विश्लेषण करें और पुष्टि करें कि आपने इसे पढ़ लिया है।
+3] पुष्टि (Verification) के लिए: केवल 2026 की वर्तमान स्थिति नीचे दिए गए फॉर्मेट में लिखकर दें:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD-PD):
+चर दशा (MD-AD-PD):
+गोचर (गुरु/शनि - लग्न व चंद्र से):
+
+मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
+----------
+उपरोक्त चैट्स में दिए गए और एक्सट्रैक्ट किए गए ज्योतिषीय डेटा (Vimshottari, Yogini, Chara Dasha और Gochar Analysis) के आधार पर, आगामी 20 वर्षों की एक विस्तृत 'मास्टर समय-सारणी' तैयार करें।
+
+​तालिका का प्रारूप और कॉलम बिल्कुल निम्न प्रकार होने चाहिए:
+
+​| समय (वर्ष) | विंशोत्तरी दशा (MD-AD) | योगिनी दशा (MD-AD) | चर दशा (MD-AD) | गुरु गोचर (लग्न/चन्द्रमा से भाव) | शनि गोचर (लग्न/चन्द्रमा से भाव) |
+
+​डेटा प्रोसेसिंग के लिए महत्वपूर्ण नियम:
+
+​दशा परिवर्तन: यदि किसी एक वर्ष के भीतर अंतर्दशा (AD) बदलती है, तो उसे एक ही सेल में 'Slash' (/) के साथ दिखाएं (जैसे: बुध AD / केतु AD)।
+----------
+कृपया संलग्न (Attached) PDF और सभी txt फाइल्स का ज्योतिषीय डेटा अपनी मेमोरी में सेव करें। इस डेटा में जातक की D1 से D60 तक की सभी वर्ग कुंडलियाँ, ग्रहों की स्थिति, नक्षत्र, विभिन्न दशा प्रणालियाँ (विंशोत्तरी, जैमिनी चर), अष्टकवर्ग (SAV/BAV), षड्बल, KP प्रणाली (सैगनिफिकेटर, सब-लॉर्ड), ग्रहों की अवस्था (जाग्रत/बाल आदि) जैसी विस्तृत जानकारी शामिल है।
 
 कृपया याद रखें - 
 
 1] जब भी मैं कोई जानकारी या संकेत दूँ तो आपको यह डेटा उपयोग करना है। आगे जब मैं एक-एक करके विश्लेषण के लिए निर्देश दूँ, तो हर बार इस पूर्ण डेटा का संदर्भ लेकर ही सटीक उत्तर दें। कोई भी जानकारी अंदाज़ से न लिखें।
 
 2] आपको जो फाइल्स अटैच की है वही सेव करे, ऊपर के चैट में दिये Birth Details का डेटा सेव मत कीजिये।
-----------
-कृपया उपरोक्त सभी चैट और PDF में दिए गए जन्म विवरण के आधार पर सभी 9 ग्रहों और सभी 12 भावों की संयुक्त रूप से एक विस्तृत प्रोफाइल तैयार करें। इसमें निम्नलिखित बातों की जानकारी एक के बाद एक क्रम से लिखें:
 
-**9 ग्रहों की प्रोफाइल (प्रत्येक ग्रह के लिए अलग से):**
-1] ग्रह किस राशि, भाव और नक्षत्र में स्थित है?
-2] ग्रह की डिग्री क्या है?
-3] ग्रह की स्थिति क्या है? (जैसे: उच्च, नीच, स्वराशि, मित्र राशि, शत्रु राशि या सम राशि)
-4] ग्रह अस्त (Combust), वक्री (Retrograde) या वर्गोत्तम है क्या?
-5] ग्रह किन-किन भावों का स्वामी है?
-6] ग्रह पर किन-किन ग्रहों की दृष्टि पड़ रही है और वह किन-किन ग्रहों के साथ युति में है?
-
-**12 भावों की प्रोफाइल (प्रत्येक भाव के लिए अलग से):**
-1] भाव की राशि कौन सी है?
-2] भाव का स्वामी (भावेश) कौन सा ग्रह है और वह किस भाव, राशि और नक्षत्र में बैठा है?
-3] उस भाव में कौन-कौन से ग्रह बैठे हैं?
-4] उस भाव पर कौन-कौन से ग्रह दृष्टि डाल रहे हैं?
-5] उस भाव के कारक ग्रह की स्थिति क्या है?
-6] भावेश पर कौन-कौन से ग्रह दृष्टि डाल रहे हैं और भावेश किन-किन ग्रहों के साथ युति में है?
-
-विशेष टीप: बारहवें भाव के विश्लेषण के अंत में गुलिक और मांदि की स्थिति का भी उल्लेख करें - वे किस भाव/राशि में स्थित हैं और उनका संबंध किस भाव/किस ग्रह से है।
-
-कृपया कोई विश्लेषण या निष्कर्ष न दें, केवल ऊपर मांगी गई जानकारी को व्यवस्थित रूप से प्रस्तुत करें।
+विशेष - ऊपर के prompts में नाम से न आए हुए निम्नलिखित txt भाग भी इसी के साथ सेव करें:
+1] चलित रिपोर्ट और PN/PB/MB रिपोर्ट
+2] KP विश्लेषण के भाग
+3] गोचर के भाग (सामान्य, विस्तार से, Double Transit, विवाह गोचर, संतान गोचर)
+4] अष्टोत्तरी दशा और त्रिभागी दशा
+5] ग्रह बल और भाव बल (Planet Strength)
+6] वर्ग विशेष विश्लेषण
+7] उपग्रह विशेष
+8] नौकरी या व्यापार विश्लेषण
+9] योग-दोष रिपोर्ट
+10] डेटा एक्सट्रैक्टर के भाग
+11] षोडशवर्ग के बचे हुए वर्गों के विश्लेषण व सारणी भाग
 ----------
 संयुक्त भाग: विवाह (Marriage) (भाग 1-5 + D60)
 
@@ -1296,35 +1488,227 @@ C) जन्म कुंडली (D1) के ग्रहों का D7 म�
 अब तक हुए सभी विश्लेषणों के आधार पर जातक के लिए अंतिम निष्कर्ष दें: संपूर्ण विश्लेषण का संक्षिप्त सारांश और जातक के लिए सबसे महत्वपूर्ण सलाह।
 ----------
 अब तक पूछे गए सभी प्रश्नों के संक्षिप्त उत्तर दें, क्योंकि यह सूची इस विश्लेषण के बिल्कुल शुरुआत में लगायी जाएगी, इससे जातक पहले ही संक्षेप में उत्तर पढ़ लेगा और उसे जिस विषय का विश्लेषण संदर्भ सहित पढ़ना है, वह भाग ढूंढेगा...`;
-        const rawData_en = `Please save the astrological data from the attached PDF and all the txt files in your memory. This data includes detailed information such as the native's all divisional charts from D1 to D60, planetary positions, nakshatras, various dasha systems (Vimshottari, Jaimini Chara), Ashtakavarga (SAV/BAV), Shadbala, KP system (significators, sub-lords), planetary states (Jagrut/Baal etc.).
+        const rawData_en = `This PDF is the kundali of native xyz; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write page references from the PDF, but please provide a list showing which of the following information is on which page, so that it will be easy for you to find it later:
+
+1] Planet position table - (planet, degree, sign, nakshatra-pada, nakshatra lord, Jaimini Chara Karakatva)
+2] Sarvashtakavarga table
+3] Shadbala table (Sthana Bala, Dig Bala, Kala Bala, Cheshta Bala, Naisargika Bala, Drik Bala)
+4] Bhava Bala table
+5] Vimshopaka Bala table (Shodasha Varga, Shad Varga, Sapta Varga and Dasha Varga)
+6] Jaimini Arudha Pada (sign-based)
+7] Vimshottari Mahadasha Antardasha chart
+8] Yogini Dasha Antardasha chart
+9] Chara Dasha Antardasha chart
+10] Krishnamurti Paddhati (KP) house position table {Bhava-Rashi-Swami-Nakshatra Swami-Upa Swami-Upa-Upa Swami-Cusp-Rashi-Nakshatra-Pada}
+11] Krishnamurti Paddhati (KP) planet position table {Bhava-Rashi-Swami-Nakshatra Swami-Upa Swami-Upa-Upa Swami-Cusp-Rashi-Nakshatra-Pada}
+12] Krishnamurti Paddhati (KP) house significator planets position table
+13] Krishnamurti Paddhati (KP) planet significator position table
+14] D1's 12 houses' sign-nakshatra (Bhava Cusp)
+15] D9 planet position table - (planet, degree, sign, nakshatra-pada, nakshatra lord) (screenshot)
+16] D9's 12 houses' sign-nakshatra (Bhava Cusp) (screenshot)
+
+
+Please present all tables in a simple and readable table format.
+
+---
+
+Next Task :
+
+From the above chat and PDF, write the sign and house lord placed in the twelve houses of the lagna kundali, along with planetary presence; also write which planets are exalted, debilitated, retrograde, neecha-bhanga, combust, vargottama. Also write their placement in nakshatra (do not write exalted, debilitated, retrograde for Rahu-Ketu).
+
+The writing pattern will be as follows, which is only for example, shown within "":
+
+"First house (Lagna):
+This house has Leo sign, therefore the Lagnesh (ascendant lord) is the Sun.
+The Sun and Rahu planets are placed in this house.
+Sun: In Leo sign, Swagrihi (in its own house). The Sun is placed in Magha nakshatra. The Sun, being the lord of the first house (Leo), sits in the lagna. The Sun aspects the seventh house (Aquarius).
+Rahu: In Leo sign (considered an enemy sign for Rahu). Rahu is placed in Magha nakshatra. Rahu aspects the fifth house (Sagittarius), the seventh house (Aquarius), and the ninth house (Aries).
+This house has the full aspect of Ketu (from the seventh house)."
+
+
+For your convenience, a txt file is provided: "D1_Analysis"
+----------
+Write the following information from the txt file one after another, unchanged, exactly as it is:
+
+1] Jaimini Complete Report
+2] BNN Report
+3] D9 Analysis
+4] D10 Analysis
+5] D60 Analysis
+6] D1_to_D9_Analysis
+7] D1_to_D10_Analysis
+8] D1_to_D60_Analysis
+----------
+Looking at the Bhava Chalit kundali, tell me what has changed in the Bhava Chalit kundali compared to the D1 kundali and what effect it will have:
+
+---
+
+Next Task :
+
+➤ Impact of PN, PB, MB on Life (Impact on Life)
+
+Topic: Vedic Astrology - Calculation and predictions of Pushkara Navamsha (PN), Pushkara Bhaga (PB) and Mrityu Bhaga (MB) for planets and houses.
+
+Based on the image and TXT calculations, write the impact on the following areas:
+
+▸ Divine Protection: Which houses/planets are protected by Pushkara energy, and in which areas of life will help come 'without asking'?
+
+▸ Struggle and Obstacles (MB Impact): In which areas of life can planets in Mrityu Bhaga create obstacles like 'landmines'?
+
+▸ Beginning vs Result (Start vs Middle): Based on the Pushkara difference between the bhava 'start' and 'middle', tell how the beginning of a work will be and how its end will be?
+
+▸ In the calculation of PN and PB, check whether their 'Bhavesh' is in MB?
+(If the house lord (Bhavesh) is in Mrityu Bhaga, then even if the house is Pushkara, its results will be obstructed)
+
+▸ Dasha Results: What impact will these nectar/poison points have in the current or upcoming Mahadasha?
+
+▸ Conclusion: Overall, what is the balance of 'nectar' (PB) and 'poison' (MB) in the kundali?
+----------
+1] First prepare a list of all the auspicious yogas in the native's kundali, then analyze in detail the method of formation of all the auspicious yogas and the likely results based on the strength of their houses and planets. A list of some yogas and doshas is given at the end of the PDF - include the auspicious yogas from it as well. Also take them from the txt.
+2] First prepare a list of all the doshas in the native's kundali, then analyze in detail the method of formation of all the doshas and the likely results based on the strength of their houses and planets. A list of some yogas and doshas is given at the end of the PDF - include the doshas from it as well. Also take them from the txt.
+
+---
+
+Next Task :
+
+Taking the birth nakshatra as the base, create the Navatara Chakra and analyze in which taras (Sampat, Vipat, Vadha, etc.) the nakshatras of all 9 planets of the kundali are placed, and according to that tara, what kind of (auspicious/inauspicious) results each planet will give? [PDF page No 28]
+----------
+Please provide a list of astrological facts/figures for all 9 planets (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu) based on the birth details in all the above chats and the PDF. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on the kundali's results, Shadbala, Vimshopaka Amshas (Shodasha Varga), Ashtakavarga, and Jaimini Karakatva.
+
+Provide the following information for each planet:
+1. [Planet name]
+➤ Jaimini Karakatva:
+➤ House lordship: (of which houses is it the lord)
+➤ Placement: (in which house and sign)
+➤ Position in sign: (friend, enemy, neutral, exalted, debilitated, moolatrikona, own sign)
+➤ Nakshatra and Pada: (which nakshatra and pada the planet is in, and the influence of the nakshatra lord.)
+➤ Aspect: (aspects which houses/planets)
+➤ Aspect on [planet name]: (aspects of which planets)
+➤ Conjunction: (in conjunction with which planets)
+➤ Avastha (degree/latitude): (degree and name of the avastha, e.g. Bala, Kumara, etc.)
+➤ State/Avastha strength: Retrograde/Combust/Debilitated/Neecha-bhanga/Vargottama condition: (Yes/No or name of the condition)
+➤ Navamsha position: (in which sign, nakshatra (lord) the planet is in the Navamsha chart, and its effect.)
+➤ Strength in Navamsha: afflicted/strong
+➤ Position change and effect in Bhava Chalit
+➤ Bhava Bala: (value only)
+➤ Shadbala: (value in rupas and how its strength is - better than average, rank, etc.)
+➤ Bhinnashtakavarga (BAV) points: (value between 0-8): (based on points: practical strength - weak/average/strong)
+➤ Vimshopaka Amshas (Shodasha Varga): (value and its rank among planets, if applicable.)
+➤ Position and effect in Pushkara Navamsha (PN)/Pushkara Bhaga (PB)/Mrityu Bhaga (MB):
+➤ Navatara position and effect: (based on the birth nakshatra, in which tara - like Sampat, Vipat, Sadhaka, etc. - this planet is placed, and due to that specific tara, what auspiciousness or obstacles will come in its natural and house results.)
+➤ Brief answer on likely results in transit and dasha: (generally, how will that planet give results in its dasha/antardasha and transit - good, bad, or average.
+
+➤ Conclusion: Overall, is the planet strong or afflicted? (percentage)
+
+➤ In the end, a conclusion regarding all planets being strong or afflicted (based on percentage)
+----------
+Please provide a list of astrological facts/figures for all 12 houses of D1 based on the birth details in all the above chats and the PDF. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on karakatva, Bhava Bala, and Ashtakavarga.
+
+
+Provide the following information for each house:
+
+1. First house (Lagna): Name of the sign [Arudha Pada]
+➤ Karakatva:
+➤ House lord (Lagnesh):
+➤ Bhavesh's position:
+➤ Planets placed:
+➤ Aspect on the house:
+➤ Bhava Bala: value in rupas and how its strength is - better than average, rank, etc. (weak or strong house in the kundali).
+➤ Sarvashtakavarga (SAV) points: (total points) (house capacity: 'Excellent' if above 28, 'Challenging' if below 25)
+➤ Position and effect in Pushkara Navamsha (PN)/Pushkara Bhaga (PB):
+➤ Conclusion: Overall, is the house strong or afflicted? (percentage)
+
+➤ In the end, a conclusion regarding all houses being strong or afflicted (based on percentage)
+
+Note: In whichever house Gulika or Mandi is placed, also state their effect on that house's results in one or two lines.
+----------
+➤ Make a general information table:
+
+►D1 Lagna bhava sign and nakshatra
+►D1 Seventh house sign and nakshatra
+►D9 Lagna bhava sign and nakshatra
+►D9 Seventh house sign and nakshatra
+
+
+►Moon sign
+►Moon nakshatra
+►Moon nakshatra lord
+
+►D1 Lagna bhava nakshatra lord
+►D1 Lagnesh
+►D1 Seventh house nakshatra lord
+►D1 Saptamesh
+►D9 Lagna bhava nakshatra lord
+►D9 Lagnesh
+►D9 Seventh house nakshatra lord
+►D9 Saptamesh
+
+➤ After making the table, analyze the following points.
+
+▸ In both D1 and D9, among the planet placed in the lagna, the Lagnesh, and the lagna nakshatra lord, who is stronger?
+▸ In D1 and D9, among the planet placed in the lagna, the Lagnesh, and the lagna nakshatra lord, which planet is the most influential and ultimately directs the person's personality?
+
+▸ In both D1 and D9, among the planet placed in the seventh house, the Saptamesh, and the seventh house nakshatra lord, who is stronger?
+▸ In D1 and D9, among the planet placed in the seventh house, the Saptamesh, and the seventh house nakshatra lord, which planet is the most influential and ultimately directs the person's marriage?
+
+➤ Conclusion:
+▸ Between the influential planet of D1's lagna and the influential planet of D9's lagna, who is more influential?
+▸ Between the influential planet of D1's seventh house and the influential planet of D9's seventh house, who is more influential?
+----------
+Please save the astrological data (Shodashavarga kundalis) given in all the attached text files to your memory.
+
+Instructions:
+
+1] There is no need to rewrite this data in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: only tell which Shodashavarga kundalis have been saved.
+
+After this I will directly ask specific questions related to analysis, for which you must use all of this data.
+----------
+Please save the astrological data (Vimshottari, Yogini, Chara dasha and Gochar) given in all the attached text files securely in your memory.
+
+Instructions:
+
+1] This data does not need to be rewritten in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification (Verification): Give only the current status of 2026 in the format given below:
+Vimshottari (MD-AD-PD):
+Yogini (MD-AD-PD):
+Chara dasha (MD-AD-PD):
+Gochar (Jupiter/Saturn - from lagna and Moon):
+
+After this, I will ask specific questions directly related to the analysis, then you must use all this data.
+----------
+Based on the astrological data (Vimshottari, Yogini, Chara Dasha and Gochar Analysis) given and extracted in the above chats, prepare a detailed 'Master Timeline' of the coming 20 years.
+
+​The table format and columns must be exactly as follows:
+
+​| Time (Year) | Vimshottari dasha (MD-AD) | Yogini dasha (MD-AD) | Chara dasha (MD-AD) | Jupiter gochar (bhava from lagna/Moon) | Saturn gochar (bhava from lagna/Moon) |
+
+​Important rules for data processing:
+
+​Dasha change: If the antardasha (AD) changes within a single year, show it in a single cell with a 'Slash' (/) (like: Mercury AD / Ketu AD).
+----------
+Please save the astrological data from the attached PDF and all the txt files in your memory. This data includes detailed information such as the native's all divisional charts from D1 to D60, planetary positions, nakshatras, various dasha systems (Vimshottari, Jaimini Chara), Ashtakavarga (SAV/BAV), Shadbala, KP system (significators, sub-lords), planetary states (Jagrut/Baal etc.).
 
 Please remember -
 
 1] Whenever I give any information or indication, you have to use this data. Later, when I give instructions for analysis one by one, give accurate answers every time by referring to this complete data. Do not write any information by guesswork.
 
 2] Save only the files attached to you, do not save the data of the Birth Details given in the chat above.
-----------
-Based on the birth details given in all the above chats and the PDF, please prepare a detailed profile of all 9 planets and all 12 houses together in a combined form. In this, write the information of the following points one after the other in order:
 
-**Profile of the 9 planets (separately for each planet):**
-1] In which sign, house and nakshatra is the planet placed?
-2] What is the degree of the planet?
-3] What is the condition of the planet? (such as: exalted, debilitated, own sign, friend's sign, enemy's sign or neutral sign)
-4] Is the planet combust, retrograde or vargottama?
-5] Of which houses is the planet the lord?
-6] Which planets are aspecting this planet and with which planets is it in conjunction?
-
-**Profile of the 12 houses (separately for each house):**
-1] Which is the sign of the house?
-2] Who is the lord of the house (Bhavesh) and in which house, sign and nakshatra is he placed?
-3] Which planets are placed in that house?
-4] Which planets are aspecting that house?
-5] What is the condition of the karaka planet of that house?
-6] Which planets are aspecting the house lord and with which planets is the house lord in conjunction?
-
-Special note: At the end of the analysis of the twelfth house, also mention the position of Gulik and Mandi - in which house/sign they are placed and with which house/which planet they are related.
-
-Please do not give any analysis or conclusion, only present the information asked above in an organized form.
+Special - also save the following txt parts along with this, which have not been named in the above prompts:
+1] Chalit Report and PN/PB/MB Report
+2] KP analysis parts
+3] Gochar parts (General, In-depth, Double Transit, Vivah Gochar, Santan Gochar)
+4] Ashtottari Dasha and Tribhagi Dasha
+5] Graha Bala and Bhava Bala (Planet Strength)
+6] Varga Vishesh analysis
+7] Upagraha Vishesh
+8] Job or Business analysis
+9] Yoga-Dosha Report
+10] Data Extractor parts
+11] Analysis and table parts of the remaining Shodashvarga charts
 ----------
 Combined Part: Marriage (Part 1-5 + D60)
 
