@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marriage Report Prompts v3.3 - Astro Prompts Copier</title>
+    <title>Marriage Report Prompts v3.4 - Astro Prompts Copier</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -97,7 +97,7 @@
 </head>
 <body>
 
-    <h1>Marriage Report Prompts v3.3</h1>
+    <h1>Marriage Report Prompts v3.4</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -114,7 +114,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData_hi = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+        const rawData_hi = `यह PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -1075,6 +1075,15 @@ KP के अनुसार, विवाह केवल उसी MD-AD-PD �
 --------------------------------------------------
 अब दिए हुए सवालो का जवाब गहन शोध करके लिखिए विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक सवाल का विस्तार से विश्लेषण होना चाहिए,उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
 --------------------------------------------------
+अब तक हुए सभी विश्लेषणों के आधार पर जातक के लिए उपाय दें:
+
+1] गैर-धार्मिक उपाय: (आदतों में बदलाव, दान-पुण्य (बिना धार्मिक विधि के), सकारात्मक व्यवहार परिवर्तन)
+2] धार्मिक/पारंपरिक उपाय: (विशिष्ट देवता की पूजा/जप, व्रत, धार्मिक दान, मंदिर दर्शन)
+3] रत्न/धातु संबंधी उपाय: (यदि आवश्यक हों तो, सावधानियों सहित)
+4] पंडित या ज्योतिषी से करवाने वाले उपाय, या किसी तीर्थ पर जाकर करवाने वाले उपाय: (यदि आवश्यक हो तो)
+
+कृपया ध्यान दें: उपाय सरल, व्यावहारिक और जातक की वर्तमान आर्थिक स्थिति के अनुकूल हों।
+--------------------------------------------------
 शुरुआत से पुछे गए जातक के वैवाहिक जीवन संबधी और जातक द्वारा पूछे गए सभी सवालों के विश्लेषण का शोर्ट में निष्कर्ष दीजिए
 --------------------------------------------------
 अब तक किये गए सभी निम्मलिखित घटनाओं और सवालों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
@@ -1121,7 +1130,7 @@ KP के अनुसार, विवाह केवल उसी MD-AD-PD �
 ➤ वैवाहिक जीवन में किसी विशेष चुनौती जैसे गलतफहमी, बाहरी हस्तक्षेप, स्वास्थ्य समस्या आदि के संकेत हैं? और उनके समाधान क्या हैं?
 23] क्या कुंडली में मांगलिक दोष या अन्य कोई विवाह संबंधी दोष है? अगर है, तो उसका प्रभाव और उपाय क्या हैं?
 जातक के प्रश्न :`;
-        const rawData_en = `This PDF is the kundali of native xyz; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write page references from the PDF, but please provide a list showing which of the following information is on which page, so that it will be easy for you to find it later:
+        const rawData_en = `This PDF is the kundali of a 00-year-old male/female native ...; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write page references from the PDF, but please provide a list showing which of the following information is on which page, so that it will be easy for you to find it later:
 
 1] Planet position table - (planet, degree, sign, nakshatra-pada, nakshatra lord, Jaimini Chara Karakatva)
 2] Sarvashtakavarga table
@@ -2082,6 +2091,15 @@ Now, after deeply researching the given information, do the astrological analysi
 --------------------------------------------------
 Now write the answers to the given questions after deep research; do the analysis in detail with conclusions - each question must be analyzed in detail, with remedies. Answer the first question first; I will ask the rest later.
 --------------------------------------------------
+Based on all the analyses done so far, give the remedies for the native:
+
+1] Non-religious remedies: (change in habits, charity (without religious ritual), positive behaviour change)
+2] Religious/traditional remedies: (worship/chanting of a specific deity, fasts, religious charity, temple visits)
+3] Gemstone/metal related remedies: (if necessary, with precautions)
+4] Remedies to be got done through a priest or astrologer, or remedies to be performed by going to a pilgrimage place: (if necessary)
+
+Please note: the remedies should be simple, practical and suited to the native's present financial condition.
+--------------------------------------------------
 Give in brief the conclusion of the analysis of all the questions asked about the native's married life since the beginning, and asked by the native.
 --------------------------------------------------
 Rewrite all the following events and questions analyzed so far and give their brief answers, because this list will be placed at the very beginning of this analysis, so that the native can first read the answers in brief, and then find the section whose analysis with context they want to read...
@@ -2128,7 +2146,7 @@ Rewrite all the following events and questions analyzed so far and give their br
 ➤ Are there signs of any special challenge in married life, such as misunderstandings, external interference, health problems, etc.? And what are their solutions?
 23] Is there Mangalik dosha or any other marriage-related dosha in the chart? If so, what is its effect and what are the remedies?
 Questions of the native:`;
-        const rawData_mr = `हे PDF जातक xyz ची कुंडली आहे, यामधील सर्व माहिती तुम्ही जतन करून ठेवायची आहे, जेणेकरून कुंडलीचे विश्लेषण करता येईल. विश्लेषण करताना PDF च्या पृष्ठाचा संदर्भ लिहू नका, परंतु खालील माहिती कोणत्या पृष्ठावर आहे, याची सूची द्या - म्हणजे तुम्हालाही पुढे शोधणे सोपे होईल:
+        const rawData_mr = `हे PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... ची कुंडली आहे, यामधील सर्व माहिती तुम्ही जतन करून ठेवायची आहे, जेणेकरून कुंडलीचे विश्लेषण करता येईल. विश्लेषण करताना PDF च्या पृष्ठाचा संदर्भ लिहू नका, परंतु खालील माहिती कोणत्या पृष्ठावर आहे, याची सूची द्या - म्हणजे तुम्हालाही पुढे शोधणे सोपे होईल:
 
 1] ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -3088,6 +3106,15 @@ KP नुसार, विवाह फक्त त्याच MD-AD-PD मध
 आता दिलेल्या माहितीचे सखोल संशोधन करून ज्योतिषीय विश्लेषण सविस्तरपणे आणि निष्कर्षासह करा, प्रत्येक घटनेचे सविस्तर विश्लेषण व्हायला हवे, उपाय आवश्यक असल्यास उपायांसह, सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
 --------------------------------------------------
 आता दिलेल्या प्रश्नांची उत्तरे सखोल संशोधन करून लिहा, सविस्तर विश्लेषण आणि निष्कर्षासह करा, प्रत्येक प्रश्नाचे सविस्तर विश्लेषण व्हायला हवे, उपायांसह, सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+--------------------------------------------------
+आतापर्यंत झालेल्या सर्व विश्लेषणांच्या आधारे जातकासाठी उपाय द्या:
+
+1] गैर-धार्मिक उपाय: (सवयींमध्ये बदल, दान-पुण्य (धार्मिक विधीशिवाय), सकारात्मक वागणुकीतील बदल)
+2] धार्मिक/पारंपरिक उपाय: (विशिष्ट देवतेची पूजा/जप, व्रत, धार्मिक दान, मंदिर दर्शन)
+3] रत्न/धातू संबंधी उपाय: (आवश्यक असल्यास, सावधगिरीसह)
+4] पंडित किंवा ज्योतिषाकडून करून घ्यावयाचे उपाय, किंवा एखाद्या तीर्थस्थानी जाऊन करावयाचे उपाय: (आवश्यक असल्यास)
+
+कृपया लक्षात घ्या: उपाय सोपे, व्यावहारिक आणि जातकाच्या सध्याच्या आर्थिक स्थितीला अनुकूल असावेत.
 --------------------------------------------------
 सुरुवातीपासून विचारलेल्या जातकाच्या वैवाहिक जीवनासंबंधी आणि जातकाने विचारलेल्या सर्व प्रश्नांच्या विश्लेषणाचा थोडक्यात निष्कर्ष द्या
 --------------------------------------------------

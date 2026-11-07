@@ -97,7 +97,7 @@
 </head>
 <body>
 
-    <h1>Year Book Prompts v2.1</h1>
+    <h1>Year Book Prompts v2.2</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -114,7 +114,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData_hi = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+        const rawData_hi = `यह PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -233,7 +233,7 @@ Next Task :
 
 ​दशा परिवर्तन: यदि किसी एक वर्ष के भीतर अंतर्दशा (AD) बदलती है, तो उसे एक ही सेल में 'Slash' (/) के साथ दिखाएं (जैसे: बुध AD / केतु AD)।
 ----------
-यह TXT फ़ाइल जातक xyz की ताजिक वर्षफल कुंडली की है, इसमें से सारी जानकारी आपको सेव कर लेनी है:
+यह TXT फ़ाइल 00 वर्षीय पुरुष/महिला जातक/जातिका ... की ताजिक वर्षफल कुंडली की है, इसमें से सारी जानकारी आपको सेव कर लेनी है:
 
 ➤ वर्ष प्रवेश की सटीक तिथि और समय
 ➤ वर्षफल लग्न कुंडली (Tajika Lagna Chart) - सभी ग्रहों की राशि और भाव सहित
@@ -455,7 +455,14 @@ txt फाइल में दी गयी जातक के निम्म�
 
 दोनों तालिका को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
 ----------
-उपरोक्त चैट और वर्षफल के विश्लेषण के आधार पर जातक के लिए अगले 12 महीनों के लिए विशिष्ट उपाय दीजिये, उपाय सिर्फ ज्योतिषीय होना चाहिए, कोई भी मन्त्रजाप अथवा पूजा पाठ नहीं होना चाहिए, दान वैगरे चलेगा, अगर कोई मंत्र पाठ आवश्यक हो तो, भगवद्गीता जो सनातन धर्म के सभी साम्प्रदाय के लिए है उसमेसे दे सकते है,
+अब तक हुए सभी विश्लेषणों के आधार पर जातक के लिए उपाय दें:
+
+1] गैर-धार्मिक उपाय: (आदतों में बदलाव, दान-पुण्य (बिना धार्मिक विधि के), सकारात्मक व्यवहार परिवर्तन)
+2] धार्मिक/पारंपरिक उपाय: (विशिष्ट देवता की पूजा/जप, व्रत, धार्मिक दान, मंदिर दर्शन)
+3] रत्न/धातु संबंधी उपाय: (यदि आवश्यक हों तो, सावधानियों सहित)
+4] पंडित या ज्योतिषी से करवाने वाले उपाय, या किसी तीर्थ पर जाकर करवाने वाले उपाय: (यदि आवश्यक हो तो)
+
+कृपया ध्यान दें: उपाय सरल, व्यावहारिक और जातक की वर्तमान आर्थिक स्थिति के अनुकूल हों।
 ----------
 उपरोक्त चैट और वर्षफल के विश्लेषण के आधार पर आने वाले 12 महीनों के लिए विशेष निष्कर्ष दीजिये :
 ➤ आने वाले 12 महीनों के लिए विशेष :
@@ -476,7 +483,7 @@ txt फाइल में दी गयी जातक के निम्म�
 ➤ स्वास्थ्य:
 ➤ इस साल का समग्र निष्कर्ष:
 -----------------------------------------`;
-        const rawData_en = `This PDF is the kundali of native xyz; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write the PDF page reference, but do give the list of which page the following information is on - it will be easier for you to find later:
+        const rawData_en = `This PDF is the kundali of a 00-year-old male/female native ...; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write the PDF page reference, but do give the list of which page the following information is on - it will be easier for you to find later:
 
 1] Graha sthiti table -(planet, degree, rashi, nakshatra-pada, nakshatra lord, Jaimini chara karakatva)
 2] Sarvashtakavarga table
@@ -595,7 +602,7 @@ Based on the astrological data (Vimshottari, Yogini, Char and Gochar Analysis) g
 
 ​Dasha change: if the antardasha (AD) changes within a single year, show it in the same cell with a 'Slash' (/) (e.g.: Budha AD / Ketu AD).
 ----------
-This TXT file contains the Tajika varshfal kundali of native xyz; you must save all the information from it:
+This TXT file contains the Tajika varshfal kundali of a 00-year-old male/female native ...; you must save all the information from it:
 
 ➤ Exact date and time of varsha pravesh
 ➤ Varshfal lagna kundali (Tajika Lagna Chart) - with rashi and bhava of all planets
@@ -817,7 +824,14 @@ Colors to avoid:
 
 Present both tables in a simple and readable table format.
 ----------
-Based on the above chat and varshfal analysis, give specific remedies for the native for the next 12 months; remedies should be only astrological, there should be no mantra japa or puja path, daan etc. is fine, if any mantra path is necessary, you can give from the Bhagavad Gita which is for all sampradayas of Sanatan Dharma,
+Based on all the analyses done so far, give the remedies for the native:
+
+1] Non-religious remedies: (change in habits, charity (without religious ritual), positive behaviour change)
+2] Religious/traditional remedies: (worship/chanting of a specific deity, fasts, religious charity, temple visits)
+3] Gemstone/metal related remedies: (if necessary, with precautions)
+4] Remedies to be got done through a priest or astrologer, or remedies to be performed by going to a pilgrimage place: (if necessary)
+
+Please note: the remedies should be simple, practical and suited to the native's present financial condition.
 ----------
 Based on the above chat and varshfal analysis, give special conclusions for the coming 12 months:
 ➤ Special for the coming 12 months:
@@ -838,7 +852,7 @@ Now, based on the graha sthiti of the native's lagna kundali, give the combined 
 ➤ Health:
 ➤ Overall conclusion of this year:
 -----------------------------------------`;
-        const rawData_mr = `हे PDF जातक xyz ची कुंडली आहे, त्यातील सर्व माहिती तुम्ही सेव करून घेतली पाहिजे, जेणेकरून कुंडलीचे विश्लेषण होऊ शकेल. विश्लेषण करताना PDF च्या पानाचा संदर्भ लिहू नका, परंतु खालील माहिती कोणत्या पानावर आहे, याची सूची द्या - म्हणजे तुम्हालाही पुढे शोधायला सोपे जाईल:
+        const rawData_mr = `हे PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... ची कुंडली आहे, त्यातील सर्व माहिती तुम्ही सेव करून घेतली पाहिजे, जेणेकरून कुंडलीचे विश्लेषण होऊ शकेल. विश्लेषण करताना PDF च्या पानाचा संदर्भ लिहू नका, परंतु खालील माहिती कोणत्या पानावर आहे, याची सूची द्या - म्हणजे तुम्हालाही पुढे शोधायला सोपे जाईल:
 
 1] ग्रह स्थिती तालिका -(ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -957,7 +971,7 @@ Next Task :
 
 ​दशा परिवर्तन: एका वर्षाच्या आत अंतर्दशा (AD) बदलत असेल, तर ती एकाच सेलमध्ये 'Slash' (/) सोबत दाखवा (जसे: बुध AD / केतू AD).
 ----------
-ही TXT फ़ाइल जातक xyz ची ताजिक वर्षफल कुंडलीची आहे, त्यातील सर्व माहिती तुम्ही सेव करून घेतली पाहिजे:
+ही TXT फ़ाइल 00 वर्षीय पुरुष/महिला जातक/जातिका ... ची ताजिक वर्षफल कुंडलीची आहे, त्यातील सर्व माहिती तुम्ही सेव करून घेतली पाहिजे:
 
 ➤ वर्ष प्रवेशाची अचूक तारीख आणि वेळ
 ➤ वर्षफल लग्न कुंडली (Tajika Lagna Chart) - सर्व ग्रहांच्या राशी आणि भावासह
@@ -1179,7 +1193,14 @@ txt फाइलमध्ये दिलेली जातकाची खा�
 
 दोन्ही तालिका सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा.
 ----------
-वरील चॅट आणि वर्षफलाच्या विश्लेषणाच्या आधारे जातकासाठी पुढील 12 महिन्यांसाठी विशिष्ट उपाय द्या; उपाय फक्त ज्योतिषीय असले पाहिजेत, कोणताही मंत्रजप किंवा पूजा पाठ नसावा, दान वैगरे चालेल, जर कोणता मंत्र पाठ आवश्यक असेल तर, सनातन धर्माच्या सर्व संप्रदायांसाठी असलेल्या भगवद्गीतेतून देऊ शकता,
+आतापर्यंत झालेल्या सर्व विश्लेषणांच्या आधारे जातकासाठी उपाय द्या:
+
+1] गैर-धार्मिक उपाय: (सवयींमध्ये बदल, दान-पुण्य (धार्मिक विधीशिवाय), सकारात्मक वागणुकीतील बदल)
+2] धार्मिक/पारंपरिक उपाय: (विशिष्ट देवतेची पूजा/जप, व्रत, धार्मिक दान, मंदिर दर्शन)
+3] रत्न/धातू संबंधी उपाय: (आवश्यक असल्यास, सावधगिरीसह)
+4] पंडित किंवा ज्योतिषाकडून करून घ्यावयाचे उपाय, किंवा एखाद्या तीर्थस्थानी जाऊन करावयाचे उपाय: (आवश्यक असल्यास)
+
+कृपया लक्षात घ्या: उपाय सोपे, व्यावहारिक आणि जातकाच्या सध्याच्या आर्थिक स्थितीला अनुकूल असावेत.
 ----------
 वरील चॅट आणि वर्षफलाच्या विश्लेषणाच्या आधारे येत्या 12 महिन्यांसाठी विशेष निष्कर्ष द्या:
 ➤ येत्या 12 महिन्यांसाठी विशेष:

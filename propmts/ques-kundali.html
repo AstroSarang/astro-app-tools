@@ -95,7 +95,7 @@
 </head>
 <body>
 
-    <h1>❓ प्रश्न कुंडली Prompts v3.4</h1>
+    <h1>❓ प्रश्न कुंडली Prompts v3.5</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -112,7 +112,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData_hi = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+        const rawData_hi = `यह PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -430,7 +430,7 @@ Next Task :
 ऊपर दिए गए सभी जवाबों, उपायों और निष्कर्ष को मूल डेटा और तथ्य-पत्र से मिलाएँ - भावेश और KP सब-लॉर्ड के नाम, SAV/BAV के अंक और उन पर बने तुलनात्मक दावे, महादशा-अंतर्दशा-प्रत्यंतर के नाम और तारीखें, गोचर की वर्तमान स्थिति, लग्न, इंदु लग्न, आरूढ़ पद, चर कारक, दृष्टि के क्रमांक और ग्रहों की राशि-भाव - हर मान की जाँच करें।
 
 परिणाम सिर्फ गलतियों की सूची में दें: सवाल नंबर, गलत लिखा मान, सही मान। जहाँ कोई गलती न हो वहाँ कुछ न लिखें। अंत में सिर्फ एक line लिखें: 'जाँच पूर्ण - कुल X गलतियाँ मिलीं।' जवाब दोबारा न लिखें।`;
-        const rawData_en = `This PDF is the kundali of native xyz; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write page references from the PDF, but please provide a list showing which of the following information is on which page, so that it will be easy for you to find it later:
+        const rawData_en = `This PDF is the kundali of a 00-year-old male/female native ...; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write page references from the PDF, but please provide a list showing which of the following information is on which page, so that it will be easy for you to find it later:
 
 1] Planet position table - (planet, degree, sign, nakshatra-pada, nakshatra lord, Jaimini Chara Karakatva)
 2] Sarvashtakavarga table
@@ -1960,9 +1960,12 @@ Next Task :
 ----------
 आतापर्यंत झालेल्या सर्व विश्लेषणांच्या आधारे जातकासाठी उपाय द्या आणि अंतिम निष्कर्ष द्या:
 
-1] गैर-धार्मिक आणि व्यावहारिक उपाय
-2] स्वतः करावयाचे धार्मिक आणि ज्योतिषीय उपाय
-3] तज्ज्ञ ब्राह्मणाकडून करून घ्यावयाचे उपाय (लागू असल्यास)
+1] गैर-धार्मिक उपाय: (सवयींमध्ये बदल, दान-पुण्य (धार्मिक विधीशिवाय), सकारात्मक वागणुकीतील बदल)
+2] धार्मिक/पारंपरिक उपाय: (विशिष्ट देवतेची पूजा/जप, व्रत, धार्मिक दान, मंदिर दर्शन)
+3] रत्न/धातू संबंधी उपाय: (आवश्यक असल्यास, सावधगिरीसह)
+4] पंडित किंवा ज्योतिषाकडून करून घ्यावयाचे उपाय, किंवा एखाद्या तीर्थस्थानी जाऊन करावयाचे उपाय: (आवश्यक असल्यास)
+
+कृपया लक्षात घ्या: उपाय सोपे, व्यावहारिक आणि जातकाच्या सध्याच्या आर्थिक स्थितीला अनुकूल असावेत.
 
 ➤ अंतिम निष्कर्ष: संपूर्ण विश्लेषणाचा संक्षिप्त सारांश आणि जातकासाठी सर्वात महत्त्वाचा सल्ला.
 ----------

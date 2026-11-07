@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Child Birth Report Prompts v2.3 - Astro Prompts Copier</title>
+    <title>Child Birth Report Prompts v2.4 - Astro Prompts Copier</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -114,7 +114,7 @@
 
     <script>
         // यहाँ आपका पूरा डेटा है
-        const rawData_hi = `यह PDF जातक xyz की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी : 
+        const rawData_hi = `यह PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी : 
 
 1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -1006,6 +1006,15 @@ B) सहायक राशि दशाएं : - संतान प्रा
 --------------------------------------------------
 अब दिए हुए सवालो का जवाब गहन शोध करके लिखिए विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक सवाल का विस्तार से विश्लेषण और निष्कर्ष देकर कीजिये, एक एक घटना का विस्तार से विश्लेषण होना चाहिए,उपाय सहित, सबसे पहले पहले सवाल का जबाव दीजिये, बाकि के बाद में पूछता हु.
 --------------------------------------------------
+अब तक हुए सभी विश्लेषणों के आधार पर जातक के लिए उपाय दें:
+
+1] गैर-धार्मिक उपाय: (आदतों में बदलाव, दान-पुण्य (बिना धार्मिक विधि के), सकारात्मक व्यवहार परिवर्तन)
+2] धार्मिक/पारंपरिक उपाय: (विशिष्ट देवता की पूजा/जप, व्रत, धार्मिक दान, मंदिर दर्शन)
+3] रत्न/धातु संबंधी उपाय: (यदि आवश्यक हों तो, सावधानियों सहित)
+4] पंडित या ज्योतिषी से करवाने वाले उपाय, या किसी तीर्थ पर जाकर करवाने वाले उपाय: (यदि आवश्यक हो तो)
+
+कृपया ध्यान दें: उपाय सरल, व्यावहारिक और जातक की वर्तमान आर्थिक स्थिति के अनुकूल हों।
+--------------------------------------------------
 सुरवात से पुछे गए जातक के जीवन संबधी सभी सवालों के विश्लेषण का शोर्ट में निष्कर्ष दीजिए
 --------------------------------------------------
 अब तक किये गए सभी निम्मलिखित घटनाओं और सवालों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
@@ -1041,7 +1050,7 @@ B) सहायक राशि दशाएं : - संतान प्रा
 15] यदि संतान प्राप्ति में कोई बाधा या विलंब है, तो उसके निवारण के लिए क्या कोई विशेष ज्योतिषीय उपाय, रत्न या पूजा-पाठ सुझाए जा सकते हैं?
 
 जातक के प्रश्न :`;
-        const rawData_en = `This PDF is the kundali of the native xyz. Save all the information from it, so that the kundali can be analysed. While analysing, do not write the page reference of the PDF, but give a list stating on which page the following information is - it will be easier for you to find later: 
+        const rawData_en = `This PDF is the kundali of a 00-year-old male/female native .... Save all the information from it, so that the kundali can be analysed. While analysing, do not write the page reference of the PDF, but give a list stating on which page the following information is - it will be easier for you to find later: 
 
 1] Graha sthiti table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord, Jaimini chara karakatva)
 2] Sarvashtakavarga table
@@ -1933,6 +1942,15 @@ Now research the given information deeply and do a detailed astrological analysi
 --------------------------------------------------
 Now write the answers to the given questions after deep research, with detailed analysis and conclusions; analyze each question in detail with conclusions; each event should be analyzed in detail, with remedies; first answer the first question, I will ask the rest later.
 --------------------------------------------------
+Based on all the analyses done so far, give the remedies for the native:
+
+1] Non-religious remedies: (change in habits, charity (without religious ritual), positive behaviour change)
+2] Religious/traditional remedies: (worship/chanting of a specific deity, fasts, religious charity, temple visits)
+3] Gemstone/metal related remedies: (if necessary, with precautions)
+4] Remedies to be got done through a priest or astrologer, or remedies to be performed by going to a pilgrimage place: (if necessary)
+
+Please note: the remedies should be simple, practical and suited to the native's present financial condition.
+--------------------------------------------------
 Give a brief conclusion of the analysis of all the life-related questions asked by the native from the beginning
 --------------------------------------------------
 Rewrite all the following events and questions analyzed so far and give their brief answers, because this list will be placed at the very beginning of this analysis; the native will first read the answers in short and will look for the section whose analysis with reference they want to read...
@@ -1968,7 +1986,7 @@ Rewrite all the following events and questions analyzed so far and give their br
 15] If there is any obstacle or delay in having children, can any special astrological remedies, gems or puja-path be suggested for its removal?
 
 Native's questions :`;
-        const rawData_mr = `हे PDF जातक xyz ची कुंडली आहे, त्यातील सर्व माहिती तुम्हाला सेव करून ठेवायची आहे, जेणेकरून कुंडलीचे विश्लेषण होऊ शकेल. विश्लेषण करताना PDF च्या पेजचा संदर्भ लिहू नका, परंतु खालील माहिती कोणत्या पेजवर आहे, याची सूची द्या म्हणजे तुम्हालाही पुढे शोधायला सोपे जाईल: 
+        const rawData_mr = `हे PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... ची कुंडली आहे, त्यातील सर्व माहिती तुम्हाला सेव करून ठेवायची आहे, जेणेकरून कुंडलीचे विश्लेषण होऊ शकेल. विश्लेषण करताना PDF च्या पेजचा संदर्भ लिहू नका, परंतु खालील माहिती कोणत्या पेजवर आहे, याची सूची द्या म्हणजे तुम्हालाही पुढे शोधायला सोपे जाईल: 
 
 1] ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
 2] सर्वाष्टकवर्ग तालिका
@@ -2859,6 +2877,15 @@ B) सहाय्यक राशी दशा: - संतानप्रा�
 आता दिलेल्या माहितीचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा; एकेका घटनेचे विस्ताराने विश्लेषण झाले पाहिजे; जर उपाय आवश्यक असतील तर उपायासह; सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
 --------------------------------------------------
 आता दिलेल्या प्रश्नांची उत्तरे सखोल संशोधन करून लिहा; विस्ताराने विश्लेषण आणि निष्कर्ष देऊन करा; एकेका प्रश्नाचे विस्ताराने विश्लेषण आणि निष्कर्ष देऊन करा; एकेका घटनेचे विस्ताराने विश्लेषण झाले पाहिजे; उपायासह; सर्वप्रथम पहिल्या प्रश्नाचे उत्तर द्या, बाकीचे नंतर विचारतो.
+--------------------------------------------------
+आतापर्यंत झालेल्या सर्व विश्लेषणांच्या आधारे जातकासाठी उपाय द्या:
+
+1] गैर-धार्मिक उपाय: (सवयींमध्ये बदल, दान-पुण्य (धार्मिक विधीशिवाय), सकारात्मक वागणुकीतील बदल)
+2] धार्मिक/पारंपरिक उपाय: (विशिष्ट देवतेची पूजा/जप, व्रत, धार्मिक दान, मंदिर दर्शन)
+3] रत्न/धातू संबंधी उपाय: (आवश्यक असल्यास, सावधगिरीसह)
+4] पंडित किंवा ज्योतिषाकडून करून घ्यावयाचे उपाय, किंवा एखाद्या तीर्थस्थानी जाऊन करावयाचे उपाय: (आवश्यक असल्यास)
+
+कृपया लक्षात घ्या: उपाय सोपे, व्यावहारिक आणि जातकाच्या सध्याच्या आर्थिक स्थितीला अनुकूल असावेत.
 --------------------------------------------------
 सुरुवातीपासून विचारलेल्या जातकाच्या जीवनसंबंधी सर्व प्रश्नांच्या विश्लेषणाचा थोडक्यात निष्कर्ष द्या
 --------------------------------------------------
