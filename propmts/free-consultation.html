@@ -97,7 +97,7 @@
 </head>
 <body>
 
-    <h1>Free Consultation Prompts v2.5</h1>
+    <h1>Free Consultation Prompts v2.6</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -234,7 +234,10 @@ Dhyan Rahe ise 100% na maane, Ek accurate aur final conclusion par aane ke liye 
 ----------
 शुरुआत से जातक द्वारा पूछे गए सभी सवालों के विश्लेषण का शोर्ट में निष्कर्ष दीजिए
 ----------
-अब तक किये गए सभी निम्मलिखित सवालों का संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
+अब तक किये गए सभी निम्मलिखित घटनाओं और सवालों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
+
+
+जातक के सवाल :
 `;
         const rawData_en = `
 Please save the astrological data from the attached (Attached) PDF and all txt files in your memory.
@@ -356,7 +359,10 @@ Please note: the remedies should be simple, practical and suited to the native's
 ----------
 Give in brief the conclusion of the analysis of all the questions asked by the native since the beginning.
 ----------
-Give brief answers to all the following questions asked so far, because this list will be placed at the very beginning of this analysis. This way the native will first read the answers in short, and he will find the section for the matter whose analysis he wants to read with references...
+Now rewrite all the following events and questions discussed so far and give their brief answers, because this list will be placed at the very beginning of this analysis, so that the native reads the short answers first and finds the section whose analysis they want to read with references...
+
+
+Questions of the native :
 `;
         const rawData_mr = `
 कृपया संलग्न (Attached) असलेला PDF आणि सर्व txt फाइल्समधील ज्योतिषीय डेटा तुमच्या मेमरीमध्ये जतन करा.
@@ -478,7 +484,10 @@ Give brief answers to all the following questions asked so far, because this lis
 ----------
 सुरुवातीपासून जातकाने विचारलेल्या सर्व प्रश्नांच्या विश्लेषणाचा थोडक्यात निष्कर्ष द्या
 ----------
-आतापर्यंत विचारलेल्या सर्व पुढील प्रश्नांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल, यामुळे जातक प्रथमच थोडक्यात उत्तरे वाचेल आणि त्याला ज्या विषयाचे विश्लेषण संदर्भासह वाचायचे आहे, तो विभाग शोधेल...
+आता आतापर्यंत केलेल्या सर्व खालील घटना आणि प्रश्न पुन्हा लिहून त्यांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला ठेवली जाईल, ज्यामुळे जातक आधीच थोडक्यात उत्तरे वाचेल आणि ज्याचे विश्लेषण संदर्भासह वाचायचे आहे तो सेक्शन शोधेल...
+
+
+जातकाचे सवाल :
 `;
         let currentLang = 'hi';
         function getRawData() {

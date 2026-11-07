@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marriage Report Prompts v3.5 - Astro Prompts Copier</title>
+    <title>Marriage Report Prompts v3.6 - Astro Prompts Copier</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -97,7 +97,7 @@
 </head>
 <body>
 
-    <h1>Marriage Report Prompts v3.5</h1>
+    <h1>Marriage Report Prompts v3.6</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -1129,7 +1129,7 @@ KP के अनुसार, विवाह केवल उसी MD-AD-PD �
 22] विवाह से संबंधित कौन-कौन सी बाधाएँ (कर्म, ग्रह, दोष आदि) दिखाई देती हैं?
 ➤ वैवाहिक जीवन में किसी विशेष चुनौती जैसे गलतफहमी, बाहरी हस्तक्षेप, स्वास्थ्य समस्या आदि के संकेत हैं? और उनके समाधान क्या हैं?
 23] क्या कुंडली में मांगलिक दोष या अन्य कोई विवाह संबंधी दोष है? अगर है, तो उसका प्रभाव और उपाय क्या हैं?
-जातक के प्रश्न :`;
+जातक के सवाल :`;
         const rawData_en = `This PDF is the kundali of a 00-year-old male/female native ...; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write page references from the PDF, but please provide a list showing which of the following information is on which page, so that it will be easy for you to find it later:
 
 1] Planet position table - (planet, degree, sign, nakshatra-pada, nakshatra lord, Jaimini Chara Karakatva)
@@ -3161,7 +3161,7 @@ KP नुसार, विवाह फक्त त्याच MD-AD-PD मध
 22] विवाहासंबंधी कोणकोणत्या अडचणी (कर्म, ग्रह, दोष इत्यादी) दिसत आहेत?
 ➤ वैवाहिक जीवनात गैरसमज, बाह्य हस्तक्षेप, आरोग्य समस्या इत्यादींसारख्या विशेष आव्हानांची चिन्हे आहेत का? आणि त्यांची उपाययोजना काय आहेत?
 23] कुंडलीत मांगलिक दोष किंवा इतर कोणताही विवाहसंबंधी दोष आहे का? असल्यास, त्याचा परिणाम आणि उपाय काय आहेत?
-जातकाचे प्रश्न:`;
+जातकाचे सवाल:`;
         let currentLang = 'hi';
         function getRawData() {
             if (currentLang === 'en') return rawData_en;

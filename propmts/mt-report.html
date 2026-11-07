@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MT Report Prompts v3.7 - Astro Prompts Copier</title>
+    <title>MT Report Prompts v3.8 - Astro Prompts Copier</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -97,7 +97,7 @@
 </head>
 <body>
 
-    <h1>MT Report Prompts v3.7</h1>
+    <h1>MT Report Prompts v3.8</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -911,7 +911,7 @@ KP के अनुसार, विवाह केवल उसी MD-AD-PD �
 8] होने वाले जीवनसाथी से पहली मुलाकात कहाँ और कैसे होगी?
 9] यह मुलाकात किस माध्यम (जैसे - ऑनलाइन, सोशल मीडिया, ऑफिस) या किस रिश्तेदार के माध्यम से हो सकती है?
 
-जातक के प्रश्न :`;
+जातक के सवाल :`;
         const rawData_en = `This PDF is the kundali of a 00-year-old male/female native ...; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write the PDF page references, but give a list of which page the following information is on - meaning it will be easier for you to find things later as well:
 
 1] Planet position table -(planet, degree, rashi, nakshatra-pada, nakshatra-lord, Jaimini chara karakatva)
@@ -2507,7 +2507,7 @@ KP नुसार, विवाह फक्त त्या MD-AD-PD मध्
 8] होणाऱ्या जीवनसाथीशी पहिली भेट कुठे आणि कशी होईल?
 9] ही भेट कोणत्या माध्यमातून (उदा. ऑनलाइन, सोशल मीडिया, ऑफिस) किंवा कोणत्या नातेवाईकामार्फत होऊ शकते?
 
-जातकाचे प्रश्न :`;
+जातकाचे सवाल :`;
         let currentLang = 'hi';
         function getRawData() {
             if (currentLang === 'en') return rawData_en;

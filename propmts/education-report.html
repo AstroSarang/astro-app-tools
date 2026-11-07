@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Education Report Prompts v1.7 - Astro Prompts Copier</title>
+    <title>Education Report Prompts v1.8 - Astro Prompts Copier</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -97,7 +97,7 @@
 </head>
 <body>
 
-    <h1>Education Report Prompts v1.7</h1>
+    <h1>Education Report Prompts v1.8</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -1188,7 +1188,7 @@ Group C - सहायक और उत्प्रेरक ग्रह (Trigg
 --------------------------------------------------
 सुरवात से पुछे गए जातक के जीवन संबधी सभी सवालों के विश्लेषण का शोर्ट में निष्कर्ष दीजिए
 --------------------------------------------------
-अब तक किये गए सभी निम्मलिखित घटनाओं और सवालों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे माता-पिता पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
+अब तक किये गए सभी निम्मलिखित घटनाओं और सवालों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
 
 1] बच्चे की जन्मकुंडली के अनुसार उसकी पढ़ाई का समग्र स्तर और शैक्षणिक क्षमता कैसी है, क्या वह उच्च शिक्षा तक सफलतापूर्वक पहुँचेगा?
 
@@ -1222,7 +1222,10 @@ Group C - सहायक और उत्प्रेरक ग्रह (Trigg
 
 15] माता-पिता के लिए मार्गदर्शन: बच्चे की पढ़ने की आदतें कैसी बनानी चाहिए, उस पर कितना दबाव डालना उचित है, पढ़ाई का माहौल (घर या Hostel, सुबह या रात) कैसा रखना चाहिए और किन बातों से बचना चाहिए?
 
-16] बच्चे की शिक्षा में सफलता, एकाग्रता और बुद्धि के लिए कौन से ज्योतिषीय उपाय, रत्न या पूजा सुझाई जा सकती है? कौन से रत्न बच्चे को बिल्कुल नहीं पहनाने चाहिए?`;
+16] बच्चे की शिक्षा में सफलता, एकाग्रता और बुद्धि के लिए कौन से ज्योतिषीय उपाय, रत्न या पूजा सुझाई जा सकती है? कौन से रत्न बच्चे को बिल्कुल नहीं पहनाने चाहिए?
+
+
+जातक के सवाल :`;
         const rawData_en = `This PDF is the kundali of a 00-year-old boy/girl native .... You must save all the information from it, so that the kundali can be analyzed. While analyzing, do not write the page reference of the PDF, but do give a list of which page the following information is on - meaning it will be easier for you to find it later as well:
 
 1] Planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra lord, Jaimini chara karakatva)
@@ -2296,7 +2299,7 @@ Please note: the remedies should be simple, practical and suited to the child's 
 --------------------------------------------------
 Give, in short, the conclusion of the analysis of all the native's life-related questions asked from the beginning.
 --------------------------------------------------
-Now rewrite all the following events and questions discussed so far and give their brief answers, because this list will be placed at the very beginning of this analysis, so that the parents first read the short answers and find the section whose analysis they want to read with references...
+Now rewrite all the following events and questions discussed so far and give their brief answers, because this list will be placed at the very beginning of this analysis, so that the native reads the short answers first and finds the section whose analysis they want to read with references...
 
 1] According to the child's birth chart, how is his overall level of studies and academic capacity, will he successfully reach higher education?
 
@@ -2330,7 +2333,10 @@ Now rewrite all the following events and questions discussed so far and give the
 
 15] Guidance for the parents: How should the child's study habits be made, how much pressure on him is appropriate, how should the study environment (home or Hostel, morning or night) be kept and which things should be avoided?
 
-16] Which astrological remedies, gemstones or poojas can be suggested for success in the child's education, concentration and intellect? Which gemstones should the child not be made to wear at all?`;
+16] Which astrological remedies, gemstones or poojas can be suggested for success in the child's education, concentration and intellect? Which gemstones should the child not be made to wear at all?
+
+
+Questions of the native :`;
         const rawData_mr = `ही PDF 00 वर्षीय मुलगा/मुलगी जातक/जातिका ... ची कुंडली आहे. यातील सर्व माहिती तुम्हाला सेव्ह करून घ्यायची आहे, जेणेकरून कुंडलीचे विश्लेषण होऊ शकेल. विश्लेषण करताना PDF च्या पानाचा संदर्भ लिहू नका, परंतु खालील माहिती कोणत्या पानावर आहे, याची यादी द्या - म्हणजे तुम्हालाही पुढे शोधायला सोपे जाईल:
 
 1] ग्रह स्थिती तालिका - (ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
@@ -3404,7 +3410,7 @@ c) पंचमेशाचा प्रबळ संबंध चतुर्�
 --------------------------------------------------
 सुरुवातीपासून विचारलेल्या जातकाच्या जीवनसंबंधी सर्व प्रश्नांच्या विश्लेषणाचा थोडक्यात निष्कर्ष द्या.
 --------------------------------------------------
-आता आतापर्यंत चर्चिलेल्या खालील सर्व घटना आणि प्रश्न पुन्हा लिहा आणि त्यांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लागेल, जेणेकरून पालक आधी छोटी उत्तरे वाचतील आणि संदर्भांसह त्या विभागातील विश्लेषण वाचतील ज्याचे विश्लेषण त्यांना वाचायचे आहे ...
+आता आतापर्यंत केलेल्या सर्व खालील घटना आणि प्रश्न पुन्हा लिहून त्यांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला ठेवली जाईल, ज्यामुळे जातक आधीच थोडक्यात उत्तरे वाचेल आणि ज्याचे विश्लेषण संदर्भासह वाचायचे आहे तो सेक्शन शोधेल...
 
 1] मुलाच्या जन्म कुंडलीनुसार त्याचा अभ्यासाचा समग्र स्तर आणि शैक्षणिक क्षमता कशी आहे, तो उच्च शिक्षणापर्यंत यशस्वीरित्या पोहोचेल का?
 
@@ -3438,7 +3444,10 @@ c) पंचमेशाचा प्रबळ संबंध चतुर्�
 
 15] पालकांसाठी मार्गदर्शन: मुलाच्या अभ्यासाच्या सवयी कशा बनवाव्यात, त्याच्यावर किती दबाव योग्य आहे, अभ्यासाचे वातावरण (घर किंवा Hostel, सकाळ किंवा रात्र) कसे ठेवावे आणि कोणत्या गोष्टी टाळल्या पाहिजेत?
 
-16] मुलाच्या शिक्षणातील यश, एकाग्रता आणि बुद्धीसाठी कोणते ज्योतिषीय उपाय, रत्ने किंवा पूजा सुचवता येतील? कोणती रत्ने मुलाला अजिबात धारण करू नयेत?`;
+16] मुलाच्या शिक्षणातील यश, एकाग्रता आणि बुद्धीसाठी कोणते ज्योतिषीय उपाय, रत्ने किंवा पूजा सुचवता येतील? कोणती रत्ने मुलाला अजिबात धारण करू नयेत?
+
+
+जातकाचे सवाल :`;
         let currentLang = 'hi';
         function getRawData() {
             if (currentLang === 'en') return rawData_en;
