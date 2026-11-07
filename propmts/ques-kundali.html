@@ -95,7 +95,7 @@
 </head>
 <body>
 
-    <h1>❓ प्रश्न कुंडली Prompts v3.3</h1>
+    <h1>❓ प्रश्न कुंडली Prompts v3.4</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -364,9 +364,20 @@ Next Task :
 2] भावेश तालिका: 1 से 12 भाव - भाव की राशि और भावेश ग्रह
 3] KP सब-लॉर्ड (CSL) तालिका: 1 से 12 भाव के सब-लॉर्ड
 4] अष्टकवर्ग तालिका: 12 भावों के SAV अंक और सभी ग्रहों के BAV अंक (राशि अनुसार)
-5] दशा तालिका: वर्तमान विंशोत्तरी महादशा-अंतर्दशा (तारीखों सहित) और आगे की महादशाएँ, वर्तमान चर दशा
-6] वर्तमान गोचर: हर ग्रह इस समय किस राशि और किस भाव में गोचर कर रहा है
-7] विशेष मान: लग्न, चंद्र राशि और चंद्र नक्षत्र, इंदु लग्न, आरूढ़ पद (A2, A7, A10, उपपद लग्न) और चर कारक (AK, AmK, PK, DK, GK)
+5] अष्टकवर्ग तालिका के नीचे निम्नलिखित सारांश पंक्तियाँ ठीक इसी प्रारूप में अलग से दें, ताकि आगे के विश्लेषणों में अंक सीधे इन्हीं पंक्तियों से लिए जा सकें:
+
+➤ सर्वाष्टकवर्ग (SAV) भावानुसार: 1ला भाव = [अंक], 2रा भाव = [अंक], 3रा भाव = [अंक], 4था भाव = [अंक], 5वां भाव = [अंक], 6ठा भाव = [अंक], 7वां भाव = [अंक], 8वां भाव = [अंक], 9वां भाव = [अंक], 10वां भाव = [अंक], 11वां भाव = [अंक], 12वां भाव = [अंक]
+(भाव लग्न से गिने जाएँगे - राशि क्रम से नहीं।)
+
+➤ गुरु का भिन्नाष्टकवर्ग (BAV) भावानुसार: 1ला भाव = [अंक], 2रा भाव = [अंक], 3रा भाव = [अंक], 4था भाव = [अंक], 5वां भाव = [अंक], 6ठा भाव = [अंक], 7वां भाव = [अंक], 8वां भाव = [अंक], 9वां भाव = [अंक], 10वां भाव = [अंक], 11वां भाव = [अंक], 12वां भाव = [अंक]
+
+➤ शनि का भिन्नाष्टकवर्ग (BAV) भावानुसार: 1ला भाव = [अंक], 2रा भाव = [अंक], 3रा भाव = [अंक], 4था भाव = [अंक], 5वां भाव = [अंक], 6ठा भाव = [अंक], 7वां भाव = [अंक], 8वां भाव = [अंक], 9वां भाव = [अंक], 10वां भाव = [अंक], 11वां भाव = [अंक], 12वां भाव = [अंक]
+
+➤ शुक्र का भिन्नाष्टकवर्ग (BAV) भावानुसार: 1ला भाव = [अंक], 2रा भाव = [अंक], 3रा भाव = [अंक], 4था भाव = [अंक], 5वां भाव = [अंक], 6ठा भाव = [अंक], 7वां भाव = [अंक], 8वां भाव = [अंक], 9वां भाव = [अंक], 10वां भाव = [अंक], 11वां भाव = [अंक], 12वां भाव = [अंक]
+6] दशा तालिका: वर्तमान विंशोत्तरी महादशा-अंतर्दशा (तारीखों सहित) और आगे की महादशाएँ, वर्तमान चर दशा
+7] वर्तमान गोचर: हर ग्रह इस समय किस राशि और किस भाव में गोचर कर रहा है
+8] आगामी गोचर-परिवर्तन: धीमे ग्रहों (गुरु, शनि, राहु, केतु) के अगले 7 वर्षों के राशि-परिवर्तन, तारीखों सहित
+9] विशेष मान: लग्न, चंद्र राशि और चंद्र नक्षत्र, इंदु लग्न, आरूढ़ पद (A2, A7, A10, उपपद लग्न) और चर कारक (AK, AmK, PK, DK, GK)
 
 जो मान डेटा में न मिले, उसके सामने 'डेटा में उपलब्ध नहीं' लिखें - खाली न छोड़ें, अनुमान न लगाएं।
 ----------
@@ -671,9 +682,20 @@ From all the data given so far (the PDF and all the txt files), prepare the nati
 2] House-lord table: houses 1 to 12 - the sign of the house and the house-lord planet
 3] KP Sub-Lord (CSL) table: sub-lords of houses 1 to 12
 4] Ashtakavarga table: SAV points of the 12 houses and BAV points of all planets (sign-wise)
-5] Dasha table: the current Vimshottari Mahadasha-Antardasha (with dates) and the coming Mahadashas, the current Chara Dasha
-6] Current transit: which sign and which house each planet is transiting in at present
-7] Special values: Lagna, Moon sign and Moon nakshatra, Indu Lagna, Arudha Padas (A2, A7, A10, Upapada Lagna) and Chara Karakas (AK, AmK, PK, DK, GK)
+5] Below the Ashtakavarga table, give the following summary lines separately in exactly this format, so that in the analyses ahead the points can be taken directly from these lines:
+
+➤ Sarvashtakavarga (SAV) bhava-wise: 1st bhava = [points], 2nd bhava = [points], 3rd bhava = [points], 4th bhava = [points], 5th bhava = [points], 6th bhava = [points], 7th bhava = [points], 8th bhava = [points], 9th bhava = [points], 10th bhava = [points], 11th bhava = [points], 12th bhava = [points]
+(Bhavas will be counted from the Lagna - not in rashi order.)
+
+➤ Guru's Bhinnashtakavarga (BAV) bhava-wise: 1st bhava = [points], 2nd bhava = [points], 3rd bhava = [points], 4th bhava = [points], 5th bhava = [points], 6th bhava = [points], 7th bhava = [points], 8th bhava = [points], 9th bhava = [points], 10th bhava = [points], 11th bhava = [points], 12th bhava = [points]
+
+➤ Shani's Bhinnashtakavarga (BAV) bhava-wise: 1st bhava = [points], 2nd bhava = [points], 3rd bhava = [points], 4th bhava = [points], 5th bhava = [points], 6th bhava = [points], 7th bhava = [points], 8th bhava = [points], 9th bhava = [points], 10th bhava = [points], 11th bhava = [points], 12th bhava = [points]
+
+➤ Shukra's Bhinnashtakavarga (BAV) bhava-wise: 1st bhava = [points], 2nd bhava = [points], 3rd bhava = [points], 4th bhava = [points], 5th bhava = [points], 6th bhava = [points], 7th bhava = [points], 8th bhava = [points], 9th bhava = [points], 10th bhava = [points], 11th bhava = [points], 12th bhava = [points]
+6] Dasha table: the current Vimshottari Mahadasha-Antardasha (with dates) and the coming Mahadashas, the current Chara Dasha
+7] Current transit: which sign and which house each planet is transiting in at present
+8] Coming transit changes: the sign changes of the slow planets (Jupiter, Saturn, Rahu, Ketu) for the next 7 years, with dates
+9] Special values: Lagna, Moon sign and Moon nakshatra, Indu Lagna, Arudha Padas (A2, A7, A10, Upapada Lagna) and Chara Karakas (AK, AmK, PK, DK, GK)
 
 For any value not found in the data, write 'Not available in data' against it - do not leave it blank, do not guess.
 ----------
