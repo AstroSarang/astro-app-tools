@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sanjivani Jyotish Sansthan - Vaidik Jyotish aur Margdarshan</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans Devanagari','Poppins',sans-serif; background:#FFF9EF; color:#33241A; line-height:1.65; }
+  body.lang-hi .en { display:none !important; }
+  body.lang-en .hi { display:none !important; }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 16px 40px; }
+
+  /* header bar */
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 4px; }
+  .brand { font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; color:#7B1E1E; letter-spacing:.3px; }
+  .brand small { display:block; font-size:11px; font-weight:600; color:#B4762A; letter-spacing:2px; }
+  .lang-toggle { background:#7B1E1E; color:#FFF3D6; border:none; padding:8px 18px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 3px 8px rgba(123,30,30,.35); }
+  .lang-toggle:hover { background:#932626; }
+
+  /* hero */
+  .hero { text-align:center; padding:34px 18px 30px; background:linear-gradient(160deg,#FFF3D6 0%,#FFE7C2 55%,#FFDFE0 100%); border:1px solid #EFD9A7; border-radius:22px; box-shadow:0 10px 28px rgba(160,100,20,.12); }
+  .hero .om { font-size:30px; color:#C77400; }
+  .hero h1 { font-size:34px; font-weight:800; color:#7B1E1E; margin:6px 0 4px; line-height:1.3; }
+  .hero h1 .grad { background:linear-gradient(90deg,#B3540A,#D97706,#B91C1C); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p.sub { font-size:17px; color:#5C4632; max-width:760px; margin:8px auto 0; }
+  .chips { margin-top:18px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+  .chip { background:#fff; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:14px; padding:7px 16px; border-radius:999px; box-shadow:0 2px 6px rgba(160,100,20,.15); }
+
+  /* notice / specialty blocks */
+  .block { background:#fff; border:1px solid #F0DFBB; border-left:6px solid #D97706; border-radius:16px; padding:22px 24px; margin-top:26px; box-shadow:0 6px 18px rgba(160,100,20,.08); }
+  .block h2 { font-size:21px; color:#7B1E1E; margin-bottom:8px; }
+  .block p { font-size:15.5px; color:#43322A; }
+  .block .micro { font-size:13.5px; color:#6B5847; margin-top:8px; }
+  .block.gold { border-left-color:#B91C1C; background:linear-gradient(180deg,#FFFDF6,#FFF7E6); }
+
+  /* services */
+  .sec-title { text-align:center; margin:42px 0 6px; font-size:28px; font-weight:800; color:#7B1E1E; }
+  .sec-sub { text-align:center; color:#7A6248; font-size:15px; margin-bottom:24px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  @media (max-width:900px){ .grid{ grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:600px){ .grid{ grid-template-columns:1fr;} .hero h1{font-size:27px;} }
+  .card { background:#fff; border:1px solid #F0DFBB; border-radius:20px; padding:20px 18px 18px; text-align:center; box-shadow:0 8px 22px rgba(160,100,20,.10); display:flex; flex-direction:column; }
+  .ph { perspective:900px; margin:2px auto 10px; width:88%; }
+  .ph img { width:100%; height:200px; object-fit:contain; display:block; transform:rotateY(-10deg) rotateX(2deg); filter:drop-shadow(16px 20px 12px rgba(90,50,10,.35)); transition:transform .45s ease, filter .45s ease; }
+  .card:hover .ph img { transform:rotateY(0deg) rotateX(0deg); filter:drop-shadow(0 10px 10px rgba(90,50,10,.25)); }
+  .card h3 { font-size:19px; color:#7B1E1E; font-weight:700; line-height:1.4; min-height:52px; }
+  .card p.desc { font-size:14.5px; color:#55433A; flex:1; margin:6px 0 12px; }
+  .price { display:inline-block; background:#C0392B; color:#fff; font-family:'Poppins',sans-serif; font-weight:700; font-size:16px; padding:4px 18px; border-radius:999px; margin-bottom:14px; box-shadow:0 3px 8px rgba(192,57,43,.35); }
+  .price .small { font-size:12.5px; font-weight:600; }
+  .btn { display:inline-block; background:linear-gradient(90deg,#B3540A,#D97706); color:#fff; text-decoration:none; font-weight:700; font-size:15px; padding:10px 22px; border-radius:999px; box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .btn:hover { filter:brightness(1.08); }
+
+  /* free strip */
+  .free-strip { margin-top:30px; background:linear-gradient(90deg,#7B1E1E,#B91C1C); color:#FFF3D6; border-radius:18px; padding:22px 26px; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; box-shadow:0 10px 24px rgba(123,30,30,.30); }
+  .free-strip .t { font-size:18px; font-weight:700; }
+  .free-strip .t span { color:#FFD97A; }
+  .free-strip .btn { background:#FFD97A; color:#7B1E1E; box-shadow:none; }
+
+  /* doubts + faq */
+  .doubts p { margin:7px 0; font-size:15.5px; }
+  .faq-item { background:#fff; border:1px solid #F0DFBB; border-radius:14px; padding:16px 20px; margin-top:14px; }
+  .faq-item h3 { font-size:16.5px; color:#7B1E1E; margin-bottom:4px; }
+  .faq-item p { font-size:15px; color:#4A382C; }
+
+
+  /* testimonials */
+  .tgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  @media (max-width:900px){ .tgrid{ grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:600px){ .tgrid{ grid-template-columns:1fr;} }
+  .tcard { background:#fff; border:1px solid #F0DFBB; border-top:5px solid #D97706; border-radius:16px; padding:18px 20px; box-shadow:0 6px 16px rgba(160,100,20,.08); }
+  .tcard .q { font-size:15px; color:#4A382C; font-style:italic; }
+  .tcard .who { margin-top:10px; font-weight:700; color:#7B1E1E; font-size:14.5px; }
+
+  /* footer */
+  .footer { margin-top:42px; text-align:center; background:#FFF3D6; border:1px solid #EFD9A7; border-radius:16px; padding:20px 14px; font-size:14.5px; color:#5C4632; }
+  .footer a { color:#B3540A; font-weight:700; text-decoration:none; }
+  .footer .line { font-weight:700; color:#7B1E1E; }
+</style>
+</head>
+<body class="lang-hi">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Sanjivani Jyotish<small>SANJIVANI JYOTISH SANSTHAN</small></div>
+    <button class="lang-toggle" onclick="toggleLanguage()">English / हिंदी</button>
+  </div>
+
+  <div class="hero">
+    <div class="om">॥ ॐ ॥</div>
+    <h1><span class="hi">संजीवनी ज्योतिष संस्थान : <span class="grad">वैदिक ज्योतिष और मार्गदर्शन</span></span><span class="en">Sanjivani Jyotish Sansthan : <span class="grad">Vedic Astrology &amp; Guidance</span></span></h1>
+    <p class="sub hi">पराशरी, जैमिनी, KP और BNN - इन 4 प्रमुख प्रणालियों से ग्रहों की Strength और State का गहन एनालिसिस करके ही हर निष्कर्ष निकाला जाता है।</p>
+    <p class="sub en">Every conclusion is reached only after an in-depth analysis of planetary strength and state through 4 major systems - Parashari, Jaimini, KP and BNN.</p>
+    <div class="chips">
+      <div class="chip"><span class="hi">100% Manual एनालिसिस</span><span class="en">100% Manual Analysis</span></div>
+      <div class="chip"><span class="hi">Micro-Level जांच</span><span class="en">Micro-Level Examination</span></div>
+      <div class="chip"><span class="hi">PDF + Audio Note विकल्प</span><span class="en">PDF + Audio Note Option</span></div>
+      <div class="chip"><span class="hi">Doubts बिल्कुल Free</span><span class="en">Doubts Cleared Free</span></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="hi">ध्यान रहे : 100% Manual In-depth Analysis</span><span class="en">Please Note : 100% Manual In-depth Analysis</span></h2>
+    <p class="hi">इस Analysis में ग्रहों की Strength का Highly Micro-Level* चेक किया गया है। इसीलिए इसमें दिया हुआ Analysis पूरी तरीके से हमारी Deep Research और मेहनत का नतीजा है, जिससे Analysis Delivery में 1 से 2 दिन का समय लग सकता है। कृपया इसका ध्यान रखें।</p>
+    <p class="en">This Analysis involves a Highly Micro-Level* examination of planetary Strength. Therefore, the detailed insights provided in this Analysis are purely the result of our Deep Research and hard work, due to which the Analysis Delivery may take 1 to 2 days. Please keep this in mind.</p>
+    <p class="micro hi">* Micro-Level चेक में शामिल: अस्त, वक्री, वर्गोत्तम, शत्रु/मित्र/सम राशि, उच्च/नीच/नीचभंग, षड्बल, भावबल, अष्टकवर्ग, भिन्नाष्टकवर्ग, षोडशवर्ग, विंशोपक, चलित, नवांश, स्वांश-कारकांश, आरूढ़ पद, चर कारक, पुष्कर भाग, मृत्यु भाग, नवतारा चक्र, योग-दोष, अर्गला, उपग्रह, स्पेशल लग्न। (विंशोत्तरी दशा, योगिनी दशा, त्रिभागी दशा, अष्टोत्तरी दशा, KP दशा, चर दशा, डबल ट्रांजिट)</p>
+    <p class="micro en">* Micro-Level examination includes: Combust (Ast), Retrograde (Vakri), Vargottam, Enemy/Friend/Neutral signs, Exalted/Debilitated/Neechbhang, Shadbala, Bhavabala, Ashtakvarga, Bhinnashtakvarga, Shodashvarga, Vimsopaka, Chalit, Navamsha, Svamsha-Karakamsha, Arudha Pada, Chara Karaka, Pushkar Bhaga, Mrityu Bhaga, Navatara Chakra, Yoga-Dosha, Argala, Upagraha, Special Lagna. (Vimshottari Dasha, Yogini Dasha, Tribhagi Dasha, Ashtottari Dasha, KP Dasha, Chara Dasha, Double Transit)</p>
+  </div>
+
+  <div class="block gold">
+    <h2><span class="hi">हमारी विशेषता</span><span class="en">Our Specialty</span></h2>
+    <p class="hi">Accurate Prediction के लिए हम 4 प्रमुख Astrological Systems से ग्रहों की Strength और State का In-depth Analysis करते हैं, जो कोई और नहीं करता। हम Analysis specially आपके लिए personally tailored बनाते हैं। इसीलिए आप हमारी Accuracy पर पूरी तरीके से भरोसा कर सकते हैं।</p>
+    <p class="en">For accurate predictions, we only reach a conclusion after doing an in-depth analysis of the strength and state of the planets using 4 major astrological systems. We create an analysis that is personally tailored just for you. That is why you can completely trust our accuracy.</p>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">हमारी मुख्य सेवाएँ</span><span class="en">Our Main Services</span></h2>
+  <p class="sec-sub hi">हर एनालिसिस 100% Manual बनता है - किसी service पर click करके पूरी जानकारी देखें</p>
+  <p class="sec-sub en">Every analysis is 100% manual - click any service to see full details</p>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQdbB8S1AXelUIbXvUk2kNUf40Gr4lcYF0w_qNzOMSw0gWAY6K_1I51Q55kFTIeKupSJiwqAtf94ndeG7V4JGOYuSYTTEYNwb9Nm7ETj27-uYI9MOtAx1tGuX-AGbdJgVwZ-qIscUm7yT1ZIKzSN1MQnqQTXsSSDiO4AD7uSIOu42G-vWkz0CxFvWMvB-1V4izLA7zzBXpD_Twv-gKMkum5v1j7AyijEJbq_8pEt=w1280" alt="Prashna Kundli Analysis"></div>
+      <h3><span class="hi">प्रश्न कुंडली एनालिसिस</span><span class="en">Prashna Kundli Analysis</span></h3>
+      <p class="desc hi">मन में कोई भी सवाल हो - नौकरी, विवाह, धन, स्वास्थ्य - प्रश्न कुंडली से सीधे और सटीक जवाब। 5 सवाल या 15 सवाल का combo, जैसा आप चुनें।</p>
+      <p class="desc en">Any question on your mind - job, marriage, money, health - get direct and accurate answers through Prashna Kundli. Choose 5 questions or the 15-question combo.</p>
+      <div><span class="price">₹299 <span class="small">/ 5 Ques</span> · ₹599 <span class="small">/ 15 Ques</span></span></div>
+      <a class="btn" target="_top" href="https://sites.google.com/view/astrosanjivani/QUES"><span class="hi">डिटेल्स देखें</span><span class="en">View Details</span> →</a>
+    </div>
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQfnwf_zG8lDxMXW64A57iow8jjybqxFkqnReLpryB1m1Shp7tG5uacIwlsetSjnSs_fl4H0xDh3BIdpCDIMmkgAlzOtqsztb0mM2p1sr0tOrcxo4wjgZKQEpp-haGFpmUrBVBrfd2qLn4IMZUZIMHKXXVQEgX5q3iypQcaqYib7W51f_GCap1GXABEm3miRjj0UwNv7yXr-qqlmY2QbvyAVAnkpxvE1ozrgkmRr7cw=w1280" alt="Marriage Analysis"></div>
+      <h3><span class="hi">पर्सनलाइज्ड विवाह एनालिसिस</span><span class="en">Personalized Marriage Analysis</span></h3>
+      <p class="desc hi">जीवनसाथी का स्वभाव, रूप-रंग, करियर और स्वभाव से लेकर विवाह के बाद के जीवन तक - विवाह से जुड़ी हर बात का गहन एनालिसिस।</p>
+      <p class="desc en">From your spouse's nature, appearance and career to life after marriage - an in-depth analysis of everything about your marriage.</p>
+      <div><span class="price">₹599</span></div>
+      <a class="btn" target="_top" href="https://sites.google.com/view/astrosanjivani/MR"><span class="hi">डिटेल्स देखें</span><span class="en">View Details</span> →</a>
+    </div>
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQdsfKJsFEElWRMmXcVKIihNEqF1L64AawMOe0XB2iDYq7PZ37d1sPzUzt1yLmrHG_N99qSp11U7js5kNwGZ56eJx_q4yWJFM1zFwictu3k0Uw_cAf82EPBPP-4t9g4VHYepoUhwBrCSnydQmtNCQJwkc1cT2sjX_LRnZTsMPDC0G8wAorT2u0s8r5TiWyhcaWJlIcJTEwa59NwTDMv6pzsTa1a9-uYIkUY9_zJo=w1280" alt="Marriage Timing Analysis"></div>
+      <h3><span class="hi">विवाह समय एनालिसिस</span><span class="en">Marriage Timing Analysis</span></h3>
+      <p class="desc hi">शादी कब होगी? 4 प्रणालियों और 5 से अधिक दशा पद्धतियों से जांचकर विवाह का सही समय और अवधि बताई जाती है।</p>
+      <p class="desc en">When will you get married? Your exact marriage time-window is determined through 4 systems and 5+ dasha methods.</p>
+      <div><span class="price">₹299</span></div>
+      <a class="btn" target="_top" href="https://sites.google.com/view/astrosanjivani/MTR"><span class="hi">डिटेल्स देखें</span><span class="en">View Details</span> →</a>
+    </div>
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQc7_avr3ESRT3UkY4Wy5LC1RcqPsFyMQ92sXkyPUVZh3nDuNBNROkidY5XpLTW-byRtpBUU-1wRnRrAC95VlTRTz_45ElCw3PGBB3_N3vYet7S7i-3sIRE6ZbCLBQaC6yW9GLQwNbuhfgA87RehYV9zFYL1wpjT_2DtyOZYC6KHQyLKVkOySpztxilkNKdpiCrW0shaMydE0kJbDiYhyZ0dxJeNGEHv9LuGNgmkc-A=w1280" alt="Career Analysis Lite"></div>
+      <h3><span class="hi">करियर एनालिसिस - Lite</span><span class="en">Career Analysis - Lite</span></h3>
+      <p class="desc hi">जॉब या बिज़नेस - कौनसा रास्ता आपके लिए सही है? सरकारी नौकरी के योग और करियर की सही दिशा का स्पष्ट जवाब।</p>
+      <p class="desc en">Job or business - which path is right for you? A clear answer on government job yogas and the right career direction.</p>
+      <div><span class="price">₹299</span></div>
+      <a class="btn" target="_top" href="https://sites.google.com/view/astrosanjivani/CR"><span class="hi">डिटेल्स देखें</span><span class="en">View Details</span> →</a>
+    </div>
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQe-iQ3ePTp4uCaLiqxmvpiJeMSCn_uILB4z4QZuBGhZ-C6AaCZkpU_6QqixelkRw7eitHbBXmvB6EWCQOKrbjIk4p9X0p1dghC-cuHa_d9qlOFEaJMpTsXQM09gLOR_umJ6mqBJ7KcsPMyqj-SyMNM0-vZiiq-_S4JqUFG30DnteIYSri9QFFuUjTPMPGyv9P7xi3C1GnwQbdR9YgNfErOO5ZnFtYJutGG8SzI5uHY=w1280" alt="Career Analysis Full"></div>
+      <h3><span class="hi">पर्सनलाइज्ड करियर एनालिसिस</span><span class="en">Personalized Career Analysis</span></h3>
+      <p class="desc hi">करियर की संपूर्ण गहन जानकारी - सही क्षेत्र और सेक्टर, नौकरी बदलने या promotion का समय, बिज़नेस के प्रकार और विदेश के योग।</p>
+      <p class="desc en">A complete in-depth career analysis - ideal fields and sectors, timing for job change or promotion, suitable business types and foreign prospects.</p>
+      <div><span class="price">₹599</span></div>
+      <a class="btn" target="_top" href="https://sites.google.com/view/astrosanjivani/CRFULL"><span class="hi">डिटेल्स देखें</span><span class="en">View Details</span> →</a>
+    </div>
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQct_X_kKvSBsxaN4843T88mJJQuMWt4_5f9yvntm0hx9uf3oWfpvUs_E9G39IBJ9Mj3Jm1tunxHRgUDJJVg9dieu6LXJG3iY7aOu-yh0cLzoNDFyETJ8LhjyCQXvtHYi0pr_ulQBDsWXtjuNenNO2CkCQK6Z7PSujEYoDxKYUzENiFXj0NgcAZcGDokGC9sp-RJfYROrQT2AZTm0ahoTekYsdiH4o30A0wMoUqd=w1280" alt="Education Analysis"></div>
+      <h3><span class="hi">शिक्षा एनालिसिस</span><span class="en">Personalized Education Analysis</span></h3>
+      <p class="desc hi">आपके बच्चे की पढ़ाई का संपूर्ण रोडमैप - सही Stream (Science, Commerce, Arts), उपयुक्त विषय, बोर्ड और प्रतियोगी परीक्षा की संभावनाएँ।</p>
+      <p class="desc en">A complete roadmap of your child's education - the right stream (Science, Commerce, Arts), suitable subjects, board and competitive exam prospects.</p>
+      <div><span class="price">₹499</span></div>
+      <a class="btn" target="_blank" href="https://pages.razorpay.com/Full-Education-Analysis"><span class="hi">डिटेल्स व ऑर्डर</span><span class="en">Details &amp; Order</span> →</a>
+    </div>
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQfviFeHjHyrtEWIVNpuYE3y-BSqf5UKCrN-4Z1n7Mdceod4AhXHstXvxwEr0hVjRgTcv0HT8YM94UxSvuhVtnYbDDqKc37pEQ6_7kPQIuGIWk2pB3kQxrsmtJtwxb543gWMUmDLqXEjfd3u9aYykvPMScuy6gbYtHfWxGrJk318ToaGL1qZ6sxSR8aWm1V_MmRUPcKC685qOAp9_oLBgriLFXsvT4cXKBR2-ox-MCQ=w1280" alt="Full Kundli Analysis"></div>
+      <h3><span class="hi">पर्सनलाइज्ड कुंडली एनालिसिस</span><span class="en">Personalized Kundli Analysis</span></h3>
+      <p class="desc hi">जीवन के हर क्षेत्र का सबसे गहन एनालिसिस - 20 वर्षों की भविष्यवाणी, सभी 20 षोडशवर्ग चार्ट और जीवन के हर पहलू की विस्तृत जानकारी।</p>
+      <p class="desc en">The most in-depth analysis of every area of life - a 20-year predictive forecast, all 20 Shodashvarga charts and detailed insights on everything.</p>
+      <div><span class="price">₹799</span></div>
+      <a class="btn" target="_top" href="https://sites.google.com/view/astrosanjivani/PK"><span class="hi">डिटेल्स देखें</span><span class="en">View Details</span> →</a>
+    </div>
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQcr3IppZdifoqqH_Zz26aXXokfARpydWQNSh6SlCDZd7RG1OO28l-r8uINVCregFcXoUAovj38UqwcERPh6L2QiLFMjNwAhuu5O887iv2ZJYTwakX59Hj-3G93yvHHTIDOssB8CdcZ-kO7qPEzDxhggiqmUjmUOm12XmXjm3M4r7uRC9WnNHpn-dNp_wCCGjq0m9t9RVFCnQVavYFPZPMGzF4YiBU_Sr0M82A=w1280" alt="Kundli Milan Analysis"></div>
+      <h3><span class="hi">कुंडली मिलान एनालिसिस</span><span class="en">Kundli Milan Analysis</span></h3>
+      <p class="desc hi">सिर्फ गुण मिलान नहीं - दोनों के स्वभाव, मानसिक और भावनात्मक सामंजस्य, मांगलिक व नाड़ी दोष और उनके उपायों की पूरी जांच।</p>
+      <p class="desc en">Not just Guna Milan - a complete check of temperament, mental and emotional harmony, Manglik and Nadi dosha and their remedies.</p>
+      <div><span class="price">₹599</span></div>
+      <a class="btn" target="_top" href="https://sites.google.com/view/astrosanjivani/MILAN"><span class="hi">डिटेल्स देखें</span><span class="en">View Details</span> →</a>
+    </div>
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQfss3gllZo-WvCftGfTpJRzfzkEsxM8X2Bs_VI67S904n_ngHWL05g9xIHp_IdbsZ_xCSdHcZJhLhFSnoch6mtOvcINfgVqy1KjCIqupX2l0daR1OblJgJSK8S5jsnwX0uhjlyh1ozsPCtKASMOVMbPVf6BDlzIxhQl99j7yR17gRQsRtoRKbyYvlMo86Eb1TZh8hR_rtkvYv-7o1TOMOu0jhKQ4p9MPDdrNTUDgB0=w1280" alt="Child Birth Analysis"></div>
+      <h3><span class="hi">संतान सुख एनालिसिस</span><span class="en">Child Birth Analysis</span></h3>
+      <p class="desc hi">संतान कब होगी, कितनी होगी - गर्भधारण और प्रसव का सही समय, देरी के ज्योतिषीय कारण और उनके उपाय।</p>
+      <p class="desc en">When and how many children - the right time for conception and delivery, astrological reasons for delays and their remedies.</p>
+      <div><span class="price">₹499 <span class="small">· Joint ₹799</span></span></div>
+      <a class="btn" target="_top" href="https://sites.google.com/view/astrosanjivani/CHBR"><span class="hi">डिटेल्स देखें</span><span class="en">View Details</span> →</a>
+    </div>
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQfQ8Oyv6Df-twRal3iMZjRF_XelwieR_DUHN7EpDl40cTS1uAOuTli0GRBGkra-BEkE16zPOdGwTcjUXAi0stGk6q1DtoO9MFXWvVL8xf5B4LXePkYO_bKEx0BcAVJ5uNqhVM8FtRLYa_zF1reKph4sxlwKblqY21_DIvZjJDrp15T-33N5Or9IWqhhD5dOFXz4IV0spwvZ27Fw75ebuEAhr3LyAnD_VVmzeEsAqWc=w1280" alt="Birth Time Rectification"></div>
+      <h3><span class="hi">जन्म समय सुधार (BTR) एनालिसिस</span><span class="en">Birth Time Rectification (BTR)</span></h3>
+      <p class="desc hi">जन्म का समय गलत या अनिश्चित है? जीवन की घटनाओं से जांचकर सही जन्म समय सेकंड तक निकाला जाता है - हर भविष्यवाणी की नींव।</p>
+      <p class="desc en">Birth time wrong or uncertain? Your exact birth time is rectified to the second by verifying major life events - the foundation of every prediction.</p>
+      <div><span class="price">₹699</span></div>
+      <a class="btn" target="_top" href="https://sites.google.com/view/astrosanjivani/BTR"><span class="hi">डिटेल्स देखें</span><span class="en">View Details</span> →</a>
+    </div>
+
+    <div class="card">
+      <div class="ph"><img src="https://sites.google.com/sitesv-images-rt/APXyLQd2iBbRUM5CuiDLwgkOjhurzNfS088igt2nldEt5Qmy-Uzvjji-bEJjNzIGjmR2eYUrkZF6avWM1Yv5a8fYnYlJCpqBDWuoZZvwCFGJCqcJqufrdMNAvsWBCHSERkqH_jM1wo_yjBM8OKAS-utLTZSuu2C29kyvbObFkpUcCrqGILdrWCwRGAqJmjZEuG73k285UZ8pNEr7W4ImLQ2OsB4gUQVBfWqNbNgJBQGKgGs=w1280" alt="Year Book Analysis"></div>
+      <h3><span class="hi">वार्षिक एनालिसिस (Year Book)</span><span class="en">Yearly Analysis (Year Book)</span></h3>
+      <p class="desc hi">आने वाले 12 महीनों का महीना-दर-महीना मार्गदर्शन - करियर, धन, स्वास्थ्य, परिवार और यात्राओं के शुभ-अशुभ समय पहले से जानें।</p>
+      <p class="desc en">Month-by-month guidance for the coming 12 months - know the auspicious and challenging times for career, wealth, health, family and travel in advance.</p>
+      <div><span class="price">₹299</span></div>
+      <a class="btn" target="_top" href="https://sites.google.com/view/astrosanjivani/YR"><span class="hi">डिटेल्स देखें</span><span class="en">View Details</span> →</a>
+    </div>
+
+  </div>
+
+  <div class="free-strip">
+    <div class="t"><span class="hi">पहली बार आ रहे हैं? <span>सिर्फ ₹51</span> में Free Consultation का Registration करें</span><span class="en">Visiting for the first time? Register for a Free Consultation at <span>just ₹51</span></span></div>
+    <a class="btn" target="_blank" href="https://pages.razorpay.com/Free-Consultation"><span class="hi">Registration करें</span><span class="en">Register Now</span> →</a>
+  </div>
+
+  <div class="block doubts">
+    <h2><span class="hi">एनालिसिस के बाद के सवाल (Doubts)</span><span class="en">Post-Analysis Queries (Doubts)</span></h2>
+    <p class="hi">➤ <b>डाउट्स क्लीयरेंस:</b> PDF में जवाब पढ़कर अगर मन में कोई डाउट रहा तो इसकी चिंता न करें। PDF में पहले से सभी डाउट्स का समाधान किया जाता है।</p>
+    <p class="hi">➤ <b>हमारा कमिटमेंट:</b> अगर फिर भी कोई डाउट हो तो दोबारा PDF भेजकर आपके सभी Doubts क्लियर किए जाते हैं। हम अपने क्लाइंट्स का साथ कभी नहीं छोड़ते जब तक उनके सभी डाउट्स क्लियर नहीं हो जाते।</p>
+    <p class="hi">➤ <b>कोई अतिरिक्त शुल्क नहीं:</b> आपको दोबारा डाउट्स क्लीयर करने के लिए कोई Extra चार्ज नहीं देना होता है। यह सर्विस एनालिसिस के Price में ही Included है।</p>
+    <p class="en">➤ <b>Doubts Clearance:</b> If you have any doubts in your mind after reading the answers in the PDF, don't worry. All potential doubts are already addressed in the PDF itself.</p>
+    <p class="en">➤ <b>Our Commitment:</b> If you still have any doubts, they will be resolved by sending you an updated PDF. We never leave our clients' side until all their doubts are fully cleared.</p>
+    <p class="en">➤ <b>No Extra Charges:</b> You do not have to pay any extra charges for getting your doubts cleared again. This service is already included in the analysis price.</p>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">आम सवाल (FAQ)</span><span class="en">Common Questions (FAQ)</span></h2>
+
+  <div class="faq-item">
+    <h3><span class="hi">क्या यह एनालिसिस computer से बनी हुई होती है?</span><span class="en">Is this analysis computer-generated?</span></h3>
+    <p class="hi">बिल्कुल नहीं। हर एनालिसिस 100% Manual बनता है - 4 प्रणालियों (पराशरी, जैमिनी, KP, BNN) से ग्रहों की Micro-Level जांच के बाद ही निष्कर्ष दिया जाता है। इसीलिए delivery में 1 से 2 दिन का समय लगता है।</p>
+    <p class="en">Not at all. Every analysis is 100% manual - conclusions are drawn only after a micro-level examination of the planets through 4 systems (Parashari, Jaimini, KP, BNN). That is why delivery takes 1 to 2 days.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3><span class="hi">एनालिसिस कैसे और कितने समय में मिलेगा?</span><span class="en">How and when will I get my analysis?</span></h3>
+    <p class="hi">Payment के बाद आपका एनालिसिस PDF के रूप में आपके Email पर भेजा जाता है, आमतौर पर 1 से 2 दिन में। चाहें तो ₹100 के अतिरिक्त शुल्क पर अपनी एनालिसिस की मुख्य बातें 20 Minute की Audio Voice Note में भी ले सकते हैं - Simple भाषा में आवाज़ में समझाई हुई।</p>
+    <p class="en">After payment, your analysis is sent to your email as a PDF, usually within 1 to 2 days. You can also get the main points of your analysis in a 20-minute Audio Voice Note for an additional ₹100 - explained in simple language.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3><span class="hi">क्या call या message पर भी एनालिसिस होता है?</span><span class="en">Is analysis also done on call or message?</span></h3>
+    <p class="hi">एनालिसिस सिर्फ PDF के रूप में ही दिया जाता है, ताकि हर बात विस्तार से और लिखित में आपके पास रहे। PDF के बाद के सभी Doubts बिना किसी अतिरिक्त शुल्क के clear किए जाते हैं।</p>
+    <p class="en">Analysis is provided only as a PDF, so that everything stays with you in detail and in writing. All your doubts after the PDF are cleared without any extra charge.</p>
+  </div>
+
+
+  <h2 class="sec-title"><span class="hi">ग्राहकों के अनुभव</span><span class="en">Client Feedbacks</span></h2>
+  <p class="sec-sub hi">जिन्होंने एनालिसिस लिया, उनके अपने शब्द</p>
+  <p class="sec-sub en">In the words of those who took an analysis</p>
+  <div class="tgrid">
+    <div class="tcard"><p class="q hi">"मैम की मैरेज टाइमिंग एनालिसिस बिल्कुल सटीक थी। मेरी शादी उसी महीने तय हुई जो उन्होंने बताया था। बहुत-बहुत धन्यवाद!"</p><p class="q en">"Astro Komal's marriage timing analysis was incredibly accurate. My marriage got fixed in the exact month she predicted!"</p><p class="who">- Priya S.</p></div>
+    <div class="tcard"><p class="q hi">"करियर को लेकर मैं परेशान था। एनालिसिस ने मुझे सही रास्ता दिखाया कि मुझे बिज़नेस करना चाहिए। आज मैं बहुत खुश हूँ।"</p><p class="q en">"The career analysis cleared all my doubts between starting a business and continuing my job. Highly recommend her analysis."</p><p class="who">- Rahul V.</p></div>
+    <div class="tcard"><p class="q hi">"प्रश्न कुंडली का विश्लेषण बहुत गहराई से किया गया था। आपने सिर्फ जवाब नहीं दिया बल्कि ग्रहों की स्थिति भी अच्छे से समझाई।"</p><p class="q en">"Thank you for the detailed Question Analysis. You didn't just give answers but properly explained the planetary positions."</p><p class="who">- Ananya K.</p></div>
+    <div class="tcard"><p class="q hi">"सालों की परेशानी के बाद प्रसव पूर्वानुमान एनालिसिस से हमें बहुत उम्मीद मिली। आपके बताये उपाय बहुत काम आये।"</p><p class="q en">"The childbirth prediction gave us so much hope and clarity after years of confusion. The remedies worked perfectly. Truly blessed!"</p><p class="who">- Neha M.</p></div>
+    <div class="tcard"><p class="q hi">"मेरे जन्म के समय को लेकर हमेशा कन्फ्यूजन रहता था। BTR एनालिसिस ने इसे एकदम सटीक कर दिया। आपका एनालिसिस बेहतरीन है।"</p><p class="q en">"My birth time was always a confusion. The BTR analysis fixed it to the exact minute. Amazing accuracy and detailed technical summary!"</p><p class="who">- Vikram T.</p></div>
+    <div class="tcard"><p class="q hi">"वार्षिक भविष्यफल एनालिसिस मेरी हर साल की गाइड है। हर महीने का जो एनालिसिस आप देती हैं, उससे मुझे साल की प्लानिंग करने में बहुत मदद मिलती है।"</p><p class="q en">"The Annual Horoscope is my go-to guide every year. The month-by-month yearly breakdown helps me plan my finances flawlessly."</p><p class="who">- Sneha R.</p></div>
+  </div>
+
+  <div class="footer">
+    <div class="line">◆ Sanjivani Jyotish Sansthan ◆</div>
+    <div style="margin-top:8px;">
+      📧 <a href="mailto:komalastro14@gmail.com">komalastro14@gmail.com</a> &nbsp;|&nbsp;
+      Insta : <a target="_blank" href="https://instagram.com/astro.komal">astro.komal</a> • <a target="_blank" href="https://instagram.com/astro.sanjivani">astro.sanjivani</a> &nbsp;|&nbsp;
+      Telegram : <a target="_blank" href="https://t.me/Sanjivani_Jyotish">Sanjivani_Jyotish</a> &nbsp;|&nbsp;
+      WhatsApp : 9552636556
+    </div>
+    <div style="margin-top:6px; font-size:13px;">© Sanjivani Jyotish Sansthan | Astro Komal</div>
+  </div>
+
+</div>
+<script>
+  function toggleLanguage() {
+    document.body.classList.toggle('lang-en');
+    document.body.classList.toggle('lang-hi');
+  }
+</script>
+</body>
+</html>
