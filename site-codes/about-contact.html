@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About & Contact Us - Sanjivani Jyotish Sansthan</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans Devanagari','Poppins',sans-serif; background:#FFF9EF; color:#33241A; line-height:1.65; }
+  body.lang-hi .en { display:none !important; }
+  body.lang-en .hi { display:none !important; }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 16px 40px; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 4px; }
+  .brand { font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; color:#7B1E1E; letter-spacing:.3px; }
+  .brand small { display:block; font-size:11px; font-weight:600; color:#B4762A; letter-spacing:2px; }
+  .lang-toggle { background:#7B1E1E; color:#FFF3D6; border:none; padding:8px 18px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 3px 8px rgba(123,30,30,.35); }
+  .lang-toggle:hover { background:#932626; }
+  .hero { text-align:center; padding:30px 18px 26px; background:linear-gradient(160deg,#FFF3D6 0%,#FFE7C2 55%,#FFDFE0 100%); border:1px solid #EFD9A7; border-radius:22px; box-shadow:0 10px 28px rgba(160,100,20,.12); }
+  .hero .om { font-size:28px; color:#C77400; }
+  .hero h1 { font-size:30px; font-weight:800; color:#7B1E1E; margin:6px 0 4px; line-height:1.35; }
+  @media (max-width:600px){ .hero h1{font-size:24px;} }
+  .block { background:#fff; border:1px solid #F0DFBB; border-left:6px solid #D97706; border-radius:16px; padding:22px 24px; margin-top:26px; box-shadow:0 6px 18px rgba(160,100,20,.08); }
+  .block h2 { font-size:21px; color:#7B1E1E; margin-bottom:8px; }
+  .block p { font-size:15.5px; color:#43322A; margin-top:8px; }
+  .block p:first-of-type { margin-top:0; }
+  .block.gold { border-left-color:#B91C1C; background:linear-gradient(180deg,#FFFDF6,#FFF7E6); }
+  .bhead { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .bhead h2 { margin-bottom:0 !important; }
+  .bicon { width:46px; height:46px; flex:0 0 46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:linear-gradient(135deg,#F59E0B,#B3540A); box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .block.gold .bicon { background:linear-gradient(135deg,#B91C1C,#7B1E1E); box-shadow:0 4px 10px rgba(123,30,30,.35); }
+  .sysbadges { margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; }
+  .sysbadges span { background:linear-gradient(90deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:14px; padding:6px 18px; border-radius:999px; box-shadow:0 3px 8px rgba(123,30,30,.30); }
+  .taglabel { font-size:14px; font-weight:700; color:#7B1E1E; margin-top:14px; }
+  .price { display:inline-block; background:#C0392B; color:#fff; font-family:'Poppins',sans-serif; font-weight:700; font-size:17px; padding:5px 20px; border-radius:999px; margin:12px 0 6px; box-shadow:0 3px 8px rgba(192,57,43,.35); }
+  .btn { display:inline-block; background:linear-gradient(90deg,#B3540A,#D97706); color:#fff; text-decoration:none; font-weight:700; font-size:15px; padding:10px 22px; border-radius:999px; box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .btn:hover { filter:brightness(1.08); }
+  .cgrid { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:6px; }
+  @media (max-width:600px){ .cgrid{ grid-template-columns:1fr; } }
+  .ccard { background:#FFFDF6; border:1px solid #F0DFBB; border-radius:16px; padding:18px; text-align:center; }
+  .ccard .ic { font-size:30px; }
+  .ccard h3 { font-size:16.5px; color:#7B1E1E; margin:6px 0 4px; }
+  .ccard p { font-size:15px; color:#43322A; }
+  .ccard a { color:#B3540A; font-weight:700; text-decoration:none; word-break:break-word; }
+  .faq-item { background:#fff; border:1px solid #F0DFBB; border-radius:14px; padding:16px 20px; margin-top:14px; }
+  .faq-item h3 { font-size:16.5px; color:#7B1E1E; margin-bottom:4px; }
+  .faq-item p { font-size:15px; color:#4A382C; }
+  .paywrap { text-align:center; margin-top:14px; }
+  .footer { margin-top:42px; text-align:center; background:#FFF3D6; border:1px solid #EFD9A7; border-radius:16px; padding:20px 14px; font-size:14.5px; color:#5C4632; }
+  .footer a { color:#B3540A; font-weight:700; text-decoration:none; }
+  .footer .line { font-weight:700; color:#7B1E1E; }
+</style>
+</head>
+<body class="lang-hi">
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">Sanjivani Jyotish<small>SANJIVANI JYOTISH SANSTHAN</small></div>
+    <button class="lang-toggle" onclick="toggleLanguage()">English / हिंदी</button>
+  </div>
+  <div class="hero">
+    <div class="om">॥ ॐ ॥</div>
+    <h1><span class="hi">हमारे बारे में और संपर्क करें (About & Contact Us)</span><span class="en">About & Contact Us</span></h1>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">👩</div><h2><span class="hi">हमारे बारे में</span><span class="en">About Us</span></h2></div>
+    <p class="hi"><b>Astro Komal</b><br>B.A., M.A. in Astrology, Jyotish Visharada</p>
+    <p class="en"><b>Astro Komal</b><br>B.A., M.A. in Astrology, Jyotish Visharada</p>
+    <p class="hi">Astro Komal 8+ वर्षों के अनुभव के साथ वैदिक ज्योतिष (पराशरी, जैमिनी, नाडी, KP - कृष्णमूर्ति पद्धति), लाल किताब, अंक ज्योतिष और हस्तरेखा शास्त्र में एक प्रसिद्ध विशेषज्ञ हैं। विभिन्न ज्योतिषीय प्रणालियों की गहरी समझ के साथ, वह Practical मार्गदर्शन प्रदान करती हैं जो व्यक्तियों को जीवन की जटिलताओं को समझने में मदद करता है।</p>
+    <p class="en">Astro Komal is a renowned expert with 8+ years of experience in Vedic Astrology (Parashari, Jaimini, Nadi, KP - Krishnamurti Paddhati), Lal Kitab, Numerology and Palmistry. With a deep understanding of various astrological systems, she provides practical guidance that helps individuals navigate the complexities of life.</p>
+    <p class="taglabel">Area of Expertise:</p>
+    <div class="sysbadges"><span class="hi">वैदिक ज्योतिष (पराशरी, जैमिनी, नाडी, KP) और लाल किताब</span><span class="en">Vedic Astrology (Parashari, Jaimini, Nadi, KP) and Lal Kitab</span><span class="hi">अंक ज्योतिष और हस्तरेखा शास्त्र</span><span class="en">Numerology and Palmistry</span><span class="hi">मैरिज और संबंधों की समस्याएं</span><span class="en">Marriage and Relationship Issues</span><span class="hi">Career और अध्ययन मार्गदर्शन</span><span class="en">Career and Study Guidance</span><span class="hi">साइकोलॉजी रीडिंग (मानसिक पठन)</span><span class="en">Psychology Reading</span></div>
+  </div>
+  <div class="block">
+    <div class="bhead"><div class="bicon">🏛️</div><h2><span class="hi">संजीवनी ज्योतिष संस्थान</span><span class="en">Sanjivani Jyotish Sansthan</span></h2></div>
+    <p class="hi">संजीवनी ज्योतिष संस्थान एक Online Platform है जो 100% Manual और Personalized ज्योतिषीय Analysis प्रदान करने के लिए समर्पित है। हमारी विशेषता हमारे In-depth Analysis में निहित है।</p>
+    <p class="en">Sanjivani Jyotish Sansthan is an online platform dedicated to providing 100% manual and personalized astrological Analysis. Our specialty lies in our in-depth Analysis.</p>
+    <p class="hi">हमारा मानना है कि ज्योतिषीय परामर्श एक जल्दबाजी में बनाया गया, Computer-Generated सारांश नहीं होना चाहिए। इसीलिए हम Highest Accuracy सुनिश्चित करने के लिए 4 प्रमुख प्रणालियों (पराशरी, जैमिनी, BNN, KP) के संयोजन का उपयोग करके हर कुंडली का Analysis करते हैं। हमारा Mission आपको आपके जीवन के लिए एक स्पष्ट, विश्वसनीय और प्रामाणिक Roadmap प्रदान करना है।</p>
+    <p class="en">We believe an astrological consultation should not be a hastily made, computer-generated summary. That is why, to ensure the highest accuracy, we analyse every chart using a combination of 4 major systems (Parashari, Jaimini, BNN, KP). Our mission is to provide you with a clear, reliable and authentic roadmap for your life.</p>
+  </div>
+  <div class="block">
+    <div class="bhead"><div class="bicon">📞</div><h2><span class="hi">हमसे संपर्क करें (Contact Us)</span><span class="en">Contact Us</span></h2></div>
+
+    <div class="cgrid">
+      <div class="ccard"><div class="ic">✉️</div><h3><span class="hi">हमें Email करें</span><span class="en">Email Us</span></h3><p><a href="mailto:komalastro14@gmail.com">komalastro14@gmail.com</a></p></div>
+      <div class="ccard"><div class="ic">📷</div><h3>Instagram</h3><p><a target="_blank" href="https://instagram.com/astro.komal">@astro.komal</a> | <a target="_blank" href="https://instagram.com/astro.sanjivani">@astro.sanjivani</a></p></div>
+      <div class="ccard"><div class="ic">💬</div><h3>WhatsApp</h3><p><a target="_blank" href="https://wa.me/919552636556">9552636556</a></p></div>
+      <div class="ccard"><div class="ic">📍</div><h3><span class="hi">कार्यालय का पता</span><span class="en">Office Address</span></h3><p class="hi">संजीवनी ज्योतिष संस्थान, सेकंड फ्लोर, सनराइज़ चैंबर्स, लोअर परेल स्टेशन (ईस्ट) के पास, सेनापति बापट मार्ग एक्सटेंशन, मुंबई - 400013, महाराष्ट्र, भारत (☎: 022-4872 3501)</p><p class="en">Sanjivani Jyotish Sansthan, Second Floor, Sunrise Chambers, Near Lower Parel Station (East), Senapati Bapat Marg Extension, Mumbai - 400013, Maharashtra, India (☎: 022-4872 3501)</p></div>
+    </div>
+  </div>
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">👑</div><h2><span class="hi">Premium 5-Year Consultation (5-वर्षीय Unlimited मार्गदर्शन)</span><span class="en">Premium 5-Year Consultation (5-Year Unlimited Guidance)</span></h2></div>
+    <p class="hi">जीवन एक लंबी यात्रा है और ग्रहों की चाल (दशा और गोचर) के अनुसार समय-समय पर सही मार्गदर्शन की आवश्यकता होती है। संजीवनी ज्योतिष संस्थान आपके लिए एक विशेष "5-Year Unlimited Consultation" Plan लेकर आया है।</p>
+    <p class="en">Life is a long journey, and as the planets move (Dasha and Transit), the right guidance is needed from time to time. Sanjivani Jyotish Sansthan brings you a special "5-Year Unlimited Consultation" plan.</p>
+    <p class="hi">➤ अगले 5 वर्षों तक, आप अपने जीवन, Career, मैरिज, या किसी भी अन्य विषय पर Unlimited प्रश्न पूछ सकते हैं।</p>
+    <p class="en">➤ For the next 5 years, you can ask unlimited questions about your life, Career, Marriage, or any other topic.</p>
+    <p class="hi">➤ जीवन के हर महत्वपूर्ण मोड़ और निर्णय पर आपको Accurate वैदिक ज्योतिषीय मार्गदर्शन मिलेगा।</p>
+    <p class="en">➤ At every important turn and decision of life, you will get accurate Vedic astrological guidance.</p>
+    <p class="hi">➤ बार-बार Consultation Fees देने की चिंता से पूरी तरह मुक्ति।</p>
+    <p class="en">➤ Complete freedom from the worry of paying consultation fees again and again.</p>
+    <div class="paywrap"><span class="price"><span class="hi">विशेष शुल्क (Special Offer): मात्र ₹3100</span><span class="en">Special Offer: Only ₹3100</span></span>
+    <form><script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_SYWVeahKxVn5up" async></script></form>
+    <p style="font-size:13px; color:#6B5847;">Secured by Razorpay</p></div>
+  </div>
+  <div class="footer">
+    <div class="line">◆ Sanjivani Jyotish Sansthan ◆</div>
+    <div style="margin-top:8px;">
+      📧 <a href="mailto:komalastro14@gmail.com">komalastro14@gmail.com</a> &nbsp;|&nbsp;
+      Insta : <a target="_blank" href="https://instagram.com/astro.komal">astro.komal</a> • <a target="_blank" href="https://instagram.com/astro.sanjivani">astro.sanjivani</a> &nbsp;|&nbsp;
+      Telegram : <a target="_blank" href="https://t.me/Sanjivani_Jyotish">Sanjivani_Jyotish</a> &nbsp;|&nbsp;
+      WhatsApp : <a target="_blank" href="https://wa.me/919552636556">9552636556</a>
+    </div>
+    <div style="margin-top:6px; font-size:13px;">© 2026 Sanjivani Jyotish Sansthan | Astro Komal</div>
+  </div>
+</div>
+<script>
+  function toggleLanguage() {
+    document.body.classList.toggle('lang-en');
+    document.body.classList.toggle('lang-hi');
+  }
+</script>
+</body>
+</html>
