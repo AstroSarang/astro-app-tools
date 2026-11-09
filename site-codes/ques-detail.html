@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prashna Kundli Analysis - Sanjivani Jyotish Sansthan</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans Devanagari','Poppins',sans-serif; background:#FFF9EF; color:#33241A; line-height:1.65; }
+  body.lang-hi .en { display:none !important; }
+  body.lang-en .hi { display:none !important; }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 16px 40px; }
+
+  /* header bar */
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 4px; }
+  .brand { font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; color:#7B1E1E; letter-spacing:.3px; }
+  .brand small { display:block; font-size:11px; font-weight:600; color:#B4762A; letter-spacing:2px; }
+  .lang-toggle { background:#7B1E1E; color:#FFF3D6; border:none; padding:8px 18px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 3px 8px rgba(123,30,30,.35); }
+  .lang-toggle:hover { background:#932626; }
+
+  /* hero */
+  .hero { padding:34px 26px 28px; background:linear-gradient(160deg,#FFF3D6 0%,#FFE7C2 55%,#FFDFE0 100%); border:1px solid #EFD9A7; border-radius:22px; box-shadow:0 10px 28px rgba(160,100,20,.12); margin-bottom:34px; }
+  .hero-grid { display:flex; gap:30px; align-items:center; }
+  .hero-photo { flex:0 0 300px; perspective:900px; }
+  .hero-photo img { width:100%; height:320px; object-fit:contain; display:block; transform:rotateY(-10deg) rotateX(2deg); filter:drop-shadow(16px 20px 12px rgba(90,50,10,.35)); transition:transform .45s ease, filter .45s ease; }
+  .hero:hover .hero-photo img { transform:rotateY(0deg) rotateX(0deg); filter:drop-shadow(0 10px 10px rgba(90,50,10,.25)); }
+  .hero-text { flex:1; text-align:left; }
+  .hero-text h1 { font-size:31px; font-weight:800; color:#7B1E1E; line-height:1.35; }
+  .hero-text h1 .grad { background:linear-gradient(90deg,#B3540A,#D97706,#B91C1C); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-text p.lead { font-size:17.5px; font-weight:700; color:#5C4632; margin-top:12px; }
+  .hero-text p.sub { font-size:16px; color:#5C4632; margin-top:6px; }
+  .chips { margin-top:18px; display:flex; flex-wrap:wrap; gap:10px; }
+  .chip { background:#fff; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:14px; padding:7px 16px; border-radius:999px; box-shadow:0 2px 6px rgba(160,100,20,.15); }
+  @media (max-width:760px){ .hero-grid{flex-direction:column;} .hero-text{text-align:center;} .chips{justify-content:center;} .hero-text h1{font-size:26px;} .hero-photo{flex:0 0 auto; width:230px;} .hero-photo img{height:280px;} }
+
+  /* blocks */
+  .block { background:#fff; border:1px solid #F0DFBB; border-left:6px solid #D97706; border-radius:16px; padding:22px 24px; margin-top:26px; box-shadow:0 6px 18px rgba(160,100,20,.08); }
+  .block h2 { font-size:21px; color:#7B1E1E; margin-bottom:8px; }
+  .block p { font-size:15.5px; color:#43322A; }
+  .block.gold { border-left-color:#B91C1C; background:linear-gradient(180deg,#FFFDF6,#FFF7E6); }
+  .bhead { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .bhead h2 { margin-bottom:0 !important; }
+  .bicon { width:46px; height:46px; flex:0 0 46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:linear-gradient(135deg,#F59E0B,#B3540A); box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .block.gold .bicon { background:linear-gradient(135deg,#B91C1C,#7B1E1E); box-shadow:0 4px 10px rgba(123,30,30,.35); }
+  .taglabel { font-size:13.5px; font-weight:700; color:#7B1E1E; margin-top:14px; }
+  .ptags { display:flex; flex-wrap:wrap; gap:9px; margin-top:4px; }
+  .ptag { display:inline-flex; align-items:center; gap:8px; background:#FFFDF6; border:1.5px solid #E3B341; border-radius:999px; padding:6px 15px 6px 7px; font-size:14.5px; color:#4A2C14; box-shadow:0 2px 6px rgba(123,30,30,.10); }
+  .ptag .n { background:linear-gradient(135deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:12.5px; min-width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0 3px; flex:none; }
+  .cnt { margin-left:auto; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:13px; padding:4px 14px; border-radius:999px; white-space:nowrap; }
+  .sysbadges { margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; }
+  .sysbadges span { background:linear-gradient(90deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:14px; padding:6px 18px; border-radius:999px; box-shadow:0 3px 8px rgba(123,30,30,.30); }
+
+  /* areas checklist */
+  .chk { display:grid; grid-template-columns:repeat(2,1fr); gap:2px 22px; margin-top:6px; }
+  .chk span { font-size:15px; color:#4A382C; padding:7px 2px; border-bottom:1px dashed #EBDCC0; }
+  .chk span::before { content:"\2713  "; color:#B3541E; font-weight:800; }
+  @media (max-width:640px){ .chk{grid-template-columns:1fr;} }
+  .featlist { margin-top:4px; }
+  .featlist p { font-size:15.5px; color:#43322A; margin:9px 0; }
+  .featlist p b { color:#7B1E1E; }
+
+  /* price options */
+  .sec-title { text-align:center; margin:42px 0 6px; font-size:28px; font-weight:800; color:#7B1E1E; }
+  .sec-sub { text-align:center; color:#7A6248; font-size:15px; margin-bottom:24px; }
+  .ogrid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:820px; margin:0 auto; }
+  @media (max-width:640px){ .ogrid{grid-template-columns:1fr;} }
+  .ocard { background:#fff; border:1.5px solid #F0DFBB; border-radius:20px; padding:26px 22px 22px; text-align:center; box-shadow:0 8px 22px rgba(160,100,20,.10); display:flex; flex-direction:column; }
+  .ocard.best { border:2px solid #D97706; }
+  .ocard .otag { display:inline-block; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:12.5px; padding:3px 14px; border-radius:999px; margin-bottom:10px; }
+  .ocard h3 { font-size:20px; color:#7B1E1E; font-weight:700; }
+  .ocard .oprice { font-family:'Poppins',sans-serif; font-size:36px; font-weight:800; color:#C0392B; margin:8px 0 2px; }
+  .ocard p { font-size:14.5px; color:#55433A; flex:1; margin:4px 0 16px; }
+  .btn { display:inline-block; background:linear-gradient(90deg,#B3540A,#D97706); color:#fff; text-decoration:none; font-weight:700; font-size:15.5px; padding:11px 26px; border-radius:999px; box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .btn:hover { filter:brightness(1.08); }
+
+  .doubts p { margin:7px 0; font-size:15.5px; }
+
+  /* footer */
+  .footer { margin-top:42px; text-align:center; background:#FFF3D6; border:1px solid #EFD9A7; border-radius:16px; padding:20px 14px; font-size:14.5px; color:#5C4632; }
+  .footer a { color:#B3540A; font-weight:700; text-decoration:none; }
+  .footer .line { font-weight:700; color:#7B1E1E; }
+</style>
+</head>
+<body class="lang-hi">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Sanjivani Jyotish<small>SANJIVANI JYOTISH SANSTHAN</small></div>
+    <button class="lang-toggle" onclick="toggleLanguage()">English / हिंदी</button>
+  </div>
+
+  <div class="hero">
+    <div class="hero-grid">
+      <div class="hero-photo"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh2w6neFzWJXl0cRj79r9_owaT4UrCLT0uwhepOqq4S2XNyJD7bswvsiAkkeZ_RX1oZdwcsv81diY7K-TlbRNCX_BL4O0g5fQO2YnWfpvltO8aBS8vIEBNvk8EOvvwbmholJZKwOhbiordifljTPfPNxwYVnzBw55a_UPa9xqk2BuddoGczHEWMrCuUq4/s1600/11-ques.png" alt="Prashna Kundli Analysis"></div>
+      <div class="hero-text">
+        <h1><span class="hi">पर्सनलाइज्ड <span class="grad">प्रश्न कुंडली</span> एनालिसिस</span><span class="en">Personalized <span class="grad">Prashna Kundli</span> Analysis</span></h1>
+        <p class="lead hi">मन में कोई खास सवाल है? सीधे पूछें और सटीक ज्योतिषीय उत्तर पाएं!</p>
+        <p class="lead en">Have a specific question in mind? Ask directly and get accurate astrological answers!</p>
+        <p class="sub hi">सिर्फ़ 'हाँ' या 'ना' नहीं - अपने सवालों का पूरा लॉजिक (Reasoning) और इन-डेप्थ एनालिसिस पाएं।</p>
+        <p class="sub en">Not just a 'Yes' or 'No' - get the complete logic (Reasoning) and an in-depth analysis of your questions.</p>
+        <div class="chips">
+          <div class="chip"><span class="hi">100% Manual एनालिसिस</span><span class="en">100% Manual Analysis</span></div>
+          <div class="chip"><span class="hi">Micro-Level Analysis</span><span class="en">Micro-Level Analysis</span></div>
+          <div class="chip"><span class="hi">PDF + Audio Note विकल्प</span><span class="en">PDF + Audio Note Option</span></div>
+          <div class="chip"><span class="hi">Doubts Clearance बिल्कुल Free</span><span class="en">Doubts Clearance Absolutely Free</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">❓</div><h2><span class="hi">भाग 1 : जीवन के किसी भी क्षेत्र से जुड़ा सवाल पूछिए</span><span class="en">Part 1 : Ask a Question from Any Area of Life</span></h2></div>
+    <div class="chk hi">
+      <span><b>करियर और व्यवसाय (Career &amp; Business) :</b> नौकरी लगेगी या नहीं? बिज़नेस कैसा चलेगा?</span>
+      <span><b>मैरिज और रिश्ते (Marriage &amp; Relationships) :</b> शादी कब होगी? पार्टनर कैसा होगा?</span>
+      <span><b>धनलाभ और आर्थिक प्रगति (Wealth &amp; Financial Growth) :</b> धन की स्थिति, कर्ज़ या प्रॉपर्टी से जुड़े सवाल।</span>
+      <span><b>परिवार और गृहसुख (Family &amp; Happiness) :</b> पारिवारिक विवाद या घर की शांति से जुड़े सवाल।</span>
+      <span><b>स्वास्थ्य और मन:शांति (Health &amp; Mental Peace) :</b> बीमारी से छुटकारा या मानसिक तनाव पर सवाल।</span>
+    </div>
+    <div class="chk en">
+      <span><b>Career &amp; Business :</b> Will I get the job? How will the business perform?</span>
+      <span><b>Marriage &amp; Relationships :</b> When will I get married? How will my partner be?</span>
+      <span><b>Wealth &amp; Financial Growth :</b> Questions related to money, debt, or property.</span>
+      <span><b>Family &amp; Happiness :</b> Questions about family disputes or peace at home.</span>
+      <span><b>Health &amp; Mental Peace :</b> Questions about recovery from illness or mental stress.</span>
+    </div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">हमारा एनालिसिस इतना गहरा क्यों है?</span><span class="en">Why Is Our Analysis So Deep?</span></h2>
+  <p class="sec-sub hi">चारों प्रणालियों के असली Checking Points - जिनसे हर सवाल की गहराई से Analysis होती है</p>
+  <p class="sec-sub en">The actual checking points of all four systems - through which every question is deeply analysed</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🪐</div><h2><span class="hi">पराशरी प्रणाली</span><span class="en">Parashari System</span></h2><span class="cnt hi">6 Points</span><span class="cnt en">6 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">सवाल से जुड़े भाव का पूर्ण Analysis</span><span class="en">Complete Analysis of the house related to the question</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">भावेश - भाव के स्वामी का Analysis</span><span class="en">Analysis of the Bhavesh - the lord of the house</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">कारक ग्रह का Analysis</span><span class="en">Analysis of the Karaka planet</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">संबंधित वर्ग कुंडली के साथ Analysis</span><span class="en">Analysis with the related divisional chart</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">अष्टकवर्ग - SAV/BAV अंकों का Analysis</span><span class="en">Ashtakvarga - Analysis of SAV/BAV points</span></span>
+      <span class="ptag"><span class="n">6</span><span class="hi">दशा और गोचर से Timing की पुष्टि</span><span class="en">Confirmation of timing through dasha and transit</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">♻️</div><h2><span class="hi">जैमिनी प्रणाली</span><span class="en">Jaimini System</span></h2><span class="cnt hi">5 Points</span><span class="cnt en">5 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">सवाल से जुड़े चर कारक का Analysis</span><span class="en">Analysis of the Chara Karaka related to the question</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">आरूढ़ पद का Analysis</span><span class="en">Analysis of the Arudha Pada</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">कारकांश और स्वांश से सवाल का Analysis</span><span class="en">Analysis of the question from Karakansh and Swansh</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">राशि दृष्टि और अर्गला का Analysis</span><span class="en">Analysis of sign aspects and Argala</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">चर दशा से Event की Timing</span><span class="en">Timing of the event through Chara Dasha</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">BNN (भृगु नंदी नाड़ी) प्रणाली</span><span class="en">BNN (Bhrigu Nandi Nadi) System</span></h2><span class="cnt hi">4 Points</span><span class="cnt en">4 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">गुरु - जीव कारक का Analysis</span><span class="en">Analysis of Jupiter - the Jeeva Karaka</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">सवाल से जुड़े कारक ग्रह का Analysis</span><span class="en">Analysis of the Karaka planet of the question</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">जीव और कारक ग्रह का मुख्य सूत्र</span><span class="en">The main formula of Jeeva and the Karaka planet</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">शनि, राहु-केतु और वक्री ग्रहों का प्रभाव</span><span class="en">Influence of Saturn, Rahu-Ketu and retrograde planets</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🎯</div><h2><span class="hi">KP प्रणाली</span><span class="en">KP System</span></h2><span class="cnt hi">3 Points</span><span class="cnt en">3 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">सवाल से जुड़े भाव का CSL (Cusp Sub Lord)</span><span class="en">CSL (Cusp Sub Lord) of the house related to the question</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">सवाल का वादा - होगा या नहीं होगा</span><span class="en">Promise of the question - will it happen or not</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">दशा से Event की Timing</span><span class="en">Timing of the event through dasha</span></span>
+    </div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🏆</div><h2><span class="hi">D60 (षष्टियंश) - अंतिम Analysis</span><span class="en">D60 (Shashtiamsha) - The Final Analysis</span></h2><span class="cnt hi">3 Points</span><span class="cnt en">3 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">D60 लग्न और लग्नेश का Analysis</span><span class="en">Analysis of D60 Lagna and Lagnesh</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">D60 में सवाल से जुड़े भाव का Analysis</span><span class="en">Analysis of the house of the question in D60</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">राजयोग कारक ग्रहों की D60 में स्थिति</span><span class="en">Rajyoga Karaka planets placed in D60</span></span>
+    </div>
+  </div>
+
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🎯</div><h2><span class="hi">Analysis का Focus - फर्क समझिए</span><span class="en">Focus of the Analysis - Understand the Difference</span></h2></div>
+    <p class="hi">➤ <b>इस Analysis का Focus:</b> प्रश्न कुंडली में हमारा पूरा Focus सिर्फ़ आपके पूछे गए सवालों पर होता है - उसी विषय की जड़ तक जाकर उसका In-depth Analysis किया जाता है।</p>
+    <p class="en">➤ <b>Focus of this Analysis:</b> In Ques Kundli, our entire focus stays only on the questions you ask - we go to the root of that subject and do its in-depth analysis.</p>
+    <p class="hi">➤ <b>Special Analysis बुक करने पर फर्क:</b> जब आप कोई Special Analysis बुक करते हैं - जैसे मैरिज, मैरिज टाइमिंग, करियर, एजुकेशन, फुल कुंडली, कुंडली मिलान, चाइल्ड बर्थ, BTR या ईयर बुक - तो पूरा Focus सिर्फ़ उसी एक विषय पर चला जाता है। उस विषय से जुड़े 15 से 30+ Compulsory सवालों के जवाब, साथ में आपके Personal सवाल भी शामिल होते हैं, जिससे उस विषय का कोई पहलू छूटता नहीं।</p>
+    <p class="en">➤ <b>The difference on booking a Special Analysis:</b> When you book a Special Analysis - such as Marriage, Marriage Timing, Career, Education, Full Kundli, Kundli Milan, Child Birth, BTR or Year Book - the entire focus shifts to that one subject alone. Answers to 15 to 30+ compulsory questions of that subject are covered, along with your personal questions, so that no aspect of that subject is left out.</p>
+    <p class="hi">➤ सीधे शब्दों में - प्रश्न कुंडली आपके सवालों का जवाब है, और Special Analysis उस विषय की पूरी किताब।</p>
+    <p class="en">➤ In simple words - Ques Kundli is the answer to your questions, and a Special Analysis is the complete book of that subject.</p>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔍</div><h2><span class="hi">भाग 2 : गहरा Analysis और Exact Time (Timing)</span><span class="en">Part 2 : Deep Analysis and Exact Timing</span></h2></div>
+    <div class="featlist">
+      <p class="hi"><b>Deep Analysis of your Question :</b> आपके सवाल का जड़ तक जाकर Analysis किया जाएगा - सिर्फ़ हाँ या ना नहीं, बल्कि पूरा Reasoning।</p>
+      <p class="hi"><b>Timing is Everything :</b> ग्रहों के अनुसार सटीक Time-frame की जानकारी कि वह काम कब सफल होगा।</p>
+      <p class="hi"><b>Soul Level Connection :</b> क्या आपकी इच्छा आपके कर्मों और भाग्य से मेल खाती है? इसका गहराई से Analysis।</p>
+      <p class="en"><b>Deep Analysis of your Question :</b> Your question is analysed to its very root - not just a yes or no, but the complete reasoning.</p>
+      <p class="en"><b>Timing is Everything :</b> The exact time-frame, as per the planets, of when your work will succeed.</p>
+      <p class="en"><b>Soul Level Connection :</b> Does your desire match your karma and destiny? An in-depth analysis of this aspect.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">✨</div><h2><span class="hi">भाग 3 : चुनौतियां, उपाय और एनालिसिस का फॉर्मेट</span><span class="en">Part 3 : Challenges, Remedies and Analysis Format</span></h2></div>
+    <div class="featlist">
+      <p class="hi"><b>Challenges &amp; Solutions :</b> अगर आपके काम में कोई रुकावट आ रही है, तो उसका असली कारण बताया जाएगा।</p>
+      <p class="hi"><b>Effective Upay :</b> उस रुकावट को ठीक करने के लिए आपके ग्रहों की स्थिति के अनुसार 100% Personalized और Powerful Remedies।</p>
+      <p class="hi"><b>Detailed Audio Explanation :</b> लिखित PDF एनालिसिस के साथ आपको एक Voice Note भी मिलेगा ताकि आप हर पॉइंट को आसानी से समझ सकें।</p>
+      <p class="en"><b>Challenges &amp; Solutions :</b> If there is an obstacle in your work, its real cause will be explained.</p>
+      <p class="en"><b>Effective Upay :</b> 100% Personalized and powerful remedies, as per your planetary positions, to remove those obstacles.</p>
+      <p class="en"><b>Detailed Audio Explanation :</b> Along with the written PDF analysis, you will also receive a Voice Note so that you can easily understand every point.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔍</div><h2><span class="hi">ध्यान रहे : 100% Manual In-depth Analysis</span><span class="en">Please Note : 100% Manual In-depth Analysis</span></h2></div>
+    <p class="hi">इस Analysis में ग्रहों की Strength का <b>Highly Micro-Level</b> चेक किया जाता है। इसीलिए इसमें दिया हुआ Analysis पूरी तरीके से हमारी Deep Research और मेहनत का नतीजा है, जिससे Analysis Delivery में 1 से 2 दिन का समय लग सकता है। कृपया इसका ध्यान रखें।</p>
+    <p class="en">This Analysis involves a <b>Highly Micro-Level</b> examination of planetary Strength. Therefore, the detailed insights provided in this Analysis are purely the result of our Deep Research and hard work, due to which the Analysis Delivery may take 1 to 2 days. Please keep this in mind.</p>
+    <p class="taglabel hi">* Micro-Level Analysis में शामिल :</p><p class="taglabel en">* Micro-Level Analysis includes :</p>
+    <div class="sysbadges"><span class="hi">अस्त</span><span class="en">Combust (Ast)</span><span class="hi">वक्री</span><span class="en">Retrograde (Vakri)</span><span class="hi">वर्गोत्तम</span><span class="en">Vargottam</span><span class="hi">शत्रु/मित्र/सम राशि</span><span class="en">Enemy/Friend/Neutral signs</span><span class="hi">उच्च/नीच/नीचभंग</span><span class="en">Exalted/Debilitated/Neechbhang</span><span class="hi">षड्बल</span><span class="en">Shadbala</span><span class="hi">भावबल</span><span class="en">Bhavabala</span><span class="hi">अष्टकवर्ग</span><span class="en">Ashtakvarga</span><span class="hi">भिन्नाष्टकवर्ग</span><span class="en">Bhinnashtakvarga</span><span class="hi">षोडशवर्ग</span><span class="en">Shodashvarga</span><span class="hi">विंशोपक</span><span class="en">Vimsopaka</span><span class="hi">चलित</span><span class="en">Chalit</span><span class="hi">नवांश</span><span class="en">Navamsha</span><span class="hi">स्वांश-कारकांश</span><span class="en">Svamsha-Karakamsha</span><span class="hi">आरूढ़ पद</span><span class="en">Arudha Pada</span><span class="hi">चर कारक</span><span class="en">Chara Karaka</span><span class="hi">पुष्कर भाग</span><span class="en">Pushkar Bhaga</span><span class="hi">मृत्यु भाग</span><span class="en">Mrityu Bhaga</span><span class="hi">नवतारा चक्र</span><span class="en">Navatara Chakra</span><span class="hi">योग-दोष</span><span class="en">Yoga-Dosha</span><span class="hi">अर्गला</span><span class="en">Argala</span><span class="hi">उपग्रह</span><span class="en">Upagraha</span><span class="hi">स्पेशल लग्न</span><span class="en">Special Lagna</span></div>
+    <p class="taglabel hi" style="margin-top:14px;">दशा पद्धतियाँ :</p><p class="taglabel en" style="margin-top:14px;">Dasha systems :</p>
+    <div class="sysbadges"><span class="hi">विंशोत्तरी दशा</span><span class="en">Vimshottari Dasha</span><span class="hi">योगिनी दशा</span><span class="en">Yogini Dasha</span><span class="hi">त्रिभागी दशा</span><span class="en">Tribhagi Dasha</span><span class="hi">अष्टोत्तरी दशा</span><span class="en">Ashtottari Dasha</span><span class="hi">KP दशा</span><span class="en">KP Dasha</span><span class="hi">चर दशा</span><span class="en">Chara Dasha</span><span class="hi">डबल ट्रांजिट</span><span class="en">Double Transit</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🎧</div><h2>Mode of Consultation</h2></div>
+    <p class="hi">In-depth और Deep Analysis की PDF + 20 Minute की Audio Voice Note (Simple भाषा में समझाई हुई)।</p>
+    <p class="en">In-depth &amp; Deep Analysis PDF + 20-Minute Audio Voice Note (explained in simple language).</p>
+    <div class="sysbadges"><span>📄 PDF</span><span>🎧 Audio Voice Note</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🌟</div><h2>हमारी विशेषता / Our Specialty</h2></div>
+    <p class="hi">Accurate Prediction के लिए हम 4 Main Astrological Systems से Planets की Strength और State का In-depth Analysis करने के बाद ही किसी Conclusion पर पहुँचते हैं। और एक ऐसी Analysis बनाते हैं जो सिर्फ़ आपके लिए Personally तैयार की जाती है। इसीलिए आप हमारी Accuracy पर पूरी तरीके से भरोसा कर सकते हैं।</p>
+    <p class="en">For Accurate Prediction, we reach a Conclusion only after doing an In-depth Analysis of the Strength and State of Planets through 4 Main Astrological Systems. And we create an Analysis that is Personally prepared only for you. That is why you can completely trust our Accuracy.</p>
+    <div class="sysbadges"><span class="hi">पराशरी</span><span class="en">Parashari</span><span class="hi">जैमिनी</span><span class="en">Jaimini</span><span>KP</span><span>BNN</span></div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">अपना Option चुनें</span><span class="en">Choose Your Option</span></h2>
+  <p class="sec-sub hi">जितने सवाल, उतना ही Option - दोनों में पूरा In-depth Analysis मिलेगा</p>
+  <p class="sec-sub en">Pick the option that fits your questions - both include the complete in-depth analysis</p>
+
+  <div class="ogrid">
+    <div class="ocard">
+      <h3><span class="hi">5 सवाल</span><span class="en">5 Questions</span></h3>
+      <div class="oprice">₹299</div>
+      <p class="hi">अपने 5 सबसे ज़रूरी सवालों का पूरा Reasoning के साथ In-depth Analysis, सटीक Time-frame और Effective उपाय।</p>
+      <p class="en">An in-depth analysis of your 5 most important questions with complete reasoning, exact time-frame and effective remedies.</p>
+      <a class="btn hi" target="_blank" href="https://pages.razorpay.com/Personalized-Ques-Analysis">अभी ऑर्डर करें →</a>
+      <a class="btn en" target="_blank" href="https://pages.razorpay.com/Personalized-Ques-Eng">Order Now →</a>
+    </div>
+    <div class="ocard best">
+      <div><span class="otag hi">⭐ सबसे लोकप्रिय</span><span class="otag en">⭐ Most Popular</span></div>
+      <h3><span class="hi">15 सवाल</span><span class="en">15 Questions</span></h3>
+      <div class="oprice">₹599</div>
+      <p class="hi">पूरे 15 सवाल - जीवन के हर क्षेत्र को कवर करने वाला सबसे संपूर्ण Option, प्रति सवाल सबसे किफ़ायती।</p>
+      <p class="en">A full 15 questions - the most complete option covering every area of life, and the most economical per question.</p>
+      <a class="btn hi" target="_blank" href="https://pages.razorpay.com/Personalized-Ques-Analysis">अभी ऑर्डर करें →</a>
+      <a class="btn en" target="_blank" href="https://pages.razorpay.com/Personalized-Ques-Eng">Order Now →</a>
+    </div>
+  </div>
+
+  <div class="block doubts">
+    <div class="bhead"><div class="bicon">💬</div><h2><span class="hi">एनालिसिस के बाद के सवाल (Doubts)</span><span class="en">Post-Analysis Queries (Doubts)</span></h2></div>
+    <p class="hi">➤ <b>डाउट्स क्लीयरेंस:</b> PDF में जवाब पढ़कर अगर मन में कोई डाउट रहा तो इसकी चिंता न करें। PDF में पहले से सभी डाउट्स का समाधान किया जाता है।</p>
+    <p class="hi">➤ <b>हमारा कमिटमेंट:</b> अगर फिर भी कोई डाउट हो तो दोबारा PDF भेजकर आपके सभी Doubts क्लियर किए जाते हैं। हम अपने क्लाइंट्स का साथ कभी नहीं छोड़ते जब तक उनके सभी डाउट्स क्लियर नहीं हो जाते।</p>
+    <p class="hi">➤ <b>कोई अतिरिक्त शुल्क नहीं:</b> आपको दोबारा डाउट्स क्लीयर करने के लिए कोई Extra चार्ज नहीं देना होता है। यह सर्विस एनालिसिस के Price में ही Included है।</p>
+    <p class="en">➤ <b>Doubts Clearance:</b> If you have any doubts in your mind after reading the answers in the PDF, don't worry. All potential doubts are already addressed in the PDF itself.</p>
+    <p class="en">➤ <b>Our Commitment:</b> If you still have any doubts, they will be resolved by sending you an updated PDF. We never leave our clients' side until all their doubts are fully cleared.</p>
+    <p class="en">➤ <b>No Extra Charges:</b> You do not have to pay any extra charges for getting your doubts cleared again. This service is already included in the analysis price.</p>
+  </div>
+
+  <div class="footer">
+    <div class="line">◆ Sanjivani Jyotish Sansthan ◆</div>
+    <div style="margin-top:8px;">
+      📧 <a href="mailto:komalastro14@gmail.com">komalastro14@gmail.com</a> &nbsp;|&nbsp;
+      Insta : <a target="_blank" href="https://instagram.com/astro.komal">astro.komal</a> • <a target="_blank" href="https://instagram.com/astro.sanjivani">astro.sanjivani</a> &nbsp;|&nbsp;
+      Telegram : <a target="_blank" href="https://t.me/Sanjivani_Jyotish">Sanjivani_Jyotish</a> &nbsp;|&nbsp;
+      WhatsApp : 9552636556
+    </div>
+    <div style="margin-top:6px; font-size:13px;">© Sanjivani Jyotish Sansthan | Astro Komal</div>
+  </div>
+
+</div>
+<script>
+  function toggleLanguage() {
+    document.body.classList.toggle('lang-en');
+    document.body.classList.toggle('lang-hi');
+  }
+</script>
+</body>
+</html>
