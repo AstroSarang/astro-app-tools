@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Kundli Analysis - Sanjivani Jyotish Sansthan</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans Devanagari','Poppins',sans-serif; background:#FFF9EF; color:#33241A; line-height:1.65; }
+  body.lang-hi .en { display:none !important; }
+  body.lang-en .hi { display:none !important; }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 16px 40px; }
+
+  /* header bar */
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 4px; }
+  .brand { font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; color:#7B1E1E; letter-spacing:.3px; }
+  .brand small { display:block; font-size:11px; font-weight:600; color:#B4762A; letter-spacing:2px; }
+  .lang-toggle { background:#7B1E1E; color:#FFF3D6; border:none; padding:8px 18px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 3px 8px rgba(123,30,30,.35); }
+  .lang-toggle:hover { background:#932626; }
+
+  /* hero */
+  .hero { padding:34px 26px 28px; background:linear-gradient(160deg,#FFF3D6 0%,#FFE7C2 55%,#FFDFE0 100%); border:1px solid #EFD9A7; border-radius:22px; box-shadow:0 10px 28px rgba(160,100,20,.12); margin-bottom:34px; }
+  .hero-grid { display:flex; gap:30px; align-items:center; }
+  .hero-photo { flex:0 0 300px; perspective:900px; }
+  .hero-photo img { width:100%; height:320px; object-fit:contain; display:block; transform:rotateY(-10deg) rotateX(2deg); filter:drop-shadow(16px 20px 12px rgba(90,50,10,.35)); transition:transform .45s ease, filter .45s ease; }
+  .hero:hover .hero-photo img { transform:rotateY(0deg) rotateX(0deg); filter:drop-shadow(0 10px 10px rgba(90,50,10,.25)); }
+  .hero-text { flex:1; text-align:left; }
+  .hero-text h1 { font-size:31px; font-weight:800; color:#7B1E1E; line-height:1.35; }
+  .hero-text h1 .grad { background:linear-gradient(90deg,#B3540A,#D97706,#B91C1C); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-text p.lead { font-size:17.5px; font-weight:700; color:#5C4632; margin-top:12px; }
+  .hero-text p.sub { font-size:16px; color:#5C4632; margin-top:6px; }
+  .chips { margin-top:18px; display:flex; flex-wrap:wrap; gap:10px; }
+  .chip { background:#fff; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:14px; padding:7px 16px; border-radius:999px; box-shadow:0 2px 6px rgba(160,100,20,.15); }
+  @media (max-width:760px){ .hero-grid{flex-direction:column;} .hero-text{text-align:center;} .chips{justify-content:center;} .hero-text h1{font-size:26px;} .hero-photo{flex:0 0 auto; width:230px;} .hero-photo img{height:280px;} }
+
+  /* blocks */
+  .block { background:#fff; border:1px solid #F0DFBB; border-left:6px solid #D97706; border-radius:16px; padding:22px 24px; margin-top:26px; box-shadow:0 6px 18px rgba(160,100,20,.08); }
+  .block h2 { font-size:21px; color:#7B1E1E; margin-bottom:8px; }
+  .block p { font-size:15.5px; color:#43322A; }
+  .block.gold { border-left-color:#B91C1C; background:linear-gradient(180deg,#FFFDF6,#FFF7E6); }
+  .bhead { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .bhead h2 { margin-bottom:0 !important; }
+  .bicon { width:46px; height:46px; flex:0 0 46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:linear-gradient(135deg,#F59E0B,#B3540A); box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .block.gold .bicon { background:linear-gradient(135deg,#B91C1C,#7B1E1E); box-shadow:0 4px 10px rgba(123,30,30,.35); }
+  .taglabel { font-size:13.5px; font-weight:700; color:#7B1E1E; margin-top:14px; }
+  .ptags { display:flex; flex-wrap:wrap; gap:9px; margin-top:4px; }
+  .ptag { display:inline-flex; align-items:center; gap:8px; background:#FFFDF6; border:1.5px solid #E3B341; border-radius:999px; padding:6px 15px 6px 7px; font-size:14.5px; color:#4A2C14; box-shadow:0 2px 6px rgba(123,30,30,.10); }
+  .ptag .n { background:linear-gradient(135deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:12.5px; min-width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0 3px; flex:none; }
+  .cnt { margin-left:auto; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:13px; padding:4px 14px; border-radius:999px; white-space:nowrap; }
+  .sysbadges { margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; }
+  .sysbadges span { background:linear-gradient(90deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:14px; padding:6px 18px; border-radius:999px; box-shadow:0 3px 8px rgba(123,30,30,.30); }
+
+  /* areas checklist */
+  .chk { display:grid; grid-template-columns:repeat(2,1fr); gap:2px 22px; margin-top:6px; }
+  .chk span { font-size:15px; color:#4A382C; padding:7px 2px; border-bottom:1px dashed #EBDCC0; }
+  .chk span::before { content:"\2713  "; color:#B3541E; font-weight:800; }
+  .chk.mute span { font-size:13.5px; color:#97836C; border-bottom-color:#F0E7D2; }
+  .chk.mute span::before { content:"\2013  "; color:#C4AE87; }
+  @media (max-width:640px){ .chk{grid-template-columns:1fr;} }
+  .featlist { margin-top:4px; }
+  .featlist p { font-size:15.5px; color:#43322A; margin:9px 0; }
+  .featlist p b { color:#7B1E1E; }
+
+  /* price options */
+  .sec-title { text-align:center; margin:42px 0 6px; font-size:28px; font-weight:800; color:#7B1E1E; }
+  .sec-sub { text-align:center; color:#7A6248; font-size:15px; margin-bottom:24px; }
+  .ogrid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:820px; margin:0 auto; }
+  @media (max-width:640px){ .ogrid{grid-template-columns:1fr;} }
+  .ocard { background:#fff; border:1.5px solid #F0DFBB; border-radius:20px; padding:26px 22px 22px; text-align:center; box-shadow:0 8px 22px rgba(160,100,20,.10); display:flex; flex-direction:column; }
+  .ocard.best { border:2px solid #D97706; }
+  .ocard .otag { display:inline-block; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:12.5px; padding:3px 14px; border-radius:999px; margin-bottom:10px; }
+  .ocard h3 { font-size:20px; color:#7B1E1E; font-weight:700; }
+  .ocard .oprice { font-family:'Poppins',sans-serif; font-size:36px; font-weight:800; color:#C0392B; margin:8px 0 2px; }
+  .ocard p { font-size:14.5px; color:#55433A; flex:1; margin:4px 0 16px; }
+  .btn { display:inline-block; background:linear-gradient(90deg,#B3540A,#D97706); color:#fff; text-decoration:none; font-weight:700; font-size:15.5px; padding:11px 26px; border-radius:999px; box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .btn:hover { filter:brightness(1.08); }
+
+  .doubts p { margin:7px 0; font-size:15.5px; }
+
+  /* footer */
+  .footer { margin-top:42px; text-align:center; background:#FFF3D6; border:1px solid #EFD9A7; border-radius:16px; padding:20px 14px; font-size:14.5px; color:#5C4632; }
+  .footer a { color:#B3540A; font-weight:700; text-decoration:none; }
+  .footer .line { font-weight:700; color:#7B1E1E; }
+</style>
+</head>
+<body class="lang-hi">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Sanjivani Jyotish<small>SANJIVANI JYOTISH SANSTHAN</small></div>
+    <button class="lang-toggle" onclick="toggleLanguage()">English / हिंदी</button>
+  </div>
+
+  <div class="hero">
+    <div class="hero-grid">
+      <div class="hero-photo"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiUIJbG6KqBE2WiFOiYn9B5SDUVYkjMBIFn8p8_eOi7V1EddHC4uIYiN2azDul4bE_S9KAgoUwBvEY4wjih3kYtRBbyMi3bKKysnfdaWDAyDJ6kjMMdpEbYWp4JFBvEw7GEjYIyO7kfuvlS0j5J9wSc_5qk4h2H6KGRmo70qvG-Nkst8XJBQ8_GgLgb8S4/s1600/06-full-kundli.png" alt="Full Kundli Analysis"></div>
+      <div class="hero-text">
+        <h1><span class="hi"><span class="grad">फुल</span> कुंडली एनालिसिस</span><span class="en">Full <span class="grad">Kundli</span> Analysis</span></h1>
+        <p class="lead hi">अपने जीवन का Complete 20-वर्षीय Roadmap प्राप्त करें!</p>
+        <p class="lead en">Get a Complete 20-Year Roadmap for Your Life!</p>
+        <p class="sub hi">यह 50 Points का In-depth Analysis आपके जीवन के हर पहलू - व्यक्तित्व, करियर, मैरिज, स्वास्थ्य और धन - को Cover करता है। इसमें 20 साल की वार्षिक भविष्यवाणी और 20 षोडशवर्ग कुंडलियों का Micro-Analysis शामिल है। Free Bonus (₹499 Value): Premium लाल किताब कुंडली, रत्न Analysis और दोष-उपाय कुंडली।</p>
+        <p class="sub en">This 50-point in-depth analysis covers every single aspect of your life - personality, career, marriage, health, and wealth. It includes a detailed 20-year annual prediction and a micro-analysis of 20 Shodashvarga (divisional) charts. Free Bonus (Value ₹499): Premium Lal Kitab Kundali, Gemstone Analysis, and Dosh-Remedies Kundali.</p>
+        <div class="chips">
+          <div class="chip"><span class="hi">100% Manual एनालिसिस</span><span class="en">100% Manual Analysis</span></div>
+          <div class="chip"><span class="hi">Micro-Level Analysis</span><span class="en">Micro-Level Analysis</span></div>
+          <div class="chip"><span class="hi">PDF + Audio Note विकल्प</span><span class="en">PDF + Audio Note Option</span></div>
+          <div class="chip"><span class="hi">Doubts Clearance बिल्कुल Free</span><span class="en">Doubts Clearance Absolutely Free</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">इस एनालिसिस में शामिल सभी 50 Question</span><span class="en">All 50 Questions Included in This Analysis</span></h2>
+  <p class="sec-sub hi">जीवन के हर पहलू का In-depth Analysis - 8 पार्टों में</p>
+  <p class="sec-sub en">In-depth analysis of every aspect of life - in 8 parts</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">पार्ट 1: ज्योतिषीय आधार, ग्रह और भाव Analysis</span><span class="en">Part 1: Astrological Foundation, Planets & House Analysis</span></h2></div>
+    <div class="chk hi">
+      <span>1] पंचांग (वार, तिथि, नक्षत्र, योग, करण और जन्म के समय की होरा (काल होरा) व होरा स्वामी का फल), लग्न (Ascendant) और उसके स्वामी, चंद्रमा और जन्म नक्षत्र व उसके पद का In-depth Analysis?</span>
+      <span>2] जातक के हर ग्रह (सूर्य से केतु तक) का Result या Impact क्या होगा?</span>
+      <span>3] ग्रहों की Strength (उच्च (Exalted), नीच (Debilitated), वक्री (Retrograde), अस्त (Combust), वर्गोत्तम, भावबल, षड्बल आदि) का क्या Impact होगा?</span>
+      <span>4] भाव Analysis (1 से 12 भावों तक) का Detailed Result क्या है?</span>
+      <span>5] चलित कुंडली (Chalit Chart) में D1 Chart की तुलना में क्या-क्या Changes आए हैं, और जीवन पर इसका असली Impact क्या पड़ेगा?</span>
+      <span>6] पुष्कर नवांश (PN), पुष्कर भाग (PB) और मृत्यु भाग (MB) का Impact - Divine Protection कहाँ मिल रही है? और कौन-से ग्रह मृत्यु भाग (MB) में होकर जीवन के किन क्षेत्रों में 'Landmine' की तरह संघर्ष और बाधाएँ पैदा कर सकते हैं?</span>
+      <span>7] 9 ग्रह प्रोफाइल - हर ग्रह का विस्तृत फल और निष्कर्ष?</span>
+      <span>8] 12 भाव प्रोफाइल - हर भाव का विस्तृत फल और निष्कर्ष?</span>
+      <span>9] चंद्र कुंडली Analysis - चंद्र लग्न, चंद्र लग्नेश और 12 भावों का फल, लग्न कुंडली से तुलना सहित?</span>
+      <span>10] लग्न कुंडली Analysis - जन्म लग्न से सभी 12 भावों का संपूर्ण फल?</span>
+    </div>
+    <div class="chk en">
+      <span>1] In-depth analysis of Panchang (Vaar, Tithi, Nakshatra, Yoga, Karana and the Hora (Kala Hora) at birth time with the result of the Hora lord), Lagna (Ascendant) and its Lord, Moon, Birth Nakshatra, and Pada?</span>
+      <span>2] The result or impact of every planet (from Sun to Ketu) for the native?</span>
+      <span>3] What will be the impact of planetary strengths (Exalted/Uchha, Debilitated/Neech, Retrograde/Vakri, Combust/Ast, Vargottam, Bhavabala, Shadbala, etc.)?</span>
+      <span>4] What is the detailed result of the House Analysis (from the 1st to the 12th House)?</span>
+      <span>5] What changes have occurred in the Chalit Chart compared to the D1 chart, and what will be their actual impact on life?</span>
+      <span>6] Impact of Pushkar Navamsha (PN), Pushkar Bhagya (PB), and Mrityu Bhagya (MB): Where is the native getting divine protection, and which planets can cause struggles? Which planets are in Mrityu Bhagya (MB) and acting like 'landmines' to create obstacles in specific sectors of life?</span>
+      <span>7] 9 Planets Profile - detailed results and conclusion of every planet?</span>
+      <span>8] 12 Houses Profile - detailed results and conclusion of every house?</span>
+      <span>9] Chandra Kundli Analysis - Chandra Lagna, its lord and results of 12 houses, with comparison to the Lagna Kundli?</span>
+      <span>10] Lagna Kundli Analysis - complete results of all 12 houses from the birth Lagna?</span>
+    </div>
+  </div>
+  <div class="block">
+    <div class="bhead"><div class="bicon">♻️</div><h2><span class="hi">पार्ट 2: जैमिनी, विशेष लग्न और उपग्रह Analysis</span><span class="en">Part 2: Jaimini, Vishesh Lagna & Upagraha Analysis</span></h2></div>
+    <div class="chk hi">
+      <span>11] जैमिनी चर कारक Analysis - AK, AmK, BK, MK, PuK, GK और DK का फल?</span>
+      <span>12] जैमिनी आरूढ़ पद Analysis - आरूढ़ लग्न (AL), उपपद (UL) और सभी 12 भावों के आरूढ़ पदों का फल?</span>
+      <span>13] कारकांश कुंडली Analysis - कारकांश लग्न और 12 भावों का फल?</span>
+      <span>14] स्वांश कुंडली Analysis - स्वांश लग्न और 12 भावों का फल?</span>
+      <span>15] विशेष लग्न Analysis - भाव लग्न, होरा लग्न, घटि लग्न का विस्तृत फल और बाकी विशेष लग्नों का संक्षिप्त फल?</span>
+      <span>16] उपग्रह Analysis - गुलिक, मांदि और बाकी 9 उपग्रहों का फल?</span>
+    </div>
+    <div class="chk en">
+      <span>11] Jaimini Chara Karaka Analysis - results of AK, AmK, BK, MK, PuK, GK and DK?</span>
+      <span>12] Jaimini Arudha Pada Analysis - results of Arudha Lagna (AL), Upapada (UL) and Arudha Padas of all 12 houses?</span>
+      <span>13] Karakamsha Kundli Analysis - Karakamsha Lagna and results of 12 houses?</span>
+      <span>14] Swamsha Kundli Analysis - Swamsha Lagna and results of 12 houses?</span>
+      <span>15] Vishesh Lagna Analysis - detailed results of Bhava Lagna, Hora Lagna, Ghati Lagna and brief results of the other special lagnas?</span>
+      <span>16] Upagraha Analysis - results of Gulik, Mandi and the other 9 Upagrahas?</span>
+    </div>
+  </div>
+  <div class="block">
+    <div class="bhead"><div class="bicon">🕉️</div><h2><span class="hi">पार्ट 3: योग, दोष और उनके ज्योतिषीय उपाय</span><span class="en">Part 3: Yogas, Doshas & Their Astrological Remedies</span></h2></div>
+    <div class="chk hi">
+      <span>17] कुंडली में कौन-से Lucky/शुभ योग हैं और वे कैसे बन रहे हैं?</span>
+      <span>18] कुंडली में कौन-से दोष हैं और उनका बनना (Formation) कैसे हो रहा है?</span>
+      <span>19] इन दोषों के उपाय (Remedies) क्या हैं - धार्मिक और Practical दोनों?</span>
+      <span>20] क्या जातक मांगलिक है? अगर मंगल दोष है, तो उसका Cancellation (परिहार) कैसे होगा और Married Life पर क्या Impact पड़ेगा?</span>
+    </div>
+    <div class="chk en">
+      <span>17] Which lucky/auspicious Yogas are present in the Kundali, and how are they forming?</span>
+      <span>18] Which Doshas are present in the Kundali, and how are they forming?</span>
+      <span>19] What are the remedies for these Doshas (both religious and practical)?</span>
+      <span>20] Is the native Manglik? If Mangal Dosh is present, how is it getting cancelled (Parihar), and what will be its impact on married life?</span>
+    </div>
+  </div>
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔢</div><h2><span class="hi">पार्ट 4: अंक ज्योतिष, भाग्य और व्यक्तित्व Profile</span><span class="en">Part 4: Numerology, Luck & Personality Profile</span></h2></div>
+    <div class="chk hi">
+      <span>21] मूलांक (Root Number) और भाग्यांक (Destiny Number) क्या हैं, और उनके स्वामी ग्रह कौन-से हैं?</span>
+      <span>22] कौन-से Numbers, Days, Years, Gemstones, Colors, Directions और इष्ट देवता (Ishta Devata) Lucky हैं? और कौन-से ग्रह Negative/Unfavorable हैं?</span>
+      <span>23] जातक की Overall Personality कैसी है?</span>
+      <span>24] जातक का स्वभाव कैसा है - Basic, Outer, Inner, Mental, Moral और Health की दृष्टि से?</span>
+      <span>25] जातक की Strengths और Weaknesses क्या हैं?</span>
+      <span>26] जातक की रुचियाँ और Hobbies क्या-क्या हैं?</span>
+      <span>27] जातक का Luck Factor कैसा है?</span>
+    </div>
+    <div class="chk en">
+      <span>21] What are the Root Number (Mulank) and Destiny Number (Bhagyank), and who are their ruling planets?</span>
+      <span>22] Which numbers, days, years, gemstones, colors, directions, and deities (Ishta Dev) are lucky? And which ones are unfavorable?</span>
+      <span>23] How is the native's overall personality?</span>
+      <span>24] How is the native's nature (basic, outer, inner, mental, moral, and health-wise)?</span>
+      <span>25] What are the native's strengths and weaknesses?</span>
+      <span>26] What are the native's interests and hobbies?</span>
+      <span>27] How is the native's luck factor?</span>
+    </div>
+  </div>
+  <div class="block">
+    <div class="bhead"><div class="bicon">💼</div><h2><span class="hi">पार्ट 5: करियर, धन, सफलता और संपत्ति</span><span class="en">Part 5: Career, Wealth, Success & Property</span></h2></div>
+    <div class="chk hi">
+      <span>28] जातक के लिए Best Career या Business कौन-सा रहेगा? किस Field में Success मिलेगी?</span>
+      <span>29] क्या जातक को जीवन में Fame और Popularity मिलेगी?</span>
+      <span>30] धन (Wealth) और Financial Status कैसा रहेगा?</span>
+      <span>31] क्या पैतृक संपत्ति (Inheritance/Ancestral Property) मिलने के Chances हैं?</span>
+      <span>32] क्या अपना घर और वाहन (Vehicle) का सुख मिलेगा?</span>
+      <span>33] कौन-से भाव या ग्रह जातक की Success को दिखाते हैं?</span>
+      <span>34] कौन-से भाव या ग्रह जातक की Weakness या संघर्षों को दिखाते हैं?</span>
+    </div>
+    <div class="chk en">
+      <span>28] What will be the best career or business for the native? In which field will they get success?</span>
+      <span>29] Will the native get fame and popularity in life?</span>
+      <span>30] How will the wealth and financial status be?</span>
+      <span>31] Are there chances of getting an inheritance or ancestral property?</span>
+      <span>32] Will the native enjoy the comfort of their own house and vehicle?</span>
+      <span>33] Which houses or planets indicate the native's success?</span>
+      <span>34] Which houses or planets indicate the native's weaknesses or struggles?</span>
+    </div>
+  </div>
+  <div class="block">
+    <div class="bhead"><div class="bicon">💍</div><h2><span class="hi">पार्ट 6: मैरिज, परिवार और संतान</span><span class="en">Part 6: Marriage, Family & Progeny</span></h2></div>
+    <div class="chk hi">
+      <span>35] जातक की मैरिज कैसी रहेगी? शादी Successful होगी या नहीं?</span>
+      <span>36] जीवनसाथी का स्वभाव कैसा होगा?</span>
+      <span>37] क्या Love Marriage, Inter-caste Marriage या भागकर शादी (Elope) के Chances हैं?</span>
+      <span>38] Family Life कैसी रहेगी?</span>
+      <span>39] क्या संतान का योग है? कितने बच्चे हो सकते हैं? (पहला बच्चा बेटा होगा या बेटी?)</span>
+    </div>
+    <div class="chk en">
+      <span>35] How will the native's marriage be? Will it be successful or not?</span>
+      <span>36] How will the life partner's nature be?</span>
+      <span>37] Are there chances of a Love Marriage, Inter-caste Marriage, or Eloping?</span>
+      <span>38] How will family life be?</span>
+      <span>39] Are there yogas for childbirth (Progeny)? How many children could there be? (Will the first child be a boy or a girl?)</span>
+    </div>
+  </div>
+  <div class="block">
+    <div class="bhead"><div class="bicon">🌿</div><h2><span class="hi">पार्ट 7: स्वास्थ्य, शिक्षा, यात्रा और जीवन की चुनौतियाँ</span><span class="en">Part 7: Health, Education, Travel & Life Challenges</span></h2></div>
+    <div class="chk hi">
+      <span>40] जातक के जीवन की Major चुनौतियाँ (ऋण, शत्रु, Legal Issues/Court Cases) क्या-क्या हैं?</span>
+      <span>41] क्या जातक का स्वास्थ्य प्रभावित है? किसी Serious Disease या Accident के Chances हैं क्या?</span>
+      <span>42] शिक्षा कैसी रहेगी और Higher Studies के क्या Chances हैं?</span>
+      <span>43] बुद्धि (Intelligence) और Learning Capacity कैसी है?</span>
+      <span>44] क्या Foreign Travel या विदेश (Abroad) में Settle होने के Chances हैं?</span>
+      <span>45] क्या Spirituality की ओर झुकाव (Inclination) रहेगा?</span>
+    </div>
+    <div class="chk en">
+      <span>40] What are the major challenges in the native's life (loans, enemies, legal issues/court cases)?</span>
+      <span>41] Is the native's health affected? Are there chances of any serious disease or accident?</span>
+      <span>42] How will the education be, and what are the chances for higher studies?</span>
+      <span>43] How is the native's intelligence and learning capacity?</span>
+      <span>44] Are there chances of foreign travel or settling abroad?</span>
+      <span>45] Will there be an inclination toward spirituality?</span>
+    </div>
+  </div>
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔮</div><h2><span class="hi">पार्ट 8: भविष्यवाणी, सारांश और Personal Guidance</span><span class="en">Part 8: Predictions, Summary & Personal Guidance</span></h2></div>
+    <div class="chk hi">
+      <span>46] पूरी कुंडली का Overall Conclusion या Summary क्या है?</span>
+      <span>47] आने वाले 20 वर्षों के लिए जातक के जीवन के हर वर्ष का Detailed Yearly Prediction।</span>
+      <span>48] आने वाले 50 वर्षों की विंशोत्तरी दशा-अंतर्दशा का Impact।</span>
+      <span>49] जातक ने जो Personal Questions पूछे हैं, उनका In-depth Analysis (Maximum 10)</span>
+      <span>50] जातक के लिए Best Remedies या Gemstones कौन-से रहेंगे?</span>
+    </div>
+    <div class="chk en">
+      <span>46] What is the overall conclusion or summary of the Kundali?</span>
+      <span>47] Detailed yearly prediction for every single year of the native's life for the next 20 years.</span>
+      <span>48] Impact of the Vimshottari Dasha-Antardasha for the next 50 years.</span>
+      <span>49] In-depth analysis of the personal questions asked by the native. (Maximum 10)</span>
+      <span>50] Which will be the best remedies or gemstones for the native?</span>
+    </div>
+  </div>
+
+  <p class="hi" style="margin:4px 0 14px;">(आप जीवन से जुड़े अपने Maximum 10 Personal सवाल पूछ सकते हैं, जिनका In-depth Analysis इस Analysis में दिया जाएगा।)</p>
+  <p class="en" style="margin:4px 0 14px;">(You can ask a maximum of 10 personal questions related to your life, the in-depth analysis of which will be provided in this Analysis.)</p>
+
+  <h2 class="sec-title"><span class="hi">हमारा एनालिसिस इतना गहरा क्यों है?</span><span class="en">Why Is Our Analysis So Deep?</span></h2>
+  <p class="sec-sub hi">चारों प्रणालियों के असली Checking Points - जिनसे हर कुंडली का गहराई से Analysis होता है</p>
+  <p class="sec-sub en">The actual checking points of all four systems - through which every kundali is deeply analysed</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🪐</div><h2><span class="hi">पराशरी प्रणाली</span><span class="en">Parashari System</span></h2><span class="cnt hi">10 Points</span><span class="cnt en">10 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">9 ग्रहों का संपूर्ण Profile और फलित</span><span class="en">Complete Profile and Results of All 9 Planets</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">12 भावों का संपूर्ण Profile और फलित</span><span class="en">Complete Profile and Results of All 12 Houses</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">नवांश (D9) का Analysis - हर ग्रह की आंतरिक क्षमता</span><span class="en">Analysis of Navamsha (D9) - Inner Capacity of Every Planet</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">जन्म कुंडली (D1) से भाव-वर्गोत्तम और चलित Analysis</span><span class="en">Bhava-Vargottam and Chalit Analysis from the Birth Chart (D1)</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">लग्न और लग्नेश का Analysis</span><span class="en">Analysis of Lagna and Lagnesh</span></span>
+      <span class="ptag"><span class="n">6</span><span class="hi">ग्रहों का बल, योग-दोष और मंगल दोष Analysis</span><span class="en">Planetary Strength, Yoga-Dosha and Mangal Dosha Analysis</span></span>
+      <span class="ptag"><span class="n">7</span><span class="hi">धन, भाग्य और सफलता के भावों का Analysis</span><span class="en">Analysis of the Houses of Wealth, Fortune and Success</span></span>
+      <span class="ptag"><span class="n">8</span><span class="hi">इन्दु लग्न (Indu Lagna) - Wealth Point का Analysis</span><span class="en">Analysis of Indu Lagna - the Wealth Point</span></span>
+      <span class="ptag"><span class="n">9</span><span class="hi">मुख्य 4 Divisional Charts - D1, D9, D10, D60 का In-depth Analysis</span><span class="en">In-depth Analysis of the 4 Main Divisional Charts - D1, D9, D10, D60</span></span>
+      <span class="ptag"><span class="n">10</span><span class="hi">Deep Research के लिए 16 और Divisional Charts - D2 धन (Wealth), D3 पराक्रम (Efforts), D4 सुख (Happiness), D5 विद्या (Knowledge), D6 बाधा (Obstacles), D7 साझेदारी (Partnership), D8 संकट (Crisis), D11 लाभ (Gains), D12 हानि (Loss), D16 वाहन-सुख (Vehicle &amp; Comforts), D20 आध्यात्मिक उद्देश्य (Spiritual Purpose), D24 शिक्षा (Education), D27 शारीरिक बल (Physical Strength), D30 दुर्भाग्य (Misfortune), D40 मातृ पक्ष (Maternal Side), D45 पितृ पक्ष व चरित्र (Paternal Side &amp; Character)</span><span class="en">16 More Divisional Charts for Deep Research - D2 (Wealth), D3 (Efforts), D4 (Happiness), D5 (Knowledge), D6 (Obstacles), D7 (Partnership), D8 (Crisis), D11 (Gains), D12 (Loss), D16 (Vehicle &amp; Comforts), D20 (Spiritual Purpose), D24 (Education), D27 (Physical Strength), D30 (Misfortune), D40 (Maternal Side), D45 (Paternal Side &amp; Character)</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">♻️</div><h2><span class="hi">जैमिनी प्रणाली</span><span class="en">Jaimini System</span></h2><span class="cnt hi">7 Points</span><span class="cnt en">7 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">AK (आत्मकारक) और चर कारकों का Analysis</span><span class="en">Analysis of AK (Atmakaraka) and Chara Karakas</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">सभी 12 भावों के आरूढ़ पदों का Analysis</span><span class="en">Analysis of Arudha Padas of All 12 Houses</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">AK और AmK का आपसी संबंध</span><span class="en">Mutual Relation of AK and AmK</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">उपपद (UL) और दारापद (A7) का Analysis</span><span class="en">Analysis of Upapada (UL) and Darapada (A7)</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">कारकांश और स्वांश कुंडली का Analysis</span><span class="en">Analysis of Karakamsha and Swamsha Charts</span></span>
+      <span class="ptag"><span class="n">6</span><span class="hi">अर्गला Analysis - संसाधनों का प्रभाव</span><span class="en">Argala Analysis - Flow of Resources</span></span>
+      <span class="ptag"><span class="n">7</span><span class="hi">चर दशा से जीवन-घटनाओं का समय Analysis</span><span class="en">Timing of Life Events through Chara Dasha</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">BNN (भृगु नंदी नाड़ी) प्रणाली</span><span class="en">BNN (Bhrigu Nandi Nadi) System</span></h2><span class="cnt hi">4 Points</span><span class="cnt en">4 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">जीव कारक ग्रह और जीवन-घटनाओं का संबंध</span><span class="en">Jeeva Karaka Planet and its Link with Life Events</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">शनि, राहु-केतु व वक्री ग्रहों का प्रभाव</span><span class="en">Effect of Saturn, Rahu-Ketu and Retrograde Planets</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">ग्रह-युग्मों के विशेष सूत्र और निष्कर्ष</span><span class="en">Special Rules of Planet Pairs and Conclusions</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">घटना-समय का सूक्ष्म Determination</span><span class="en">Micro-Level Determination of Event Timing</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🎯</div><h2><span class="hi">KP प्रणाली</span><span class="en">KP System</span></h2><span class="cnt hi">5 Points</span><span class="cnt en">5 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">मुख्य भावों के CSL से वादा (Promise) Analysis</span><span class="en">Promise Analysis from CSL of the Main Houses</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">मैरिज, करियर और संतान के CSL का Analysis</span><span class="en">Analysis of CSL for Marriage, Career and Progeny</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">हर विषय की प्रकृति और दिशा का Determination</span><span class="en">Determination of Nature and Direction of Every Matter</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">घटनाओं का समय - दशा, भुक्ति और गोचर से पुष्टि</span><span class="en">Timing of Events - Confirmed by Dasha, Bhukti and Transit</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">Ruling Planets से अंतिम पुष्टि</span><span class="en">Final Confirmation through Ruling Planets</span></span>
+    </div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🏆</div><h2><span class="hi">D60 (षष्टियंश) - अंतिम Analysis</span><span class="en">D60 (Shashtiamsha) - The Final Analysis</span></h2><span class="cnt hi">3 Points</span><span class="cnt en">3 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">D60 लग्न और लग्नेश - Karmic Blueprint</span><span class="en">D60 Lagna and Lagnesh - the Karmic Blueprint</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">D60 का दशम भाव और दशमेश - Karmic कर्म</span><span class="en">10th house and Dashamesh of D60 - Karmic Action</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">राजयोग कारक ग्रहों की D60 में स्थिति</span><span class="en">Rajyoga Karaka planets placed in D60</span></span>
+    </div>
+  </div>
+
+
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔍</div><h2><span class="hi">ध्यान रहे : 100% Manual In-depth Analysis</span><span class="en">Please Note : 100% Manual In-depth Analysis</span></h2></div>
+    <p class="hi">इस Analysis में ग्रहों की Strength का <b>Highly Micro-Level</b> चेक किया जाता है। इसीलिए इसमें दिया हुआ Analysis पूरी तरीके से हमारी Deep Research और मेहनत का नतीजा है, जिससे Analysis Delivery में 1 से 2 दिन का समय लग सकता है। कृपया इसका ध्यान रखें।</p>
+    <p class="en">This Analysis involves a <b>Highly Micro-Level</b> examination of planetary Strength. Therefore, the detailed insights provided in this Analysis are purely the result of our Deep Research and hard work, due to which the Analysis Delivery may take 1 to 2 days. Please keep this in mind.</p>
+    <p class="taglabel hi">* Micro-Level Analysis में शामिल :</p><p class="taglabel en">* Micro-Level Analysis includes :</p>
+    <div class="sysbadges"><span class="hi">अस्त</span><span class="en">Combust (Ast)</span><span class="hi">वक्री</span><span class="en">Retrograde (Vakri)</span><span class="hi">वर्गोत्तम</span><span class="en">Vargottam</span><span class="hi">शत्रु/मित्र/सम राशि</span><span class="en">Enemy/Friend/Neutral signs</span><span class="hi">उच्च/नीच/नीचभंग</span><span class="en">Exalted/Debilitated/Neechbhang</span><span class="hi">षड्बल</span><span class="en">Shadbala</span><span class="hi">भावबल</span><span class="en">Bhavabala</span><span class="hi">अष्टकवर्ग</span><span class="en">Ashtakvarga</span><span class="hi">भिन्नाष्टकवर्ग</span><span class="en">Bhinnashtakvarga</span><span class="hi">षोडशवर्ग</span><span class="en">Shodashvarga</span><span class="hi">विंशोपक</span><span class="en">Vimsopaka</span><span class="hi">चलित</span><span class="en">Chalit</span><span class="hi">नवांश</span><span class="en">Navamsha</span><span class="hi">स्वांश-कारकांश</span><span class="en">Svamsha-Karakamsha</span><span class="hi">आरूढ़ पद</span><span class="en">Arudha Pada</span><span class="hi">चर कारक</span><span class="en">Chara Karaka</span><span class="hi">पुष्कर भाग</span><span class="en">Pushkar Bhaga</span><span class="hi">मृत्यु भाग</span><span class="en">Mrityu Bhaga</span><span class="hi">नवतारा चक्र</span><span class="en">Navatara Chakra</span><span class="hi">योग-दोष</span><span class="en">Yoga-Dosha</span><span class="hi">अर्गला</span><span class="en">Argala</span><span class="hi">उपग्रह</span><span class="en">Upagraha</span><span class="hi">स्पेशल लग्न</span><span class="en">Special Lagna</span></div>
+    <p class="taglabel hi" style="margin-top:14px;">दशा पद्धतियाँ :</p><p class="taglabel en" style="margin-top:14px;">Dasha systems :</p>
+    <div class="sysbadges"><span class="hi">विंशोत्तरी दशा</span><span class="en">Vimshottari Dasha</span><span class="hi">योगिनी दशा</span><span class="en">Yogini Dasha</span><span class="hi">त्रिभागी दशा</span><span class="en">Tribhagi Dasha</span><span class="hi">अष्टोत्तरी दशा</span><span class="en">Ashtottari Dasha</span><span class="hi">KP दशा</span><span class="en">KP Dasha</span><span class="hi">चर दशा</span><span class="en">Chara Dasha</span><span class="hi">डबल ट्रांजिट</span><span class="en">Double Transit</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🎧</div><h2>Mode of Consultation</h2></div>
+    <p class="hi">In-depth और Deep Analysis की PDF + 20 Minute की Audio Voice Note (Simple भाषा में समझाई हुई)।</p>
+    <p class="en">In-depth &amp; Deep Analysis PDF + 20-Minute Audio Voice Note (explained in simple language).</p>
+    <div class="sysbadges"><span>📄 PDF</span><span>🎧 Audio Voice Note</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🌟</div><h2>हमारी विशेषता / Our Specialty</h2></div>
+    <p class="hi">Accurate Prediction के लिए हम 4 Main Astrological Systems से Planets की Strength और State का In-depth Analysis करने के बाद ही किसी Conclusion पर पहुँचते हैं। और एक ऐसी Analysis बनाते हैं जो सिर्फ़ आपके लिए Personally तैयार की जाती है। इसीलिए आप हमारी Accuracy पर पूरी तरीके से भरोसा कर सकते हैं।</p>
+    <p class="en">For Accurate Prediction, we reach a Conclusion only after doing an In-depth Analysis of the Strength and State of Planets through 4 Main Astrological Systems. And we create an Analysis that is Personally prepared only for you. That is why you can completely trust our Accuracy.</p>
+    <div class="sysbadges"><span class="hi">पराशरी</span><span class="en">Parashari</span><span class="hi">जैमिनी</span><span class="en">Jaimini</span><span>KP</span><span>BNN</span></div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">अपना Option चुनें</span><span class="en">Choose Your Option</span></h2>
+  <p class="sec-sub hi">पूरी कुंडली का Complete Analysis - सिर्फ़ ₹799 में</p>
+  <p class="sec-sub en">Complete Analysis of the Full Kundli - in just ₹799</p>
+
+  <div class="ogrid" style="grid-template-columns:1fr;max-width:430px;">
+    <div class="ocard best">
+      <div><span class="otag hi">🔯 Full Kundli</span><span class="otag en">🔯 Full Kundli</span></div>
+      <h3><span class="hi">फुल कुंडली एनालिसिस</span><span class="en">Full Kundli Analysis</span></h3>
+      <div class="oprice">₹799</div>
+      <p class="hi">जीवन के हर पहलू का In-depth Analysis और 20 वर्षों की भविष्यवाणी - साथ में जीवन से जुड़े आपके Maximum 10 Personal सवाल।</p>
+      <p class="en">In-depth analysis of every aspect of life and predictions for 20 years - along with your maximum 10 personal questions on life.</p>
+      <a class="btn hi" target="_blank" href="https://pages.razorpay.com/Personalized-Kundali-Analysis">अभी ऑर्डर करें →</a>
+      <a class="btn en" target="_blank" href="https://pages.razorpay.com/Personalized-Kundali-Eng">Order Now →</a>
+    </div>
+  </div>
+
+  <div class="block doubts">
+    <div class="bhead"><div class="bicon">💬</div><h2><span class="hi">एनालिसिस के बाद के सवाल (Doubts)</span><span class="en">Post-Analysis Queries (Doubts)</span></h2></div>
+    <p class="hi">➤ <b>डाउट्स क्लीयरेंस:</b> PDF में जवाब पढ़कर अगर मन में कोई डाउट रहा तो इसकी चिंता न करें। PDF में पहले से सभी डाउट्स का समाधान किया जाता है।</p>
+    <p class="hi">➤ <b>हमारा कमिटमेंट:</b> अगर फिर भी कोई डाउट हो तो दोबारा PDF भेजकर आपके सभी Doubts क्लियर किए जाते हैं। हम अपने क्लाइंट्स का साथ कभी नहीं छोड़ते जब तक उनके सभी डाउट्स क्लियर नहीं हो जाते।</p>
+    <p class="hi">➤ <b>कोई अतिरिक्त शुल्क नहीं:</b> आपको दोबारा डाउट्स क्लीयर करने के लिए कोई Extra चार्ज नहीं देना होता है। यह सर्विस एनालिसिस के Price में ही Included है।</p>
+    <p class="en">➤ <b>Doubts Clearance:</b> If you have any doubts in your mind after reading the answers in the PDF, don't worry. All potential doubts are already addressed in the PDF itself.</p>
+    <p class="en">➤ <b>Our Commitment:</b> If you still have any doubts, they will be resolved by sending you an updated PDF. We never leave our clients' side until all their doubts are fully cleared.</p>
+    <p class="en">➤ <b>No Extra Charges:</b> You do not have to pay any extra charges for getting your doubts cleared again. This service is already included in the analysis price.</p>
+  </div>
+
+  <div class="footer">
+    <div class="line">◆ Sanjivani Jyotish Sansthan ◆</div>
+    <div style="margin-top:8px;">
+      📧 <a href="mailto:komalastro14@gmail.com">komalastro14@gmail.com</a> &nbsp;|&nbsp;
+      Insta : <a target="_blank" href="https://instagram.com/astro.komal">astro.komal</a> • <a target="_blank" href="https://instagram.com/astro.sanjivani">astro.sanjivani</a> &nbsp;|&nbsp;
+      Telegram : <a target="_blank" href="https://t.me/Sanjivani_Jyotish">Sanjivani_Jyotish</a> &nbsp;|&nbsp;
+      WhatsApp : 9552636556
+    </div>
+    <div style="margin-top:6px; font-size:13px;">© Sanjivani Jyotish Sansthan | Astro Komal</div>
+  </div>
+
+</div>
+<script>
+  function toggleLanguage() {
+    document.body.classList.toggle('lang-en');
+    document.body.classList.toggle('lang-hi');
+  }
+</script>
+</body>
+</html>
