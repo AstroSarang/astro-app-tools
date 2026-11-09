@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marriage Analysis - Sanjivani Jyotish Sansthan</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans Devanagari','Poppins',sans-serif; background:#FFF9EF; color:#33241A; line-height:1.65; }
+  body.lang-hi .en { display:none !important; }
+  body.lang-en .hi { display:none !important; }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 16px 40px; }
+
+  /* header bar */
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 4px; }
+  .brand { font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; color:#7B1E1E; letter-spacing:.3px; }
+  .brand small { display:block; font-size:11px; font-weight:600; color:#B4762A; letter-spacing:2px; }
+  .lang-toggle { background:#7B1E1E; color:#FFF3D6; border:none; padding:8px 18px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 3px 8px rgba(123,30,30,.35); }
+  .lang-toggle:hover { background:#932626; }
+
+  /* hero */
+  .hero { padding:34px 26px 28px; background:linear-gradient(160deg,#FFF3D6 0%,#FFE7C2 55%,#FFDFE0 100%); border:1px solid #EFD9A7; border-radius:22px; box-shadow:0 10px 28px rgba(160,100,20,.12); margin-bottom:34px; }
+  .hero-grid { display:flex; gap:30px; align-items:center; }
+  .hero-photo { flex:0 0 300px; perspective:900px; }
+  .hero-photo img { width:100%; height:320px; object-fit:contain; display:block; transform:rotateY(-10deg) rotateX(2deg); filter:drop-shadow(16px 20px 12px rgba(90,50,10,.35)); transition:transform .45s ease, filter .45s ease; }
+  .hero:hover .hero-photo img { transform:rotateY(0deg) rotateX(0deg); filter:drop-shadow(0 10px 10px rgba(90,50,10,.25)); }
+  .hero-text { flex:1; text-align:left; }
+  .hero-text h1 { font-size:31px; font-weight:800; color:#7B1E1E; line-height:1.35; }
+  .hero-text h1 .grad { background:linear-gradient(90deg,#B3540A,#D97706,#B91C1C); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-text p.lead { font-size:19px; font-weight:800; color:#B3540A; margin-top:12px; }
+  .hero-text p.sub { font-size:16px; color:#5C4632; margin-top:6px; }
+  .hlist { margin-top:14px; }
+  .hlist span { display:block; font-size:15px; color:#4A382C; padding:3px 0; }
+  .hlist span::before { content:"\27A4  "; color:#B3541E; font-weight:800; }
+  .chips { margin-top:18px; display:flex; flex-wrap:wrap; gap:10px; }
+  .chip { background:#fff; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:14px; padding:7px 16px; border-radius:999px; box-shadow:0 2px 6px rgba(160,100,20,.15); }
+  @media (max-width:760px){ .hero-grid{flex-direction:column;} .hero-text{text-align:center;} .chips{justify-content:center;} .hlist span{text-align:left;} .hero-text h1{font-size:26px;} .hero-photo{flex:0 0 auto; width:230px;} .hero-photo img{height:280px;} }
+
+  /* blocks */
+  .block { background:#fff; border:1px solid #F0DFBB; border-left:6px solid #D97706; border-radius:16px; padding:22px 24px; margin-top:26px; box-shadow:0 6px 18px rgba(160,100,20,.08); }
+  .block h2 { font-size:21px; color:#7B1E1E; margin-bottom:8px; }
+  .block p { font-size:15.5px; color:#43322A; }
+  .block.gold { border-left-color:#B91C1C; background:linear-gradient(180deg,#FFFDF6,#FFF7E6); }
+  .bhead { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .bhead h2 { margin-bottom:0 !important; }
+  .bicon { width:46px; height:46px; flex:0 0 46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:linear-gradient(135deg,#F59E0B,#B3540A); box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .block.gold .bicon { background:linear-gradient(135deg,#B91C1C,#7B1E1E); box-shadow:0 4px 10px rgba(123,30,30,.35); }
+  .taglabel { font-size:13.5px; font-weight:700; color:#7B1E1E; margin-top:14px; }
+  .sysbadges { margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; }
+  .sysbadges span { background:linear-gradient(90deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:14px; padding:6px 18px; border-radius:999px; box-shadow:0 3px 8px rgba(123,30,30,.30); }
+  .ptags { display:flex; flex-wrap:wrap; gap:9px; margin-top:4px; }
+  .ptag { display:inline-flex; align-items:center; gap:8px; background:#FFFDF6; border:1.5px solid #E3B341; border-radius:999px; padding:6px 15px 6px 7px; font-size:14.5px; color:#4A2C14; box-shadow:0 2px 6px rgba(123,30,30,.10); }
+  .ptag .n { background:linear-gradient(135deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:12.5px; min-width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0 3px; flex:none; }
+  .cnt { margin-left:auto; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:13px; padding:4px 14px; border-radius:999px; white-space:nowrap; }
+
+  /* question lists - catalog style, numbered */
+  .chk { display:grid; grid-template-columns:1fr; gap:2px 22px; margin-top:6px; }
+  .chk span { font-size:15px; color:#4A382C; padding:7px 2px; border-bottom:1px dashed #EBDCC0; }
+  .chk span.subq { padding-left:26px; border-bottom:1px dashed #EBDCC0; color:#6B4F3A; }
+
+  /* price options */
+  .sec-title { text-align:center; margin:42px 0 6px; font-size:28px; font-weight:800; color:#7B1E1E; }
+  .sec-sub { text-align:center; color:#7A6248; font-size:15px; margin-bottom:24px; }
+  .ogrid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:820px; margin:0 auto; }
+  .ogrid.single { grid-template-columns:1fr; max-width:460px; }
+  @media (max-width:640px){ .ogrid{grid-template-columns:1fr;} }
+  .ocard { background:#fff; border:1.5px solid #F0DFBB; border-radius:20px; padding:26px 22px 22px; text-align:center; box-shadow:0 8px 22px rgba(160,100,20,.10); display:flex; flex-direction:column; }
+  .ocard.best { border:2px solid #D97706; }
+  .ocard h3 { font-size:20px; color:#7B1E1E; font-weight:700; }
+  .ocard .oprice { font-family:'Poppins',sans-serif; font-size:36px; font-weight:800; color:#C0392B; margin:8px 0 2px; }
+  .ocard p { font-size:14.5px; color:#55433A; flex:1; margin:4px 0 16px; }
+  .btn { display:inline-block; background:linear-gradient(90deg,#B3540A,#D97706); color:#fff; text-decoration:none; font-weight:700; font-size:15.5px; padding:11px 26px; border-radius:999px; box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .btn:hover { filter:brightness(1.08); }
+
+  .doubts p { margin:7px 0; font-size:15.5px; }
+
+  /* footer */
+  .footer { margin-top:42px; text-align:center; background:#FFF3D6; border:1px solid #EFD9A7; border-radius:16px; padding:20px 14px; font-size:14.5px; color:#5C4632; }
+  .footer a { color:#B3540A; font-weight:700; text-decoration:none; }
+  .footer .line { font-weight:700; color:#7B1E1E; }
+</style>
+</head>
+<body class="lang-hi">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Sanjivani Jyotish<small>SANJIVANI JYOTISH SANSTHAN</small></div>
+    <button class="lang-toggle" onclick="toggleLanguage()">English / हिंदी</button>
+  </div>
+
+  <div class="hero">
+    <div class="hero-grid">
+      <div class="hero-photo"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi-Yi4ubgpiK4yyMwcSyqPrGqDV309-mYWc-YA7fChJz6Z02hUP8dLr1z9g00tqUYPR1vzNmnDTVNR8WmoYRMJz16Q6iuTLMTR8tB2mS1EVWKW7qHKNmE-M5ObqaTxVfhOpxhMQ4Lu2iy1sbQwXPdnb2A9A12mjr6E3EJeXvPVcKyKaPqAEM_ExGeF3Co0/s1600/01-marriage-analysis.png" alt="Marriage Analysis"></div>
+      <div class="hero-text">
+        <h1><span class="hi">पर्सनलाइज्ड <span class="grad">मैरिज</span> एनालिसिस</span><span class="en">Personalized <span class="grad">Marriage</span> Analysis</span></h1>
+        <p class="lead hi">एक एनालिसिस में सबकुछ!</p>
+        <p class="lead en">Discover Every Detail About Your Future Spouse!</p>
+        <p class="sub hi">लाइफ पार्टनर और मैरिड लाइफ की हर डिटेल के साथ 30+ सवालों के जवाब - 4 प्रमुख ज्योतिष प्रणालियों के In-depth Analysis पर आधारित।</p>
+        <p class="sub en">Detail &amp; In-depth Analysis about your Future Spouse (All Systems) - get answers to 30+ Ques.</p>
+        <div class="hlist">
+          <span class="hi">कब होगी शादी? ससुराल की डायरेक्शन और पहली मुलाकात</span>
+          <span class="hi">लाइफ पार्टनर के नेचर के बारे में डिटेल और इन-डेप्थ एनालिसिस</span>
+          <span class="hi">लाइफ पार्टनर की पर्सनालिटी (कलर, लुक्स, हाइट, बॉडी स्ट्रक्चर, हेल्थ)</span>
+          <span class="hi">लाइफ पार्टनर का करियर, हॉबीज़ और फैमिली लाइफ</span>
+          <span class="hi">मैरिज से जुड़ी हर चैलेंज (मंगल दोष सहित) और उसके रेमेडीज़</span>
+          <span class="hi">4 प्रमुख ज्योतिष सिस्टम्स (पराशरी, जैमिनी, BNN, KP) द्वारा इन-डेप्थ एनालिसिस</span>
+          <span class="en">When will you get married? In-laws' direction and the first meeting</span>
+          <span class="en">Detailed and in-depth analysis of your life partner's nature</span>
+          <span class="en">Life partner's personality (colour, looks, height, body structure, health)</span>
+          <span class="en">Life partner's career, hobbies and family life</span>
+          <span class="en">Every challenge related to marriage (including Mangal Dosha) and its remedies</span>
+          <span class="en">In-depth analysis through 4 major astrology systems (Parashari, Jaimini, BNN, KP)</span>
+        </div>
+        <div class="chips">
+          <div class="chip"><span class="hi">100% Manual एनालिसिस</span><span class="en">100% Manual Analysis</span></div>
+          <div class="chip"><span class="hi">Micro-Level Analysis</span><span class="en">Micro-Level Analysis</span></div>
+          <div class="chip"><span class="hi">PDF + Audio Note विकल्प</span><span class="en">PDF + Audio Note Option</span></div>
+          <div class="chip"><span class="hi">Doubts Clearance बिल्कुल Free</span><span class="en">Doubts Clearance Absolutely Free</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">इस एनालिसिस में शामिल सभी सवाल</span><span class="en">All Questions Included in This Analysis</span></h2>
+  <p class="sec-sub hi">जातक के अपने सवाल और उपसवाल मिलाकर 30+ सवालों का संपूर्ण एनालिसिस</p>
+  <p class="sec-sub en">A complete analysis of 30+ questions, including the native's own questions and sub-questions</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">💑</div><h2><span class="hi">A] लाइफ पार्टनर का नेचर और पर्सनैलिटी (Nature &amp; Personality)</span><span class="en">A] Nature &amp; Personality of the Life Partner</span></h2></div>
+    <div class="chk hi">
+      <span>1] फ्यूचर लाइफ पार्टनर के नेचर का इन-डेप्थ एनालिसिस (In-depth Analysis)? (चारों एस्ट्रोलॉजी सिस्टम्स और 20+ लेयर्स से डीप चेकिंग, साथ ही D60 चार्ट से कन्फर्मेशन)।</span>
+      <span>2] पार्टनर का मोराल (Morale), माइंडसेट (Mindset) और इनर नेचर (Inner nature) कैसा होगा?</span>
+      <span>3] क्या लाइफ पार्टनर लॉयल (Loyal) और फेथफुल (Faithful) होगा?</span>
+      <span>4] पार्टनर की वीकनेसेस (Weaknesses) या नेगेटिव साइड्स क्या-क्या होंगी?</span>
+    </div>
+    <div class="chk en">
+      <span>1] In-depth analysis of the future life partner's nature? (Deep checking through all four astrology systems and 20+ layers, along with confirmation from the D60 chart).</span>
+      <span>2] How will the partner's morale, mindset, and inner nature be?</span>
+      <span>3] Will the life partner be loyal and faithful?</span>
+      <span>4] What will be the partner's weaknesses or negative traits?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🕰️</div><h2><span class="hi">B] मैरिज का प्रोबेबल टाइम (Probable Time) और पहली मुलाकात</span><span class="en">B] Probable Time of Marriage &amp; First Meeting</span></h2></div>
+    <div class="chk hi">
+      <span>5] मैरिज की टाइमिंग का एनालिसिस? (5 दशा सिस्टम्स और 20+ लेयर्स से डीप चेकिंग, साथ ही 'प्रॉमिस ऑफ मैरिज' (Promise of marriage) का टेस्ट)।</span>
+      <span>6] होने वाले लाइफ पार्टनर से पहली मीटिंग (First meeting) कहाँ और कैसे होगी?</span>
+      <span>7] यह मुलाकात किस मीडियम (जैसे- ऑनलाइन, सोशल मीडिया, ऑफिस) या किस रिलेटिव के थ्रू हो सकती है?</span>
+    </div>
+    <div class="chk en">
+      <span>5] Analysis of the timing of marriage? (Deep checking through 5 dasha systems and 20+ layers, along with testing the 'Promise of Marriage').</span>
+      <span>6] Where and how will the first meeting with the future life partner take place?</span>
+      <span>7] Through which medium (e.g., online, social media, office) or which relative could this meeting happen?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">✨</div><h2><span class="hi">C] लाइफ पार्टनर की फिजिकल अपीयरेंस और डिटेल्स (Physical Details)</span><span class="en">C] Physical Appearance &amp; Details of the Life Partner</span></h2></div>
+    <div class="chk hi">
+      <span>8] पार्टनर के फिजिकल ट्रेट्स (Physical traits) कैसे होंगे? (कॉम्प्लेक्शन/रंग, लुक्स, हाइट, बॉडी स्ट्रक्चर, और कोई बर्थमार्क)।</span>
+      <span>9] उनके इंटरेस्ट्स (Interests) और हॉबीज़ (Hobbies) क्या-क्या होंगी?</span>
+      <span>10] पार्टनर का करियर (Career) या जॉब प्रोफाइल कैसा होगा?</span>
+      <span>11] उनकी हेल्थ (Health) और वाइटेलिटी (Vitality) कैसी रहेगी?</span>
+    </div>
+    <div class="chk en">
+      <span>8] What will the partner's physical traits be? (Complexion, looks, height, body structure, and any birthmarks).</span>
+      <span>9] What will be their interests and hobbies?</span>
+      <span>10] What will be the partner's career or job profile?</span>
+      <span>11] How will their health and vitality be?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">💞</div><h2><span class="hi">D] मैरिड लाइफ की क्वालिटी (Quality of Married Life)</span><span class="en">D] Quality of Married Life</span></h2></div>
+    <div class="chk hi">
+      <span>12] मैरिड लाइफ का एनालिसिस (मेंटल कनेक्शन, इमोशनल डेप्थ, और मैरिटल ब्लिस/वैवाहिक सुख)?</span>
+      <span>13] क्या मैरिज सक्सेसफुल (Successful) रहेगी या नहीं? (लॉन्ग-टर्म स्टेबिलिटी)।</span>
+      <span>14] पार्टनर का फैमिली बैकग्राउंड (Family background) कैसा होगा?</span>
+      <span>15] क्या पार्टनर नेटिव के गोल्स (Goals) और एम्बीशंस (Ambitions) को सपोर्ट करेगा?</span>
+      <span>16] क्या चाइल्डबर्थ (संतान प्राप्ति) के चांसेज़/योग हैं?</span>
+    </div>
+    <div class="chk en">
+      <span>12] Analysis of married life (mental connection, emotional depth, and marital bliss)?</span>
+      <span>13] Will the marriage be successful or not? (Long-term stability).</span>
+      <span>14] What will the partner's family background be like?</span>
+      <span>15] Will the partner support the native's goals and ambitions?</span>
+      <span>16] Are there chances or yogas for childbirth?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🏠</div><h2><span class="hi">E] इन-लॉज़ (ससुराल) और रिलेशंस (In-laws &amp; Relations)</span><span class="en">E] In-laws &amp; Relations</span></h2></div>
+    <div class="chk hi">
+      <span>17] मैरिज या इन-लॉज़ (In-laws) का घर किस डायरेक्शन (दिशा) में होगा?</span>
+      <span>18] मैरिज के लिए कौन-सी लोकेशंस (Locations) या कंट्रीज़ (देश) लकी/फेवरेबल रहेंगे?</span>
+      <span>19] इन-लॉज़ (ससुराल वालों) के साथ बॉन्डिंग (Bonding) और रिलेशंस कैसे रहेंगे?</span>
+      <span>20] क्या शादी के बाद ससुराल वालों के थ्रू लक फेवर (भाग्योदय) करेगा या फाइनेंशियल गेन्स (धनलाभ) होंगे?</span>
+    </div>
+    <div class="chk en">
+      <span>17] In which direction will the marriage or the in-laws' house be?</span>
+      <span>18] Which locations or countries will be lucky or favorable for the marriage?</span>
+      <span>19] How will the bonding and relations be with the in-laws?</span>
+      <span>20] After marriage, will luck favor the native, or will there be financial gains through the in-laws?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">💍</div><h2><span class="hi">F] मैरिज का टाइप (Type of Marriage)</span><span class="en">F] Type of Marriage</span></h2></div>
+    <div class="chk hi">
+      <span>21] क्या प्री-मैरिटल अफेयर्स (Pre-marital affairs) या अट्रैक्शन के योग हैं?</span>
+      <span>22] क्या लव मैरिज (Love Marriage), इंटर-कास्ट (Inter-caste), भागकर शादी (Elope) या अरेंज्ड मैरिज (Arranged Marriage) होगी?</span>
+      <span>23] क्या लॉन्ग-डिस्टेंस रिलेशनशिप (Long Distance Relationship) के चांसेज़ हैं?</span>
+    </div>
+    <div class="chk en">
+      <span>21] Are there yogas for pre-marital affairs or attraction?</span>
+      <span>22] Will it be a love marriage, inter-caste marriage, elopement, or arranged marriage?</span>
+      <span>23] Are there chances of a long-distance relationship?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🌿</div><h2><span class="hi">G] शादी के बाद का इम्पैक्ट (Post-Marriage Impact)</span><span class="en">G] Post-Marriage Impact</span></h2></div>
+    <div class="chk hi">
+      <span>24] मैरिज के बाद लाइफ में कौन-से मेजर चेंजेज़ (Major Changes) आएंगे?</span>
+      <span class="subq">➤ करियर (Career), हेल्थ (Health), रेज़िडेंस (Residence/निवास स्थान), और स्पिरिचुअल ग्रोथ (Spiritual Growth) में?</span>
+    </div>
+    <div class="chk en">
+      <span>24] What major changes will occur in life after marriage?</span>
+      <span class="subq">➤ In career, health, residence, and spiritual growth?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">⚠️</div><h2><span class="hi">H] मैरिटल चैलेंजेज़ (Marital Challenges) और दोष</span><span class="en">H] Marital Challenges &amp; Doshas</span></h2></div>
+    <div class="chk hi">
+      <span>25] क्या मैरिज में डिले (Delay) या ऑब्स्टेकल्स (बाधाएं) हैं?</span>
+      <span>26] क्या सेपरेशन (Separation), डिवोर्स या मल्टीपल मैरिजेज़ (एक से ज़्यादा शादी) के योग हैं?</span>
+      <span>27] कौन-कौन से हर्डल्स या ब्लॉकेजेज़ (जैसे- कार्मिक इश्यूज़, प्लैनेट्स, दोष) मैरिज में रुकावट बन रहे हैं?</span>
+      <span>28] क्या मांगलिक दोष (Manglik Dosh) या कोई और मैरिज-रिलेटेड दोष कुंडली में है?</span>
+    </div>
+    <div class="chk en">
+      <span>25] Are there any delays or obstacles in the marriage?</span>
+      <span>26] Are there yogas for separation, divorce, or multiple marriages?</span>
+      <span>27] What hurdles or blockages (e.g., karmic issues, planets, doshas) are creating obstacles in the marriage?</span>
+      <span>28] Is there a Manglik Dosh or any other marriage-related dosha in the Kundali?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="chk hi">
+      <span style="font-weight:700; color:#7B1E1E;">29] नेटिव ने जो पर्सनल क्वेश्चन्स पूछे हैं, उनका इन-डेप्थ एनालिसिस।</span>
+    </div>
+    <div class="chk en">
+      <span style="font-weight:700; color:#7B1E1E;">29] In-depth analysis of the personal questions asked by the native.</span>
+    </div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">हमारा एनालिसिस इतना गहरा क्यों है?</span><span class="en">Why Is Our Analysis So Deep?</span></h2>
+  <p class="sec-sub hi">चारों प्रणालियों के असली Checking Points - जिनसे हर कुंडली का गहराई से Analysis होता है</p>
+  <p class="sec-sub en">The actual checking points of all four systems - through which every chart is deeply analysed</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🪐</div><h2><span class="hi">पराशरी प्रणाली</span><span class="en">Parashari System</span></h2><span class="cnt hi">10 Points</span><span class="cnt en">10 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">सप्तमेश का पूर्ण Analysis</span><span class="en">Complete Analysis of the Saptamesh</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">सप्तम भाव का Analysis</span><span class="en">Analysis of the 7th house</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">नवांश (D9) कुंडली का Analysis</span><span class="en">Analysis of the Navansh (D9) chart</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">D1 के सप्तमेश की D9 में स्थिति</span><span class="en">D1's Saptamesh placed in D9</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">शुक्र और गुरु की स्थिति</span><span class="en">Position of Venus and Jupiter</span></span>
+      <span class="ptag"><span class="n">6</span><span class="hi">शुक्र-मंगल संबंध</span><span class="en">Venus-Mars connection</span></span>
+      <span class="ptag"><span class="n">7</span><span class="hi">शुक्र पर राहु-केतु का प्रभाव</span><span class="en">Rahu-Ketu's influence on Venus</span></span>
+      <span class="ptag"><span class="n">8</span><span class="hi">सप्तम से दशम भाव का Analysis</span><span class="en">Analysis of the 10th from the 7th</span></span>
+      <span class="ptag"><span class="n">9</span><span class="hi">अष्टम भाव का Analysis</span><span class="en">Analysis of the 8th house</span></span>
+      <span class="ptag"><span class="n">10</span><span class="hi">चंद्रमा और सप्तम भाव का संबंध</span><span class="en">The Moon's connection with the 7th house</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">♻️</div><h2><span class="hi">जैमिनी प्रणाली</span><span class="en">Jaimini System</span></h2><span class="cnt hi">6 Points</span><span class="cnt en">6 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">दाराकारक (DK) का Analysis</span><span class="en">Analysis of the Darakaraka (DK)</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">उपपद लग्न (UL) का Analysis</span><span class="en">Analysis of the Upapada Lagna (UL)</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">दारापद (A7) का Analysis</span><span class="en">Analysis of the Darapada (A7)</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">स्वांश और कारकांश का सप्तम भाव</span><span class="en">7th house from Swansh and Karakansh</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">UL और DK का आपसी संबंध</span><span class="en">Mutual relation of UL and DK</span></span>
+      <span class="ptag"><span class="n">6</span><span class="hi">अर्गला Analysis</span><span class="en">Argala Analysis</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">BNN (भृगु नंदी नाड़ी) प्रणाली</span><span class="en">BNN (Bhrigu Nandi Nadi) System</span></h2><span class="cnt hi">4 Points</span><span class="cnt en">4 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">गुरु - जीव कारक का Analysis</span><span class="en">Analysis of Jupiter - the Jeeva Karaka</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">लाइफ पार्टनर का कारक ग्रह</span><span class="en">The life partner's Karaka planet</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">जीव और पार्टनर कारक का मुख्य सूत्र</span><span class="en">The main formula of Jeeva and partner Karaka</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">शनि, राहु-केतु और वक्री ग्रहों का प्रभाव</span><span class="en">Influence of Saturn, Rahu-Ketu and retrograde planets</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🎯</div><h2><span class="hi">KP प्रणाली</span><span class="en">KP System</span></h2><span class="cnt hi">5 Points</span><span class="cnt en">5 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">7वें भाव के CSL से मैरिज का वादा (Promise)</span><span class="en">Promise of marriage through the 7th house CSL</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">देरी और बाधाओं का Analysis</span><span class="en">Analysis of delay and obstructions</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">लाइफ पार्टनर का स्वभाव</span><span class="en">Nature of the life partner</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">मैरिड लाइफ की क्वालिटी व अलगाव की संभावना</span><span class="en">Quality of married life and possibility of separation</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">मैरिज का प्रकार - लव या अरेंज्ड</span><span class="en">Type of marriage - love or arranged</span></span>
+    </div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🏆</div><h2><span class="hi">D60 (षष्टियंश) - अंतिम Analysis</span><span class="en">D60 (Shashtiamsha) - The Final Analysis</span></h2><span class="cnt hi">3 Points</span><span class="cnt en">3 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">D60 लग्न और लग्नेश का Analysis</span><span class="en">Analysis of D60 Lagna and Lagnesh</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">D60 का सप्तम भाव और सप्तमेश</span><span class="en">D60's 7th house and Saptamesh</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">राजयोग कारक ग्रहों की D60 में स्थिति</span><span class="en">Rajyoga Karaka planets placed in D60</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔍</div><h2><span class="hi">ध्यान रहे : 100% Manual In-depth Analysis</span><span class="en">Please Note : 100% Manual In-depth Analysis</span></h2></div>
+    <p class="hi">इस Analysis में ग्रहों की Strength का <b>Highly Micro-Level</b> चेक किया जाता है। इसीलिए इसमें दिया हुआ Analysis पूरी तरीके से हमारी Deep Research और मेहनत का नतीजा है, जिससे Analysis Delivery में 1 से 2 दिन का समय लग सकता है। कृपया इसका ध्यान रखें।</p>
+    <p class="en">This Analysis involves a <b>Highly Micro-Level</b> examination of planetary Strength. Therefore, the detailed insights provided in this Analysis are purely the result of our Deep Research and hard work, due to which the Analysis Delivery may take 1 to 2 days. Please keep this in mind.</p>
+    <p class="taglabel hi">* Micro-Level Analysis में शामिल :</p><p class="taglabel en">* Micro-Level Analysis includes :</p>
+    <div class="sysbadges"><span class="hi">अस्त</span><span class="en">Combust (Ast)</span><span class="hi">वक्री</span><span class="en">Retrograde (Vakri)</span><span class="hi">वर्गोत्तम</span><span class="en">Vargottam</span><span class="hi">शत्रु/मित्र/सम राशि</span><span class="en">Enemy/Friend/Neutral signs</span><span class="hi">उच्च/नीच/नीचभंग</span><span class="en">Exalted/Debilitated/Neechbhang</span><span class="hi">षड्बल</span><span class="en">Shadbala</span><span class="hi">भावबल</span><span class="en">Bhavabala</span><span class="hi">अष्टकवर्ग</span><span class="en">Ashtakvarga</span><span class="hi">भिन्नाष्टकवर्ग</span><span class="en">Bhinnashtakvarga</span><span class="hi">षोडशवर्ग</span><span class="en">Shodashvarga</span><span class="hi">विंशोपक</span><span class="en">Vimsopaka</span><span class="hi">चलित</span><span class="en">Chalit</span><span class="hi">नवांश</span><span class="en">Navamsha</span><span class="hi">स्वांश-कारकांश</span><span class="en">Svamsha-Karakamsha</span><span class="hi">आरूढ़ पद</span><span class="en">Arudha Pada</span><span class="hi">चर कारक</span><span class="en">Chara Karaka</span><span class="hi">पुष्कर भाग</span><span class="en">Pushkar Bhaga</span><span class="hi">मृत्यु भाग</span><span class="en">Mrityu Bhaga</span><span class="hi">नवतारा चक्र</span><span class="en">Navatara Chakra</span><span class="hi">योग-दोष</span><span class="en">Yoga-Dosha</span><span class="hi">अर्गला</span><span class="en">Argala</span><span class="hi">उपग्रह</span><span class="en">Upagraha</span><span class="hi">स्पेशल लग्न</span><span class="en">Special Lagna</span></div>
+    <p class="taglabel hi" style="margin-top:14px;">दशा पद्धतियाँ :</p><p class="taglabel en" style="margin-top:14px;">Dasha systems :</p>
+    <div class="sysbadges"><span class="hi">विंशोत्तरी दशा</span><span class="en">Vimshottari Dasha</span><span class="hi">योगिनी दशा</span><span class="en">Yogini Dasha</span><span class="hi">त्रिभागी दशा</span><span class="en">Tribhagi Dasha</span><span class="hi">अष्टोत्तरी दशा</span><span class="en">Ashtottari Dasha</span><span class="hi">KP दशा</span><span class="en">KP Dasha</span><span class="hi">चर दशा</span><span class="en">Chara Dasha</span><span class="hi">डबल ट्रांजिट</span><span class="en">Double Transit</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🎧</div><h2>Mode of Consultation</h2></div>
+    <p class="hi">In-depth और Deep Analysis की PDF + 20 Minute की Audio Voice Note (Simple भाषा में समझाई हुई)।</p>
+    <p class="en">In-depth &amp; Deep Analysis PDF + 20-Minute Audio Voice Note (explained in simple language).</p>
+    <div class="sysbadges"><span>📄 PDF</span><span>🎧 Audio Voice Note</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🌟</div><h2>हमारी विशेषता / Our Specialty</h2></div>
+    <p class="hi">Accurate Prediction के लिए हम 4 Main Astrological Systems से Planets की Strength और State का In-depth Analysis करने के बाद ही किसी Conclusion पर पहुँचते हैं। और एक ऐसी Analysis बनाते हैं जो सिर्फ़ आपके लिए Personally तैयार की जाती है। इसीलिए आप हमारी Accuracy पर पूरी तरीके से भरोसा कर सकते हैं।</p>
+    <p class="en">For Accurate Prediction, we reach a Conclusion only after doing an In-depth Analysis of the Strength and State of Planets through 4 Main Astrological Systems. And we create an Analysis that is Personally prepared only for you. That is why you can completely trust our Accuracy.</p>
+    <div class="sysbadges"><span class="hi">पराशरी</span><span class="en">Parashari</span><span class="hi">जैमिनी</span><span class="en">Jaimini</span><span>KP</span><span>BNN</span></div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">अपना Option चुनें</span><span class="en">Choose Your Option</span></h2>
+  <p class="sec-sub hi">संपूर्ण मैरिज एनालिसिस - एक ही Option में सब कुछ</p>
+  <p class="sec-sub en">The complete Marriage Analysis - everything in a single option</p>
+
+  <div class="ogrid single">
+    <div class="ocard best">
+      <h3><span class="hi">पर्सनलाइज्ड मैरिज एनालिसिस</span><span class="en">Personalized Marriage Analysis</span></h3>
+      <div class="oprice">₹599</div>
+      <p class="hi">जीवनसाथी के नेचर, प्रोफाइल और मैरिज से जुड़े सभी 30+ सवालों (जातक के अपने सवाल और उपसवाल सहित) का संपूर्ण In-depth Analysis।</p>
+      <p class="en">A complete in-depth analysis of all 30+ questions (including the native's own questions and sub-questions) about the life partner's nature, profile and marriage.</p>
+      <a class="btn hi" target="_blank" href="https://pages.razorpay.com/Marriage-Analysis">अभी ऑर्डर करें →</a>
+      <a class="btn en" target="_blank" href="https://pages.razorpay.com/Marriage-Analysis-Eng">Order Now →</a>
+    </div>
+  </div>
+
+  <div class="block doubts">
+    <div class="bhead"><div class="bicon">💬</div><h2><span class="hi">एनालिसिस के बाद के सवाल (Doubts)</span><span class="en">Post-Analysis Queries (Doubts)</span></h2></div>
+    <p class="hi">➤ <b>डाउट्स क्लीयरेंस:</b> PDF में जवाब पढ़कर अगर मन में कोई डाउट रहा तो इसकी चिंता न करें। PDF में पहले से सभी डाउट्स का समाधान किया जाता है।</p>
+    <p class="hi">➤ <b>हमारा कमिटमेंट:</b> अगर फिर भी कोई डाउट हो तो दोबारा PDF भेजकर आपके सभी Doubts क्लियर किए जाते हैं। हम अपने क्लाइंट्स का साथ कभी नहीं छोड़ते जब तक उनके सभी डाउट्स क्लियर नहीं हो जाते।</p>
+    <p class="hi">➤ <b>कोई अतिरिक्त शुल्क नहीं:</b> आपको दोबारा डाउट्स क्लीयर करने के लिए कोई Extra चार्ज नहीं देना होता है। यह सर्विस एनालिसिस के Price में ही Included है।</p>
+    <p class="en">➤ <b>Doubts Clearance:</b> If you have any doubts in your mind after reading the answers in the PDF, don't worry. All potential doubts are already addressed in the PDF itself.</p>
+    <p class="en">➤ <b>Our Commitment:</b> If you still have any doubts, they will be resolved by sending you an updated PDF. We never leave our clients' side until all their doubts are fully cleared.</p>
+    <p class="en">➤ <b>No Extra Charges:</b> You do not have to pay any extra charges for getting your doubts cleared again. This service is already included in the analysis price.</p>
+  </div>
+
+  <div class="footer">
+    <div class="line">◆ Sanjivani Jyotish Sansthan ◆</div>
+    <div style="margin-top:8px;">
+      📧 <a href="mailto:komalastro14@gmail.com">komalastro14@gmail.com</a> &nbsp;|&nbsp;
+      Insta : <a target="_blank" href="https://instagram.com/astro.komal">astro.komal</a> • <a target="_blank" href="https://instagram.com/astro.sanjivani">astro.sanjivani</a> &nbsp;|&nbsp;
+      Telegram : <a target="_blank" href="https://t.me/Sanjivani_Jyotish">Sanjivani_Jyotish</a> &nbsp;|&nbsp;
+      WhatsApp : <a target="_blank" href="https://wa.me/919552636556">9552636556</a>
+    </div>
+    <div style="margin-top:6px; font-size:13px;">© Sanjivani Jyotish Sansthan | Astro Komal</div>
+  </div>
+
+</div>
+<script>
+  function toggleLanguage() {
+    document.body.classList.toggle('lang-en');
+    document.body.classList.toggle('lang-hi');
+  }
+</script>
+</body>
+</html>

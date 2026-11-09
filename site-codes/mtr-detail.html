@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marriage Analysis - Sanjivani Jyotish Sansthan</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans Devanagari','Poppins',sans-serif; background:#FFF9EF; color:#33241A; line-height:1.65; }
+  body.lang-hi .en { display:none !important; }
+  body.lang-en .hi { display:none !important; }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 16px 40px; }
+
+  /* header bar */
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 4px; }
+  .brand { font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; color:#7B1E1E; letter-spacing:.3px; }
+  .brand small { display:block; font-size:11px; font-weight:600; color:#B4762A; letter-spacing:2px; }
+  .lang-toggle { background:#7B1E1E; color:#FFF3D6; border:none; padding:8px 18px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 3px 8px rgba(123,30,30,.35); }
+  .lang-toggle:hover { background:#932626; }
+
+  /* hero */
+  .hero { padding:34px 26px 28px; background:linear-gradient(160deg,#FFF3D6 0%,#FFE7C2 55%,#FFDFE0 100%); border:1px solid #EFD9A7; border-radius:22px; box-shadow:0 10px 28px rgba(160,100,20,.12); margin-bottom:34px; }
+  .hero-grid { display:flex; gap:30px; align-items:center; }
+  .hero-photo { flex:0 0 300px; perspective:900px; }
+  .hero-photo img { width:100%; height:320px; object-fit:contain; display:block; transform:rotateY(-10deg) rotateX(2deg); filter:drop-shadow(16px 20px 12px rgba(90,50,10,.35)); transition:transform .45s ease, filter .45s ease; }
+  .hero:hover .hero-photo img { transform:rotateY(0deg) rotateX(0deg); filter:drop-shadow(0 10px 10px rgba(90,50,10,.25)); }
+  .hero-text { flex:1; text-align:left; }
+  .hero-text h1 { font-size:31px; font-weight:800; color:#7B1E1E; line-height:1.35; }
+  .hero-text h1 .grad { background:linear-gradient(90deg,#B3540A,#D97706,#B91C1C); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-text p.lead { font-size:19px; font-weight:800; color:#B3540A; margin-top:12px; }
+  .hero-text p.sub { font-size:16px; color:#5C4632; margin-top:6px; }
+  .hlist { margin-top:14px; }
+  .hlist span { display:block; font-size:15px; color:#4A382C; padding:3px 0; }
+  .hlist span::before { content:"\27A4  "; color:#B3541E; font-weight:800; }
+  .chips { margin-top:18px; display:flex; flex-wrap:wrap; gap:10px; }
+  .chip { background:#fff; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:14px; padding:7px 16px; border-radius:999px; box-shadow:0 2px 6px rgba(160,100,20,.15); }
+  @media (max-width:760px){ .hero-grid{flex-direction:column;} .hero-text{text-align:center;} .chips{justify-content:center;} .hlist span{text-align:left;} .hero-text h1{font-size:26px;} .hero-photo{flex:0 0 auto; width:230px;} .hero-photo img{height:280px;} }
+
+  /* blocks */
+  .block { background:#fff; border:1px solid #F0DFBB; border-left:6px solid #D97706; border-radius:16px; padding:22px 24px; margin-top:26px; box-shadow:0 6px 18px rgba(160,100,20,.08); }
+  .block h2 { font-size:21px; color:#7B1E1E; margin-bottom:8px; }
+  .block p { font-size:15.5px; color:#43322A; }
+  .block.gold { border-left-color:#B91C1C; background:linear-gradient(180deg,#FFFDF6,#FFF7E6); }
+  .bhead { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .bhead h2 { margin-bottom:0 !important; }
+  .bicon { width:46px; height:46px; flex:0 0 46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:linear-gradient(135deg,#F59E0B,#B3540A); box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .block.gold .bicon { background:linear-gradient(135deg,#B91C1C,#7B1E1E); box-shadow:0 4px 10px rgba(123,30,30,.35); }
+  .taglabel { font-size:13.5px; font-weight:700; color:#7B1E1E; margin-top:14px; }
+  .sysbadges { margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; }
+  .sysbadges span { background:linear-gradient(90deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:14px; padding:6px 18px; border-radius:999px; box-shadow:0 3px 8px rgba(123,30,30,.30); }
+  .ptags { display:flex; flex-wrap:wrap; gap:9px; margin-top:4px; }
+  .ptag { display:inline-flex; align-items:center; gap:8px; background:#FFFDF6; border:1.5px solid #E3B341; border-radius:999px; padding:6px 15px 6px 7px; font-size:14.5px; color:#4A2C14; box-shadow:0 2px 6px rgba(123,30,30,.10); }
+  .ptag .n { background:linear-gradient(135deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:12.5px; min-width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0 3px; flex:none; }
+  .cnt { margin-left:auto; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:13px; padding:4px 14px; border-radius:999px; white-space:nowrap; }
+
+  /* question lists - catalog style, numbered */
+  .chk { display:grid; grid-template-columns:1fr; gap:2px 22px; margin-top:6px; }
+  .chk span { font-size:15px; color:#4A382C; padding:7px 2px; border-bottom:1px dashed #EBDCC0; }
+  .chk span.subq { padding-left:26px; border-bottom:1px dashed #EBDCC0; color:#6B4F3A; }
+
+  /* price options */
+  .sec-title { text-align:center; margin:42px 0 6px; font-size:28px; font-weight:800; color:#7B1E1E; }
+  .sec-sub { text-align:center; color:#7A6248; font-size:15px; margin-bottom:24px; }
+  .ogrid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:820px; margin:0 auto; }
+  .ogrid.single { grid-template-columns:1fr; max-width:460px; }
+  @media (max-width:640px){ .ogrid{grid-template-columns:1fr;} }
+  .ocard { background:#fff; border:1.5px solid #F0DFBB; border-radius:20px; padding:26px 22px 22px; text-align:center; box-shadow:0 8px 22px rgba(160,100,20,.10); display:flex; flex-direction:column; }
+  .ocard.best { border:2px solid #D97706; }
+  .ocard h3 { font-size:20px; color:#7B1E1E; font-weight:700; }
+  .ocard .oprice { font-family:'Poppins',sans-serif; font-size:36px; font-weight:800; color:#C0392B; margin:8px 0 2px; }
+  .ocard p { font-size:14.5px; color:#55433A; flex:1; margin:4px 0 16px; }
+  .btn { display:inline-block; background:linear-gradient(90deg,#B3540A,#D97706); color:#fff; text-decoration:none; font-weight:700; font-size:15.5px; padding:11px 26px; border-radius:999px; box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .btn:hover { filter:brightness(1.08); }
+
+  .doubts p { margin:7px 0; font-size:15.5px; }
+
+  /* footer */
+  .footer { margin-top:42px; text-align:center; background:#FFF3D6; border:1px solid #EFD9A7; border-radius:16px; padding:20px 14px; font-size:14.5px; color:#5C4632; }
+  .footer a { color:#B3540A; font-weight:700; text-decoration:none; }
+  .footer .line { font-weight:700; color:#7B1E1E; }
+</style>
+</head>
+<body class="lang-hi">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Sanjivani Jyotish<small>SANJIVANI JYOTISH SANSTHAN</small></div>
+    <button class="lang-toggle" onclick="toggleLanguage()">English / हिंदी</button>
+  </div>
+
+  <div class="hero">
+    <div class="hero-grid">
+      <div class="hero-photo"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhP2mC6eGuSGUDDLWU5DIkCY2U-Y3BzpfpDM5ROTEJYBXzL1rlYYSolgbxwJSbYS_yLDccMpxYOsGcBKCIldMrFy9EKrBqiNpkRv8AqfFzmCQF1vGT1tmdi8Wx1lHRpeJnakDf1EF0ZQD6jNQRHww5mbvijHnrlTwcdE-njtHE7zld4vW5-7ljoAIAU4JY/s1600/02-marriage-timing.png" alt="Marriage Timing Analysis"></div>
+      <div class="hero-text">
+        <h1><span class="hi">पर्सनलाइज्ड <span class="grad">मैरिज टाइमिंग</span> एनालिसिस</span><span class="en">Personalized <span class="grad">Marriage Timing</span> Analysis</span></h1>
+        <p class="lead hi">आपकी शादी का सबसे सटीक Time-Frame!</p>
+        <p class="lead en">The Most Accurate Time-Frame of Your Marriage!</p>
+        <p class="sub hi">यह सिर्फ़ अनुमान नहीं, बल्कि आपकी शादी के 'दैवीय समय' का एक Micro-Level Analysis है। यह Analysis दशा, गोचर और ग्रहों की Position का Study करके 4 प्रमुख ज्योतिष Systems के माध्यम से सबसे सटीक 'Time-Frame' की पहचान करता है।</p>
+        <p class="sub en">This is not just a guess, but a subtle analysis of the 'divine time' of your marriage. This analysis studies dashas, transits and planetary positions to identify the most accurate 'time-limit' through 4 major astrology systems.</p>
+        <div class="hlist">
+          <span class="hi">आपको एक सटीक Time-Frame मिलेगा जब आपकी शादी की सबसे Strong Probability है</span>
+          <span class="hi">पराशरी, जैमिनी और KP द्वारा आपकी कुंडली में 'मैरिज के वादे' का Analysis</span>
+          <span class="hi">Past Birth के कर्मों को समझने के लिए D60 (Karmic Legacy) का Deep Study</span>
+          <span class="hi">अलग-अलग Favorable Periods के लिए Probability Percentage जानें</span>
+          <span class="en">You will get an accurate time-frame when your marriage is most likely to happen</span>
+          <span class="en">Analysis of the 'Promise of Marriage' in your kundli through Parashari, Jaimini and KP</span>
+          <span class="en">A deep study of D60 (Karmic Legacy) to understand the karmas of past births</span>
+          <span class="en">Know the probability percentage for different favorable periods</span>
+        </div>
+        <div class="chips">
+          <div class="chip"><span class="hi">100% Manual एनालिसिस</span><span class="en">100% Manual Analysis</span></div>
+          <div class="chip"><span class="hi">Micro-Level Analysis</span><span class="en">Micro-Level Analysis</span></div>
+          <div class="chip"><span class="hi">PDF + Audio Note विकल्प</span><span class="en">PDF + Audio Note Option</span></div>
+          <div class="chip"><span class="hi">Doubts Clearance बिल्कुल Free</span><span class="en">Doubts Clearance Absolutely Free</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">इस एनालिसिस में किया गया मुख्य Analysis</span><span class="en">Main Analysis Done in This Analysis</span></h2>
+  <p class="sec-sub hi">मैरिज का समय, उसका वादा और Probability - पूरा Analysis एक ही क्रम में</p>
+  <p class="sec-sub en">The time of marriage, its promise and probability - the complete analysis in a single flow</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🕰️</div><h2><span class="hi">मैरिज का प्रोबेबल टाइम (Probable Time) और पहली मुलाकात</span><span class="en">Probable Time of Marriage &amp; First Meeting</span></h2></div>
+    <div class="chk hi">
+      <span>1] मैरिज की टाइमिंग का एनालिसिस? (5 दशा सिस्टम्स और 20+ लेयर्स से डीप चेकिंग, साथ ही 'प्रॉमिस ऑफ मैरिज' (Promise of marriage) का टेस्ट)।</span>
+      <span>2] होने वाले लाइफ पार्टनर से पहली मीटिंग (First meeting) कहाँ और कैसे होगी?</span>
+      <span>3] यह मुलाकात किस मीडियम (जैसे- ऑनलाइन, सोशल मीडिया, ऑफिस) या किस रिलेटिव के थ्रू हो सकती है?</span>
+    </div>
+    <div class="chk en">
+      <span>1] Analysis of the timing of marriage? (Deep checking through 5 dasha systems and 20+ layers, along with testing the 'Promise of Marriage').</span>
+      <span>2] Where and how will the first meeting with the future life partner take place?</span>
+      <span>3] Through which medium (e.g., online, social media, office) or which relative could this meeting happen?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔮</div><h2><span class="hi">मैरिज योग का Final Conclusion</span><span class="en">Final Conclusion of the Marriage Yoga</span></h2></div>
+    <div class="chk hi">
+      <span>➤ पराशरी, जैमिनी और BNN ज्योतिष से मैरिज का वादा कितना Clear है?</span>
+      <span>➤ Krishnamurti System (KP) के अनुसार मैरिज के वादे का Analysis।</span>
+      <span>➤ D60 (षष्टियंश) - Past Merits और Final Result क्या Indicate करते हैं?</span>
+      <span>➤ क्या आपकी कुंडली में शादी का वादा क्लियर है?</span>
+    </div>
+    <div class="chk en">
+      <span>➤ How clear is the promise of marriage through Parashari, Jaimini and BNN astrology?</span>
+      <span>➤ Analysis of the promise of marriage according to the Krishnamurti method (KP).</span>
+      <span>➤ What do D60 (Shashtiamsha) - past merits and the final result - indicate?</span>
+      <span>➤ Is the promise of marriage clear in your kundli?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">📅</div><h2><span class="hi">Exact Time Window का Determination</span><span class="en">Determination of the Exact Time Window</span></h2></div>
+    <div class="chk hi">
+      <span>➤ मैरिज के लिए सबसे Strong Time Window कौन सी है?</span>
+      <span>➤ Parashari System के अनुसार विंशोत्तरी/योगिनी/त्रिभागी दशाओं से समय का Analysis।</span>
+      <span>➤ Jaimini System के अनुसार चर महादशा से समय का Analysis।</span>
+      <span>➤ Bhrigu Nandi Nadi (BNN) के अनुसार गुरु-शनि के Double Transit से समय का Determination।</span>
+    </div>
+    <div class="chk en">
+      <span>➤ Which is the strongest Time Window for marriage?</span>
+      <span>➤ Analysis of time through Vimshottari/Yogini/Tribhagi dashas according to Parashari astrology.</span>
+      <span>➤ Analysis of time through Chara Mahadasha according to Jaimini astrology.</span>
+      <span>➤ Determination of time through the combined Jupiter-Saturn transit according to Bhrigu Nandi Nadi (BNN).</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">📊</div><h2><span class="hi">Probability और Alternate Period</span><span class="en">Probability &amp; Alternate Periods</span></h2></div>
+    <div class="chk hi">
+      <span>➤ KP System के अनुसार CSL Dasha Qualification से समय का Analysis।</span>
+      <span>➤ मुख्य Time Period में मैरिज की Probability कितने Percentage (%) है?</span>
+      <span>➤ अगर मुख्य Period में मैरिज नहीं होता है, तो और कौन-सा Probable Period है?</span>
+      <span>➤ Alternate Periods में मैरिज की Probability कितने Percentage है?</span>
+    </div>
+    <div class="chk en">
+      <span>➤ Analysis of time through CSL dasha qualification according to KP astrology.</span>
+      <span>➤ What is the probability percentage (%) of marriage in the main time period?</span>
+      <span>➤ If marriage does not happen in the main period, then which is the next probable period?</span>
+      <span>➤ What is the probability percentage of marriage in the alternate periods?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🏁</div><h2><span class="hi">Final Conclusion और Overall Overview</span><span class="en">Final Conclusion &amp; Overall Overview</span></h2></div>
+    <div class="chk hi">
+      <span>➤ सभी Astrology Systems का Overall और Final Conclusion क्या है?</span>
+      <span>➤ मैरिज के लिए कौन से ग्रह, दशा और गोचर सबसे Important Role निभाएंगे?</span>
+    </div>
+    <div class="chk en">
+      <span>➤ What is the overall and final conclusion of all the astrological methods?</span>
+      <span>➤ Which planets, dashas and transits will play the most important role for the marriage?</span>
+    </div>
+    <div class="chk hi">
+      <span style="font-weight:700; color:#7B1E1E;">➤ नेटिव ने जो पर्सनल क्वेश्चन्स पूछे हैं, उनका इन-डेप्थ एनालिसिस।</span>
+    </div>
+    <div class="chk en">
+      <span style="font-weight:700; color:#7B1E1E;">➤ In-depth analysis of the personal questions asked by the native.</span>
+    </div>
+    <p class="hi" style="margin-top:12px;">(आप मैरिज से जुड़े अपने मैक्सिमम 2 पर्सनल सवाल पूछ सकते हैं, जिनका In-depth एनालिसिस इस एनालिसिस में दिया जाएगा।)</p>
+    <p class="en" style="margin-top:12px;">(You can ask a maximum of 2 personal questions related to marriage, whose in-depth analysis will be given in this analysis.)</p>
+    <p class="hi" style="margin-top:8px;">(नोट : Complete मैरिज Analysis के लिए <a href="https://sites.google.com/view/astrosanjivani/MR" target="_blank" style="color:#B3540A; font-weight:700;">पर्सनलाइज्ड मैरिज एनालिसिस</a> बुक करें।)</p>
+    <p class="en" style="margin-top:8px;">(Note: For the complete Marriage Analysis, book the <a href="https://sites.google.com/view/astrosanjivani/MR" target="_blank" style="color:#B3540A; font-weight:700;">Personalized Marriage Analysis</a>.)</p>
+  </div>
+
+<h2 class="sec-title"><span class="hi">हमारा एनालिसिस इतना गहरा क्यों है?</span><span class="en">Why Is Our Analysis So Deep?</span></h2>
+  <p class="sec-sub hi">चारों प्रणालियों के असली Checking Points - जिनसे हर कुंडली का गहराई से Analysis होता है</p>
+  <p class="sec-sub en">The actual checking points of all four systems - through which every chart is deeply analysed</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🪐</div><h2><span class="hi">पराशरी प्रणाली</span><span class="en">Parashari System</span></h2><span class="cnt hi">11 Points</span><span class="cnt en">11 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">सप्तमेश का पूर्ण Analysis</span><span class="en">Complete Analysis of the Saptamesh</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">सप्तम भाव का Analysis</span><span class="en">Analysis of the 7th house</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">नवांश (D9) कुंडली का Analysis</span><span class="en">Analysis of the Navansh (D9) chart</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">D1 के सप्तमेश की D9 में स्थिति</span><span class="en">D1's Saptamesh placed in D9</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">शुक्र और गुरु की स्थिति</span><span class="en">Position of Venus and Jupiter</span></span>
+      <span class="ptag"><span class="n">6</span><span class="hi">शुक्र-मंगल संबंध</span><span class="en">Venus-Mars connection</span></span>
+      <span class="ptag"><span class="n">7</span><span class="hi">शुक्र पर राहु-केतु का प्रभाव</span><span class="en">Rahu-Ketu's influence on Venus</span></span>
+      <span class="ptag"><span class="n">8</span><span class="hi">विंशोत्तरी दशा से Time Determination</span><span class="en">Time Determination through Vimshottari Dasha</span></span>
+      <span class="ptag"><span class="n">9</span><span class="hi">योगिनी दशा से Time Determination</span><span class="en">Time Determination through Yogini Dasha</span></span>
+      <span class="ptag"><span class="n">10</span><span class="hi">गोचर Analysis - गुरु-शनि का Double Transit</span><span class="en">Transit Analysis - Double Transit of Jupiter-Saturn</span></span>
+      <span class="ptag"><span class="n">11</span><span class="hi">बल और क्षमता का Analysis - गोचर की पुष्टि के लिए</span><span class="en">Analysis of strength and capacity - to confirm the transit</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">♻️</div><h2><span class="hi">जैमिनी प्रणाली</span><span class="en">Jaimini System</span></h2><span class="cnt hi">7 Points</span><span class="cnt en">7 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">दाराकारक (DK) का Analysis</span><span class="en">Analysis of the Darakaraka (DK)</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">उपपद लग्न (UL) का Analysis</span><span class="en">Analysis of the Upapada Lagna (UL)</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">दारापद (A7) का Analysis</span><span class="en">Analysis of the Darapada (A7)</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">स्वांश और कारकांश का सप्तम भाव</span><span class="en">7th house from Swansh and Karakansh</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">UL और DK का आपसी संबंध</span><span class="en">Mutual relation of UL and DK</span></span>
+      <span class="ptag"><span class="n">6</span><span class="hi">चर दशा से Time Determination</span><span class="en">Time Determination through Chara Dasha</span></span>
+      <span class="ptag"><span class="n">7</span><span class="hi">अर्गला से दशा की गुणवत्ता का Analysis</span><span class="en">Analysis of dasha quality through Argala</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">BNN (भृगु नंदी नाड़ी) प्रणाली</span><span class="en">BNN (Bhrigu Nandi Nadi) System</span></h2><span class="cnt hi">6 Points</span><span class="cnt en">6 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">गुरु - जीव कारक का Analysis</span><span class="en">Analysis of Jupiter - the Jeeva Karaka</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">लाइफ पार्टनर का कारक ग्रह</span><span class="en">The life partner's Karaka planet</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">जीव और पार्टनर कारक का मुख्य सूत्र</span><span class="en">The main formula of Jeeva and partner Karaka</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">शनि, राहु-केतु और वक्री ग्रहों का प्रभाव</span><span class="en">Influence of Saturn, Rahu-Ketu and retrograde planets</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">जीव कारक का सक्रिय होना</span><span class="en">Activation of the Jeeva Karaka</span></span>
+      <span class="ptag"><span class="n">6</span><span class="hi">शनि - कर्म फल दाता का अनुमोदन</span><span class="en">Approval of Saturn - the giver of karmic fruits</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🎯</div><h2><span class="hi">KP प्रणाली</span><span class="en">KP System</span></h2><span class="cnt hi">4 Points</span><span class="cnt en">4 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">7वें भाव के CSL से मैरिज का वादा (Promise)</span><span class="en">Promise of marriage through the 7th house CSL</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">देरी और बाधाओं का Analysis</span><span class="en">Analysis of delay and obstructions</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">दशा Analysis - संभावित अवधि की पुष्टि</span><span class="en">Dasha Analysis - confirmation of the probable period</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">गोचर (Transit) का उपयोग</span><span class="en">Use of Transits</span></span>
+    </div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🏆</div><h2><span class="hi">D60 (षष्टियंश) - अंतिम Analysis</span><span class="en">D60 (Shashtiamsha) - The Final Analysis</span></h2><span class="cnt hi">3 Points</span><span class="cnt en">3 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">D60 लग्न और लग्नेश का Analysis</span><span class="en">Analysis of D60 Lagna and Lagnesh</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">D60 का सप्तम भाव और सप्तमेश</span><span class="en">D60's 7th house and Saptamesh</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">राजयोग कारक ग्रहों की D60 में स्थिति</span><span class="en">Rajyoga Karaka planets placed in D60</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔍</div><h2><span class="hi">ध्यान रहे : 100% Manual In-depth Analysis</span><span class="en">Please Note : 100% Manual In-depth Analysis</span></h2></div>
+    <p class="hi">इस Analysis में ग्रहों की Strength का <b>Highly Micro-Level</b> चेक किया जाता है। इसीलिए इसमें दिया हुआ Analysis पूरी तरीके से हमारी Deep Research और मेहनत का नतीजा है, जिससे Analysis Delivery में 1 से 2 दिन का समय लग सकता है। कृपया इसका ध्यान रखें।</p>
+    <p class="en">This Analysis involves a <b>Highly Micro-Level</b> examination of planetary Strength. Therefore, the detailed insights provided in this Analysis are purely the result of our Deep Research and hard work, due to which the Analysis Delivery may take 1 to 2 days. Please keep this in mind.</p>
+    <p class="taglabel hi">* Micro-Level Analysis में शामिल :</p><p class="taglabel en">* Micro-Level Analysis includes :</p>
+    <div class="sysbadges"><span class="hi">अस्त</span><span class="en">Combust (Ast)</span><span class="hi">वक्री</span><span class="en">Retrograde (Vakri)</span><span class="hi">वर्गोत्तम</span><span class="en">Vargottam</span><span class="hi">शत्रु/मित्र/सम राशि</span><span class="en">Enemy/Friend/Neutral signs</span><span class="hi">उच्च/नीच/नीचभंग</span><span class="en">Exalted/Debilitated/Neechbhang</span><span class="hi">षड्बल</span><span class="en">Shadbala</span><span class="hi">भावबल</span><span class="en">Bhavabala</span><span class="hi">अष्टकवर्ग</span><span class="en">Ashtakvarga</span><span class="hi">भिन्नाष्टकवर्ग</span><span class="en">Bhinnashtakvarga</span><span class="hi">षोडशवर्ग</span><span class="en">Shodashvarga</span><span class="hi">विंशोपक</span><span class="en">Vimsopaka</span><span class="hi">चलित</span><span class="en">Chalit</span><span class="hi">नवांश</span><span class="en">Navamsha</span><span class="hi">स्वांश-कारकांश</span><span class="en">Svamsha-Karakamsha</span><span class="hi">आरूढ़ पद</span><span class="en">Arudha Pada</span><span class="hi">चर कारक</span><span class="en">Chara Karaka</span><span class="hi">पुष्कर भाग</span><span class="en">Pushkar Bhaga</span><span class="hi">मृत्यु भाग</span><span class="en">Mrityu Bhaga</span><span class="hi">नवतारा चक्र</span><span class="en">Navatara Chakra</span><span class="hi">योग-दोष</span><span class="en">Yoga-Dosha</span><span class="hi">अर्गला</span><span class="en">Argala</span><span class="hi">उपग्रह</span><span class="en">Upagraha</span><span class="hi">स्पेशल लग्न</span><span class="en">Special Lagna</span></div>
+    <p class="taglabel hi" style="margin-top:14px;">दशा Systems :</p><p class="taglabel en" style="margin-top:14px;">Dasha systems :</p>
+    <div class="sysbadges"><span class="hi">विंशोत्तरी दशा</span><span class="en">Vimshottari Dasha</span><span class="hi">योगिनी दशा</span><span class="en">Yogini Dasha</span><span class="hi">त्रिभागी दशा</span><span class="en">Tribhagi Dasha</span><span class="hi">अष्टोत्तरी दशा</span><span class="en">Ashtottari Dasha</span><span class="hi">KP दशा</span><span class="en">KP Dasha</span><span class="hi">चर दशा</span><span class="en">Chara Dasha</span><span class="hi">डबल ट्रांजिट</span><span class="en">Double Transit</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🎧</div><h2>Mode of Consultation</h2></div>
+    <p class="hi">In-depth और Deep Analysis की PDF + 20 Minute की Audio Voice Note (Simple भाषा में समझाई हुई)।</p>
+    <p class="en">In-depth &amp; Deep Analysis PDF + 20-Minute Audio Voice Note (explained in simple language).</p>
+    <div class="sysbadges"><span>📄 PDF</span><span>🎧 Audio Voice Note</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🌟</div><h2>हमारी विशेषता / Our Specialty</h2></div>
+    <p class="hi">Accurate Prediction के लिए हम 4 Main Astrological Systems से Planets की Strength और State का In-depth Analysis करने के बाद ही किसी Conclusion पर पहुँचते हैं। और एक ऐसी Analysis बनाते हैं जो सिर्फ़ आपके लिए Personally तैयार की जाती है। इसीलिए आप हमारी Accuracy पर पूरी तरीके से भरोसा कर सकते हैं।</p>
+    <p class="en">For Accurate Prediction, we reach a Conclusion only after doing an In-depth Analysis of the Strength and State of Planets through 4 Main Astrological Systems. And we create an Analysis that is Personally prepared only for you. That is why you can completely trust our Accuracy.</p>
+    <div class="sysbadges"><span class="hi">पराशरी</span><span class="en">Parashari</span><span class="hi">जैमिनी</span><span class="en">Jaimini</span><span>KP</span><span>BNN</span></div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">अपना Option चुनें</span><span class="en">Choose Your Option</span></h2>
+  <p class="sec-sub hi">मैरिज टाइमिंग एनालिसिस - एक ही Option में Complete Time-Analysis</p>
+  <p class="sec-sub en">The Marriage Timing Analysis - the complete time analysis in a single option</p>
+
+  <div class="ogrid single">
+    <div class="ocard best">
+      <h3><span class="hi">पर्सनलाइज्ड मैरिज टाइमिंग एनालिसिस</span><span class="en">Personalized Marriage Timing Analysis</span></h3>
+      <div class="oprice">₹299</div>
+      <p class="hi" style="font-size:13.5px; color:#8A6D3B; margin-top:-6px;">(एक डॉक्टर की फीस से भी कम में!)</p>
+      <p class="en" style="font-size:13.5px; color:#8A6D3B; margin-top:-6px;">(Less than even a doctor's fee!)</p>
+      <p class="hi">मैरिज के समय का Complete In-depth Analysis - Promise of Marriage का Verdict, सबसे प्रबल Time-Window और पहली मुलाकात की पूरी जानकारी।</p>
+      <p class="en">A complete in-depth analysis of the time of marriage - the Promise of Marriage verdict, the strongest Time-Window and complete details of the first meeting.</p>
+      <a class="btn hi" target="_blank" href="https://pages.razorpay.com/Marriage-Time-Analysis">अभी ऑर्डर करें →</a>
+      <a class="btn en" target="_blank" href="https://pages.razorpay.com/Marriage-Time-Analysis-Eng">Order Now →</a>
+    </div>
+  </div>
+
+  <div class="block doubts">
+    <div class="bhead"><div class="bicon">💬</div><h2><span class="hi">एनालिसिस के बाद के सवाल (Doubts)</span><span class="en">Post-Analysis Queries (Doubts)</span></h2></div>
+    <p class="hi">➤ <b>डाउट्स क्लीयरेंस:</b> PDF में जवाब पढ़कर अगर मन में कोई डाउट रहा तो इसकी चिंता न करें। PDF में पहले से सभी डाउट्स का समाधान किया जाता है।</p>
+    <p class="hi">➤ <b>हमारा कमिटमेंट:</b> अगर फिर भी कोई डाउट हो तो दोबारा PDF भेजकर आपके सभी Doubts क्लियर किए जाते हैं। हम अपने क्लाइंट्स का साथ कभी नहीं छोड़ते जब तक उनके सभी डाउट्स क्लियर नहीं हो जाते।</p>
+    <p class="hi">➤ <b>कोई अतिरिक्त शुल्क नहीं:</b> आपको दोबारा डाउट्स क्लीयर करने के लिए कोई Extra चार्ज नहीं देना होता है। यह सर्विस एनालिसिस के Price में ही Included है।</p>
+    <p class="en">➤ <b>Doubts Clearance:</b> If you have any doubts in your mind after reading the answers in the PDF, don't worry. All potential doubts are already addressed in the PDF itself.</p>
+    <p class="en">➤ <b>Our Commitment:</b> If you still have any doubts, they will be resolved by sending you an updated PDF. We never leave our clients' side until all their doubts are fully cleared.</p>
+    <p class="en">➤ <b>No Extra Charges:</b> You do not have to pay any extra charges for getting your doubts cleared again. This service is already included in the analysis price.</p>
+  </div>
+
+  <div class="footer">
+    <div class="line">◆ Sanjivani Jyotish Sansthan ◆</div>
+    <div style="margin-top:8px;">
+      📧 <a href="mailto:komalastro14@gmail.com">komalastro14@gmail.com</a> &nbsp;|&nbsp;
+      Insta : <a target="_blank" href="https://instagram.com/astro.komal">astro.komal</a> • <a target="_blank" href="https://instagram.com/astro.sanjivani">astro.sanjivani</a> &nbsp;|&nbsp;
+      Telegram : <a target="_blank" href="https://t.me/Sanjivani_Jyotish">Sanjivani_Jyotish</a> &nbsp;|&nbsp;
+      WhatsApp : <a target="_blank" href="https://wa.me/919552636556">9552636556</a>
+    </div>
+    <div style="margin-top:6px; font-size:13px;">© Sanjivani Jyotish Sansthan | Astro Komal</div>
+  </div>
+
+</div>
+<script>
+  function toggleLanguage() {
+    document.body.classList.toggle('lang-en');
+    document.body.classList.toggle('lang-hi');
+  }
+</script>
+</body>
+</html>
