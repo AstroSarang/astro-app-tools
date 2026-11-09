@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prashna Kundli Analysis - Sanjivani Jyotish Sansthan</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans Devanagari','Poppins',sans-serif; background:#FFF9EF; color:#33241A; line-height:1.65; }
+  body.lang-hi .en { display:none !important; }
+  body.lang-en .hi { display:none !important; }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 16px 40px; }
+
+  /* header bar */
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 4px; }
+  .brand { font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; color:#7B1E1E; letter-spacing:.3px; }
+  .brand small { display:block; font-size:11px; font-weight:600; color:#B4762A; letter-spacing:2px; }
+  .lang-toggle { background:#7B1E1E; color:#FFF3D6; border:none; padding:8px 18px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 3px 8px rgba(123,30,30,.35); }
+  .lang-toggle:hover { background:#932626; }
+
+  /* hero */
+  .hero { padding:34px 26px 28px; background:linear-gradient(160deg,#FFF3D6 0%,#FFE7C2 55%,#FFDFE0 100%); border:1px solid #EFD9A7; border-radius:22px; box-shadow:0 10px 28px rgba(160,100,20,.12); margin-bottom:34px; }
+  .hero-grid { display:flex; gap:30px; align-items:center; }
+  .hero-photo { flex:0 0 300px; perspective:900px; }
+  .hero-photo img { width:100%; height:320px; object-fit:contain; display:block; transform:rotateY(-10deg) rotateX(2deg); filter:drop-shadow(16px 20px 12px rgba(90,50,10,.35)); transition:transform .45s ease, filter .45s ease; }
+  .hero:hover .hero-photo img { transform:rotateY(0deg) rotateX(0deg); filter:drop-shadow(0 10px 10px rgba(90,50,10,.25)); }
+  .hero-text { flex:1; text-align:left; }
+  .hero-text h1 { font-size:31px; font-weight:800; color:#7B1E1E; line-height:1.35; }
+  .hero-text h1 .grad { background:linear-gradient(90deg,#B3540A,#D97706,#B91C1C); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-text p.lead { font-size:17.5px; font-weight:700; color:#5C4632; margin-top:12px; }
+  .hero-text p.sub { font-size:16px; color:#5C4632; margin-top:6px; }
+  .chips { margin-top:18px; display:flex; flex-wrap:wrap; gap:10px; }
+  .chip { background:#fff; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:14px; padding:7px 16px; border-radius:999px; box-shadow:0 2px 6px rgba(160,100,20,.15); }
+  @media (max-width:760px){ .hero-grid{flex-direction:column;} .hero-text{text-align:center;} .chips{justify-content:center;} .hero-text h1{font-size:26px;} .hero-photo{flex:0 0 auto; width:230px;} .hero-photo img{height:280px;} }
+
+  /* blocks */
+  .block { background:#fff; border:1px solid #F0DFBB; border-left:6px solid #D97706; border-radius:16px; padding:22px 24px; margin-top:26px; box-shadow:0 6px 18px rgba(160,100,20,.08); }
+  .block h2 { font-size:21px; color:#7B1E1E; margin-bottom:8px; }
+  .block p { font-size:15.5px; color:#43322A; }
+  .block.gold { border-left-color:#B91C1C; background:linear-gradient(180deg,#FFFDF6,#FFF7E6); }
+  .bhead { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .bhead h2 { margin-bottom:0 !important; }
+  .bicon { width:46px; height:46px; flex:0 0 46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:linear-gradient(135deg,#F59E0B,#B3540A); box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .block.gold .bicon { background:linear-gradient(135deg,#B91C1C,#7B1E1E); box-shadow:0 4px 10px rgba(123,30,30,.35); }
+  .taglabel { font-size:13.5px; font-weight:700; color:#7B1E1E; margin-top:14px; }
+  .ptags { display:flex; flex-wrap:wrap; gap:9px; margin-top:4px; }
+  .ptag { display:inline-flex; align-items:center; gap:8px; background:#FFFDF6; border:1.5px solid #E3B341; border-radius:999px; padding:6px 15px 6px 7px; font-size:14.5px; color:#4A2C14; box-shadow:0 2px 6px rgba(123,30,30,.10); }
+  .ptag .n { background:linear-gradient(135deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:12.5px; min-width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0 3px; flex:none; }
+  .cnt { margin-left:auto; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:13px; padding:4px 14px; border-radius:999px; white-space:nowrap; }
+  .sysbadges { margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; }
+  .sysbadges span { background:linear-gradient(90deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:14px; padding:6px 18px; border-radius:999px; box-shadow:0 3px 8px rgba(123,30,30,.30); }
+
+  /* areas checklist */
+  .chk { display:grid; grid-template-columns:repeat(2,1fr); gap:2px 22px; margin-top:6px; }
+  .chk span { font-size:15px; color:#4A382C; padding:7px 2px; border-bottom:1px dashed #EBDCC0; }
+  .chk span::before { content:"\2713  "; color:#B3541E; font-weight:800; }
+  .chk.mute span { font-size:13.5px; color:#97836C; border-bottom-color:#F0E7D2; }
+  .chk.mute span::before { content:"\2013  "; color:#C4AE87; }
+  @media (max-width:640px){ .chk{grid-template-columns:1fr;} }
+  .featlist { margin-top:4px; }
+  .featlist p { font-size:15.5px; color:#43322A; margin:9px 0; }
+  .featlist p b { color:#7B1E1E; }
+
+  /* price options */
+  .sec-title { text-align:center; margin:42px 0 6px; font-size:28px; font-weight:800; color:#7B1E1E; }
+  .sec-sub { text-align:center; color:#7A6248; font-size:15px; margin-bottom:24px; }
+  .ogrid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:820px; margin:0 auto; }
+  @media (max-width:640px){ .ogrid{grid-template-columns:1fr;} }
+  .ocard { background:#fff; border:1.5px solid #F0DFBB; border-radius:20px; padding:26px 22px 22px; text-align:center; box-shadow:0 8px 22px rgba(160,100,20,.10); display:flex; flex-direction:column; }
+  .ocard.best { border:2px solid #D97706; }
+  .ocard .otag { display:inline-block; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:12.5px; padding:3px 14px; border-radius:999px; margin-bottom:10px; }
+  .ocard h3 { font-size:20px; color:#7B1E1E; font-weight:700; }
+  .ocard .oprice { font-family:'Poppins',sans-serif; font-size:36px; font-weight:800; color:#C0392B; margin:8px 0 2px; }
+  .ocard p { font-size:14.5px; color:#55433A; flex:1; margin:4px 0 16px; }
+  .btn { display:inline-block; background:linear-gradient(90deg,#B3540A,#D97706); color:#fff; text-decoration:none; font-weight:700; font-size:15.5px; padding:11px 26px; border-radius:999px; box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .btn:hover { filter:brightness(1.08); }
+
+  .doubts p { margin:7px 0; font-size:15.5px; }
+
+  /* footer */
+  .footer { margin-top:42px; text-align:center; background:#FFF3D6; border:1px solid #EFD9A7; border-radius:16px; padding:20px 14px; font-size:14.5px; color:#5C4632; }
+  .footer a { color:#B3540A; font-weight:700; text-decoration:none; }
+  .footer .line { font-weight:700; color:#7B1E1E; }
+</style>
+</head>
+<body class="lang-hi">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Sanjivani Jyotish<small>SANJIVANI JYOTISH SANSTHAN</small></div>
+    <button class="lang-toggle" onclick="toggleLanguage()">English / हिंदी</button>
+  </div>
+
+  <div class="hero">
+    <div class="hero-grid">
+      <div class="hero-photo"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj9sNiMT3odEqHlU86JpVi-PwvL2WjMf92tnRmo-S1sgvpl_wrS4xjVeFJVOMNm-_inVBSI-026r-kQu1CS-c36CfbBLNuFlFTsdYTNwqkRr3tpIJwryNncLtb5A1dGIsaZBNDEvtmdO82db3s69tRbwNst6JY6p7ZkN0o6AwWYsfNrhDLPU_aB4iKIvxk/s1600/04-career-full.png" alt="Prashna Kundli Analysis"></div>
+      <div class="hero-text">
+        <h1><span class="hi">करियर <span class="grad">फुल</span> एनालिसिस</span><span class="en">Personalized <span class="grad">Prashna Kundli</span> Analysis</span></h1>
+        <p class="lead hi">एक Analysis में पूरा Career Plan!</p>
+        <p class="lead en">Your complete Career Plan in one Analysis!</p>
+        <p class="sub hi">जॉब करें या बिज़नेस? सरकारी जॉब की संभावना कैसी है? कौन-सा Career Field देगा Success? कब मिलेगी पहली जॉब, कब होगा प्रमोशन?</p>
+        <p class="sub en">Job or Business? What are the chances of a Government Job? Which Career Field will give you Success? When will you get your first job, and when the promotion?</p>
+        <div class="chips">
+          <div class="chip"><span class="hi">100% Manual एनालिसिस</span><span class="en">100% Manual Analysis</span></div>
+          <div class="chip"><span class="hi">Micro-Level Analysis</span><span class="en">Micro-Level Analysis</span></div>
+          <div class="chip"><span class="hi">PDF + Audio Note विकल्प</span><span class="en">PDF + Audio Note Option</span></div>
+          <div class="chip"><span class="hi">Doubts Clearance बिल्कुल Free</span><span class="en">Doubts Clearance Absolutely Free</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">इस एनालिसिस में शामिल सभी (6+20) 26 Question</span><span class="en">All 26 Questions (6+20) Included in This Analysis</span></h2>
+  <p class="sec-sub hi">करियर का गहन Analysis और सभी 20 मुख्य Questionों का विस्तृत Analysis</p>
+  <p class="sec-sub en">In-depth analysis of the career and detailed analysis of all 20 main questions</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🎯</div><h2><span class="hi">इस एनालिसिस में शामिल मुख्य Analysis</span><span class="en">Main Analysis Included in This Analysis</span></h2></div>
+    <p class="hi" style="margin:12px 0 2px;"><b>A] ज्योतिषीय Analysis: करियर का स्तर</b></p>
+    <p class="hi" style="margin:0 0 4px;">आपकी कुंडली 'उच्च अधिकारी/व्यवसायी' की है या 'मजदूर/निम्न श्रेणी' की? इसका ज्योतिषीय Analysis।</p>
+    <p class="en" style="margin:12px 0 2px;"><b>A] Astrological Analysis: Level of Career</b></p>
+    <p class="en" style="margin:0 0 4px;">Astrological analysis to determine if your Kundali indicates a 'High-level Officer/Successful Businessman' status or an 'Average Worker' status.</p>
+    <p class="hi" style="margin:12px 0 2px;"><b>B] नौकरी vs व्यवसाय: एक विस्तृत Analysis</b></p>
+    <p class="hi" style="margin:0 0 4px;">नौकरी (Job) vs व्यवसाय (Business) की संभावनाओं का विस्तृत Analysis।</p>
+    <p class="en" style="margin:12px 0 2px;"><b>B] Job vs. Business: A Detailed Analysis</b></p>
+    <p class="en" style="margin:0 0 4px;">Detailed analysis of your prospects and success rate in a Job versus a Business.</p>
+    <p class="hi" style="margin:12px 0 2px;"><b>C] करियर को प्रभावित करने वाले ग्रहों का Analysis</b></p>
+    <p class="hi" style="margin:0 0 4px;">आपके करियर को प्रभावित करने वाले मुख्य ग्रहों का विस्तृत Analysis।</p>
+    <p class="en" style="margin:12px 0 2px;"><b>C] Analysis of Planets Influencing Career</b></p>
+    <p class="en" style="margin:0 0 4px;">In-depth analysis of the main planets influencing your career and professional life.</p>
+    <p class="hi" style="margin:12px 0 2px;"><b>D & E] 10 सबसे उपयुक्त करियर Path</b></p>
+    <p class="hi" style="margin:0 0 4px;">आपके शीर्ष करियर Path की प्राथमिकता और उनका Analysis। आपकी कुंडली के अनुसार आपके लिए 10 सबसे उपयुक्त करियर Path (नौकरी और व्यवसाय) कौन से हैं?</p>
+    <p class="en" style="margin:12px 0 2px;"><b>D & E] Top 10 Most Suitable Career Paths</b></p>
+    <p class="en" style="margin:0 0 4px;">Prioritization and deep analysis of your top career paths. According to your Kundali, which are the 10 most suitable career fields (in both Job and Business) for you?</p>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">💼</div><h2><span class="hi">पार्ट 1: करियर का गहन Analysis (In-depth Analysis)</span><span class="en">Part 1: In-depth Career Analysis</span></h2></div>
+    <div class="chk hi">
+      <span>करियर का Foundation, Potential, Luck और Life Pattern के आधार पर Assessment? (चारों Systems और 20+ Layers से Deep Checking, साथ में D60 Chart से Confirmation)</span>
+      <span>करियर में Position, Authority, Soul Purpose और Public Image कैसी रहेगी?</span>
+      <span>करियर से जुड़े Major Events और Success के Promise का Accurate Calculation?</span>
+      <span>D60 Chart (षष्टियंश) - Past Life Karma (पूर्व पुण्य) और Final Results (Karmic Legacy) क्या होंगे?</span>
+      <span>क्या यह कुंडली किसी 'Average/Struggling Worker' की है या किसी 'High-Level Officer/Successful Businessman' की? इसकी Deep Checking?</span>
+      <span>जॉब vs बिज़नेस की Possibility पर अष्टकवर्ग (Ashtakvarga) का Confirmation?</span>
+    </div>
+    <div class="chk en">
+      <span>Assessment of the career based on its Foundation, Potential, Luck and Life Pattern? (Deep checking through all four systems and 20+ layers, along with confirmation from the D60 chart)</span>
+      <span>How will the position, authority, soul purpose and public image be in the career?</span>
+      <span>Accurate calculation of major career-related events and the promise of success?</span>
+      <span>D60 Chart (Shashtiamsha) - what will be the past life karmas (Purva Punya) and final results (Karmic Legacy)?</span>
+      <span>Does this Kundali belong to an 'average/struggling worker' or a 'high-level officer/successful businessman'? Deep checking of this aspect?</span>
+      <span>Confirmation of the possibility of Job vs Business through Ashtakvarga?</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">📋</div><h2><span class="hi">पार्ट 2: करियर एनालिसिस: मेन क्वेश्चन्स (Main 20 Questions)</span><span class="en">Part 2: Career Analysis (Main 20 Questions)</span></h2></div>
+    <div class="chk hi">
+      <span>1] Kundali के अनुसार सही Career Choice और Suitable Field क्या है? जॉब vs बिज़नेस के Chances क्या हैं?</span>
+      <span>2] आपके अंदर कौन-से Talents, Skills और Strengths हैं, जो Career Growth में Helpful होंगे?</span>
+      <span>3] करियर में क्या Weaknesses या Negative Points हो सकते हैं, जिन पर Focus करने की ज़रूरत है?</span>
+      <span>4] Education और Skill Development का करियर पर क्या Impact पड़ेगा? किस Field में Studies Beneficial रहेगी?</span>
+      <span>➤ क्या आप अपनी Education और Knowledge को करियर में Successfully Use कर पाएंगे? आपकी Real Expertise किस Field में होगी?</span>
+      <span>5] क्या आपके लिए जॉब/सर्विस करना ज़्यादा Better रहेगा या अपना खुद का बिज़नेस Start करना?</span>
+      <span>6] अगर आप जॉब करते हैं, तो क्या Kundali में Government Job के Strong योग हैं? इसके कितने Percent Chances हैं?</span>
+      <span>7] अगर बिज़नेस करना है, तो किस Type का बिज़नेस या Industry सबसे ज़्यादा Favourable/Suitable रहेगा?</span>
+      <span>8] करियर में Growth, Promotion और Progress कब मिलेगा?</span>
+      <span>9] Financial Gains, Income के Sources, Financial Stability और धन (Wealth) के योग कैसे हैं?</span>
+      <span>➤ धन (Wealth) बचाने की क्षमता कैसी है? धन के Sources Ethical होंगे या नहीं?</span>
+      <span>10] करियर में Financial Challenges या Losses के योग हैं क्या? कब और कैसे आएँगे?</span>
+      <span>11] Job Satisfaction कैसी रहेगी - किन चीज़ों से संतुष्टि मिलेगी और किन से Frustration?</span>
+      <span>12] Colleagues, Bosses और Subordinates के साथ Relations कैसे रहेंगे - Clash होगा या Support मिलेगा?</span>
+      <span>➤ Hidden Obstacles, Workplace Politics और Health Issues का करियर पर क्या असर पड़ेगा?</span>
+      <span>13] करियर के लिए Travel या Relocation के योग हैं क्या? किस दिशा/स्थान पर?</span>
+      <span>14] करियर की Major Challenges, Obstacles और Tough Times कौन-से हैं? उनसे कैसे निपटें?</span>
+      <span>15] Major Milestones कब आएँगे - पहली जॉब, Job Switch, बड़ा Promotion, Business Start/Change?</span>
+      <span>16] Current दशाओं और गोचर (Transits) का करियर पर क्या Impact है और आगे क्या Result मिलेगा?</span>
+      <span>17] करियर में Success, Honor, Reputation और किसी Field में Fame मिलेगा क्या?</span>
+      <span>➤ क्या आपको असली Credit, Rewards और Recognition मिलेगा, या सिर्फ़ Position और बोझ?</span>
+      <span>18] क्या करियर से जुड़े बड़े Goals और Ambitions Achieve होंगे?</span>
+      <span>19] करियर में Peak Position और Authority क्या होगी - Leader या Top Official बनेंगे क्या?</span>
+      <span>20] करियर के लिए Remedies, Gemstones और पूजा-पाठ क्या हैं?</span>
+      <span>21] जातक के Personal Questions का In-depth Analysis (Maximum 5)</span>
+    </div>
+    <div class="chk en">
+      <span>1] According to the Kundali, what is the right career choice and suitable field? What are the chances of Job vs Business?</span>
+      <span>2] What talents, skills and strengths do you possess that will be helpful for career growth?</span>
+      <span>3] What could be the weaknesses or negative points in the career that need focus?</span>
+      <span>4] What impact will education and skill development have on the career? In which field will studies be beneficial?</span>
+      <span>➤ Will you be able to successfully use your education and knowledge in your career? In which field will your real expertise lie?</span>
+      <span>5] Will it be better for you to do a job/service or start your own business?</span>
+      <span>6] If you pursue a job, are there strong yogas for a Government Job in the Kundali? What are the percentage chances for it?</span>
+      <span>7] If business is the path, what type of business or industry will be most favourable/suitable for you?</span>
+      <span>8] When will growth, promotion and progress come in the career?</span>
+      <span>9] How are the financial gains, sources of income, financial stability and wealth yogas?</span>
+      <span>➤ How is the capacity to save wealth? Will the sources of wealth be ethical or not?</span>
+      <span>10] Are there yogas of financial challenges or losses in the career? When and how will they come?</span>
+      <span>11] How will job satisfaction be - what will give satisfaction and what will cause frustration?</span>
+      <span>12] How will relations with colleagues, bosses and subordinates be - will there be clashes or support?</span>
+      <span>➤ What effect will hidden obstacles, workplace politics and health issues have on the career?</span>
+      <span>13] Are there yogas of travel or relocation for the career? In which direction/place?</span>
+      <span>14] What are the major challenges, obstacles and tough times of the career? How to tackle them?</span>
+      <span>15] When will the major milestones come - first job, job switch, big promotion, business start/change?</span>
+      <span>16] What is the impact of the current dashas and transits on the career, and what result will come ahead?</span>
+      <span>17] Will there be success, honour, reputation and fame in some field in the career?</span>
+      <span>➤ Will you get real credit, rewards and recognition, or only position and burden?</span>
+      <span>18] Will the big career-related goals and ambitions be achieved?</span>
+      <span>19] What will be the peak position and authority in the career - will you become a leader or top official?</span>
+      <span>20] What are the remedies, gemstones and puja-path for the career?</span>
+      <span>21] In-depth analysis of the personal questions asked by the native (Maximum 5)</span>
+    </div>
+    <p class="hi" style="margin-top:12px;">➤ <b>नोट:</b> अगर आपका Budget कम है तो आप <a href="https://sites.google.com/view/astrosanjivani/CR" target="_blank" style="color:#B91C1C;font-weight:700;">Career Lite Analysis</a> बुक करें - उसमें Question 7 तक का Analysis मात्र ₹299 में मिलेगा।</p>
+    <p class="en" style="margin-top:12px;">➤ <b>Note:</b> If your budget is low, book the <a href="https://sites.google.com/view/astrosanjivani/CR" target="_blank" style="color:#B91C1C;font-weight:700;">Career Lite Analysis</a> - it gives the analysis of up to question 7 in just ₹299.</p>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">हमारा एनालिसिस इतना गहरा क्यों है?</span><span class="en">Why Is Our Analysis So Deep?</span></h2>
+  <p class="sec-sub hi">चारों प्रणालियों के असली Checking Points - जिनसे हर कुंडली का गहराई से Analysis होता है</p>
+  <p class="sec-sub en">The actual checking points of all four systems - through which every kundali is deeply analysed</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🪐</div><h2><span class="hi">पराशरी प्रणाली</span><span class="en">Parashari System</span></h2><span class="cnt hi">8 Points</span><span class="cnt en">8 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">दशमेश (10वें भाव के स्वामी) का Analysis</span><span class="en">Analysis of the Dashamesh (lord of the 10th house)</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">दशम भाव (कर्म भाव) का Analysis</span><span class="en">Analysis of the 10th house (Karma Bhava)</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">नवांश (D9) का Analysis - करियर में भाग्य और आंतरिक क्षमता</span><span class="en">Analysis of Navamsha (D9) - destiny and inner capacity in career</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">दशमांश (D10) का Analysis - कर्म, पेशा और प्रतिष्ठा</span><span class="en">Analysis of Dashamsha (D10) - karma, profession and prestige</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">लग्न और लग्नेश का Analysis</span><span class="en">Analysis of Lagna and Lagnesh</span></span>
+      <span class="ptag"><span class="n">6</span><span class="hi">ग्रहों का बल और करियर के कारक ग्रह</span><span class="en">Strength of planets and the karaka planets of career</span></span>
+      <span class="ptag"><span class="n">7</span><span class="hi">धन और लाभ के भावों का Analysis</span><span class="en">Analysis of the houses of wealth and gains</span></span>
+      <span class="ptag"><span class="n">8</span><span class="hi">इन्दु लग्न (Indu Lagna) - Wealth Point का Analysis</span><span class="en">Analysis of Indu Lagna - the Wealth Point</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">♻️</div><h2><span class="hi">जैमिनी प्रणाली</span><span class="en">Jaimini System</span></h2><span class="cnt hi">7 Points</span><span class="cnt en">7 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">आत्मकारक (AK) - आत्मा का उद्देश्य</span><span class="en">Atmakaraka (AK) - the purpose of the soul</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">अमात्यकारक (AmK) - करियर का सलाहकार</span><span class="en">Amatyakaraka (AmK) - the career advisor</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">AK और AmK का आपसी संबंध</span><span class="en">Mutual relation between AK and AmK</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">कर्म पद (A10) - Professional छवि और प्रतिष्ठा</span><span class="en">Karma Pada (A10) - professional image and prestige</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">कारकांश लग्न - छिपी प्रतिभा और भाग्य</span><span class="en">Karakamsha Lagna - hidden talent and destiny</span></span>
+      <span class="ptag"><span class="n">6</span><span class="hi">अर्गला Analysis - संसाधनों का प्रवाह</span><span class="en">Argala Analysis - the flow of resources</span></span>
+      <span class="ptag"><span class="n">7</span><span class="hi">घटिका लग्न (GL) - सत्ता, अधिकार और उच्च पद</span><span class="en">Ghatika Lagna (GL) - power, authority and high position</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">BNN (भृगु नंदी नाड़ी) प्रणाली</span><span class="en">BNN (Bhrigu Nandi Nadi) System</span></h2><span class="cnt hi">4 Points</span><span class="cnt en">4 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">शनि - कर्म कारक की स्थिति और संबंध</span><span class="en">Saturn - position and relations of the Karma Karaka</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">गुरु (जीव कारक) और शनि का संबंध</span><span class="en">Relation between Jupiter (Jeeva Karaka) and Saturn</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">करियर से जुड़े अन्य ग्रहों का प्रभाव</span><span class="en">Effect of other career-related planets</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">दशमेश नवांशधिपति सूत्र - बाधा और समाधान</span><span class="en">Dashmesh Navamshadhipati formula - obstruction and solution</span></span>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🎯</div><h2><span class="hi">KP प्रणाली</span><span class="en">KP System</span></h2><span class="cnt hi">5 Points</span><span class="cnt en">5 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">10वें भाव के CSL से करियर का वादा (Promise)</span><span class="en">Promise of career from the CSL of the 10th house</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">नौकरी का वादा और व्यापार का वादा</span><span class="en">Promise of Job and Promise of Business</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">पेशे की प्रकृति (Nature of Profession)</span><span class="en">Nature of Profession</span></span>
+      <span class="ptag"><span class="n">4</span><span class="hi">पदोन्नति और सफलता का समय (Timing)</span><span class="en">Timing of promotion and success</span></span>
+      <span class="ptag"><span class="n">5</span><span class="hi">सरकारी नौकरी का वादा (Promise)</span><span class="en">Promise of Government Job</span></span>
+    </div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🏆</div><h2><span class="hi">D60 (षष्टियंश) - अंतिम Analysis</span><span class="en">D60 (Shashtiamsha) - The Final Analysis</span></h2><span class="cnt hi">3 Points</span><span class="cnt en">3 Points</span></div>
+    <div class="ptags">
+      <span class="ptag"><span class="n">1</span><span class="hi">D60 लग्न और लग्नेश - Karmic Blueprint</span><span class="en">D60 Lagna and Lagnesh - the Karmic Blueprint</span></span>
+      <span class="ptag"><span class="n">2</span><span class="hi">D60 का दशम भाव और दशमेश - Karmic कर्म</span><span class="en">10th house and Dashamesh of D60 - Karmic Action</span></span>
+      <span class="ptag"><span class="n">3</span><span class="hi">राजयोग कारक ग्रहों की D60 में स्थिति</span><span class="en">Rajyoga Karaka planets placed in D60</span></span>
+    </div>
+  </div>
+
+
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔍</div><h2><span class="hi">ध्यान रहे : 100% Manual In-depth Analysis</span><span class="en">Please Note : 100% Manual In-depth Analysis</span></h2></div>
+    <p class="hi">इस Analysis में ग्रहों की Strength का <b>Highly Micro-Level</b> चेक किया जाता है। इसीलिए इसमें दिया हुआ Analysis पूरी तरीके से हमारी Deep Research और मेहनत का नतीजा है, जिससे Analysis Delivery में 1 से 2 दिन का समय लग सकता है। कृपया इसका ध्यान रखें।</p>
+    <p class="en">This Analysis involves a <b>Highly Micro-Level</b> examination of planetary Strength. Therefore, the detailed insights provided in this Analysis are purely the result of our Deep Research and hard work, due to which the Analysis Delivery may take 1 to 2 days. Please keep this in mind.</p>
+    <p class="taglabel hi">* Micro-Level Analysis में शामिल :</p><p class="taglabel en">* Micro-Level Analysis includes :</p>
+    <div class="sysbadges"><span class="hi">अस्त</span><span class="en">Combust (Ast)</span><span class="hi">वक्री</span><span class="en">Retrograde (Vakri)</span><span class="hi">वर्गोत्तम</span><span class="en">Vargottam</span><span class="hi">शत्रु/मित्र/सम राशि</span><span class="en">Enemy/Friend/Neutral signs</span><span class="hi">उच्च/नीच/नीचभंग</span><span class="en">Exalted/Debilitated/Neechbhang</span><span class="hi">षड्बल</span><span class="en">Shadbala</span><span class="hi">भावबल</span><span class="en">Bhavabala</span><span class="hi">अष्टकवर्ग</span><span class="en">Ashtakvarga</span><span class="hi">भिन्नाष्टकवर्ग</span><span class="en">Bhinnashtakvarga</span><span class="hi">षोडशवर्ग</span><span class="en">Shodashvarga</span><span class="hi">विंशोपक</span><span class="en">Vimsopaka</span><span class="hi">चलित</span><span class="en">Chalit</span><span class="hi">नवांश</span><span class="en">Navamsha</span><span class="hi">स्वांश-कारकांश</span><span class="en">Svamsha-Karakamsha</span><span class="hi">आरूढ़ पद</span><span class="en">Arudha Pada</span><span class="hi">चर कारक</span><span class="en">Chara Karaka</span><span class="hi">पुष्कर भाग</span><span class="en">Pushkar Bhaga</span><span class="hi">मृत्यु भाग</span><span class="en">Mrityu Bhaga</span><span class="hi">नवतारा चक्र</span><span class="en">Navatara Chakra</span><span class="hi">योग-दोष</span><span class="en">Yoga-Dosha</span><span class="hi">अर्गला</span><span class="en">Argala</span><span class="hi">उपग्रह</span><span class="en">Upagraha</span><span class="hi">स्पेशल लग्न</span><span class="en">Special Lagna</span></div>
+    <p class="taglabel hi" style="margin-top:14px;">दशा पद्धतियाँ :</p><p class="taglabel en" style="margin-top:14px;">Dasha systems :</p>
+    <div class="sysbadges"><span class="hi">विंशोत्तरी दशा</span><span class="en">Vimshottari Dasha</span><span class="hi">योगिनी दशा</span><span class="en">Yogini Dasha</span><span class="hi">त्रिभागी दशा</span><span class="en">Tribhagi Dasha</span><span class="hi">अष्टोत्तरी दशा</span><span class="en">Ashtottari Dasha</span><span class="hi">KP दशा</span><span class="en">KP Dasha</span><span class="hi">चर दशा</span><span class="en">Chara Dasha</span><span class="hi">डबल ट्रांजिट</span><span class="en">Double Transit</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🎧</div><h2>Mode of Consultation</h2></div>
+    <p class="hi">In-depth और Deep Analysis की PDF + 20 Minute की Audio Voice Note (Simple भाषा में समझाई हुई)।</p>
+    <p class="en">In-depth &amp; Deep Analysis PDF + 20-Minute Audio Voice Note (explained in simple language).</p>
+    <div class="sysbadges"><span>📄 PDF</span><span>🎧 Audio Voice Note</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🌟</div><h2>हमारी विशेषता / Our Specialty</h2></div>
+    <p class="hi">Accurate Prediction के लिए हम 4 Main Astrological Systems से Planets की Strength और State का In-depth Analysis करने के बाद ही किसी Conclusion पर पहुँचते हैं। और एक ऐसी Analysis बनाते हैं जो सिर्फ़ आपके लिए Personally तैयार की जाती है। इसीलिए आप हमारी Accuracy पर पूरी तरीके से भरोसा कर सकते हैं।</p>
+    <p class="en">For Accurate Prediction, we reach a Conclusion only after doing an In-depth Analysis of the Strength and State of Planets through 4 Main Astrological Systems. And we create an Analysis that is Personally prepared only for you. That is why you can completely trust our Accuracy.</p>
+    <div class="sysbadges"><span class="hi">पराशरी</span><span class="en">Parashari</span><span class="hi">जैमिनी</span><span class="en">Jaimini</span><span>KP</span><span>BNN</span></div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">अपना Option चुनें</span><span class="en">Choose Your Option</span></h2>
+  <p class="sec-sub hi">पूरा Career Analysis - सिर्फ़ ₹599 में</p>
+  <p class="sec-sub en">The complete Career Analysis - in just ₹599</p>
+
+  <div class="ogrid" style="grid-template-columns:1fr;max-width:430px;">
+    <div class="ocard best">
+      <div><span class="otag hi">💼 Career Full</span><span class="otag en">💼 Career Full</span></div>
+      <h3><span class="hi">करियर फुल एनालिसिस</span><span class="en">Career Full Analysis</span></h3>
+      <div class="oprice">₹599</div>
+      <p class="hi">करियर का In-depth Analysis और सभी 20 मुख्य Questionों का विस्तृत Analysis - साथ में करियर से जुड़े आपके Maximum 5 Personal सवाल।</p>
+      <p class="en">In-depth analysis of the career and detailed analysis of all 20 main questions - along with your maximum 5 personal questions related to career.</p>
+      <a class="btn hi" target="_blank" href="https://pages.razorpay.com/Full-Career-Analysis">अभी ऑर्डर करें →</a>
+      <a class="btn en" target="_blank" href="https://pages.razorpay.com/Full-Career-Analysis-Eng">Order Now →</a>
+    </div>
+  </div>
+
+  <div class="block doubts">
+    <div class="bhead"><div class="bicon">💬</div><h2><span class="hi">एनालिसिस के बाद के सवाल (Doubts)</span><span class="en">Post-Analysis Queries (Doubts)</span></h2></div>
+    <p class="hi">➤ <b>डाउट्स क्लीयरेंस:</b> PDF में जवाब पढ़कर अगर मन में कोई डाउट रहा तो इसकी चिंता न करें। PDF में पहले से सभी डाउट्स का समाधान किया जाता है।</p>
+    <p class="hi">➤ <b>हमारा कमिटमेंट:</b> अगर फिर भी कोई डाउट हो तो दोबारा PDF भेजकर आपके सभी Doubts क्लियर किए जाते हैं। हम अपने क्लाइंट्स का साथ कभी नहीं छोड़ते जब तक उनके सभी डाउट्स क्लियर नहीं हो जाते।</p>
+    <p class="hi">➤ <b>कोई अतिरिक्त शुल्क नहीं:</b> आपको दोबारा डाउट्स क्लीयर करने के लिए कोई Extra चार्ज नहीं देना होता है। यह सर्विस एनालिसिस के Price में ही Included है।</p>
+    <p class="en">➤ <b>Doubts Clearance:</b> If you have any doubts in your mind after reading the answers in the PDF, don't worry. All potential doubts are already addressed in the PDF itself.</p>
+    <p class="en">➤ <b>Our Commitment:</b> If you still have any doubts, they will be resolved by sending you an updated PDF. We never leave our clients' side until all their doubts are fully cleared.</p>
+    <p class="en">➤ <b>No Extra Charges:</b> You do not have to pay any extra charges for getting your doubts cleared again. This service is already included in the analysis price.</p>
+  </div>
+
+  <div class="footer">
+    <div class="line">◆ Sanjivani Jyotish Sansthan ◆</div>
+    <div style="margin-top:8px;">
+      📧 <a href="mailto:komalastro14@gmail.com">komalastro14@gmail.com</a> &nbsp;|&nbsp;
+      Insta : <a target="_blank" href="https://instagram.com/astro.komal">astro.komal</a> • <a target="_blank" href="https://instagram.com/astro.sanjivani">astro.sanjivani</a> &nbsp;|&nbsp;
+      Telegram : <a target="_blank" href="https://t.me/Sanjivani_Jyotish">Sanjivani_Jyotish</a> &nbsp;|&nbsp;
+      WhatsApp : 9552636556
+    </div>
+    <div style="margin-top:6px; font-size:13px;">© Sanjivani Jyotish Sansthan | Astro Komal</div>
+  </div>
+
+</div>
+<script>
+  function toggleLanguage() {
+    document.body.classList.toggle('lang-en');
+    document.body.classList.toggle('lang-hi');
+  }
+</script>
+</body>
+</html>
