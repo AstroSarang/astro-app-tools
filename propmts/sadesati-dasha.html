@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Prompts Copier</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border-left: 5px solid #007bff;
+        }
+        .card-content {
+            white-space: pre-wrap;
+            font-size: 14px;
+            color: #555;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+        .card-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #007bff;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn {
+            align-self: flex-end;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Sadesati Dasha Prompts v1.0</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
+    <div class="container" id="prompt-container">
+        <!-- Prompts will be loaded here -->
+    </div>
+
+    <div id="snackbar" class="toast">Text Copied to Clipboard!</div>
+
+    <script>
+        // यहाँ आपका पूरा डेटा है
+        const rawData_hi = `यह PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+
+1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तालिका
+3] गुरु का भिन्नाष्टकवर्ग (BAV) तालिका।
+4] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+5] भाव बल तालिका 
+6] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग और दश वर्ग)
+7] विशोंतरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] D1 के 12 भाव के राशी-नक्षत्र (Bhava Cusp)
+10] D9 ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+
+कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
+
+---
+
+Next Task :
+
+उपरोक्त चैट और  PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
+
+लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
+
+"पहला भाव (लग्न):
+इस भाव में सिंह राशि है, इसलिए लग्नेश सूर्य हैं।
+इस भाव में सूर्य और राहु ग्रह स्थित हैं।
+सूर्य: सिंह राशि में स्वगृही (अपने ही घर में) हैं। सूर्य मघा नक्षत्र में स्थित हैं। सूर्य प्रथम भाव (सिंह) के स्वामी होकर लग्न में बैठे हैं। सूर्य की दृष्टि सातवें भाव (कुम्भ) पर है।
+राहु: सिंह राशि में (राहु के लिए शत्रु राशि मानी जाती है)। राहु मघा नक्षत्र में स्थित है। राहु की दृष्टि पांचवें भाव (धनु), सातवें भाव (कुम्भ) और नौवें भाव (मेष) पर है।
+इस भाव पर केतु (सातवें भाव से) की पूर्ण दृष्टि है।"
+
+
+आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
+----------
+कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), और जैमिनी कारकत्व के आधार पर होना चाहिए।
+
+प्रत्येक ग्रह के लिए निम्नलिखित जानकारी प्रदान करें:
+1. [ग्रह का नाम]
+➤ भाव स्वामित्व: (किन भावों का स्वामी है)
+➤ स्थिति: (किस भाव और राशि में)
+➤ राशि में स्थिति: (मित्र, शत्रु, सम, उच्च, नीच, मूलत्रिकोण, स्वराशि)
+➤ नक्षत्र एवं पद: (वह ग्रह किस नक्षत्र और किस पद में है, और नक्षत्र स्वामी का प्रभाव।)
+➤ दृष्टि: (किन भावों/ग्रहों पर दृष्टि) 
+➤ [ग्रह का नाम] पर दृष्टि: (किन ग्रहों की दृष्टि है)
+➤ युति: (किन ग्रहों के साथ युति में है)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री और अवस्था का नाम जैसे बाल, कुमार आदि)
+➤ भावनात्मक/अवस्था शक्ति: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिति: (हाँ/नहीं या स्थिति का नाम)
+➤ नवमांश स्थिति:  (नवमांश कुंडली में ग्रह किस राशि, नक्षत्र (स्वामी) में है और उसका प्रभाव।)
+➤ नवमांश में शक्ति: पीड़ित/बलवान
+➤ भावबल: (केवल मान)
+➤ षड्बल (रूप में):  (रूप में मान और उसका बल कैसा है - औसत से बेहतर, रैंक आदि।)
+➤ विमशोपक आषांश (षोडश वर्ग): (मान और ग्रहों में उसका रैंक, यदि लागू हो।)
+➤ गोचर और दशा में संभावित फल का संक्षिप्त जवाब : (सामान्य तौर पर वह ग्रह अपनी दशा/अंतर्दशा और गोचर में कैसा फल देगा - अच्छा, खराब, या मध्यम।
+➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
+
+➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
+----------
+कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर D1 के सभी 12 भावों का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल) आधार पर होना चाहिए।
+
+
+प्रत्येक भाव के लिए निम्नलिखित जानकारी प्रदान करें:
+
+1. पहला भाव (लग्न):  राशि का नाम
+➤ कारकत्व: 
+➤ भाव बल: रैंक  (कुंडली में कमजोर अथवा मजबूत भाव)।
+➤ भाव स्वामी (लग्नेश):
+➤ भावेश की स्थिति: 
+➤ स्थित ग्रह: 
+➤ भाव पर दृष्टि: 
+➤ निष्कर्ष : समग्र रूप से भाव मजबूत है या पीड़ित है ? (प्रतिशत)
+
+➤ अंत मे सभी भाव के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
+
+नोट : जिस भाव में गुलिक या मांदि स्थित हो, उस भाव के फल में उनका प्रभाव भी एक-दो पंक्तियों में अवश्य बतायें।
+----------
+कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (सभी दशा Systems और Master Timeline) को अपनी मेमोरी में सुरक्षित कर लें।
+
+निर्देश:
+
+1] इस डेटा को अभी चैट में दोबारा लिखने की आवश्यकता नहीं है।
+2] बस डेटा का विश्लेषण करें और पुष्टि करें कि आपने इसे पढ़ लिया है।
+3] पुष्टि (Verification) के लिए: केवल वर्तमान स्थिति नीचे दिए गए फॉर्मेट में लिखकर दें:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD):
+त्रिभागी (MD-AD):
+अष्टोत्तरी (MD-AD):
+चर (MD-AD):
+
+मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
+----------
+कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए गोचर डेटा को अपनी मेमोरी में सुरक्षित कर लें।
+
+निर्देश:
+
+1] इस डेटा को अभी चैट में दोबारा लिखने की आवश्यकता नहीं है।
+2] बस डेटा का विश्लेषण करें और पुष्टि करें कि आपने इसे पढ़ लिया है।
+3] पुष्टि (Verification) के लिए: केवल वर्तमान स्थिति नीचे दिए गए फॉर्मेट में लिखकर दें:
+
+जातक की जन्म राशि (चंद्र राशि):
+गोचर (शनि - लग्न व चंद्र से):
+वर्तमान स्थिति: साढ़ेसाती / ढैय्या / कोई नहीं
+शनि का अगला राशि-परिवर्तन (तारीख):
+
+मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
+----------
+अगले 3 वर्षों में शनि कब कब किस किस राशि में प्रवेश करेगा, इसकी सटीक तारीखों की सूची दीजिये, और हर राशि-परिवर्तन पर जातक की जन्म राशि (चंद्र राशि) से शनि किस भाव में होगा, यह भी साथ में लिखें।
+----------
+उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
+----------
+यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
+
+1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
+2] किसी भी तरह की शुगर-कोटिंग (Sugar-coating) न करें। अगर किसी तारीख में कोई दोष, कमजोरी या नकारात्मक बात है, तो उसे स्पष्ट रूप से बतायें - कोई तारीख जबरदस्ती शुभ न बतायें।
+3] अपने उत्तर की शुरुआत किसी भी अभिवादन या संवादात्मक वाक्यांश (जैसे 'निश्चित रूप से', 'ज़रूर', 'निम्मलिखित है') से न करें, सीधे विश्लेषण से शुरू करें।
+4] System instructions में दिए गए आदेशों का भी पालन करे.
+
+क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
+----------
+अब हम जातक के साढ़ेसाती और वर्तमान दशा का विश्लेषण निकालेंगे, उसके पहले ध्यान रखने योग्य बातें :
+
+1] ध्यान रहे अभी 2026 चल रहा है और जातिका/जातक xyz 00 साल की/का है. विश्लेषण करते समय आयु का ध्यान रखे.
+2] यह Analysis हर जातक के लिए है - साढ़ेसाती चल रही हो तो वही मुख्य भाग होगा, न हो तो ढैय्या (चतुर्थ या अष्टम शनि) देखी जाएगी, और वह भी न हो तो शनि इस समय जातक की जन्म राशि से जिस भाव में गोचर कर रहा है, उस भाव का वर्तमान प्रभाव मुख्य भाग होगा. वर्तमान दशा का Analysis हर हाल में अनिवार्य (Compulsory) है.
+3] सभी तारीखें, दशा-अवधियाँ और गोचर-स्थितियाँ सिर्फ दिए गए डेटा (कुंडली PDF, गोचर TXT और दशा TXT) से ही लेनी हैं - अपने मन से कोई तारीख या स्थिति न बनाएँ और न बदलें.
+4] साढ़ेसाती का चरण (पहला, दूसरा या तीसरा) और उसकी शुरुआत-समाप्ति की तारीखें गोचर TXT में दिए गए शनि के राशि-परिवर्तनों से ही तय करें.
+----------
+जातक के कुंडली के आधार पर निम्मलिखित पॉइंट्स गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+भाग 1: जातक की शनि-स्थिति और वर्तमान स्थिति का आधार
+➤ जन्म कुंडली में शनि: शनि किस राशि और किस भाव में स्थित है? शनि किन भावों का स्वामी है? शनि की स्थिति कैसी है (उच्च, नीच, स्वराशि, मित्र, शत्रु राशि; वक्री, अस्त, वर्गोत्तम)? शनि का षड्बल और विमशोपक बल कैसा है? शनि किन भावों और ग्रहों पर दृष्टि डाल रहा है और शनि पर किन ग्रहों की दृष्टि या युति है?
+➤ जातक की जन्म राशि (चंद्र राशि) कौन सी है और चंद्र की स्थिति व Strength कैसी है? (साढ़ेसाती का असर चंद्र के बल पर बहुत निर्भर करता है।)
+➤ वर्तमान स्थिति: इस समय जातक की साढ़ेसाती चल रही है, ढैय्या चल रही है, या दोनों में से कोई नहीं? जो स्थिति हो, उसकी शुरुआत की तारीख, वर्तमान चरण और समाप्ति की तारीख स्पष्ट लिखें।
+----------
+भाग 2: वर्तमान गोचर-शनि का गहन विश्लेषण
+(जो स्थिति लागू हो, उसी का विश्लेषण करें - साढ़ेसाती हो तो साढ़ेसाती का, न हो तो ढैय्या का, वह भी न हो तो वर्तमान गोचर-शनि के भाव-प्रभाव का)
+➤ चल रहे चरण की अवधि (शुरुआत-समाप्ति तारीख सहित) और इस चरण में शनि जातक की जन्म राशि से किस भाव में है।
+➤ जीवन के क्षेत्रों पर प्रभाव: करियर और व्यवसाय, धन और आर्थिक स्थिति, स्वास्थ्य, परिवार और रिश्ते, मानसिक स्थिति - हर क्षेत्र का अलग-अलग विस्तार से विश्लेषण करें।
+➤ यह समय जातक पर कितना भारी या हल्का पड़ेगा? चंद्र के बल, शनि की जन्म-कुंडली स्थिति और चल रही दशा के आधार पर प्रतिशत में निष्कर्ष दें।
+➤ गोचर-शनि और चल रही महादशा-अंतर्दशा का आपसी संबंध: दशा इस समय को Support कर रही है या संघर्ष बढ़ा रही है?
+----------
+भाग 3: वर्तमान दशा का गहन विश्लेषण (Compulsory)
+➤ इस समय चल रही महादशा, अंतर्दशा और प्रत्यंतर्दशा कौन सी हैं, उनकी अवधियाँ (शुरुआत-समाप्ति तारीख सहित) क्या हैं, और Master Timeline के अनुसार बाकी दशा Systems (योगिनी, त्रिभागी, अष्टोत्तरी, चर) में वर्तमान स्थिति क्या है? क्या सभी Systems एक ही दिशा दिखा रहे हैं?
+➤ दशा-स्वामी ग्रहों की जन्म कुंडली में स्थिति और Strength कैसी है? वे किन भावों के स्वामी हैं और किन भावों को जगा रहे हैं?
+➤ इस दशा में जातक को क्या मिलेगा और कहाँ सावधानी रखनी है - करियर, धन, स्वास्थ्य, परिवार के हिसाब से विस्तार से बताएँ।
+➤ आने वाली अगली अंतर्दशा और अगली महादशा कब से शुरू होंगी और उनसे क्या उम्मीद रखनी चाहिए?
+----------
+भाग 4: अगले 2-3 वर्षों का दशा-गोचर नक्शा
+➤ अगले 2-3 वर्षों की समय-सारणी बनाएँ: कौन सी अवधि भारी रहेगी, कौन सी संभलने की रहेगी और कौन सी आगे बढ़ने की - दशा-परिवर्तन और शनि के राशि-परिवर्तन की तारीखों के साथ।
+➤ शनि का अगला राशि-परिवर्तन कब होगा और उससे जातक की स्थिति में क्या बदलाव आएगा (साढ़ेसाती/ढैय्या की शुरुआत या समाप्ति, या भाव-प्रभाव का बदलना)?
+➤ इस अवधि में बड़े फैसले (नौकरी बदलना, व्यवसाय शुरू करना, निवेश, विवाह आदि) के लिए कौन सा समय सबसे ठीक रहेगा और कौन सा समय टालना चाहिए?
+----------
+भाग 5: उपाय और ध्यान रहे
+➤ शनि के लिए सटीक उपाय: वर्तमान गोचर-स्थिति और जातक की कुंडली को देखते हुए 2-3 बहुत ही आसान, सात्विक उपाय बताएँ, जिन्हें आज की जनरेशन आसानी से फॉलो कर सके।
+➤ दशा-स्वामी के लिए उपाय: चल रही महादशा-अंतर्दशा के स्वामी ग्रह के हिसाब से 1-2 सरल उपाय बताएँ (यदि आवश्यक हों)।
+➤ क्या करें, क्या न करें (Dos और Don'ts): इस समय के लिए 3-4 व्यावहारिक बातें - क्या करना फायदेमंद रहेगा और क्या टालना चाहिए।
+----------
+भाग 6: अंतिम निष्कर्ष (Final Conclusion)
+➤ समग्र निष्कर्ष: यह समय जातक के लिए 'धैर्य रखने का समय' है, 'संभलकर चलने का समय' है या 'आगे बढ़ने का समय' है? एक विस्तारपूर्वक और स्पष्ट पैराग्राफ में बताएँ - साढ़ेसाती/ढैय्या/गोचर-शनि और वर्तमान दशा, दोनों के मिले-जुले आधार पर।
+➤ जातक के लिए सबसे महत्वपूर्ण एक सलाह अलग से स्पष्ट लिखें।
+
+(ध्यान रहे: इस Analysis में जातक के अधिकतम 2 Personal Questions शामिल हैं - वे सवाल अलग से दिए जाएँगे और उनके जवाब इस भाग के बाद उसी क्रम में देने हैं।)
+----------
+➤ जातक ने अपने बारे में जानकारी दी है और जातक के कुछ प्रश्न हैं, पहले दी गई जानकारी को सूचीबद्ध करें, उसके बाद सभी प्रश्नों को सूचीबद्ध करें :
+----------
+अब जातक की दी हुयी जानकारी का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर करें, हर घटना का विस्तार से विश्लेषण होना चाहिए, यदि उपाय आवश्यक हो तो उपायों सहित, शुरुआत पहली घटना के विश्लेषण से करें, बाकी बाद में पूछती हूँ।
+----------
+➤ जातक के कुछ प्रश्न हैं, पहले सभी प्रश्नों को सूचीबद्ध करें :
+
+जातक के सवाल :
+----------
+अब जातक के सवालों का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर करें, हर सवाल का विस्तार से विश्लेषण होना चाहिए, यदि उपाय आवश्यक हो तो उपायों सहित, शुरुआत पहले सवाल के विश्लेषण से करें, बाकी बाद में पूछती हूँ।
+----------
+अब तक किये गए सभी विश्लेषणों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस भाग का विश्लेषण विस्तार से पढना है, उस भाग को ढूंढेगा...
+
+मुख्य बातें :
+(वर्तमान स्थिति - साढ़ेसाती/ढैय्या/गोचर-शनि की स्थिति और अवधि, वर्तमान दशा, भारी और संभलने का समय, सबसे महत्वपूर्ण सलाह - बस इतना ही, 2-3 पंक्तियों में हर बिंदु)
+----------
+अब अंतिम जाँच करें - कोई नया विश्लेषण या निष्कर्ष बिल्कुल न दें।
+
+ऊपर दिए गए सभी जवाबों और निष्कर्ष को मूल डेटा (कुंडली PDF, गोचर TXT और दशा TXT) से मिलाएँ - जन्म राशि, जन्म नक्षत्र, जन्म कुंडली में शनि की राशि-भाव-स्वामित्व, साढ़ेसाती/ढैय्या की स्थिति, चरण और शुरुआत-समाप्ति की तारीखें, शनि के राशि-परिवर्तन की तारीखें, और सभी दशा Systems की महादशा-अंतर्दशा-प्रत्यंतर्दशा के नाम व तारीखें - हर मान की जाँच करें।
+
+परिणाम सिर्फ गलतियों की सूची में दें: भाग/सवाल नंबर, गलत लिखा मान, सही मान। जहाँ कोई गलती न हो वहाँ कुछ न लिखें। अंत में सिर्फ एक line लिखें: 'जाँच पूर्ण - कुल X गलतियाँ मिलीं।' जवाब दोबारा न लिखें।`;
+
+        const rawData_en = `This PDF is the kundali of a 00-year-old male/female native ...; you must save all the information from it so the kundali can be analyzed. While analyzing, do not write page references of the PDF, but give a list of which page the following information is on - meaning it will be easier for you too to find later:
+
+1] Planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord, Jaimini Chara Karaka)
+2] Sarvashtakavarga table
+3] Jupiter's Bhinnashtakavarga (BAV) table.
+4] Shadbala table (Sthana Bala, Dig Bala, Kala Bala, Cheshta Bala, Naisargika Bala, Drik Bala)
+5] Bhava Bala table 
+6] Vimshopak Bala table (Shodasha Varga, Shad Varga, Sapta Varga and Dasha Varga)
+7] Vimshottari Mahadasha-Antardasha chart
+8] Yogini Dasha-Antardasha chart
+9] D1 12 bhava rashi-nakshatra (Bhava Cusp)
+10] D9 planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord) (screenshot)
+
+Please present all tables in a simple and readable table format.
+
+---
+
+Next Task :
+
+From the above chat and  PDF, write the rashi placed in the twelve bhavas of the lagna kundali, the bhava lord, and the planetary presence; also write which planets are exalted, debilitated, retrograde, neecha-bhanga, combust, vargottama. Also write the nakshatra placement (do not write exalted, debilitated, retrograde for Rahu-Ketu)
+
+The writing pattern will be as follows, which is only for example, shown in  ""  :
+
+"First house (Lagna):
+This house has Simha rashi, therefore the lagnesh is Surya.
+In this house, Surya and Rahu planets are placed.
+Surya: in Simha rashi, swagrihi (in its own house). Surya is placed in Magha nakshatra. Surya, being the lord of the first house (Simha), sits in the lagna. Surya's drishti is on the seventh house (Kumbha).
+Rahu: in Simha rashi (considered an enemy rashi for Rahu). Rahu is placed in Magha nakshatra. Rahu's drishti is on the fifth house (Dhanu), seventh house (Kumbha) and ninth house (Mesha).
+On this house, Ketu (from the seventh house) has full drishti."
+
+
+For your convenience a txt file has been given : "D1_Analysis"
+----------
+Please provide a list of astrological facts/figures for all 9 planets (Surya, Chandra, Mangal, Budha, Guru, Shukra, Shani, Rahu, Ketu) based on the birth details in all the above chats and PDFs. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on the kundali's phaladesh, shadbala, vimshopak bala (shodasha varga), and Jaimini karakatva.
+
+Provide the following information for each planet:
+1. [Planet name]
+➤ Bhava ownership: (which bhavas it is the lord of)
+➤ Position: (in which bhava and rashi)
+➤ Position in rashi: (friend, enemy, neutral, exalted, debilitated, moolatrikona, own sign)
+➤ Nakshatra and pada: (in which nakshatra and which pada the planet is, and the effect of the nakshatra lord.)
+➤ Drishti: (on which bhavas/planets it has drishti) 
+➤ Drishti on [planet name]: (which planets have drishti on it)
+➤ Yuti: (with which planets it is in yuti)
+➤ Avastha (degree/latitude): (degree and name of avastha like bala, kumara etc.)
+➤ Bhavanatmak/avastha strength: retrograde/combust/debilitated/neecha-bhanga/vargottama status: (yes/no or name of the status)
+➤ Navamsha position:  (in the navamsha kundali, in which rashi, nakshatra (lord) the planet is and its effect.)
+➤ Strength in navamsha: afflicted/strong
+➤ Bhava bala: (value only)
+➤ Shadbala (in rupa):  (value in rupa and how its strength is - better than average, rank etc.)
+➤ Vimshopak bala (shodasha varga): (value and its rank among planets, if applicable.)
+➤ Brief answer of probable phala in gochar and dasha : (generally how that planet will give phala in its dasha/antardasha and gochar - good, bad, or medium.
+➤ Conclusion : overall, is the planet strong or afflicted? (percentage)
+
+➤ Finally, a conclusion regarding all planets being strong and afflicted (based on percentage)
+----------
+Please provide a list of astrological facts/figures for all 12 bhavas of D1 based on the birth details in all the above chats and PDFs. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on karakatva, bhava bala).
+
+
+Provide the following information for each bhava:
+
+1. First house (Lagna):  name of the rashi
+➤ Karakatva: 
+➤ Bhava bala: rank  (weak or strong bhava in the kundali).
+➤ Bhava lord (lagnesh):
+➤ Position of bhavesh: 
+➤ Placed planets: 
+➤ Drishti on bhava: 
+➤ Conclusion : overall, is the bhava strong or afflicted? (percentage)
+
+➤ Finally, a conclusion regarding all bhavas being strong and afflicted (based on percentage)
+
+Note: In whichever house Gulika or Mandi is placed, also state their effect on that house's results in one or two lines.
+----------
+Please save in your memory the astrological data (all Dasha Systems and the Master Timeline) given in all the attached text files.
+
+Instructions:
+
+1] There is no need to write this data again in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: write only the current status in the format given below:
+Vimshottari (MD-AD-PD):
+Yogini (MD-AD):
+Tribhagi (MD-AD):
+Ashtottari (MD-AD):
+Chara (MD-AD):
+
+After this I will directly ask specific questions related to the analysis; then you have to use all this data.
+----------
+Please save in your memory the gochar (transit) data given in all the attached text files.
+
+Instructions:
+
+1] There is no need to write this data again in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: write only the current status in the format given below:
+
+Native's Janma Rashi (Moon sign):
+Gochar (Saturn - from lagna and Moon):
+Current status: Sadesati / Dhaiya / None
+Saturn's next sign change (date):
+
+After this I will directly ask specific questions related to the analysis; then you have to use all this data.
+----------
+Give the list of the exact dates on which Saturn will enter which sign over the next 3 years, and with every sign change also write in which bhava Saturn will be from the native's Janma Rashi (Moon sign).
+----------
+Please give a short list of all the information you have received so far for the kundali analysis.
+----------
+Please ensure that you will strictly follow the following orders,
+
+1] Cross-check the data before giving the output.
+2] Do not do any kind of sugar-coating. If any date has a dosha, weakness or negative point, state it clearly - do not forcibly call any date auspicious.
+3] Do not start your answer with any greeting or conversational phrase (like 'certainly', 'sure', 'here is'); start directly with the analysis.
+4] Also follow the orders given in the System instructions.
+
+Are you ready - just tell me which orders you will follow.
+----------
+Now we will extract the analysis of the native's Sadesati and current dasha; before that, points to keep in mind:
+
+1] Note that it is currently 2026 and the female native/male native xyz is 00 years old. Keep the age in mind while analyzing.
+2] This Analysis is for every native - if Sadesati is running, that will be the main part; if not, Dhaiya (fourth or eighth Saturn) will be seen; and if that too is not there, the current effect of the bhava in which Saturn is transiting from the native's Janma Rashi will be the main part. The Analysis of the current dasha is Compulsory in every case.
+3] All dates, dasha periods and transit positions must be taken only from the data given (kundali PDF, Gochar TXT and Dasha TXT) - do not create or change any date or position on your own.
+4] Decide the phase of Sadesati (first, second or third) and its start-end dates only from Saturn's sign changes given in the Gochar TXT.
+----------
+Based on the native's kundali, do a deep and detailed analysis (Detailed Analysis) of the following points; note that along with all the points, each of their sub-points should also be analyzed in detail; finally also give a conclusion (Detailed Conclusion) of each point.
+
+Part 1: Basis of the Native's Saturn Position and Current Status
+➤ Saturn in the birth kundali: In which sign and which bhava is Saturn placed? Of which bhavas is Saturn the lord? What is Saturn's condition (exalted, debilitated, own sign, friend, enemy sign; retrograde, combust, Vargottama)? How are Saturn's Shadbala and Vimshopaka Bala? On which bhavas and planets is Saturn casting its drishti, and which planets are aspecting or conjoining Saturn?
+➤ What is the native's Janma Rashi (Moon sign), and what is the Moon's position and strength? (The effect of Sadesati depends greatly on the Moon's strength.)
+➤ Current status: At this time, is the native's Sadesati running, Dhaiya running, or neither of the two? Whichever status it is, clearly write its start date, current phase and end date.
+----------
+Part 2: Deep Analysis of the Current Transit Saturn
+(Analyze whichever status applies - if Sadesati, then Sadesati; if not, Dhaiya; if that too is not there, then the bhava-effect of the current transit Saturn)
+➤ The period of the running phase (with start-end dates), and in this phase in which bhava Saturn is from the native's Janma Rashi.
+➤ Effect on the areas of life: career and business, wealth and financial condition, health, family and relationships, mental state - analyze each area separately in detail.
+➤ How heavy or light will this time be for the native? Give a conclusion in percentage, based on the Moon's strength, Saturn's natal position and the running dasha.
+➤ The mutual relation between transit Saturn and the running Mahadasha-Antardasha: is the dasha supporting this period or increasing the conflict?
+----------
+Part 3: Deep Analysis of the Current Dasha (Compulsory)
+➤ Which Mahadasha, Antardasha and Pratyantardasha are running at this time, what are their periods (with start-end dates), and as per the Master Timeline what is the current status in the other Dasha Systems (Yogini, Tribhagi, Ashtottari, Chara)? Are all the Systems showing the same direction?
+➤ What is the position and strength of the dasha-lord planets in the birth kundali? Of which bhavas are they the lords, and which bhavas are they activating?
+➤ What will the native get in this dasha and where is caution needed - explain in detail for career, wealth, health and family.
+➤ When will the next Antardasha and the next Mahadasha begin, and what should be expected from them?
+----------
+Part 4: Dasha-Transit Map of the Next 2-3 Years
+➤ Make a timeline of the next 2-3 years: which period will be heavy, which will be the period of steadying, and which of moving ahead - along with the dates of dasha changes and Saturn's sign changes.
+➤ When will Saturn's next sign change happen, and what change will it bring in the native's status (the start or end of Sadesati/Dhaiya, or a change of the bhava-effect)?
+➤ In this period, for big decisions (changing a job, starting a business, investment, marriage etc.), which time will be the most suitable and which time should be avoided?
+----------
+Part 5: Remedies and Points to Note
+➤ Exact remedies for Saturn: Looking at the current transit position and the native's kundali, give 2-3 very easy, sattvic remedies that today's generation can easily follow.
+➤ Remedies for the dasha-lord: Give 1-2 simple remedies according to the lord planet of the running Mahadasha-Antardasha (if necessary).
+➤ What to do, what not to do (Dos and Don'ts): 3-4 practical points for this period - what will be beneficial to do and what should be avoided.
+----------
+Part 6: Final Conclusion
+➤ Overall conclusion: Is this time 'a time to keep patience' for the native, 'a time to move carefully', or 'a time to move ahead'? Explain in one detailed and clear paragraph - on the combined basis of Sadesati/Dhaiya/transit Saturn and the current dasha.
+➤ Separately and clearly write the single most important advice for the native.
+
+(Note: A maximum of 2 Personal Questions of the native are included in this Analysis - those questions will be given separately, and their answers are to be given right after this part, in the same order.)
+----------
+➤ The native has given information about himself and the native has some questions, first list the given information, after that list all the questions :
+----------
+Now do in-depth research on the information given by the native and give the astrological analysis in detail with conclusions, every event should be analysed in detail, if remedies are necessary then along with remedies, begin with the analysis of the first event, I will ask the rest later.
+----------
+➤ The native has some questions; first, list all the questions:
+
+Questions of the native:
+----------
+Now do in-depth research on the questions of the native and give the astrological analysis in detail with conclusions, every question should be analysed in detail, if remedies are necessary then along with remedies, begin with the analysis of the first question, I will ask the rest later.
+----------
+Now rewrite all the analyses done so far and give their brief answers, because this list will be placed at the very beginning of this analysis, so that the native reads the short answers first and finds the part whose detailed analysis they want to read...
+
+Main points:
+(Current status - the status and period of Sadesati/Dhaiya/transit Saturn, the current dasha, the heavy time and the steadying time, the most important advice - only this much, each point in 2-3 lines)
+----------
+Now do a final check - do not give any new analysis or conclusion at all.
+
+Match all the answers and conclusions given above against the original data (kundali PDF, Gochar TXT and Dasha TXT) - check every value: Janma Rashi, Janma Nakshatra, Saturn's sign-bhava-lordship in the birth kundali, the status, phase and start-end dates of Sadesati/Dhaiya, the dates of Saturn's sign changes, and the Mahadasha-Antardasha-Pratyantardasha names and dates of all the Dasha Systems.
+
+Give the result only as a list of errors: Part/Question number, wrongly written value, correct value. Where there is no error, write nothing. At the end write only one line: 'Check complete - total X errors found.' Do not write the answers again.`;
+
+        const rawData_mr = `हे PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... ची कुंडली आहे, यामधील सर्व माहिती तुम्ही जतन करून ठेवली पाहिजे, जेणेकरून कुंडलीचे विश्लेषण करता येईल, विश्लेषण करताना PDF च्या पानांचा संदर्भ लिहू नका पण खालील माहिती कोणत्या पानावर आहे, याची सूची द्या म्हणजे तुम्हालाही पुढे शोधण्यात सोपे जाईल :
+
+1] ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तक्ता
+3] गुरूचा भिन्नाष्टकवर्ग (BAV) तक्ता।
+4] षड्बल तक्ता (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+5] भाव बल तक्ता 
+6] विमशोपक बल तक्ता (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+7] विंशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] D1 च्या 12 भावांचे रास-नक्षत्र (Bhava Cusp)
+10] D9 ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+
+कृपया सर्व तक्ते सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा।
+
+---
+
+Next Task :
+
+वरील चॅट आणि  PDF मधील लग्न कुंडलीच्या बारा भावांमध्ये असलेली रास आणि भाव स्वामी तसेच ग्रह उपस्थिती, कोणता ग्रह उच्च, नीच, वक्री, नीचभंग, अस्त, वर्गोत्तम आहे तेही लिहा. नक्षत्रातील स्थितीही लिहा (राहू-केतूंना उच्च, नीच, वक्री लिहू नका)
+
+लेखन पॅटर्न खालीलप्रमाणे असेल जो फक्त उदाहरणासाठी आहे, जो  ""  यात दाखवला आहे :
+
+"पहिला भाव (लग्न):
+या भावात सिंह रास आहे, त्यामुळे लग्नेश सूर्य आहेत.
+या भावात सूर्य आणि राहू ग्रह स्थित आहेत.
+सूर्य: सिंह राशीत स्वगृही (स्वतःच्याच घरात) आहेत. सूर्य मघा नक्षत्रात स्थित आहेत. सूर्य प्रथम भावाचा (सिंह) स्वामी होऊन लग्नात बसले आहेत. सूर्याची दृष्टी सातव्या भावावर (कुंभ) आहे.
+राहू: सिंह राशीत (राहूसाठी शत्रू रास मानली जाते). राहू मघा नक्षत्रात स्थित आहे. राहूची दृष्टी पाचव्या भावावर (धनु), सातव्या भावावर (कुंभ) आणि नवव्या भावावर (मेष) आहे.
+या भावावर केतूची (सातव्या भावातून) पूर्ण दृष्टी आहे."
+
+
+तुमच्या सोयीसाठी txt फाईल दिली आहे : "D1_Analysis"
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांवर आधारित सर्व ९ ग्रहांचे (सूर्य, चंद्र, मंगळ, बुध, गुरू, शुक्र, शनि, राहू, केतू) ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत स्पष्टीकरणाची गरज नाही. ही सूची कुंडलीच्या फलादेश, षड्बल, विमशोपक बल (षोडश वर्ग), आणि जैमिनी कारकत्व यावर आधारित असावी.
+
+प्रत्येक ग्रहासाठी खालील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रू, सम, उच्च, नीच, मूलत्रिकोण, स्वरास)
+➤ नक्षत्र आणि पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी) 
+➤ [ग्रहाच्या नावावर] दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांसोबत युतीत आहे)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इत्यादी)
+➤ भावनात्मक/अवस्था शक्ती: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (होय/नाही किंवा स्थितीचे नाव)
+➤ नवमांश स्थिती:  (नवमांश कुंडलीत ग्रह कोणत्या राशीत, नक्षत्रात (स्वामी) आहे आणि त्याचा प्रभाव.)
+➤ नवमांशातील शक्ती: पीडित/बलवान
+➤ भाव बल: (फक्त मान)
+➤ षड्बल (रूपात):  (रूपातील मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी.)
+➤ विमशोपक बल (षोडश वर्ग): (मान आणि ग्रहांमध्ये त्याचा रँक, लागू असल्यास.)
+➤ गोचर आणि दशेतील संभाव्य फलाचे संक्षिप्त उत्तर : (सामान्यतः तो ग्रह आपल्या दशेत/अंतर्दशेत आणि गोचरात कसे फल देईल - चांगले, खराब, किंवा मध्यम.
+➤ निष्कर्ष : एकंदर ग्रह मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रहांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीवर आधारित)
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांवर आधारित D1 च्या सर्व 12 भावांची ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत स्पष्टीकरणाची गरज नाही. ही सूची कारकत्व, भाव बल) यावर आधारित असावी.
+
+
+प्रत्येक भावासाठी खालील माहिती द्या:
+
+1. पहिला भाव (लग्न):  राशीचे नाव
+➤ कारकत्व: 
+➤ भाव बल: रँक  (कुंडलीत कमजोर किंवा मजबूत भाव).
+➤ भाव स्वामी (लग्नेश):
+➤ भावेशाची स्थिती: 
+➤ स्थित ग्रह: 
+➤ भावावर दृष्टी: 
+➤ निष्कर्ष : एकंदर भाव मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व भावांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीवर आधारित)
+
+टीप : ज्या भावात गुलिक किंवा मांदि स्थित असेल, त्या भावाच्या फलात त्यांचा प्रभावही एक-दोन ओळींमध्ये अवश्य सांगा.
+----------
+कृपया संलग्न (Attached) सर्व टेक्स्ट फाईल्समध्ये दिलेला ज्योतिषीय डेटा (सर्व दशा Systems आणि Master Timeline) आपल्या मेमरीत सुरक्षित करा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला आहे याची पुष्टी करा.
+3] पुष्टी (Verification) साठी: फक्त सध्याची स्थिती खाली दिलेल्या फॉर्मेटमध्ये लिहून द्या:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD):
+त्रिभागी (MD-AD):
+अष्टोत्तरी (MD-AD):
+चर (MD-AD):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+कृपया संलग्न (Attached) सर्व टेक्स्ट फाईल्समध्ये दिलेला गोचर डेटा आपल्या मेमरीत सुरक्षित करा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला आहे याची पुष्टी करा.
+3] पुष्टी (Verification) साठी: फक्त सध्याची स्थिती खाली दिलेल्या फॉर्मेटमध्ये लिहून द्या:
+
+जातकाची जन्म रास (चंद्र रास):
+गोचर (शनि - लग्न व चंद्रापासून):
+सध्याची स्थिती: साडेसाती / ढैय्या / काहीही नाही
+शनीचा पुढील रास-बदल (तारीख):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+----------
+पुढील 3 वर्षांत शनि कधी कधी कोणत्या कोणत्या राशीत प्रवेश करेल, याच्या अचूक तारखांची सूची द्या, आणि प्रत्येक रास-बदलावर जातकाच्या जन्म राशीपासून (चंद्र राशीपासून) शनि कोणत्या भावात असेल, हेही सोबत लिहा.
+----------
+आतापर्यंत तुम्हाला कुंडली विश्लेषणासाठी कोणकोणती माहिती मिळाली, याची short मध्ये यादी द्या.
+----------
+तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटा क्रॉसचेक करून घ्या.
+2] कोणत्याही प्रकारची साखर-लेप (Sugar-coating) करू नका. एखाद्या तारखेत काही दोष, कमजोरी किंवा नकारात्मक बाब असेल तर ती स्पष्टपणे सांगा - कोणतीही तारीख जबरदस्तीने शुभ सांगू नका.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'नक्कीच', 'जरूर', 'खालीलप्रमाणे आहे') करू नका, थेट विश्लेषणापासून सुरुवात करा.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का - फक्त कोणते आदेश पाळाल ते सांगा.
+----------
+आता आपण जातकाच्या साडेसातीचे आणि सध्याच्या दशेचे विश्लेषण काढणार आहोत, त्यापूर्वी लक्षात ठेवण्याच्या गोष्टी :
+
+1] लक्षात ठेवा सध्या 2026 चालू आहे आणि जातिका/जातक xyz 00 वर्षांची/चा आहे. विश्लेषण करताना वय लक्षात ठेवा.
+2] हे Analysis प्रत्येक जातकासाठी आहे - साडेसाती चालू असेल तर तोच मुख्य भाग असेल, नसेल तर ढैय्या (चतुर्थ किंवा अष्टम शनि) पाहिली जाईल, आणि तीही नसेल तर शनि सध्या जातकाच्या जन्म राशीपासून ज्या भावात गोचर करत आहे, त्या भावाचा सध्याचा प्रभाव मुख्य भाग असेल. सध्याच्या दशेचे Analysis प्रत्येक परिस्थितीत अनिवार्य (Compulsory) आहे.
+3] सर्व तारखा, दशा-कालावधी आणि गोचर-स्थिती फक्त दिलेल्या डेटामधूनच (कुंडली PDF, गोचर TXT आणि दशा TXT) घ्यायच्या आहेत - स्वतःच्या मनाने कोणतीही तारीख किंवा स्थिती बनवू नका आणि बदलूही नका.
+4] साडेसातीचा टप्पा (पहिला, दुसरा किंवा तिसरा) आणि तिच्या सुरुवात-समाप्तीच्या तारखा गोचर TXT मध्ये दिलेल्या शनीच्या रास-बदलांवरूनच ठरवा.
+----------
+जातकाच्या कुंडलीच्या आधारे खालील मुद्द्यांचे सखोल आणि तपशीलवार विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही तपशीलवार विश्लेषण झाले पाहिजे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+भाग 1: जातकाची शनि-स्थिती आणि सध्याच्या स्थितीचा आधार
+➤ जन्म कुंडलीत शनि: शनि कोणत्या राशीत आणि कोणत्या भावात स्थित आहे? शनि कोणत्या भावांचा स्वामी आहे? शनीची स्थिती कशी आहे (उच्च, नीच, स्वरास, मित्र, शत्रू रास; वक्री, अस्त, वर्गोत्तम)? शनीचे षड्बल आणि विमशोपक बल कसे आहे? शनि कोणत्या भावांवर आणि ग्रहांवर दृष्टी टाकतो आणि शनीवर कोणत्या ग्रहांची दृष्टी किंवा युती आहे?
+➤ जातकाची जन्म रास (चंद्र रास) कोणती आहे आणि चंद्राची स्थिती व बल कसे आहे? (साडेसातीचा परिणाम चंद्राच्या बलावर खूप अवलंबून असतो.)
+➤ सध्याची स्थिती: सध्या जातकाची साडेसाती चालू आहे, ढैय्या चालू आहे, की दोन्हींपैकी काहीही नाही? जी स्थिती असेल, तिची सुरुवातीची तारीख, सध्याचा टप्पा आणि समाप्तीची तारीख स्पष्ट लिहा.
+----------
+भाग 2: सध्याच्या गोचर-शनीचे सखोल विश्लेषण
+(जी स्थिती लागू असेल, तिचेच विश्लेषण करा - साडेसाती असेल तर साडेसातीचे, नसेल तर ढैय्याचे, तीही नसेल तर सध्याच्या गोचर-शनीच्या भाव-प्रभावाचे)
+➤ चालू टप्प्याचा कालावधी (सुरुवात-समाप्तीच्या तारखांसह) आणि या टप्प्यात शनि जातकाच्या जन्म राशीपासून कोणत्या भावात आहे.
+➤ जीवनाच्या क्षेत्रांवर परिणाम: करिअर आणि व्यवसाय, धन आणि आर्थिक स्थिती, आरोग्य, कुटुंब आणि नातेसंबंध, मानसिक स्थिती - प्रत्येक क्षेत्राचे वेगवेगळे तपशीलवार विश्लेषण करा.
+➤ ही वेळ जातकावर किती जड किंवा हलकी जाईल? चंद्राचे बल, शनीची जन्म-कुंडलीतील स्थिती आणि चालू दशा यांच्या आधारे टक्केवारीत निष्कर्ष द्या.
+➤ गोचर-शनि आणि चालू महादशा-अंतर्दशा यांचा परस्पर संबंध: दशा या काळाला Support करत आहे की संघर्ष वाढवत आहे?
+----------
+भाग 3: सध्याच्या दशेचे सखोल विश्लेषण (Compulsory)
+➤ सध्या चालू महादशा, अंतर्दशा आणि प्रत्यंतर्दशा कोणत्या आहेत, त्यांचे कालावधी (सुरुवात-समाप्तीच्या तारखांसह) काय आहेत, आणि Master Timeline नुसार बाकीच्या दशा Systems मध्ये (योगिनी, त्रिभागी, अष्टोत्तरी, चर) सध्याची स्थिती काय आहे? सर्व Systems एकच दिशा दाखवत आहेत का?
+➤ दशा-स्वामी ग्रहांची जन्म कुंडलीतील स्थिती आणि बल कसे आहे? ते कोणत्या भावांचे स्वामी आहेत आणि कोणत्या भावांना जागृत करत आहेत?
+➤ या दशेत जातकाला काय मिळेल आणि कुठे सावधगिरी बाळगावी - करिअर, धन, आरोग्य, कुटुंब यांच्या हिशोबाने तपशीलवार सांगा.
+➤ पुढील अंतर्दशा आणि पुढील महादशा कधीपासून सुरू होतील आणि त्यांच्याकडून काय अपेक्षा ठेवावी?
+----------
+भाग 4: पुढील 2-3 वर्षांचा दशा-गोचर नकाशा
+➤ पुढील 2-3 वर्षांची समय-सारणी बनवा: कोणता कालावधी जड राहील, कोणता सावरण्याचा राहील आणि कोणता पुढे जाण्याचा - दशा-बदल आणि शनीच्या रास-बदलांच्या तारखांसह.
+➤ शनीचा पुढील रास-बदल कधी होईल आणि त्यामुळे जातकाच्या स्थितीत काय बदल होईल (साडेसाती/ढैय्याची सुरुवात किंवा समाप्ती, किंवा भाव-प्रभाव बदलणे)?
+➤ या कालावधीत मोठ्या निर्णयांसाठी (नोकरी बदलणे, व्यवसाय सुरू करणे, गुंतवणूक, विवाह इत्यादी) कोणती वेळ सर्वात योग्य राहील आणि कोणती वेळ टाळावी?
+----------
+भाग 5: उपाय आणि लक्षात ठेवण्याच्या गोष्टी
+➤ शनीसाठी अचूक उपाय: सध्याची गोचर-स्थिती आणि जातकाची कुंडली पाहून 2-3 अगदी सोपे, सात्त्विक उपाय सांगा, जे आजची पिढी सहजपणे फॉलो करू शकेल.
+➤ दशा-स्वामीसाठी उपाय: चालू महादशा-अंतर्दशेच्या स्वामी ग्रहानुसार 1-2 सोपे उपाय सांगा (आवश्यक असल्यास).
+➤ काय करावे, काय करू नये (Dos आणि Don'ts): या काळासाठी 3-4 व्यावहारिक गोष्टी - काय करणे फायद्याचे राहील आणि काय टाळावे.
+----------
+भाग 6: अंतिम निष्कर्ष (Final Conclusion)
+➤ एकंदर निष्कर्ष: ही वेळ जातकासाठी 'धैर्य ठेवण्याची वेळ' आहे, 'सावधपणे चालण्याची वेळ' आहे की 'पुढे जाण्याची वेळ' आहे? एका तपशीलवार आणि स्पष्ट परिच्छेदात सांगा - साडेसाती/ढैय्या/गोचर-शनि आणि सध्याची दशा, दोन्हींच्या एकत्रित आधारावर.
+➤ जातकासाठी सर्वात महत्त्वाचा एक सल्ला वेगळा स्पष्ट लिहा.
+
+(लक्षात ठेवा: या Analysis मध्ये जातकाचे जास्तीत जास्त 2 Personal Questions समाविष्ट आहेत - ते प्रश्न वेगळे दिले जातील आणि त्यांची उत्तरे या भागानंतर त्याच क्रमाने द्यायची आहेत.)
+----------
+➤ जातकाने स्वतःबद्दल माहिती दिली आहे आणि जातकाचे काही प्रश्न आहेत, प्रथम दिलेली माहिती सूचीबद्ध करा, त्यानंतर सर्व प्रश्न सूचीबद्ध करा :
+----------
+आता जातकाने दिलेल्या माहितीचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, प्रत्येक घटनेचे विस्ताराने विश्लेषण झाले पाहिजे, जर उपाय आवश्यक असतील तर उपायांसह, सुरुवात पहिल्या घटनेच्या विश्लेषणाने करा, बाकीचे नंतर विचारते.
+----------
+➤ जातकाचे काही प्रश्न आहेत, प्रथम सर्व प्रश्न सूचीबद्ध करा :
+
+जातकाचे सवाल :
+----------
+आता जातकाने दिलेल्या प्रश्नांचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, प्रत्येक प्रश्नाचे विस्ताराने विश्लेषण झाले पाहिजे, जर उपाय आवश्यक असतील तर उपायांसह, सुरुवात पहिल्या प्रश्नाच्या विश्लेषणाने करा, बाकीचे नंतर विचारते.
+----------
+आतापर्यंत केलेल्या सर्व विश्लेषणांचे पुन्हा लिहून त्यांचे संक्षिप्त उत्तर द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल, यामुळे जातक आधीच short मध्ये उत्तर वाचेल आणि त्याला ज्या भागाचे विश्लेषण तपशीलवार वाचायचे आहे, तो भाग शोधेल...
+
+मुख्य मुद्दे :
+(सध्याची स्थिती - साडेसाती/ढैय्या/गोचर-शनीची स्थिती आणि कालावधी, सध्याची दशा, जड वेळ आणि सावरण्याची वेळ, सर्वात महत्त्वाचा सल्ला - फक्त इतकेच, प्रत्येक मुद्दा 2-3 ओळींमध्ये)
+----------
+आता अंतिम तपासणी करा - कोणतेही नवीन विश्लेषण किंवा निष्कर्ष अजिबात देऊ नका.
+
+वर दिलेली सर्व उत्तरे आणि निष्कर्ष मूळ डेटाशी (कुंडली PDF, गोचर TXT आणि दशा TXT) जुळवून पाहा - जन्म रास, जन्म नक्षत्र, जन्म कुंडलीत शनीची रास-भाव-स्वामित्व, साडेसाती/ढैय्याची स्थिती, टप्पा आणि सुरुवात-समाप्तीच्या तारखा, शनीच्या रास-बदलांच्या तारखा, आणि सर्व दशा Systems च्या महादशा-अंतर्दशा-प्रत्यंतर्दशा यांची नावे व तारखा - प्रत्येक मूल्य तपासा.
+
+निकाल फक्त चुकांच्या यादीत द्या: भाग/प्रश्न क्रमांक, चुकीचे लिहिलेले मूल्य, बरोबर मूल्य. जिथे चूक नसेल तिथे काहीही लिहू नका. शेवटी फक्त एक ओळ लिहा: 'तपासणी पूर्ण - एकूण X चुका सापडल्या.' उत्तरे पुन्हा लिहू नका.`;
+
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
+
+        // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
+        const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
+        
+        function processData() {
+            const container = document.getElementById('prompt-container');
+            // पहले डैश लाइन्स से तोडें
+            let parts = getRawData().split(separatorRegex);
+
+            parts.forEach((part, index) => {
+                let cleanText = part.trim();
+                
+                // फिल्टरिंग लॉजिक
+                const lines = cleanText.split('\n');
+                const filteredLines = lines.filter(line => {
+                    const l = line.trim();
+                    // जंक (MMM... RRR... PPPP...) हटाएं
+                    if (l.match(/^[M|P|C|H|R]{5,}$/)) return false;
+                    // सिर्फ डैश वाली लाइन हटाएं
+                    if (l.match(/^-{5,}$/)) return false;
+                    return true;
+                });
+                
+                cleanText = filteredLines.join('\n').trim();
+
+                if (cleanText.length > 5) { // खाली या बहुत छोटी स्ट्रिंग न दिखाएं
+                    createCard(cleanText, index + 1);
+                }
+            });
+        }
+
+        function createCard(text, id) {
+            const container = document.getElementById('prompt-container');
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            header.innerHTML = `<span>Prompt #${id}</span>`;
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+            content.innerText = text;
+
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = 'Copy Prompt';
+            btn.onclick = () => copyText(text, btn);
+
+            card.appendChild(header);
+            card.appendChild(content);
+            card.appendChild(btn);
+            container.appendChild(card);
+        }
+
+        function showBtnFeedback(btn, success){
+            if(!btn) return;
+            var origText = btn.innerText;
+            var origBg = btn.style.backgroundColor;
+            btn.innerText = success ? "\u2713 Copied!" : "\u2717 Failed";
+            btn.style.backgroundColor = success ? "#2e7d32" : "#c62828";
+            btn.style.color = "#fff";
+            setTimeout(function(){ btn.innerText = origText; btn.style.backgroundColor = origBg; }, 2000);
+        }
+        function copyText(text, btn) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast();
+                    showBtnFeedback(btn, true);
+                }).catch(err => {
+                    fallbackCopy(text, btn);
+                });
+            } else {
+                fallbackCopy(text, btn);
+            }
+        }
+
+        function fallbackCopy(text, btn) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed'; // Avoid scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                var ok = document.execCommand('copy');
+                showToast();
+                showBtnFeedback(btn, ok);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                showBtnFeedback(btn, false);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast() {
+            var x = document.getElementById("snackbar");
+            x.className = "toast show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        // Initialize
+        processData();
+
+    </script>
+</body>
+</html>
