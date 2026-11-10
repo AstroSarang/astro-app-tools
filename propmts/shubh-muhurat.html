@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Prompts Copier</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border-left: 5px solid #007bff;
+        }
+        .card-content {
+            white-space: pre-wrap;
+            font-size: 14px;
+            color: #555;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+        .card-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #007bff;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn {
+            align-self: flex-end;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Shubh Muhurat Prompts v1.0</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
+    <div class="container" id="prompt-container">
+        <!-- Prompts will be loaded here -->
+    </div>
+
+    <div id="snackbar" class="toast">Text Copied to Clipboard!</div>
+
+    <script>
+        // यहाँ आपका पूरा डेटा है
+        const rawData_hi = `यह PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+
+1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तालिका
+3] गुरु का भिन्नाष्टकवर्ग (BAV) तालिका।
+4] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+5] भाव बल तालिका
+6] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग और दश वर्ग)
+7] विशोंतरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] D1 के 12 भाव के राशी-नक्षत्र (Bhava Cusp)
+10] D9 ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+
+कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
+----------
+कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (विंशोत्तरी दशा और गोचर) को अपनी मेमोरी में सेव करके रखो।
+
+निर्देश:
+
+1] इस डेटा को अभी चैट में दोबारा लिखने की आवश्यकता नहीं है।
+2] बस डेटा का विश्लेषण करें और पुष्टि करें कि आपने इसे पढ़ लिया है।
+3] पुष्टि (Verification) के लिए: केवल वर्तमान स्थिति नीचे दिए गए फॉर्मेट में लिखकर दें:
+विंशोत्तरी (MD-AD-PD):
+गोचर (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहू, केतु - लग्न व चंद्र से):
+
+मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
+----------
+कृपया संलग्न (Attached) टेक्स्ट फाइल 'मुहूर्त डेटा' में दिए गए शुभ मुहूर्त कैलकुलेटर के डेटा को अपनी मेमोरी में सेव करके रखो। इस फाइल में जातक के चुने हुए कार्य/कार्यों के लिए खोज अवधि (अगले 12 महीनों तक) की हर उपयुक्त तारीख की जानकारी है:
+- तारीख, वार, तिथि, नक्षत्र, योग और करण (पंचांग)
+- चंद्र-बल: गोचर चंद्र जन्म राशि से किस भाव में, शुभ/अशुभ
+- तारा-बल: गोचर नक्षत्र जन्म नक्षत्र से कौन सी तारा, शुभ/अशुभ
+- त्रिबल: सूर्य-बल और गुरु-बल का Score और स्तर (Level)
+- चुनी तारीखों के शुभ लग्न समयखंड: समय (शुरू-समाप्ति), लग्न राशि, अष्टम शुद्धि की स्थिति
+- हर तारीख का राहुकाल समय
+
+निर्देश:
+1] इस डेटा को अभी चैट में दोबारा लिखने की आवश्यकता नहीं है।
+2] बस डेटा पढ़ें और पुष्टि करें कि आपने इसे पढ़ लिया है।
+3] पुष्टि (Verification) के लिए सिर्फ इतना लिखकर दें:
+कार्य 1: [कार्य का नाम] - कुल उपयुक्त तारीखें: [संख्या], सबसे अधिक त्रिबल Score वाली तारीख: [तारीख]
+कार्य 2: [कार्य का नाम] - कुल उपयुक्त तारीखें: [संख्या], सबसे अधिक त्रिबल Score वाली तारीख: [तारीख] (दूसरा कार्य हो तभी लिखें)
+
+मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
+----------
+उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
+----------
+यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
+
+1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
+2] किसी भी तरह की शुगर-कोटिंग (Sugar-coating) न करें। अगर किसी तारीख में कोई दोष, कमजोरी या नकारात्मक बात है, तो उसे स्पष्ट रूप से बतायें - कोई तारीख जबरदस्ती शुभ न बतायें।
+3] अपने उत्तर की शुरुआत किसी भी अभिवादन या संवादात्मक वाक्यांश (जैसे 'निश्चित रूप से', 'ज़रूर', 'निम्मलिखित है') से न करें, सीधे विश्लेषण से शुरू करें।
+4] System instructions में दिए गए आदेशों का भी पालन करे.
+
+क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
+----------
+अब हम जातक के शुभ मुहूर्त का विश्लेषण निकालेंगे, उसके पहले ध्यान रखने योग्य बातें :
+
+1] ध्यान रहे अभी 2026 चल रहा है और जातिका/जातक xyz 00 साल की/का है. विश्लेषण करते समय आयु का ध्यान रखे.
+2] यह Analysis एक या दो कार्यों के मुहूर्त के लिए है. कार्य ये हैं: [कार्य 1 का नाम] और [कार्य 2 का नाम - हो तो].
+3] खोज अवधि अगले 12 महीनों की है. सभी तारीखें, समय और Score सिर्फ मुहूर्त कैलकुलेटर के दिए डेटा से ही लेने हैं - अपने मन से कोई तारीख, समय या Score न बनायें और न बदलें.
+4] विवाह या सगाई का कार्य हो तो दोनों जातकों (वर और वधू) के चंद्र-बल, तारा-बल और त्रिबल दोनों के हिसाब से देखने हैं.
+----------
+जातक के कुंडली के आधार पर निम्मलिखित पॉइंट्स गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे भाषा सरल, सकारात्मक और आधुनिक होनी चाहिए :
+
+भाग 1: जातक और कार्य का आधार
+➤ जातक की जन्म राशि और जन्म नक्षत्र क्या है? मुहूर्त देखने में इन दोनों की भूमिका संक्षिप्त में बतायें।
+➤ चुने हुए कार्य/कार्यों के कारक ग्रह कौन से हैं और जातक की कुंडली में उनकी स्थिति व बल कैसा है?
+➤ खोज अवधि (अगले 12 महीने) में जातक की चल रही विंशोत्तरी महादशा-अंतर्दशा कौन सी है? क्या यह दशा इस कार्य के लिए अनुकूल समय देती है?
+(दूसरा कार्य हो तो कारक ग्रह और दशा-अनुकूलता दोनों कार्यों के लिए अलग-अलग बतायें।)
+----------
+भाग 2: शुभ तारीखों की सूची
+➤ मुहूर्त डेटा के आधार पर चुने हुए कार्य के लिए अगले 12 महीनों की सभी उपयुक्त तारीखों की तालिका बनायें। तालिका के कॉलम बिल्कुल निम्न प्रकार होने चाहिए:
+| तारीख | वार | तिथि | नक्षत्र | योग | करण | चंद्र-बल | तारा-बल | त्रिबल Score |
+➤ तालिका के बाद सबसे अच्छी 2-3 तारीखों को 'Top Recommendation' के रूप में अलग से चिह्नित करें और हर एक के लिए 2-3 पंक्तियों में कारण दें कि वही तारीख सबसे अच्छी क्यों है।
+(दूसरा कार्य हो तो उसकी तालिका और Top Recommendation अलग से, उसी प्रारूप में दें। विवाह/सगाई में चंद्र-बल, तारा-बल और त्रिबल दोनों जातकों के हिसाब से दिखायें।)
+----------
+भाग 3: चुनी तारीख का गहन विश्लेषण
+(Top Recommendation की हर तारीख के लिए अलग-अलग, निम्न प्रारूप में दें)
+तारीख: [तारीख, वार]
+➤ चंद्र-बल: गोचर चंद्र जातक की जन्म राशि से किस भाव में है और यह इस कार्य के लिए कितना शुभ है?
+➤ तारा-बल: गोचर नक्षत्र जन्म नक्षत्र से कौन सी तारा बनाती है (जैसे संपत, क्षेम, साधन, मित्र) और उसका फल क्या है?
+➤ त्रिबल (सूर्य-बल और गुरु-बल): दोनों के Score और स्तर क्या हैं और इस कार्य के लिए इनका अर्थ क्या है?
+➤ उस दिन के दोष: भद्रा, राहुकाल, चंद्राष्टम जैसी कोई बाधा है या नहीं? है तो किस समय तक है और उससे कैसे बचना है।
+➤ समग्र: यह तारीख इस कार्य के लिए कितनी Strong है (प्रतिशत में निष्कर्ष)।
+----------
+भाग 4: एकदम सटीक समय (Exact Muhurat Window)
+(हर चुनी तारीख के लिए)
+➤ मुहूर्त डेटा में दिए गए शुभ लग्न समयखंडों में से सबसे अच्छा समयखंड चुनकर दें: तारीख, समय (शुरू-समाप्ति), लग्न राशि।
+➤ यह लग्न जातक की जन्म राशि/लग्न से कितना अनुकूल है और अष्टम शुद्धि की स्थिति क्या है?
+➤ दूसरा Alternate समयखंड भी दें, ताकि पहला समय निकल जाए तो दूसरा काम आए।
+➤ राहुकाल का समय स्पष्ट लिखें - उस समय कार्य की शुरुआत बिल्कुल न करें।
+(समय सिर्फ डेटा से ही लेने हैं, अपने मन से कोई समय न बनायें।)
+----------
+भाग 5: टालने योग्य तारीखें
+➤ खोज अवधि की वे तारीखें जो सतह पर ठीक लग सकती हैं, पर चंद्र-बल अशुभ, तारा-बल अशुभ (विपत, प्रत्यरि, वध तारा), चंद्राष्टम या त्रिबल Score बहुत कम होने के कारण इस कार्य के लिए टालनी चाहिए - उनकी सूची कारण सहित दें।
+➤ हर तारीख के सामने सिर्फ एक पंक्ति में कारण लिखें कि वह क्यों टालनी है।
+(यह भाग इसलिए जरूरी है ताकि जातक किसी और से मिली या पंचांग में देखी तारीख से भ्रमित न हो।)
+----------
+भाग 6: निष्कर्ष और ध्यान रहे
+➤ Final Conclusion: दोनों कार्यों (या एक कार्य) के लिए सबसे अच्छी तारीख और समय का अंतिम चुनाव एक जगह स्पष्ट लिखें - जातक को बिना दुविधा के वही चुनना है।
+➤ कार्य के दिन के लिए सरल Dos और Don'ts (3-4 बिंदु)।
+➤ सटीक उपाय (Remedies): चुनी तारीख और वर्तमान दशा को देखते हुए 2-3 बहुत ही आसान, सात्विक उपाय दें।
+----------
+अब तक किये गए सभी विश्लेषणों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस बात का विश्लेषण संदर्भ सहित पढना है, उस सेक्शन को ढूंढेगा...
+
+चुनी गयी तारीखें और समय :
+(हर कार्य के लिए: कार्य का नाम, सबसे अच्छी तारीख, दूसरा विकल्प, सटीक समय window - बस इतना ही, 2-3 पंक्तियों में)
+----------
+अब अंतिम जाँच करें - कोई नया विश्लेषण या निष्कर्ष बिल्कुल न दें।
+
+ऊपर दिए गए सभी जवाबों और निष्कर्ष को मूल डेटा (कुंडली PDF और मुहूर्त कैलकुलेटर डेटा) से मिलाएँ - जन्म राशि, जन्म नक्षत्र, हर तारीख का वार, तिथि, नक्षत्र, योग, करण, चंद्र-बल और तारा-बल की स्थिति, त्रिबल Score, शुभ लग्न समयखंड, राहुकाल समय और महादशा-अंतर्दशा के नाम व तारीखें - हर मान की जाँच करें।
+
+परिणाम सिर्फ गलतियों की सूची में दें: भाग नंबर, गलत लिखा मान, सही मान। जहाँ कोई गलती न हो वहाँ कुछ न लिखें। अंत में सिर्फ एक line लिखें: 'जाँच पूर्ण - कुल X गलतियाँ मिलीं।' जवाब दोबारा न लिखें।`;
+
+        const rawData_en = `This PDF is the kundali of a 00-year-old male/female native ...; you must save all the information from it so that the kundali can be analyzed. While analyzing, do not write page references from the PDF, but please provide a list showing which of the following information is on which page, so that it will also be easy for you to find it later:
+
+1] Planetary Position Table - (Planet, Degree, Sign, Nakshatra-Pada, Nakshatra Lord, Jaimini Chara Karaka)
+2] Sarvashtakavarga Table
+3] Jupiter's Bhinnashtakavarga (BAV) Table.
+4] Shadbala Table (Sthana Bala, Dig Bala, Kala Bala, Cheshta Bala, Naisargika Bala, Drik Bala)
+5] Bhava Bala Table
+6] Vimshottari Bala Table (Shodash Varga, Shad Varga, Sapta Varga and Dasha Varga)
+7] Vimshottari Mahadasha Antardasha Chart
+8] Yogini Dasha Antardasha Chart
+9] Sign-Nakshatra of the 12 houses of D1 (Bhava Cusp)
+10] D9 Planetary Position Table - (Planet, Degree, Sign, Nakshatra-Pada, Nakshatra Lord) (Screenshot)
+
+Please present all the tables in a simple and readable table format.
+----------
+Please save the astrological data (Vimshottari Dasha and transits) given in all the attached text files in your memory.
+
+Instructions:
+
+1] There is no need to write this data again in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification, write only the current position in the format given below:
+Vimshottari (MD-AD-PD):
+Transit (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu - from Lagna and Moon):
+
+After this I will directly ask specific questions related to the analysis, at that time you must use this entire data.
+----------
+Please save the data of the Shubh Muhurat Calculator given in the attached text file 'Muhurat Data' in your memory. This file contains, for the task(s) chosen by the native, the details of every suitable date in the search period (up to the next 12 months):
+- Date, weekday, Tithi, Nakshatra, Yoga and Karana (Panchang)
+- Chandra-Bala: transit Moon in which house from the Janma Rashi, Shubh/Ashubh
+- Tara-Bala: which Tara the transit Nakshatra forms from the Janma Nakshatra, Shubh/Ashubh
+- Tribala: Score and Level of Surya-Bala and Guru-Bala
+- Shubh Lagna time windows for the chosen dates: time (start-end), Lagna sign, Ashtam Shuddhi status
+- Rahu Kaal time for every date
+
+Instructions:
+1] There is no need to write this data again in the chat right now.
+2] Just read the data and confirm that you have read it.
+3] For verification, write only this much:
+Task 1: [Task name] - Total suitable dates: [number], Date with the highest Tribala Score: [date]
+Task 2: [Task name] - Total suitable dates: [number], Date with the highest Tribala Score: [date] (write only if there is a second task)
+
+After this I will directly ask specific questions related to the analysis, at that time you must use this entire data.
+----------
+Please give a short list of all the information you have received so far for the kundali analysis.
+----------
+Please ensure that you will strictly follow the following orders,
+
+1] Cross-check the data before giving the output.
+2] Do not do any kind of sugar-coating. If any date has a dosha, weakness or negative point, state it clearly - do not forcibly call any date auspicious.
+3] Do not start your answer with any greeting or conversational phrase (like 'certainly', 'sure', 'here is'); start directly with the analysis.
+4] Also follow the orders given in the System instructions.
+
+Are you ready - just tell me which orders you will follow.
+----------
+Now we will extract the analysis of the native's Shubh Muhurat; before that, points to keep in mind:
+
+1] Keep in mind that 2026 is currently running and the native xyz is 00 years old. Keep the age in mind while analyzing.
+2] This Analysis is for the muhurat of one or two tasks. The tasks are: [Name of Task 1] and [Name of Task 2 - if any].
+3] The search period is the next 12 months. All dates, times and Scores must be taken only from the data given by the Muhurat Calculator - do not create or change any date, time or Score on your own.
+4] If the task is Marriage or Engagement, Chandra-Bala, Tara-Bala and Tribala must be seen for both natives (groom and bride).
+----------
+Based on the native's kundali, analyze the following points in depth and in detail (Detailed Analysis); keep in mind that the language should be simple, positive and modern:
+
+Part 1: Basis of the Native and the Task
+➤ What is the native's Janma Rashi and Janma Nakshatra? Briefly state the role of both in seeing a muhurat.
+➤ Which are the Karaka planets of the chosen task(s), and what is their position and strength in the native's kundali?
+➤ Which Vimshottari Mahadasha-Antardasha is running during the search period (next 12 months)? Does this dasha give a favourable time for this task?
+(If there is a second task, state the Karaka planets and dasha-favourability separately for both tasks.)
+----------
+Part 2: List of Auspicious Dates
+➤ Based on the Muhurat Data, make a table of all suitable dates in the next 12 months for the chosen task. The columns of the table must be exactly as follows:
+| Date | Weekday | Tithi | Nakshatra | Yoga | Karana | Chandra-Bala | Tara-Bala | Tribala Score |
+➤ After the table, mark the best 2-3 dates separately as 'Top Recommendation' and for each, give the reason in 2-3 lines why that date is the best.
+(If there is a second task, give its table and Top Recommendation separately, in the same format. For Marriage/Engagement, show Chandra-Bala, Tara-Bala and Tribala for both natives.)
+----------
+Part 3: Deep Analysis of the Chosen Date
+(Give separately for each Top Recommendation date, in the following format)
+Date: [date, weekday]
+➤ Chandra-Bala: Transit Moon is in which house from the native's Janma Rashi, and how auspicious is it for this task?
+➤ Tara-Bala: Which Tara does the transit Nakshatra form from the Janma Nakshatra (like Sampat, Kshema, Sadhana, Mitra), and what is its result?
+➤ Tribala (Surya-Bala and Guru-Bala): What are the Scores and Levels of both, and what do they mean for this task?
+➤ Doshas of that day: Is there any obstruction like Bhadra, Rahu Kaal, Chandrashtama or not? If yes, till what time is it, and how to avoid it.
+➤ Overall: How Strong is this date for this task (conclusion in percentage).
+----------
+Part 4: Exact Muhurat Time (Exact Muhurat Window)
+(For each chosen date)
+➤ From the Shubh Lagna time windows given in the Muhurat Data, select and give the best time window: date, time (start-end), Lagna sign.
+➤ How favourable is this Lagna from the native's Janma Rashi/Lagna, and what is the Ashtam Shuddhi status?
+➤ Also give a second Alternate time window, so that if the first time passes, the second can be used.
+➤ Write the Rahu Kaal time clearly - the task must not be started at that time at all.
+(Take the times only from the data; do not create any time on your own.)
+----------
+Part 5: Dates to Avoid
+➤ List, with reasons, the dates of the search period which may look fine on the surface, but should be avoided for this task because of Ashubh Chandra-Bala, Ashubh Tara-Bala (Vipat, Pratyari, Vadha Tara), Chandrashtama or a very low Tribala Score.
+➤ Against each date, write the reason in just one line why it is to be avoided.
+(This part is necessary so that the native is not confused by a date received from someone else or seen in a Panchang.)
+----------
+Part 6: Conclusion and Points to Note
+➤ Final Conclusion: Write the final choice of the best date and time for both tasks (or one task) clearly at one place - the native has to choose exactly that, without any confusion.
+➤ Simple Dos and Don'ts for the day of the task (3-4 points).
+➤ Exact Remedies: Looking at the chosen date and the current dasha, give 2-3 very easy, sattvic remedies.
+----------
+Now rewrite all the analyses done so far and give their brief answers, because this list will be placed at the very beginning of this analysis, so that the native reads the short answers first and finds the section whose analysis they want to read with references...
+
+Chosen dates and times:
+(For each task: task name, best date, second option, exact time window - only this much, in 2-3 lines)
+----------
+Now do a final check - do not give any new analysis or conclusion at all.
+
+Match all the answers and conclusions given above against the original data (kundali PDF and Muhurat Calculator data) - check every value: Janma Rashi, Janma Nakshatra, weekday, Tithi, Nakshatra, Yoga, Karana of every date, Chandra-Bala and Tara-Bala status, Tribala Score, Shubh Lagna time windows, Rahu Kaal time, and Mahadasha-Antardasha names and dates.
+
+Give the result only as a list of errors: Part number, wrongly written value, correct value. Where there is no error, write nothing. At the end write only one line: 'Check complete - total X errors found.' Do not write the answers again.`;
+
+        const rawData_mr = `हे PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... ची कुंडली आहे, यामधील सर्व माहिती तुम्ही जतन करून ठेवली पाहिजे, जेणेकरून कुंडलीचे विश्लेषण करता येईल, विश्लेषण करताना PDF च्या पानाचा संदर्भ लिहू नका परंतु खालील माहिती कोणत्या पानावर आहे, याची यादी द्या म्हणजे तुम्हालाही पुढे शोधायला सोपे जाईल :
+
+1] ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तक्ता
+3] गुरूचा भिन्नाष्टकवर्ग (BAV) तक्ता।
+4] षड्बल तक्ता (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+5] भाव बल तक्ता
+6] विमशोपक बल तक्ता (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+7] विंशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] D1 च्या 12 भावांचे रास-नक्षत्र (Bhava Cusp)
+10] D9 ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+
+कृपया सर्व तक्ते सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा.
+----------
+कृपया जोडलेल्या (Attached) सर्व टेक्स्ट फाइल्समधील ज्योतिषीय डेटा (विंशोत्तरी दशा आणि गोचर) तुमच्या मेमरीमध्ये जतन करून ठेवा.
+
+सूचना:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची आवश्यकता नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला असल्याची पुष्टी करा.
+3] पुष्टीसाठी (Verification) फक्त सध्याची स्थिती खाली दिलेल्या फॉर्मेटमध्ये लिहून द्या:
+विंशोत्तरी (MD-AD-PD):
+गोचर (सूर्य, चंद्र, मंगळ, बुध, गुरू, शुक्र, शनी, राहू, केतू - लग्न व चंद्रापासून):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला हा संपूर्ण डेटा वापरायचा आहे.
+----------
+कृपया जोडलेल्या (Attached) टेक्स्ट फाइल 'मुहूर्त डेटा' मधील शुभ मुहूर्त कॅल्क्युलेटरचा डेटा तुमच्या मेमरीमध्ये जतन करून ठेवा. या फाइलमध्ये जातकाने निवडलेल्या कार्यासाठी/कार्यांसाठी शोध कालावधीतील (पुढील 12 महिन्यांपर्यंत) प्रत्येक योग्य तारखेची माहिती आहे:
+- तारीख, वार, तिथी, नक्षत्र, योग आणि करण (पंचांग)
+- चंद्र-बल: गोचर चंद्र जन्म राशीपासून कोणत्या भावात, शुभ/अशुभ
+- तारा-बल: गोचर नक्षत्र जन्म नक्षत्रापासून कोणती तारा, शुभ/अशुभ
+- त्रिबल: सूर्य-बल आणि गुरू-बल यांचा Score आणि स्तर (Level)
+- निवडलेल्या तारखांचे शुभ लग्न वेळखंड: वेळ (सुरुवात-समाप्ती), लग्न रास, अष्टम शुद्धीची स्थिती
+- प्रत्येक तारखेचा राहुकाल वेळ
+
+सूचना:
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची आवश्यकता नाही.
+2] फक्त डेटा वाचा आणि तुम्ही तो वाचला असल्याची पुष्टी करा.
+3] पुष्टीसाठी (Verification) फक्त इतकेच लिहून द्या:
+कार्य 1: [कार्याचे नाव] - एकूण योग्य तारखा: [संख्या], सर्वात जास्त त्रिबल Score असलेली तारीख: [तारीख]
+कार्य 2: [कार्याचे नाव] - एकूण योग्य तारखा: [संख्या], सर्वात जास्त त्रिबल Score असलेली तारीख: [तारीख] (दुसरे कार्य असेल तरच लिहा)
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला हा संपूर्ण डेटा वापरायचा आहे.
+----------
+आतापर्यंत तुम्हाला कुंडली विश्लेषणासाठी कोणकोणती माहिती मिळाली, याची short मध्ये यादी द्या.
+----------
+तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटा क्रॉसचेक करून घ्या.
+2] कोणत्याही प्रकारची साखर-लेप (Sugar-coating) करू नका. एखाद्या तारखेत काही दोष, कमजोरी किंवा नकारात्मक बाब असेल तर ती स्पष्टपणे सांगा - कोणतीही तारीख जबरदस्तीने शुभ सांगू नका.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'नक्कीच', 'जरूर', 'खालीलप्रमाणे आहे') करू नका, थेट विश्लेषणापासून सुरुवात करा.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का - फक्त कोणते आदेश पाळाल ते सांगा.
+----------
+आता आपण जातकाच्या शुभ मुहूर्ताचे विश्लेषण काढणार आहोत, त्यापूर्वी लक्षात ठेवण्याच्या गोष्टी :
+
+1] लक्षात ठेवा सध्या 2026 चालू आहे आणि जातिका/जातक xyz 00 वर्षांची/चा आहे. विश्लेषण करताना वय लक्षात ठेवा.
+2] हे Analysis एक किंवा दोन कार्यांच्या मुहूर्तासाठी आहे. कार्ये ही आहेत: [कार्य 1 चे नाव] आणि [कार्य 2 चे नाव - असेल तर].
+3] शोध कालावधी पुढील 12 महिन्यांचा आहे. सर्व तारखा, वेळा आणि Score फक्त मुहूर्त कॅल्क्युलेटरने दिलेल्या डेटामधूनच घ्यायचे आहेत - स्वतःच्या मनाने कोणतीही तारीख, वेळ किंवा Score बनवू नका आणि बदलूही नका.
+4] विवाह किंवा साखरपुडा (सगाई) हे कार्य असेल तर दोन्ही जातकांचे (वर आणि वधू) चंद्र-बल, तारा-बल आणि त्रिबल दोघांच्याही हिशोबाने पाहायचे आहेत.
+----------
+जातकाच्या कुंडलीच्या आधारे खालील मुद्द्यांचे सखोल आणि तपशीलवार विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा भाषा सोपी, सकारात्मक आणि आधुनिक असावी :
+
+भाग 1: जातक आणि कार्याचा आधार
+➤ जातकाची जन्म रास आणि जन्म नक्षत्र कोणती आहे? मुहूर्त पाहण्यात या दोन्हींची भूमिका थोडक्यात सांगा.
+➤ निवडलेल्या कार्याचे/कार्यांचे कारक ग्रह कोणते आहेत आणि जातकाच्या कुंडलीत त्यांची स्थिती व बल कसे आहे?
+➤ शोध कालावधीत (पुढील 12 महिने) जातकाची चालू विंशोत्तरी महादशा-अंतर्दशा कोणती आहे? ही दशा या कार्यासाठी अनुकूल वेळ देते का?
+(दुसरे कार्य असेल तर कारक ग्रह आणि दशा-अनुकूलता दोन्ही कार्यांसाठी वेगवेगळी सांगा.)
+----------
+भाग 2: शुभ तारखांची यादी
+➤ मुहूर्त डेटाच्या आधारे निवडलेल्या कार्यासाठी पुढील 12 महिन्यांतील सर्व योग्य तारखांचा तक्ता बनवा. तक्त्याचे कॉलम अगदी खालीलप्रमाणे असावेत:
+| तारीख | वार | तिथी | नक्षत्र | योग | करण | चंद्र-बल | तारा-बल | त्रिबल Score |
+➤ तक्त्यानंतर सर्वात चांगल्या 2-3 तारखा 'Top Recommendation' म्हणून वेगळ्या चिन्हांकित करा आणि प्रत्येकासाठी 2-3 ओळींमध्ये कारण द्या की तीच तारीख सर्वात चांगली का आहे.
+(दुसरे कार्य असेल तर त्याचा तक्ता आणि Top Recommendation वेगळा, त्याच फॉर्मेटमध्ये द्या. विवाह/साखरपुड्यात चंद्र-बल, तारा-बल आणि त्रिबल दोन्ही जातकांच्या हिशोबाने दाखवा.)
+----------
+भाग 3: निवडलेल्या तारखेचे सखोल विश्लेषण
+(Top Recommendation च्या प्रत्येक तारखेसाठी वेगवेगळे, खालील फॉर्मेटमध्ये द्या)
+तारीख: [तारीख, वार]
+➤ चंद्र-बल: गोचर चंद्र जातकाच्या जन्म राशीपासून कोणत्या भावात आहे आणि हे या कार्यासाठी किती शुभ आहे?
+➤ तारा-बल: गोचर नक्षत्र जन्म नक्षत्रापासून कोणती तारा बनवते (जसे संपत, क्षेम, साधन, मित्र) आणि तिचे फळ काय आहे?
+➤ त्रिबल (सूर्य-बल आणि गुरू-बल): दोघांचे Score आणि स्तर काय आहेत आणि या कार्यासाठी त्यांचा अर्थ काय आहे?
+➤ त्या दिवसाचे दोष: भद्रा, राहुकाल, चंद्राष्टम असा काही अडथळा आहे की नाही? असेल तर किती वाजेपर्यंत आहे आणि तो कसा टाळायचा.
+➤ एकूण: ही तारीख या कार्यासाठी किती Strong आहे (टक्केवारीत निष्कर्ष).
+----------
+भाग 4: अगदी अचूक वेळ (Exact Muhurat Window)
+(प्रत्येक निवडलेल्या तारखेसाठी)
+➤ मुहूर्त डेटामध्ये दिलेल्या शुभ लग्न वेळखंडांपैकी सर्वात चांगला वेळखंड निवडून द्या: तारीख, वेळ (सुरुवात-समाप्ती), लग्न रास.
+➤ हे लग्न जातकाच्या जन्म राशी/लग्नापासून किती अनुकूल आहे आणि अष्टम शुद्धीची स्थिती काय आहे?
+➤ दुसरा Alternate वेळखंडही द्या, जेणेकरून पहिली वेळ निघून गेली तर दुसरा उपयोगी येईल.
+➤ राहुकालची वेळ स्पष्ट लिहा - त्या वेळेत कार्याची सुरुवात अजिबात करू नका.
+(वेळा फक्त डेटामधूनच घ्यायच्या आहेत, स्वतःच्या मनाने कोणतीही वेळ बनवू नका.)
+----------
+भाग 5: टाळावयाच्या तारखा
+➤ शोध कालावधीतील अशा तारखांची यादी कारणांसहित द्या ज्या वरकरणी ठीक वाटू शकतात, पण चंद्र-बल अशुभ, तारा-बल अशुभ (विपत, प्रत्यरि, वध तारा), चंद्राष्टम किंवा त्रिबल Score खूप कमी असल्यामुळे या कार्यासाठी टाळायला हव्यात.
+➤ प्रत्येक तारखेसमोर फक्त एका ओळीत कारण लिहा की ती का टाळायची आहे.
+(हा भाग यासाठी आवश्यक आहे की जातक दुसऱ्या कोणाकडून मिळालेल्या किंवा पंचांगात पाहिलेल्या तारखेमुळे गोंधळू नये.)
+----------
+भाग 6: निष्कर्ष आणि लक्षात ठेवण्याच्या गोष्टी
+➤ Final Conclusion: दोन्ही कार्यांसाठी (किंवा एका कार्यासाठी) सर्वात चांगल्या तारखेची आणि वेळेची अंतिम निवड एकाच ठिकाणी स्पष्ट लिहा - जातकाने कोणत्याही संभ्रमाशिवाय तीच निवडायची आहे.
+➤ कार्याच्या दिवसासाठी सोपे Dos आणि Don'ts (3-4 मुद्दे).
+➤ अचूक उपाय (Remedies): निवडलेली तारीख आणि सध्याची दशा पाहून 2-3 अगदी सोपे, सात्विक उपाय द्या.
+----------
+आतापर्यंत केलेल्या सर्व विश्लेषणांचे पुन्हा लिहून त्यांचे संक्षिप्त उत्तर द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल, यामुळे जातक आधीच short मध्ये उत्तर वाचेल आणि त्याला ज्या गोष्टीचे विश्लेषण संदर्भासहित वाचायचे आहे, तो सेक्शन शोधेल...
+
+निवडलेल्या तारखा आणि वेळा :
+(प्रत्येक कार्यासाठी: कार्याचे नाव, सर्वात चांगली तारीख, दुसरा पर्याय, अचूक वेळ window - फक्त इतकेच, 2-3 ओळींमध्ये)
+----------
+आता अंतिम तपासणी करा - कोणतेही नवीन विश्लेषण किंवा निष्कर्ष अजिबात देऊ नका.
+
+वर दिलेली सर्व उत्तरे आणि निष्कर्ष मूळ डेटाशी (कुंडली PDF आणि मुहूर्त कॅल्क्युलेटर डेटा) जुळवून पाहा - जन्म रास, जन्म नक्षत्र, प्रत्येक तारखेचा वार, तिथी, नक्षत्र, योग, करण, चंद्र-बल आणि तारा-बल यांची स्थिती, त्रिबल Score, शुभ लग्न वेळखंड, राहुकाल वेळ आणि महादशा-अंतर्दशा यांची नावे व तारखा - प्रत्येक मूल्य तपासा.
+
+निकाल फक्त चुकांच्या यादीत द्या: भाग क्रमांक, चुकीचे लिहिलेले मूल्य, बरोबर मूल्य. जिथे चूक नसेल तिथे काहीही लिहू नका. शेवटी फक्त एक ओळ लिहा: 'तपासणी पूर्ण - एकूण X चुका सापडल्या.' उत्तरे पुन्हा लिहू नका.`;
+
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
+
+        // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
+        const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
+        
+        function processData() {
+            const container = document.getElementById('prompt-container');
+            // पहले डैश लाइन्स से तोडें
+            let parts = getRawData().split(separatorRegex);
+
+            parts.forEach((part, index) => {
+                let cleanText = part.trim();
+                
+                // फिल्टरिंग लॉजिक
+                const lines = cleanText.split('\n');
+                const filteredLines = lines.filter(line => {
+                    const l = line.trim();
+                    // जंक (MMM... RRR... PPPP...) हटाएं
+                    if (l.match(/^[M|P|C|H|R]{5,}$/)) return false;
+                    // सिर्फ डैश वाली लाइन हटाएं
+                    if (l.match(/^-{5,}$/)) return false;
+                    return true;
+                });
+                
+                cleanText = filteredLines.join('\n').trim();
+
+                if (cleanText.length > 5) { // खाली या बहुत छोटी स्ट्रिंग न दिखाएं
+                    createCard(cleanText, index + 1);
+                }
+            });
+        }
+
+        function createCard(text, id) {
+            const container = document.getElementById('prompt-container');
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            header.innerHTML = `<span>Prompt #${id}</span>`;
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+            content.innerText = text;
+
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = 'Copy Prompt';
+            btn.onclick = () => copyText(text, btn);
+
+            card.appendChild(header);
+            card.appendChild(content);
+            card.appendChild(btn);
+            container.appendChild(card);
+        }
+
+        function showBtnFeedback(btn, success){
+            if(!btn) return;
+            var origText = btn.innerText;
+            var origBg = btn.style.backgroundColor;
+            btn.innerText = success ? "\u2713 Copied!" : "\u2717 Failed";
+            btn.style.backgroundColor = success ? "#2e7d32" : "#c62828";
+            btn.style.color = "#fff";
+            setTimeout(function(){ btn.innerText = origText; btn.style.backgroundColor = origBg; }, 2000);
+        }
+        function copyText(text, btn) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast();
+                    showBtnFeedback(btn, true);
+                }).catch(err => {
+                    fallbackCopy(text, btn);
+                });
+            } else {
+                fallbackCopy(text, btn);
+            }
+        }
+
+        function fallbackCopy(text, btn) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed'; // Avoid scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                var ok = document.execCommand('copy');
+                showToast();
+                showBtnFeedback(btn, ok);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                showBtnFeedback(btn, false);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast() {
+            var x = document.getElementById("snackbar");
+            x.className = "toast show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        // Initialize
+        processData();
+
+    </script>
+</body>
+</html>
