@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shubh Muhurat Analysis - Sanjivani Jyotish Sansthan</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans Devanagari','Poppins',sans-serif; background:#FFF9EF; color:#33241A; line-height:1.65; }
+  body.lang-hi .en { display:none !important; }
+  body.lang-en .hi { display:none !important; }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 16px 40px; }
+
+  /* header bar */
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 4px; }
+  .brand { font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; color:#7B1E1E; letter-spacing:.3px; }
+  .brand small { display:block; font-size:11px; font-weight:600; color:#B4762A; letter-spacing:2px; }
+  .lang-toggle { background:#7B1E1E; color:#FFF3D6; border:none; padding:8px 18px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 3px 8px rgba(123,30,30,.35); }
+  .lang-toggle:hover { background:#932626; }
+
+  /* hero */
+  .hero { padding:34px 26px 28px; background:linear-gradient(160deg,#FFF3D6 0%,#FFE7C2 55%,#FFDFE0 100%); border:1px solid #EFD9A7; border-radius:22px; box-shadow:0 10px 28px rgba(160,100,20,.12); margin-bottom:34px; }
+  .hero-grid { display:flex; gap:30px; align-items:center; }
+  .hero-photo { flex:0 0 300px; perspective:900px; }
+  .hero-photo img { width:100%; height:320px; object-fit:contain; display:block; transform:rotateY(-10deg) rotateX(2deg); filter:drop-shadow(16px 20px 12px rgba(90,50,10,.35)); transition:transform .45s ease, filter .45s ease; }
+  .hero:hover .hero-photo img { transform:rotateY(0deg) rotateX(0deg); filter:drop-shadow(0 10px 10px rgba(90,50,10,.25)); }
+  .hero-text { flex:1; text-align:left; }
+  .hero-text h1 { font-size:31px; font-weight:800; color:#7B1E1E; line-height:1.35; }
+  .hero-text h1 .grad { background:linear-gradient(90deg,#B3540A,#D97706,#B91C1C); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-text p.lead { font-size:17.5px; font-weight:700; color:#5C4632; margin-top:12px; }
+  .hero-text p.sub { font-size:16px; color:#5C4632; margin-top:6px; }
+  .chips { margin-top:18px; display:flex; flex-wrap:wrap; gap:10px; }
+  .chip { background:#fff; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:14px; padding:7px 16px; border-radius:999px; box-shadow:0 2px 6px rgba(160,100,20,.15); }
+  @media (max-width:760px){ .hero-grid{flex-direction:column;} .hero-text{text-align:center;} .chips{justify-content:center;} .hero-text h1{font-size:26px;} .hero-photo{flex:0 0 auto; width:230px;} .hero-photo img{height:280px;} }
+
+  /* blocks */
+  .block { background:#fff; border:1px solid #F0DFBB; border-left:6px solid #D97706; border-radius:16px; padding:22px 24px; margin-top:26px; box-shadow:0 6px 18px rgba(160,100,20,.08); }
+  .block h2 { font-size:21px; color:#7B1E1E; margin-bottom:8px; }
+  .block p { font-size:15.5px; color:#43322A; }
+  .block.gold { border-left-color:#B91C1C; background:linear-gradient(180deg,#FFFDF6,#FFF7E6); }
+  .bhead { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .bhead h2 { margin-bottom:0 !important; }
+  .bicon { width:46px; height:46px; flex:0 0 46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:linear-gradient(135deg,#F59E0B,#B3540A); box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .block.gold .bicon { background:linear-gradient(135deg,#B91C1C,#7B1E1E); box-shadow:0 4px 10px rgba(123,30,30,.35); }
+  .taglabel { font-size:13.5px; font-weight:700; color:#7B1E1E; margin-top:14px; }
+  .ptags { display:flex; flex-wrap:wrap; gap:9px; margin-top:4px; }
+  .ptag { display:inline-flex; align-items:center; gap:8px; background:#FFFDF6; border:1.5px solid #E3B341; border-radius:999px; padding:6px 15px 6px 7px; font-size:14.5px; color:#4A2C14; box-shadow:0 2px 6px rgba(123,30,30,.10); }
+  .ptag .n { background:linear-gradient(135deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:12.5px; min-width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0 3px; flex:none; }
+  .cnt { margin-left:auto; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:13px; padding:4px 14px; border-radius:999px; white-space:nowrap; }
+  .sysbadges { margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; }
+  .sysbadges span { background:linear-gradient(90deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:14px; padding:6px 18px; border-radius:999px; box-shadow:0 3px 8px rgba(123,30,30,.30); }
+
+  /* areas checklist */
+  .chk { display:grid; grid-template-columns:repeat(2,1fr); gap:2px 22px; margin-top:6px; }
+  .chk span { font-size:15px; color:#4A382C; padding:7px 2px; border-bottom:1px dashed #EBDCC0; }
+  .chk span::before { content:"\2713  "; color:#B3541E; font-weight:800; }
+  .chk.mute span { font-size:13.5px; color:#97836C; border-bottom-color:#F0E7D2; }
+  .chk.mute span::before { content:"\2013  "; color:#C4AE87; }
+  @media (max-width:640px){ .chk{grid-template-columns:1fr;} }
+  .featlist { margin-top:4px; }
+  .featlist p { font-size:15.5px; color:#43322A; margin:9px 0; }
+  .featlist p b { color:#7B1E1E; }
+
+  /* price options */
+  .sec-title { text-align:center; margin:42px 0 6px; font-size:28px; font-weight:800; color:#7B1E1E; }
+  .sec-sub { text-align:center; color:#7A6248; font-size:15px; margin-bottom:24px; }
+  .qnote { background:#FFF6E3; border:1.5px solid #E3B341; border-left:6px solid #D97706; border-radius:12px; padding:12px 18px; font-size:15.5px; color:#5a4636; margin:18px 0 8px; }
+  .ogrid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:820px; margin:0 auto; }
+  @media (max-width:640px){ .ogrid{grid-template-columns:1fr;} }
+  .ocard { background:#fff; border:1.5px solid #F0DFBB; border-radius:20px; padding:26px 22px 22px; text-align:center; box-shadow:0 8px 22px rgba(160,100,20,.10); display:flex; flex-direction:column; }
+  .ocard.best { border:2px solid #D97706; }
+  .ocard .otag { display:inline-block; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:12.5px; padding:3px 14px; border-radius:999px; margin-bottom:10px; }
+  .ocard h3 { font-size:20px; color:#7B1E1E; font-weight:700; }
+  .ocard .oprice { font-family:'Poppins',sans-serif; font-size:36px; font-weight:800; color:#C0392B; margin:8px 0 2px; }
+  .ocard p { font-size:14.5px; color:#55433A; flex:1; margin:4px 0 16px; }
+  .btn { display:inline-block; background:linear-gradient(90deg,#B3540A,#D97706); color:#fff; text-decoration:none; font-weight:700; font-size:15.5px; padding:11px 26px; border-radius:999px; box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .btn:hover { filter:brightness(1.08); }
+
+  .doubts p { margin:7px 0; font-size:15.5px; }
+
+  /* footer */
+  .footer { margin-top:42px; text-align:center; background:#FFF3D6; border:1px solid #EFD9A7; border-radius:16px; padding:20px 14px; font-size:14.5px; color:#5C4632; }
+  .footer a { color:#B3540A; font-weight:700; text-decoration:none; }
+  .footer .line { font-weight:700; color:#7B1E1E; }
+</style>
+</head>
+<body class="lang-hi">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Sanjivani Jyotish<small>SANJIVANI JYOTISH SANSTHAN</small></div>
+    <button class="lang-toggle" onclick="toggleLanguage()">English / हिंदी</button>
+  </div>
+
+  <div class="hero">
+    <div class="hero-grid">
+      <div class="hero-photo"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi7JzOwOlSeczfdjdlh4cn9ytpXXsCy-fLeptoXD3mDgQR94iBfXZWrLTKnELlKX3Aj1eHeavL57FCSK-H9bgru054fgqXhMPC7E43PEpGMCiWBfCmnAA0q4mH_0FcUo_136Y-69-FIVltbhYjxgUpHx6LCtQrIuMX2WoBDGaRYZEqh17U5fnIo03LmG5s/s783/kalash-muhurat-3d.png" alt="Shubh Muhurat"></div>
+      <div class="hero-text">
+        <h1><span class="hi"><span class="grad">स्पेशल शुभ मुहूर्त</span> एनालिसिस</span><span class="en"><span class="grad">Special Shubh Muhurat</span> Analysis</span></h1>
+        <p class="lead hi">सही काम, सही समय पर - तुम्हारे बड़े काम के लिए सबसे Strong मुहूर्त कौन सा है?</p>
+        <p class="lead en">The right work at the right time - which is the Strongest Muhurat for your important task?</p>
+        <p class="sub hi">चुकीची वेळ म्हणजे मेहनत वाया - गलत समय पर शुरू हुआ काम अड़चनों में फँसता है। यह Analysis तुम्हारी कुंडली के चंद्र-बल, तारा-बल और त्रिबल के आधार पर अगले 12 महीनों की सबसे शुभ तारीखें और एकदम सटीक समय देता है - ताकि तुम्हारा Planning Action में बदले और काम सफल हो। एक Order में 2 कार्य तक के मुहूर्त।</p>
+        <p class="sub en">The wrong time means wasted effort - work begun at the wrong time gets stuck in obstacles. This Analysis gives you the most auspicious dates and the exact time of the next 12 months, based on the Chandra-Bala, Tara-Bala and Tribala of your Kundali - so that your Planning turns into Action and the work succeeds. Muhurat for up to 2 tasks in one Order.</p>
+        <div class="chips">
+          <div class="chip"><span class="hi">100% Manual एनालिसिस</span><span class="en">100% Manual Analysis</span></div>
+          <div class="chip"><span class="hi">Micro-Level जांच</span><span class="en">Micro-Level Analysis</span></div>
+          <div class="chip"><span class="hi">PDF + Audio Note विकल्प</span><span class="en">PDF + Audio Note Option</span></div>
+          <div class="chip"><span class="hi">Doubts Clearance बिल्कुल Free</span><span class="en">Doubts Clearance Absolutely Free</span></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">इस Analysis में शामिल सभी 6 भाग</span><span class="en">All 6 Parts Included in This Analysis</span></h2>
+  <p class="sec-sub hi">अगले 12 महीनों का संपूर्ण मुहूर्त Analysis - भाग-दर-भाग (एक Order में 2 कार्य तक)</p>
+  <p class="sec-sub en">A complete Muhurat Analysis of the next 12 months - part by part (up to 2 tasks in one Order)</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🌟</div><h2><span class="hi">भाग 1: जातक और कार्य का आधार</span><span class="en">Part 1: The Basis of the Native and the Task</span></h2></div>
+    <div class="chk hi"><span>➤ <b>जन्म राशि और जन्म नक्षत्र:</b> तुम्हारी जन्म राशि और जन्म नक्षत्र कौन से हैं? मुहूर्त देखने में इन दोनों की भूमिका क्या है?</span><span>➤ <b>कार्य के कारक ग्रह:</b> चुने हुए कार्य के कारक ग्रह कौन से हैं और तुम्हारी कुंडली में उनकी स्थिति व बल कैसा है?</span><span>➤ <b>दशा का साथ:</b> अगले 12 महीनों में चल रही विंशोत्तरी महादशा-अंतर्दशा इस कार्य के लिए कितनी अनुकूल है?</span></div>
+    <div class="chk en"><span>➤ <b>Janma Rashi and Janma Nakshatra:</b> What are your birth sign and birth star? What is the role of both in seeing a Muhurat?</span><span>➤ <b>Karaka Planets of the Task:</b> Which are the significator planets of the chosen task, and what is their position and strength in your Kundali?</span><span>➤ <b>Support of the Dasha:</b> How favourable is the Vimshottari Mahadasha-Antardasha running in the next 12 months for this task?</span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">📅</div><h2><span class="hi">भाग 2: शुभ तारीखों की सूची</span><span class="en">Part 2: The List of Auspicious Dates</span></h2></div>
+    <div class="chk hi"><span>➤ <b>सभी उपयुक्त तारीखों की तालिका:</b> अगले 12 महीनों की हर उपयुक्त तारीख - तारीख, वार, तिथि, नक्षत्र, योग, करण, चंद्र-बल, तारा-बल और त्रिबल Score के साथ।</span><span>➤ <b>Top Recommendation:</b> सबसे अच्छी 2-3 तारीखें अलग से चिह्नित - हर एक के साथ कारण, कि वही तारीख सबसे Strong क्यों है।</span><span>➤ <b>दोनों कार्यों के लिए अलग-अलग:</b> 2 कार्य हों तो हर कार्य की तालिका और Top Recommendation अलग-अलग। मैरिज/सगाई में दोनों जातकों (वर-वधू) के बल अलग-अलग।</span></div>
+    <div class="chk en"><span>➤ <b>Table of All Suitable Dates:</b> Every suitable date of the next 12 months - with date, weekday, Tithi, Nakshatra, Yoga, Karana, Chandra-Bala, Tara-Bala and Tribala Score.</span><span>➤ <b>Top Recommendation:</b> The best 2-3 dates marked separately - with the reason for each, why that date is the Strongest.</span><span>➤ <b>Separate for Both Tasks:</b> If there are 2 tasks, a separate table and Top Recommendation for each task. For Marriage/Engagement, the strength of both natives (groom-bride) separately.</span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔭</div><h2><span class="hi">भाग 3: चुनी तारीख का गहरा Analysis</span><span class="en">Part 3: Deep Analysis of the Chosen Date</span></h2></div>
+    <div class="chk hi"><span>➤ <b>चंद्र-बल:</b> उस दिन गोचर चंद्र जन्म राशि से किस भाव में है और यह इस कार्य के लिए कितना शुभ है?</span><span>➤ <b>तारा-बल:</b> गोचर नक्षत्र जन्म नक्षत्र से कौन सी तारा बनाती है (संपत, क्षेम, साधन, मित्र) और उसका फल क्या है?</span><span>➤ <b>त्रिबल (सूर्य-बल और गुरु-बल):</b> दोनों के Score और स्तर क्या हैं और इस कार्य के लिए इनका अर्थ क्या है?</span><span>➤ <b>उस दिन के दोष:</b> भद्रा, राहु काल, चंद्राष्टम जैसी कोई बाधा है या नहीं? है तो किस समय तक है और उससे कैसे बचना है।</span><span>➤ <b>समग्र:</b> यह तारीख इस कार्य के लिए कितनी Strong है - Percentage में Conclusion।</span></div>
+    <div class="chk en"><span>➤ <b>Chandra-Bala:</b> In which house from the Janma Rashi is the transit Moon on that day, and how auspicious is it for this task?</span><span>➤ <b>Tara-Bala:</b> Which Tara does the transit Nakshatra form from the Janma Nakshatra (Sampat, Kshema, Sadhana, Mitra), and what is its result?</span><span>➤ <b>Tribala (Surya-Bala and Guru-Bala):</b> What are the Scores and Levels of both, and what do they mean for this task?</span><span>➤ <b>Doshas of That Day:</b> Is there any obstruction like Bhadra, Rahu Kaal or Chandrashtama? If yes, till what time is it, and how to avoid it.</span><span>➤ <b>Overall:</b> How Strong is this date for this task - Conclusion in Percentage.</span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🕒</div><h2><span class="hi">भाग 4: एकदम सटीक समय (Exact Muhurat Window)</span><span class="en">Part 4: The Exact Time (Exact Muhurat Window)</span></h2></div>
+    <div class="chk hi"><span>➤ <b>सबसे शुभ समयखंड:</b> चुनी तारीख का सबसे अच्छा शुभ लग्न समय - समय (शुरू-समाप्ति) और लग्न राशि के साथ।</span><span>➤ <b>लग्न शुद्धि:</b> यह लग्न जन्म राशि/लग्न से कितना अनुकूल है और अष्टम शुद्धि की स्थिति क्या है?</span><span>➤ <b>Alternate समयखंड:</b> दूसरा समयखंड भी - पहला समय निकल जाए तो दूसरा काम आए।</span><span>➤ <b>राहु काल चेतावनी:</b> उस दिन का राहु काल Clear दिया है - उस समय कार्य की शुरुआत बिल्कुल नहीं करनी है।</span></div>
+    <div class="chk en"><span>➤ <b>The Most Auspicious Window:</b> The best Shubh Lagna time of the chosen date - with time (start-end) and the Lagna sign.</span><span>➤ <b>Lagna Purity:</b> How favourable is this Lagna from the Janma Rashi/Lagna, and what is the Ashtam Shuddhi status?</span><span>➤ <b>Alternate Window:</b> A second time window as well - if the first time passes, the second can be used.</span><span>➤ <b>Rahu Kaal Warning:</b> That day's Rahu Kaal stated clearly - the task must not be started at that time at all.</span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">⚠️</div><h2><span class="hi">भाग 5: टालने योग्य तारीखें</span><span class="en">Part 5: Dates to Avoid</span></h2></div>
+    <div class="chk hi"><span>➤ <b>भ्रमित करने वाली तारीखें:</b> वे तारीखें जो दिखने में ठीक लगती हैं, पर चंद्र-बल अशुभ, तारा-बल अशुभ (विपत, प्रत्यरि, वध तारा), चंद्राष्टम या बहुत कम त्रिबल Score के कारण इस कार्य के लिए टालनी चाहिए।</span><span>➤ <b>हर तारीख का कारण:</b> हर तारीख के सामने एक पंक्ति में - वह क्यों टालनी है। ताकि किसी और से मिली या पंचांग में देखी तारीख से भ्रम न हो।</span></div>
+    <div class="chk en"><span>➤ <b>Confusing Dates:</b> Dates that look fine on the surface, but should be avoided for this task due to inauspicious Chandra-Bala, inauspicious Tara-Bala (Vipat, Pratyari, Vadha Tara), Chandrashtama or a very low Tribala Score.</span><span>➤ <b>Reason for Every Date:</b> One line against each date - why it is to be avoided. So that there is no confusion from a date received from someone else or seen in a Panchang.</span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🏆</div><h2><span class="hi">भाग 6: Conclusion और ध्यान रहे</span><span class="en">Part 6: Conclusion and Points to Note</span></h2></div>
+    <div class="chk hi"><span>➤ <b>Final Conclusion:</b> सबसे अच्छी तारीख और समय का अंतिम चुनाव एक ही जगह Clear - बिना किसी दुविधा के वही चुनना है।</span><span>➤ <b>कार्य के दिन के Dos-Don'ts:</b> उस दिन क्या करें और क्या न करें - 3-4 सरल बिंदु।</span><span>➤ <b>सटीक उपाय (Remedies):</b> चुनी तारीख और वर्तमान दशा देखते हुए 2-3 बहुत आसान, सात्विक उपाय - जिन्हें आज की Generation आसानी से Follow कर सके।</span></div>
+    <div class="chk en"><span>➤ <b>Final Conclusion:</b> The final choice of the best date and time at one place, Clear - that itself is to be chosen, without any confusion.</span><span>➤ <b>Dos-Don'ts for the Day of the Task:</b> What to do and what not to do that day - 3-4 simple points.</span><span>➤ <b>Accurate Remedies:</b> Seeing the chosen date and the current Dasha, 2-3 very easy, sattvic remedies - that today's generation can easily follow.</span></div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">हमारा एनालिसिस इतना गहरा क्यों है?</span><span class="en">Why Is Our Analysis So Deep?</span></h2>
+  <p class="sec-sub hi">मुहूर्त Analysis के असली Checking Points - जिनसे हर तारीख का गहराई से Analysis होता है</p>
+  <p class="sec-sub en">The real checking points of Muhurat Analysis - through which every date is analysed in depth</p>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🪔</div><h2><span class="hi">मुहूर्त Analysis</span><span class="en">Muhurat Analysis</span></h2><span class="cnt hi">8 Points</span><span class="cnt en">8 Points</span></div>
+    <div class="ptags"><span class="ptag"><span class="n">1</span><span class="hi">कार्य के कारक ग्रह और दशा का साथ</span><span class="en">Karaka Planets of the Task and Dasha Support</span></span><span class="ptag"><span class="n">2</span><span class="hi">पंचांग शुद्धि - तिथि, वार, नक्षत्र, योग, करण</span><span class="en">Panchang Purity - Tithi, Weekday, Nakshatra, Yoga, Karana</span></span><span class="ptag"><span class="n">3</span><span class="hi">चंद्र-बल - जन्म राशि से भाव</span><span class="en">Chandra-Bala - House from Janma Rashi</span></span><span class="ptag"><span class="n">4</span><span class="hi">तारा-बल - संपत, क्षेम, साधन, मित्र तारा</span><span class="en">Tara-Bala - Sampat, Kshema, Sadhana, Mitra Tara</span></span><span class="ptag"><span class="n">5</span><span class="hi">त्रिबल - सूर्य-बल और गुरु-बल Score</span><span class="en">Tribala - Surya-Bala and Guru-Bala Score</span></span><span class="ptag"><span class="n">6</span><span class="hi">दोष परिहार - भद्रा, राहु काल, चंद्राष्टम</span><span class="en">Dosha Check - Bhadra, Rahu Kaal, Chandrashtama</span></span><span class="ptag"><span class="n">7</span><span class="hi">लग्न शुद्धि और अष्टम शुद्धि</span><span class="en">Lagna Shuddhi and Ashtam Shuddhi</span></span><span class="ptag"><span class="n">8</span><span class="hi">सटीक समय Window और Alternate समय</span><span class="en">Exact Time Window and Alternate Time</span></span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔍</div><h2><span class="hi">ध्यान रहे : 100% Manual In-depth Analysis</span><span class="en">Please Note : 100% Manual In-depth Analysis</span></h2></div>
+    <p class="hi">इस Analysis में ग्रहों की Strength का <b>Highly Micro-Level</b> चेक किया जाता है। इसीलिए इसमें दिया हुआ Analysis पूरी तरीके से हमारी Deep Research और मेहनत का नतीजा है, जिससे Analysis Delivery में 1 से 2 दिन का समय लग सकता है। कृपया इसका ध्यान रखें।</p>
+    <p class="en">This Analysis involves a <b>Highly Micro-Level</b> examination of planetary Strength. Therefore, the detailed insights provided in this Analysis are purely the result of our Deep Research and hard work, due to which the Analysis Delivery may take 1 to 2 days. Please keep this in mind.</p>
+    <p class="taglabel hi">* Micro-Level Analysis में शामिल :</p><p class="taglabel en">* Micro-Level Analysis includes :</p>
+    <div class="sysbadges"><span class="hi">अस्त</span><span class="en">Combust (Ast)</span><span class="hi">वक्री</span><span class="en">Retrograde (Vakri)</span><span class="hi">वर्गोत्तम</span><span class="en">Vargottam</span><span class="hi">शत्रु/मित्र/सम राशि</span><span class="en">Enemy/Friend/Neutral signs</span><span class="hi">उच्च/नीच/नीचभंग</span><span class="en">Exalted/Debilitated/Neechbhang</span><span class="hi">षड्बल</span><span class="en">Shadbala</span><span class="hi">भावबल</span><span class="en">Bhavabala</span><span class="hi">अष्टकवर्ग</span><span class="en">Ashtakvarga</span><span class="hi">भिन्नाष्टकवर्ग</span><span class="en">Bhinnashtakvarga</span><span class="hi">षोडशवर्ग</span><span class="en">Shodashvarga</span><span class="hi">विंशोपक</span><span class="en">Vimsopaka</span><span class="hi">चलित</span><span class="en">Chalit</span><span class="hi">नवांश</span><span class="en">Navamsha</span><span class="hi">स्वांश-कारकांश</span><span class="en">Svamsha-Karakamsha</span><span class="hi">आरूढ़ पद</span><span class="en">Arudha Pada</span><span class="hi">चर कारक</span><span class="en">Chara Karaka</span><span class="hi">पुष्कर भाग</span><span class="en">Pushkar Bhaga</span><span class="hi">मृत्यु भाग</span><span class="en">Mrityu Bhaga</span><span class="hi">नवतारा चक्र</span><span class="en">Navatara Chakra</span><span class="hi">योग-दोष</span><span class="en">Yoga-Dosha</span><span class="hi">अर्गला</span><span class="en">Argala</span><span class="hi">उपग्रह</span><span class="en">Upagraha</span><span class="hi">स्पेशल लग्न</span><span class="en">Special Lagna</span></div>
+    <p class="taglabel hi" style="margin-top:14px;">दशा पद्धतियाँ :</p><p class="taglabel en" style="margin-top:14px;">Dasha systems :</p>
+    <div class="sysbadges"><span class="hi">विंशोत्तरी दशा</span><span class="en">Vimshottari Dasha</span><span class="hi">योगिनी दशा</span><span class="en">Yogini Dasha</span><span class="hi">त्रिभागी दशा</span><span class="en">Tribhagi Dasha</span><span class="hi">अष्टोत्तरी दशा</span><span class="en">Ashtottari Dasha</span><span class="hi">KP दशा</span><span class="en">KP Dasha</span><span class="hi">चर दशा</span><span class="en">Chara Dasha</span><span class="hi">डबल ट्रांजिट</span><span class="en">Double Transit</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🎧</div><h2>Mode of Consultation</h2></div>
+    <p class="hi">In-depth और Deep Analysis की PDF (Simple भाषा में समझाई हुई)।</p>
+    <p class="en">In-depth &amp; Deep Analysis PDF (explained in simple language).</p>
+    <div class="sysbadges"><span>📄 PDF</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🌟</div><h2>हमारी विशेषता / Our Specialty</h2></div>
+    <p class="hi">Accurate Prediction के लिए हम 4 Main Astrological Systems से Planets की Strength और State का In-depth Analysis करने के बाद ही किसी Conclusion पर पहुँचते हैं। और एक ऐसी Analysis बनाते हैं जो सिर्फ़ आपके लिए Personally तैयार की जाती है। इसीलिए आप हमारी Accuracy पर पूरी तरीके से भरोसा कर सकते हैं।</p>
+    <p class="en">For Accurate Prediction, we reach a Conclusion only after doing an In-depth Analysis of the Strength and State of Planets through 4 Main Astrological Systems. And we create an Analysis that is Personally prepared only for you. That is why you can completely trust our Accuracy.</p>
+    <div class="sysbadges"><span class="hi">पराशरी</span><span class="en">Parashari</span><span class="hi">जैमिनी</span><span class="en">Jaimini</span><span>KP</span><span>BNN</span></div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">अपना Option चुनें</span><span class="en">Choose Your Option</span></h2>
+  <p class="sec-sub hi">तुम्हारे कार्य का Verified शुभ मुहूर्त - सिर्फ़ ₹151 में (एक Order में 2 कार्य तक)</p>
+  <p class="sec-sub en">A Verified Shubh Muhurat for your task - in just ₹151 (up to 2 tasks in one Order)</p>
+
+  <div class="ogrid" style="grid-template-columns:1fr;max-width:430px;">
+    <div class="ocard best">
+      <div><span class="otag hi">🪔 शुभ मुहूर्त</span><span class="otag en">🪔 Shubh Muhurat</span></div>
+      <h3><span class="hi">स्पेशल शुभ मुहूर्त एनालिसिस</span><span class="en">Special Shubh Muhurat Analysis</span></h3>
+      <div class="oprice">₹151</div>
+      <p class="hi">अगले 12 महीनों की शुभ तारीखों की सूची, Top तारीखों का गहरा Analysis, एकदम सटीक समय, टालने योग्य तारीखें - Final Conclusion सहित। 2 कार्य तक शामिल।</p>
+      <p class="en">A list of auspicious dates of the next 12 months, deep analysis of the top dates, the exact time, dates to avoid - with the Final Conclusion. Up to 2 tasks included.</p>
+      <a class="btn hi" target="_blank" href="https://pages.razorpay.com/Shubh-Muhurat-Analysis">अभी ऑर्डर करें →</a>
+      <a class="btn en" target="_blank" href="https://pages.razorpay.com/Shubh-Muhurat-Analysis-Eng">Order Now →</a>
+    </div>
+  </div>
+
+  <div class="block doubts">
+    <div class="bhead"><div class="bicon">💬</div><h2><span class="hi">एनालिसिस के बाद के सवाल (Doubts)</span><span class="en">Post-Analysis Queries (Doubts)</span></h2></div>
+    <p class="hi">➤ <b>डाउट्स क्लीयरेंस:</b> PDF में जवाब पढ़कर अगर मन में कोई डाउट रहा तो इसकी चिंता न करें। PDF में पहले से सभी डाउट्स का समाधान किया जाता है।</p>
+    <p class="hi">➤ <b>हमारा कमिटमेंट:</b> अगर फिर भी कोई डाउट हो तो दोबारा PDF भेजकर आपके सभी Doubts क्लियर किए जाते हैं। हम अपने क्लाइंट्स का साथ कभी नहीं छोड़ते जब तक उनके सभी डाउट्स क्लियर नहीं हो जाते।</p>
+    <p class="hi">➤ <b>कोई अतिरिक्त शुल्क नहीं:</b> आपको दोबारा डाउट्स क्लीयर करने के लिए कोई Extra चार्ज नहीं देना होता है। यह सर्विस एनालिसिस के Price में ही Included है।</p>
+    <p class="en">➤ <b>Doubts Clearance:</b> If you have any doubts in your mind after reading the answers in the PDF, don't worry. All potential doubts are already addressed in the PDF itself.</p>
+    <p class="en">➤ <b>Our Commitment:</b> If you still have any doubts, they will be resolved by sending you an updated PDF. We never leave our clients' side until all their doubts are fully cleared.</p>
+    <p class="en">➤ <b>No Extra Charges:</b> You do not have to pay any extra charges for getting your doubts cleared again. This service is already included in the analysis price.</p>
+  </div>
+
+  <div class="footer">
+    <div class="line">◆ Sanjivani Jyotish Sansthan ◆</div>
+    <div style="margin-top:8px;">
+      📧 <a href="mailto:komalastro14@gmail.com">komalastro14@gmail.com</a> &nbsp;|&nbsp;
+      Insta : <a target="_blank" href="https://instagram.com/astro.komal">astro.komal</a> • <a target="_blank" href="https://instagram.com/astro.sanjivani">astro.sanjivani</a> &nbsp;|&nbsp;
+      Telegram : <a target="_blank" href="https://t.me/Sanjivani_Jyotish">Sanjivani_Jyotish</a> &nbsp;|&nbsp;
+      WhatsApp : <a target="_blank" href="https://wa.me/919552636556">9552636556</a>
+    </div>
+    <div style="margin-top:6px; font-size:13px;">© Sanjivani Jyotish Sansthan | Astro Komal</div>
+  </div>
+
+</div>
+<script>
+  function toggleLanguage() {
+    document.body.classList.toggle('lang-en');
+    document.body.classList.toggle('lang-hi');
+  }
+</script>
+</body>
+</html>
