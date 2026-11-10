@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Prompts Copier</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border-left: 5px solid #007bff;
+        }
+        .card-content {
+            white-space: pre-wrap;
+            font-size: 14px;
+            color: #555;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+        .card-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #007bff;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn {
+            align-self: flex-end;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Shishu Kundali Prompts v1.0</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
+    <div class="container" id="prompt-container">
+        <!-- Prompts will be loaded here -->
+    </div>
+
+    <div id="snackbar" class="toast">Text Copied to Clipboard!</div>
+
+    <script>
+        // यहाँ आपका पूरा डेटा है
+        const rawData_hi = `यह PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का विश्लेषण हो सके, विश्लेषण करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+
+1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तालिका
+3] गुरु का भिन्नाष्टकवर्ग (BAV) तालिका।
+4] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+5] भाव बल तालिका 
+6] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग और दश वर्ग)
+7] विशोंतरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] D1 के 12 भाव के राशी-नक्षत्र (Bhava Cusp)
+10] D9 ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+
+कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
+
+---
+
+Next Task :
+
+उपरोक्त चैट और  PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
+
+लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
+
+"पहला भाव (लग्न):
+इस भाव में सिंह राशि है, इसलिए लग्नेश सूर्य हैं।
+इस भाव में सूर्य और राहु ग्रह स्थित हैं।
+सूर्य: सिंह राशि में स्वगृही (अपने ही घर में) हैं। सूर्य मघा नक्षत्र में स्थित हैं। सूर्य प्रथम भाव (सिंह) के स्वामी होकर लग्न में बैठे हैं। सूर्य की दृष्टि सातवें भाव (कुम्भ) पर है।
+राहु: सिंह राशि में (राहु के लिए शत्रु राशि मानी जाती है)। राहु मघा नक्षत्र में स्थित है। राहु की दृष्टि पांचवें भाव (धनु), सातवें भाव (कुम्भ) और नौवें भाव (मेष) पर है।
+इस भाव पर केतु (सातवें भाव से) की पूर्ण दृष्टि है।"
+
+
+आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
+
+----------
+
+कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), और जैमिनी कारकत्व के आधार पर होना चाहिए।
+
+प्रत्येक ग्रह के लिए निम्नलिखित जानकारी प्रदान करें:
+1. [ग्रह का नाम]
+➤ भाव स्वामित्व: (किन भावों का स्वामी है)
+➤ स्थिति: (किस भाव और राशि में)
+➤ राशि में स्थिति: (मित्र, शत्रु, सम, उच्च, नीच, मूलत्रिकोण, स्वराशि)
+➤ नक्षत्र एवं पद: (वह ग्रह किस नक्षत्र और किस पद में है, और नक्षत्र स्वामी का प्रभाव।)
+➤ दृष्टि: (किन भावों/ग्रहों पर दृष्टि) 
+➤ [ग्रह का नाम] पर दृष्टि: (किन ग्रहों की दृष्टि है)
+➤ युति: (किन ग्रहों के साथ युति में है)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री और अवस्था का नाम जैसे बाल, कुमार आदि)
+➤ भावनात्मक/अवस्था शक्ति: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिति: (हाँ/नहीं या स्थिति का नाम)
+➤ नवमांश स्थिति:  (नवमांश कुंडली में ग्रह किस राशि, नक्षत्र (स्वामी) में है और उसका प्रभाव।)
+➤ नवमांश में शक्ति: पीड़ित/बलवान
+➤ भावबल: (केवल मान)
+➤ षड्बल (रूप में):  (रूप में मान और उसका बल कैसा है - औसत से बेहतर, रैंक आदि।)
+➤ विमशोपक आषांश (षोडश वर्ग): (मान और ग्रहों में उसका रैंक, यदि लागू हो।)
+➤ गोचर और दशा में संभावित फल का संक्षिप्त जवाब : (सामान्य तौर पर वह ग्रह अपनी दशा/अंतर्दशा और गोचर में कैसा फल देगा - अच्छा, खराब, या मध्यम।
+➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
+
+➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
+
+----------
+
+कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर D1 के सभी 12 भावों का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल) आधार पर होना चाहिए।
+
+
+प्रत्येक भाव के लिए निम्नलिखित जानकारी प्रदान करें:
+
+1. पहला भाव (लग्न):  राशि का नाम
+➤ कारकत्व: 
+➤ भाव बल: रैंक  (कुंडली में कमजोर अथवा मजबूत भाव)।
+➤ भाव स्वामी (लग्नेश):
+➤ भावेश की स्थिति: 
+➤ स्थित ग्रह: 
+➤ भाव पर दृष्टि: 
+➤ निष्कर्ष : समग्र रूप से भाव मजबूत है या पीड़ित है ? (प्रतिशत)
+
+➤ अंत मे सभी भाव के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
+
+नोट : जिस भाव में गुलिक या मांदि स्थित हो, उस भाव के फल में उनका प्रभाव भी एक-दो पंक्तियों में अवश्य बतायें।
+
+----------
+
+कृपया संलग्न (Attached) सभी टेक्स्ट फाइलों में दिए गए ज्योतिषीय डेटा (सभी दशा Systems और Master Timeline) को अपनी मेमोरी में सुरक्षित कर लें।
+
+निर्देश:
+
+1] इस डेटा को अभी चैट में दोबारा लिखने की आवश्यकता नहीं है।
+2] बस डेटा का विश्लेषण करें और पुष्टि करें कि आपने इसे पढ़ लिया है।
+3] पुष्टि (Verification) के लिए: केवल वर्तमान स्थिति नीचे दिए गए फॉर्मेट में लिखकर दें:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD):
+त्रिभागी (MD-AD):
+अष्टोत्तरी (MD-AD):
+चर (MD-AD):
+
+मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
+
+----------
+
+कृपया संलग्न (Attached) टेक्स्ट फाइल में दिए गए अवकहड़ा चक्र के डेटा को अपनी मेमोरी में सुरक्षित कर लें।
+
+निर्देश:
+
+1] इस डेटा को अभी चैट में दोबारा लिखने की आवश्यकता नहीं है।
+2] बस डेटा का विश्लेषण करें और पुष्टि करें कि आपने इसे पढ़ लिया है।
+3] पुष्टि (Verification) के लिए: केवल वर्तमान स्थिति नीचे दिए गए फॉर्मेट में लिखकर दें:
+
+लग्न:
+चंद्र राशि:
+जन्म नक्षत्र और पद:
+पाया:
+वर्ण:
+योनि:
+गण:
+वश्य:
+नाड़ी:
+नामाक्षर:
+दशा भोग्य:
+
+मैं इसके बाद सीधे विश्लेषण से जुड़े विशिष्ट प्रश्न पूछूंगा, तब आपको इस पूरे डेटा का उपयोग करना है।
+
+----------
+
+जन्म-दोषों की जांच के लिए निम्मलिखित मान कुंडली PDF और दिए गए डेटा से निकालकर सूची के रूप में दीजिये - कोई विश्लेषण या निष्कर्ष न दें, सिर्फ मान दें:
+
+1] चंद्र किस भाव में है और चंद्र पर किन पाप ग्रहों (मंगल, शनि, राहु, केतु, सूर्य) की युति या दृष्टि है?
+2] जन्म नक्षत्र कौन सा है - क्या वह गंडमूल नक्षत्रों (अश्विनी, मघा, मूल, अश्लेषा, ज्येष्ठा, रेवती) में से है?
+3] लग्न का अंश कितना है (लग्न संधि की जांच के लिए)?
+4] जन्म तिथि, करण और योग कौन से हैं (अमावस्या, भद्रा करण, तिथि गंडांत की जांच के लिए)?
+5] जन्म के समय सूर्य-चंद्र की स्थिति - क्या जन्म ग्रहण काल या संक्रांति काल के आसपास का है?
+6] चंद्र की स्थिति से बालारिष्ट की शर्तें (दुष्ट भाव में चंद्र, पाप युति/दृष्टि, भंग की शर्तें - शुभ ग्रहों की दृष्टि/केंद्र स्थिति) पूरी होती हैं या नहीं - मानों सहित लिखें।
+
+----------
+
+उपरोक्त अबतक आपको कुंडली विश्लेषण के लिए दी गयी कौन कौनसी जानकारी प्राप्त हुयी, उसकी short में सूचि दीजिये.
+
+----------
+
+यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
+
+1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
+2] किसी भी तरह की शुगर-कोटिंग (Sugar-coating) न करें। अगर किसी तारीख में कोई दोष, कमजोरी या नकारात्मक बात है, तो उसे स्पष्ट रूप से बतायें - कोई तारीख जबरदस्ती शुभ न बतायें।
+3] अपने उत्तर की शुरुआत किसी भी अभिवादन या संवादात्मक वाक्यांश (जैसे 'निश्चित रूप से', 'ज़रूर', 'निम्मलिखित है') से न करें, सीधे विश्लेषण से शुरू करें।
+4] System instructions में दिए गए आदेशों का भी पालन करे.
+
+क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
+
+----------
+
+अब हम शिशु की कुंडली का विश्लेषण निकालेंगे, उसके पहले ध्यान रखने योग्य बातें :
+
+1] यह Analysis जन्मे हुए शिशु (बच्चे) की अपनी कुंडली का है - संबोधन माता-पिता से करना है और बच्चे का उल्लेख हमेशा तृतीय पुरुष में करना है (जैसे 'आपका बच्चा', 'उसका स्वभाव')। बच्चे से सीधे संबोधन बिल्कुल न करें।
+2] विश्लेषण करते समय बच्चे की वर्तमान आयु का ध्यान रखें - अभी 2026 चल रहा है। दोषों की सावधानी-अवधि और संस्कारों का समय बच्चे की आयु के हिसाब से ही बताना है।
+3] सभी मान, तारीखें और अवधियाँ सिर्फ दिए गए डेटा (कुंडली PDF, अवकहड़ा डेटा, दशा TXT) से ही लेनी हैं - अपने मन से कोई मान या तारीख न बनाएँ और न बदलें।
+4] दोषों के बारे में डराने वाली भाषा बिल्कुल न लिखें - जो दोष है उसे स्पष्ट बताएँ, पर साथ में उसका भंग (रद्दीकरण) है या नहीं और उपाय अवश्य दें, ताकि माता-पिता घबराएँ नहीं, समझदारी से कदम उठाएँ।
+5] शिक्षा और करियर के बारे में यहाँ सिर्फ रुचि की दिशा बतानी है - पक्की भविष्यवाणी (जैसे 'बच्चा डॉक्टर ही बनेगा') बिल्कुल न करें।
+6] स्वास्थ्य के बारे में सिर्फ ज्योतिषीय प्रवृत्ति और सावधानी के क्षेत्र बताने हैं - कोई medical सलाह या बीमारी का पक्का दावा न करें।
+
+----------
+
+जातक (शिशु) की कुंडली के आधार पर निम्मलिखित पॉइंट्स का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओं का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए। संबोधन माता-पिता से रखें।
+
+भाग 1: शिशु का आधार - अवकहड़ा, नामाक्षर और शुभ बिंदु
+➤ जन्म परिचय: बच्चे का लग्न, चंद्र राशि और जन्म नक्षत्र-पद क्या है? इन तीनों से बच्चे के जीवन की बुनियादी दिशा क्या बनती है?
+➤ अवकहड़ा चक्र: बच्चे का पाया (सोना, चांदी, तांबा या लोहा) कौन सा है और परिवार के लिए उसका अर्थ क्या है? वर्ण, योनि, गण, वश्य और नाड़ी क्या हैं - हर एक का बच्चे के स्वभाव और जीवन पर क्या संकेत है?
+➤ नामाक्षर: जन्म नक्षत्र और उसके पद के अनुसार बच्चे के नाम का सही प्रथम अक्षर कौन सा है? यदि बच्चे का नाम पहले से रखा जा चुका हो तो बताएँ कि वह नामाक्षर से मेल खाता है या नहीं, और नाम के 2-3 उपयुक्त सुझाव भी दें (अर्थ सहित)।
+➤ शुभ बिंदु: बच्चे के लिए शुभ अंक, शुभ दिन, शुभ रंग और शुभ दिशा कौन सी हैं?
+
+----------
+
+भाग 2: जन्म-दोष जांच और उपाय
+(हर दोष की जांच अलग-अलग करें - पहले स्पष्ट लिखें कि वह दोष है या नहीं, फिर जिस मान के आधार पर निष्कर्ष निकाला है वह मान लिखें, फिर प्रभाव और उपाय दें)
+➤ गंडमूल नक्षत्र: क्या बच्चे का जन्म गंडमूल नक्षत्र में हुआ है? है तो कौन से नक्षत्र-पद में, उसका प्रभाव किस पर पड़ता है (बच्चे पर, माता-पिता पर या परिवार पर) और उसकी शांति कब और कैसे करानी चाहिए?
+➤ बालारिष्ट: क्या कुंडली में बालारिष्ट है? है तो कितना Strong है, उसकी अवधि किस आयु तक है, और उसका भंग (रद्दीकरण) है या नहीं - भंग की शर्तों सहित स्पष्ट करें।
+➤ लग्न संधि और गंडांत: लग्न संधि, लग्न गंडांत या तिथि गंडांत में से कोई स्थिति है या नहीं?
+➤ विशेष जन्म-परिस्थितियाँ: अमावस्या, भद्रा करण, ग्रहण काल, संक्रांति काल, माता-पिता या भाई के जन्म नक्षत्र में जन्म - इनमें से कोई परिस्थिति लागू होती है या नहीं? लागू हो तो उसका उपाय क्या है?
+➤ नज़र दोष: बच्चे को नज़र लगने की प्रवृत्ति कितनी है और उससे बचाव के सरल उपाय क्या हैं?
+➤ माता-पिता के लिए सावधानी: किस आयु तक बच्चे के स्वास्थ्य का विशेष ध्यान रखना है और किन बातों का ध्यान रखना है? (डराने वाली भाषा बिल्कुल न लिखें - हर बात उपाय के साथ दें।)
+
+----------
+
+भाग 3: संस्कार और उनके मुहूर्त
+(हर संस्कार के लिए - परंपरागत आयु/अवधि, बच्चे की कुंडली के हिसाब से सबसे शुभ अवधि और संक्षिप्त विधि-टिप्पणी दें। तारीखें सिर्फ दिए गए मुहूर्त डेटा से ही लें, अपने मन से कोई तारीख न बनाएँ।)
+➤ नामकरण संस्कार: यदि नामकरण बाकी हो तो उसके लिए शुभ अवधि और ध्यान रखने योग्य बातें।
+➤ अन्नप्राशन: बच्चे की आयु के हिसाब से अन्नप्राशन का सबसे शुभ समय कब पड़ेगा?
+➤ मुंडन (चूड़ाकर्म): मुंडन किस वर्ष में कराना सबसे शुभ रहेगा और किस समय टालना चाहिए?
+➤ विद्यारंभ: बच्चे की पढ़ाई शुरू करने (अक्षर-लेखन) का सबसे उपयुक्त समय और आयु कौन सी है?
+➤ उपनयन (जनेऊ): यदि बच्चे पर लागू होता हो तो उपनयन की उपयुक्त आयु और अवधि क्या है? लागू न हो तो सिर्फ इतना लिखें कि यह संस्कार इस बच्चे पर लागू नहीं होता।
+➤ जिन संस्कारों का समय निकल चुका हो, उनके बारे में सिर्फ एक पंक्ति में उल्लेख करें।
+
+----------
+
+भाग 4: स्वभाव, स्वास्थ्य और शिक्षा की दिशा
+➤ स्वभाव और व्यक्तित्व: लग्न, चंद्र राशि और जन्म नक्षत्र के आधार पर बच्चे का स्वभाव कैसा होगा - उसकी मज़बूत बातें (तेज़ बुद्धि, भावुकता, ज़िद, रचनात्मकता आदि जो भी लागू हो) और जिन बातों पर माता-पिता को शुरू से ध्यान देना चाहिए, वे बातें स्पष्ट लिखें।
+➤ मन और भावनाएँ: बच्चा भावनात्मक रूप से कैसा रहेगा - माता-पिता से जुड़ाव, संवेदनशीलता और उसके मन को समझने की कुंजी क्या है?
+➤ स्वास्थ्य: स्वास्थ्य की ज्योतिषीय प्रवृत्ति कैसी है - किन क्षेत्रों (पाचन, श्वास, त्वचा, आँखें आदि जो भी लागू हो) में सावधानी रखनी है और किस आयु तक विशेष ध्यान रखना है? (कोई medical सलाह न दें, सिर्फ प्रवृत्ति और सावधानी बताएँ।)
+➤ शिक्षा की दिशा: पढ़ाई में बच्चे की रुचि किस ओर रहेगी - भाषा, गणित, विज्ञान, कला, खेल - किस क्षेत्र में उसकी प्राकृतिक मज़बूती है? यह सिर्फ दिशा है, विस्तृत Education Analysis अलग product है - इसका उल्लेख एक पंक्ति में करें।
+➤ परवरिश की व्यावहारिक बातें: उपरोक्त विश्लेषण के आधार पर माता-पिता के लिए 3-4 व्यावहारिक बातें - बच्चे को कैसे प्रोत्साहित करें, किन आदतों को शुरू से बढ़ावा दें और किन बातों से बचें।
+
+----------
+
+भाग 5: योग, भाग्य और बचपन की दशा-रूपरेखा
+➤ प्रमुख योग: बच्चे की कुंडली में कौन से प्रमुख योग और राजयोग हैं? हर योग का नाम, वह किन ग्रहों से बना है और उसका बल Percentage में कितना Strong है - तैयार फल न लिखें, बच्चे की कुंडली के मानों से निष्कर्ष निकालें।
+➤ भाग्य की दिशा: लग्नेश, भाग्येश (नवम भाव के स्वामी) और चंद्र की स्थिति के आधार पर बच्चे के भाग्य की बुनियादी दिशा क्या है - जीवन में उन्नति का आधार मुख्य रूप से किस क्षेत्र से बनेगा?
+➤ बचपन की दशाएँ: जन्म से अब तक कौन सी महादशा-अंतर्दशा चलीं और इस समय कौन सी चल रही है - बच्चे पर उनका असर (स्वास्थ्य, स्वभाव, पढ़ाई की शुरुआत) कैसा रहा और रहेगा?
+➤ आगे की रूपरेखा: आने वाली अगली महादशा कब से शुरू होगी और बचपन-किशोरावस्था के बड़े पड़ावों (पढ़ाई की मज़बूत शुरुआत, रुचि का स्पष्ट होना आदि) का समय किस दशा में पड़ेगा - तारीखों और आयु सहित लिखें।
+
+----------
+
+भाग 6: अंतिम निष्कर्ष (Final Conclusion) और माता-पिता के लिए मार्गदर्शन
+➤ समग्र निष्कर्ष: बच्चे की कुंडली का कुल स्वरूप एक स्पष्ट पैराग्राफ में बताएँ - बच्चे की सबसे बड़ी मज़बूती, सबसे बड़ी सावधानी और जीवन की बुनियादी दिशा।
+➤ माता-पिता के लिए सबसे महत्वपूर्ण 2-3 सलाह अलग से स्पष्ट लिखें - परवरिश, स्वास्थ्य की देखभाल और रुचि को बढ़ावा देने के हिसाब से।
+
+(ध्यान रहे: इस Analysis में माता-पिता के अधिकतम 3 Personal Questions शामिल हैं - वे सवाल अलग से दिए जाएँगे और उनके जवाब इस भाग के बाद उसी क्रम में देने हैं।)
+
+----------
+
+➤ माता-पिता ने अपने बच्चे के बारे में जानकारी दी है और माता-पिता के कुछ प्रश्न हैं, पहले दी गई जानकारी को सूचीबद्ध करें, उसके बाद सभी प्रश्नों को सूचीबद्ध करें :
+
+----------
+
+अब माता-पिता द्वारा बच्चे के बारे में दी हुयी जानकारी का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर करें, हर घटना का विस्तार से विश्लेषण होना चाहिए, यदि उपाय आवश्यक हो तो उपायों सहित, शुरुआत पहली घटना के विश्लेषण से करें, बाकी बाद में पूछती हूँ।
+
+----------
+
+➤ माता-पिता के कुछ प्रश्न हैं, पहले सभी प्रश्नों को सूचीबद्ध करें :
+
+माता-पिता के सवाल :
+
+----------
+
+अब माता-पिता के सवालों का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर करें, हर सवाल का विस्तार से विश्लेषण होना चाहिए, यदि उपाय आवश्यक हो तो उपायों सहित, शुरुआत पहले सवाल के विश्लेषण से करें, बाकी बाद में पूछती हूँ।
+
+----------
+
+अब तक किये गए सभी विश्लेषणों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे माता-पिता पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस भाग का विश्लेषण विस्तार से पढना है, उस भाग को ढूंढेगा...
+
+मुख्य बातें :
+(मुख्य बातें - नामाक्षर और अवकहड़ा का सार, दोष-जांच का परिणाम और उपाय, संस्कारों का समय, स्वभाव और शिक्षा की दिशा, वर्तमान दशा, माता-पिता के लिए सबसे महत्वपूर्ण सलाह - बस इतना ही, 2-3 पंक्तियों में हर बिंदु)
+
+----------
+
+अब अंतिम जाँच करें - कोई नया विश्लेषण या निष्कर्ष बिल्कुल न दें।
+
+ऊपर दिए गए सभी जवाबों और निष्कर्ष को मूल डेटा (कुंडली PDF, अवकहड़ा डेटा और दशा TXT) से मिलाएँ - लग्न, चंद्र राशि, जन्म नक्षत्र-पद, पाया, वर्ण, योनि, गण, वश्य, नाड़ी, नामाक्षर, दोष-जांच के आधार-मान (चंद्र का भाव, पाप ग्रहों की युति-दृष्टि, गंडमूल नक्षत्र, लग्न का अंश, जन्म तिथि-करण-योग), संस्कारों की अवधियाँ, और सभी दशा Systems की महादशा-अंतर्दशा-प्रत्यंतर्दशा के नाम व तारीखें - हर मान की जाँच करें।
+
+परिणाम सिर्फ गलतियों की सूची में दें: भाग/सवाल नंबर, गलत लिखा मान, सही मान। जहाँ कोई गलती न हो वहाँ कुछ न लिखें। अंत में सिर्फ एक line लिखें: 'जाँच पूर्ण - कुल X गलतियाँ मिलीं।' जवाब दोबारा न लिखें।`;
+
+        const rawData_en = `This PDF is the kundali of a 00-year-old male/female native ...; you must save all the information from it so the kundali can be analyzed. While analyzing, do not write page references of the PDF, but give a list of which page the following information is on - meaning it will be easier for you too to find later:
+
+1] Planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord, Jaimini Chara Karaka)
+2] Sarvashtakavarga table
+3] Jupiter's Bhinnashtakavarga (BAV) table.
+4] Shadbala table (Sthana Bala, Dig Bala, Kala Bala, Cheshta Bala, Naisargika Bala, Drik Bala)
+5] Bhava Bala table 
+6] Vimshopak Bala table (Shodasha Varga, Shad Varga, Sapta Varga and Dasha Varga)
+7] Vimshottari Mahadasha-Antardasha chart
+8] Yogini Dasha-Antardasha chart
+9] D1 12 bhava rashi-nakshatra (Bhava Cusp)
+10] D9 planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord) (screenshot)
+
+Please present all tables in a simple and readable table format.
+
+---
+
+Next Task :
+
+From the above chat and  PDF, write the rashi placed in the twelve bhavas of the lagna kundali, the bhava lord, and the planetary presence; also write which planets are exalted, debilitated, retrograde, neecha-bhanga, combust, vargottama. Also write the nakshatra placement (do not write exalted, debilitated, retrograde for Rahu-Ketu)
+
+The writing pattern will be as follows, which is only for example, shown in  ""  :
+
+"First house (Lagna):
+This house has Simha rashi, therefore the lagnesh is Surya.
+In this house, Surya and Rahu planets are placed.
+Surya: in Simha rashi, swagrihi (in its own house). Surya is placed in Magha nakshatra. Surya, being the lord of the first house (Simha), sits in the lagna. Surya's drishti is on the seventh house (Kumbha).
+Rahu: in Simha rashi (considered an enemy rashi for Rahu). Rahu is placed in Magha nakshatra. Rahu's drishti is on the fifth house (Dhanu), seventh house (Kumbha) and ninth house (Mesha).
+On this house, Ketu (from the seventh house) has full drishti."
+
+
+For your convenience a txt file has been given : "D1_Analysis"
+
+----------
+
+Please provide a list of astrological facts/figures for all 9 planets (Surya, Chandra, Mangal, Budha, Guru, Shukra, Shani, Rahu, Ketu) based on the birth details in all the above chats and PDFs. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on the kundali's phaladesh, shadbala, vimshopak bala (shodasha varga), and Jaimini karakatva.
+
+Provide the following information for each planet:
+1. [Planet name]
+➤ Bhava ownership: (which bhavas it is the lord of)
+➤ Position: (in which bhava and rashi)
+➤ Position in rashi: (friend, enemy, neutral, exalted, debilitated, moolatrikona, own sign)
+➤ Nakshatra and pada: (in which nakshatra and which pada the planet is, and the effect of the nakshatra lord.)
+➤ Drishti: (on which bhavas/planets it has drishti) 
+➤ Drishti on [planet name]: (which planets have drishti on it)
+➤ Yuti: (with which planets it is in yuti)
+➤ Avastha (degree/latitude): (degree and name of avastha like bala, kumara etc.)
+➤ Bhavanatmak/avastha strength: retrograde/combust/debilitated/neecha-bhanga/vargottama status: (yes/no or name of the status)
+➤ Navamsha position:  (in the navamsha kundali, in which rashi, nakshatra (lord) the planet is and its effect.)
+➤ Strength in navamsha: afflicted/strong
+➤ Bhava bala: (value only)
+➤ Shadbala (in rupa):  (value in rupa and how its strength is - better than average, rank etc.)
+➤ Vimshopak bala (shodasha varga): (value and its rank among planets, if applicable.)
+➤ Brief answer of probable phala in gochar and dasha : (generally how that planet will give phala in its dasha/antardasha and gochar - good, bad, or medium.
+➤ Conclusion : overall, is the planet strong or afflicted? (percentage)
+
+➤ Finally, a conclusion regarding all planets being strong and afflicted (based on percentage)
+
+----------
+
+Please provide a list of astrological facts/figures for all 12 bhavas of D1 based on the birth details in all the above chats and PDFs. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on karakatva, bhava bala).
+
+
+Provide the following information for each bhava:
+
+1. First house (Lagna):  name of the rashi
+➤ Karakatva: 
+➤ Bhava bala: rank  (weak or strong bhava in the kundali).
+➤ Bhava lord (lagnesh):
+➤ Position of bhavesh: 
+➤ Placed planets: 
+➤ Drishti on bhava: 
+➤ Conclusion : overall, is the bhava strong or afflicted? (percentage)
+
+➤ Finally, a conclusion regarding all bhavas being strong and afflicted (based on percentage)
+
+Note: In whichever house Gulika or Mandi is placed, also state their effect on that house's results in one or two lines.
+
+----------
+
+Please save in your memory the astrological data (all Dasha Systems and the Master Timeline) given in all the attached text files.
+
+Instructions:
+
+1] There is no need to write this data again in the chat right now.
+2] Just analyze the data and confirm that you have read it.
+3] For verification: write only the current status in the format given below:
+Vimshottari (MD-AD-PD):
+Yogini (MD-AD):
+Tribhagi (MD-AD):
+Ashtottari (MD-AD):
+Chara (MD-AD):
+
+After this I will directly ask specific questions related to the analysis; then you have to use all this data.
+
+----------
+
+Please save the Avakahada Chakra data given in the attached text file in your memory.
+
+Instructions:
+
+1] There is no need to rewrite this data in the chat right now.
+2] Just analyse the data and confirm that you have read it.
+3] For verification, write only the current status in the format given below:
+
+Lagna:
+Moon Sign (Chandra Rashi):
+Birth Nakshatra and Pada:
+Paya:
+Varna:
+Yoni:
+Gana:
+Vashya:
+Nadi:
+Namakshara (Name Letter):
+Dasha Bhogya (Balance of Dasha at Birth):
+
+After this I will directly ask specific questions related to the analysis, then you have to use this entire data.
+
+----------
+
+For the examination of birth doshas, extract the following values from the Kundali PDF and the given data and give them as a list - do not give any analysis or conclusion, only the values:
+
+1] In which house is the Moon placed, and which malefic planets (Mars, Saturn, Rahu, Ketu, Sun) are in conjunction with or aspect the Moon?
+2] What is the birth Nakshatra - is it one of the Gandmool Nakshatras (Ashwini, Magha, Moola, Ashlesha, Jyeshtha, Revati)?
+3] What is the degree of the Lagna (for the Lagna Sandhi check)?
+4] What are the birth Tithi, Karana and Yoga (for the Amavasya, Bhadra Karana and Tithi Gandant checks)?
+5] The positions of the Sun and Moon at birth - is the birth around an eclipse period or a Sankranti period?
+6] Whether the conditions of Balarishta are fulfilled from the Moon's position (Moon in a dushta house, malefic conjunction/aspect, and the cancellation conditions - benefic aspects / kendra positions) - write with the values.
+
+----------
+
+Please give a short list of all the information you have received so far for the kundali analysis.
+
+----------
+
+Please ensure that you will strictly follow the following orders,
+
+1] Cross-check the data before giving the output.
+2] Do not do any kind of sugar-coating. If any date has a dosha, weakness or negative point, state it clearly - do not forcibly call any date auspicious.
+3] Do not start your answer with any greeting or conversational phrase (like 'certainly', 'sure', 'here is'); start directly with the analysis.
+4] Also follow the orders given in the System instructions.
+
+Are you ready - just tell me which orders you will follow.
+
+----------
+
+Now we will take out the analysis of the child's Kundali; before that, points to keep in mind:
+
+1] This Analysis is of the born child's own Kundali - the address must be to the parents, and the child must always be referred to in the third person (such as 'your child', 'his/her nature'). Never address the child directly.
+2] While analysing, keep the child's current age in mind - it is currently 2026. The caution periods for doshas and the timings of sanskars must be given according to the child's age only.
+3] All values, dates and periods must be taken only from the given data (Kundali PDF, Avakahada data, Dasha TXT) - do not create or change any value or date on your own.
+4] Do not write frightening language about doshas at all - state clearly whichever dosha is present, but always give its cancellation (bhanga), if any, and the remedies along with it, so that the parents do not panic and take sensible steps.
+5] About education and career, only the direction of interest is to be given here - do not make definite predictions at all (such as 'the child will definitely become a doctor').
+6] About health, only the astrological tendencies and areas of caution are to be given - do not give any medical advice or a definite claim of disease.
+
+----------
+
+On the basis of the native's (child's) Kundali, do a deep and detailed analysis of the following points; keep in mind that along with all the points, each of their sub-points must also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well. Keep the address to the parents.
+
+Part 1: The Child's Basis - Avakahada, Namakshara and Auspicious Points
+➤ Birth introduction: What are the child's Lagna, Moon sign and birth Nakshatra-Pada? What basic direction of the child's life is formed from these three?
+➤ Avakahada Chakra: What is the child's Paya (Gold, Silver, Copper or Iron) and what does it mean for the family? What are the Varna, Yoni, Gana, Vashya and Nadi - what does each indicate about the child's nature and life?
+➤ Namakshara: According to the birth Nakshatra and its Pada, what is the correct first letter of the child's name? If the child's name has already been kept, state whether it matches the Namakshara or not, and also give 2-3 suitable name suggestions (with meanings).
+➤ Auspicious points: What are the lucky number, lucky day, lucky colour and lucky direction for the child?
+
+----------
+
+Part 2: Birth Dosha Examination and Remedies
+(Examine each dosha separately - first write clearly whether that dosha is present or not, then write the value on the basis of which the conclusion has been drawn, then give the effect and the remedy)
+➤ Gandmool Nakshatra: Was the child born in a Gandmool Nakshatra? If yes, in which Nakshatra-Pada, on whom does its effect fall (on the child, the parents or the family) and when and how should its Shanti be performed?
+➤ Balarishta: Is there Balarishta in the Kundali? If yes, how strong is it, up to what age is its period, and is there its cancellation (bhanga) or not - clarify along with the cancellation conditions.
+➤ Lagna Sandhi and Gandant: Is any of the conditions - Lagna Sandhi, Lagna Gandant or Tithi Gandant - present or not?
+➤ Special birth circumstances: Amavasya, Bhadra Karana, eclipse period, Sankranti period, birth in the birth Nakshatra of the parents or a sibling - does any of these circumstances apply or not? If it applies, what is its remedy?
+➤ Nazar Dosha (evil eye): How strong is the tendency of the child to catch the evil eye, and what are the simple remedies to protect against it?
+➤ Caution for the parents: Up to what age should special care of the child's health be taken, and what things should be kept in mind? (Do not write frightening language at all - give everything along with its remedy.)
+
+----------
+
+Part 3: Sanskars and Their Muhurat
+(For each sanskar, give - the traditional age/period, the most auspicious period according to the child's Kundali, and a brief ritual note. Take dates only from the given Muhurat data; do not create any date on your own.)
+➤ Namkaran Sanskar: If the naming ceremony is still pending, the auspicious period for it and the points to keep in mind.
+➤ Annaprashan: According to the child's age, when will the most auspicious time for Annaprashan fall?
+➤ Mundan (Chudakarma): In which year will it be most auspicious to perform the Mundan, and which time should be avoided?
+➤ Vidyarambh: What is the most suitable time and age for starting the child's education (Akshar-Lekhan)?
+➤ Upanayan (Janeu): If it applies to the child, what is the suitable age and period for Upanayan? If it does not apply, write only that this sanskar does not apply to this child.
+➤ For the sanskars whose time has already passed, mention them in just one line each.
+
+----------
+
+Part 4: Nature, Health and Direction of Education
+➤ Nature and personality: On the basis of the Lagna, Moon sign and birth Nakshatra, how will the child's nature be - write clearly his/her strong points (sharp intellect, emotionality, stubbornness, creativity etc., whichever apply) and the points the parents should pay attention to from the beginning.
+➤ Mind and emotions: How will the child be emotionally - attachment to the parents, sensitivity, and what is the key to understanding his/her mind?
+➤ Health: How is the astrological tendency of health - in which areas (digestion, breathing, skin, eyes etc., whichever apply) should caution be kept, and up to what age should special care be taken? (Do not give any medical advice; only state tendencies and cautions.)
+➤ Direction of education: In studies, towards what will the child's interest be - language, mathematics, science, art, sports - in which field is his/her natural strength? This is only a direction; the detailed Education Analysis is a separate product - mention this in one line.
+➤ Practical points of upbringing: On the basis of the above analysis, 3-4 practical points for the parents - how to encourage the child, which habits to promote from the beginning, and what things to avoid.
+
+----------
+
+Part 5: Yogas, Fortune and the Dasha Outline of Childhood
+➤ Major yogas: Which major yogas and Rajyogas are present in the child's Kundali? For each yoga give its name, the planets from which it is formed, and how strong it is in percentage - do not write ready-made results; draw conclusions from the values of the child's Kundali.
+➤ Direction of fortune: On the basis of the positions of the Lagnesh, the Bhagyesh (lord of the 9th house) and the Moon, what is the basic direction of the child's fortune - mainly from which area will the foundation of progress in life be formed?
+➤ Childhood dashas: From birth till now, which Mahadasha-Antardasha have run, and which is running at present - how has their effect on the child (health, nature, beginning of studies) been, and how will it be?
+➤ Outline ahead: From when will the next Mahadasha begin, and in which dasha will the major milestones of childhood-adolescence (a strong start of studies, interest becoming clear, etc.) fall - write along with dates and age.
+
+----------
+
+Part 6: Final Conclusion and Guidance for the Parents
+➤ Overall conclusion: State the total picture of the child's Kundali in one clear paragraph - the child's biggest strength, the biggest caution, and the basic direction of life.
+➤ Write the 2-3 most important pieces of advice for the parents separately and clearly - from the point of view of upbringing, care of health, and promoting the child's interests.
+
+(Note: A maximum of 3 Personal Questions of the parents are included in this Analysis - those questions will be given separately, and their answers are to be given after this part, in the same order.)
+
+----------
+
+➤ The parents have given information about their child and the parents have some questions, first list the given information, after that list all the questions :
+
+----------
+
+Now do in-depth research on the information given by the parents about the child and give the astrological analysis in detail with conclusions, every event should be analysed in detail, if remedies are necessary then along with remedies, begin with the analysis of the first event, I will ask the rest later.
+
+----------
+
+➤ The parents have some questions; first, list all the questions:
+
+Questions of the native:
+
+----------
+
+Now do in-depth research on the questions of the parents and give the astrological analysis in detail with conclusions, every question should be analysed in detail, if remedies are necessary then along with remedies, begin with the analysis of the first question, I will ask the rest later.
+
+----------
+
+Now rewrite all the analyses done so far and give their brief answers, because this list will be placed at the very beginning of this analysis, so that the native reads the short answers first and finds the part whose detailed analysis they want to read...
+
+Main points:
+(Main points - the essence of the Namakshara and Avakahada, the result of the dosha examination and remedies, the timings of the sanskars, nature and direction of education, the current dasha, the most important advice for the parents - only this much, every point in 2-3 lines)
+
+----------
+
+Now do a final check - do not give any new analysis or conclusion at all.
+
+Match all the answers and conclusions given above against the original data (kundali PDF, Gochar TXT and Dasha TXT) - check every value: Janma Rashi, Janma Nakshatra, Saturn's sign-bhava-lordship in the birth kundali, the status, phase and start-end dates of Sadesati/Dhaiya, the dates of Saturn's sign changes, and the Mahadasha-Antardasha-Pratyantardasha names and dates of all the Dasha Systems.
+
+Give the result only as a list of errors: Part/Question number, wrongly written value, correct value. Where there is no error, write nothing. At the end write only one line: 'Check complete - total X errors found.' Do not write the answers again.`;
+
+        const rawData_mr = `हे PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... ची कुंडली आहे, यामधील सर्व माहिती तुम्ही जतन करून ठेवली पाहिजे, जेणेकरून कुंडलीचे विश्लेषण करता येईल, विश्लेषण करताना PDF च्या पानांचा संदर्भ लिहू नका पण खालील माहिती कोणत्या पानावर आहे, याची सूची द्या म्हणजे तुम्हालाही पुढे शोधण्यात सोपे जाईल :
+
+1] ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तक्ता
+3] गुरूचा भिन्नाष्टकवर्ग (BAV) तक्ता।
+4] षड्बल तक्ता (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+5] भाव बल तक्ता 
+6] विमशोपक बल तक्ता (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+7] विंशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] D1 च्या 12 भावांचे रास-नक्षत्र (Bhava Cusp)
+10] D9 ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+
+कृपया सर्व तक्ते सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा।
+
+---
+
+Next Task :
+
+वरील चॅट आणि  PDF मधील लग्न कुंडलीच्या बारा भावांमध्ये असलेली रास आणि भाव स्वामी तसेच ग्रह उपस्थिती, कोणता ग्रह उच्च, नीच, वक्री, नीचभंग, अस्त, वर्गोत्तम आहे तेही लिहा. नक्षत्रातील स्थितीही लिहा (राहू-केतूंना उच्च, नीच, वक्री लिहू नका)
+
+लेखन पॅटर्न खालीलप्रमाणे असेल जो फक्त उदाहरणासाठी आहे, जो  ""  यात दाखवला आहे :
+
+"पहिला भाव (लग्न):
+या भावात सिंह रास आहे, त्यामुळे लग्नेश सूर्य आहेत.
+या भावात सूर्य आणि राहू ग्रह स्थित आहेत.
+सूर्य: सिंह राशीत स्वगृही (स्वतःच्याच घरात) आहेत. सूर्य मघा नक्षत्रात स्थित आहेत. सूर्य प्रथम भावाचा (सिंह) स्वामी होऊन लग्नात बसले आहेत. सूर्याची दृष्टी सातव्या भावावर (कुंभ) आहे.
+राहू: सिंह राशीत (राहूसाठी शत्रू रास मानली जाते). राहू मघा नक्षत्रात स्थित आहे. राहूची दृष्टी पाचव्या भावावर (धनु), सातव्या भावावर (कुंभ) आणि नवव्या भावावर (मेष) आहे.
+या भावावर केतूची (सातव्या भावातून) पूर्ण दृष्टी आहे."
+
+
+तुमच्या सोयीसाठी txt फाईल दिली आहे : "D1_Analysis"
+
+----------
+
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांवर आधारित सर्व ९ ग्रहांचे (सूर्य, चंद्र, मंगळ, बुध, गुरू, शुक्र, शनि, राहू, केतू) ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत स्पष्टीकरणाची गरज नाही. ही सूची कुंडलीच्या फलादेश, षड्बल, विमशोपक बल (षोडश वर्ग), आणि जैमिनी कारकत्व यावर आधारित असावी.
+
+प्रत्येक ग्रहासाठी खालील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रू, सम, उच्च, नीच, मूलत्रिकोण, स्वरास)
+➤ नक्षत्र आणि पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी) 
+➤ [ग्रहाच्या नावावर] दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांसोबत युतीत आहे)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इत्यादी)
+➤ भावनात्मक/अवस्था शक्ती: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (होय/नाही किंवा स्थितीचे नाव)
+➤ नवमांश स्थिती:  (नवमांश कुंडलीत ग्रह कोणत्या राशीत, नक्षत्रात (स्वामी) आहे आणि त्याचा प्रभाव.)
+➤ नवमांशातील शक्ती: पीडित/बलवान
+➤ भाव बल: (फक्त मान)
+➤ षड्बल (रूपात):  (रूपातील मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी.)
+➤ विमशोपक बल (षोडश वर्ग): (मान आणि ग्रहांमध्ये त्याचा रँक, लागू असल्यास.)
+➤ गोचर आणि दशेतील संभाव्य फलाचे संक्षिप्त उत्तर : (सामान्यतः तो ग्रह आपल्या दशेत/अंतर्दशेत आणि गोचरात कसे फल देईल - चांगले, खराब, किंवा मध्यम.
+➤ निष्कर्ष : एकंदर ग्रह मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रहांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीवर आधारित)
+
+----------
+
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांवर आधारित D1 च्या सर्व 12 भावांची ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत स्पष्टीकरणाची गरज नाही. ही सूची कारकत्व, भाव बल) यावर आधारित असावी.
+
+
+प्रत्येक भावासाठी खालील माहिती द्या:
+
+1. पहिला भाव (लग्न):  राशीचे नाव
+➤ कारकत्व: 
+➤ भाव बल: रँक  (कुंडलीत कमजोर किंवा मजबूत भाव).
+➤ भाव स्वामी (लग्नेश):
+➤ भावेशाची स्थिती: 
+➤ स्थित ग्रह: 
+➤ भावावर दृष्टी: 
+➤ निष्कर्ष : एकंदर भाव मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व भावांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीवर आधारित)
+
+टीप : ज्या भावात गुलिक किंवा मांदि स्थित असेल, त्या भावाच्या फलात त्यांचा प्रभावही एक-दोन ओळींमध्ये अवश्य सांगा.
+
+----------
+
+कृपया संलग्न (Attached) सर्व टेक्स्ट फाईल्समध्ये दिलेला ज्योतिषीय डेटा (सर्व दशा Systems आणि Master Timeline) आपल्या मेमरीत सुरक्षित करा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची गरज नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला आहे याची पुष्टी करा.
+3] पुष्टी (Verification) साठी: फक्त सध्याची स्थिती खाली दिलेल्या फॉर्मेटमध्ये लिहून द्या:
+विंशोत्तरी (MD-AD-PD):
+योगिनी (MD-AD):
+त्रिभागी (MD-AD):
+अष्टोत्तरी (MD-AD):
+चर (MD-AD):
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला या संपूर्ण डेटाचा वापर करायचा आहे.
+
+----------
+
+कृपया संलग्न (Attached) टेक्स्ट फाइलमध्ये दिलेला अवकहडा चक्राचा डेटा तुमच्या मेमरीमध्ये सुरक्षित करून ठेवा.
+
+निर्देश:
+
+1] हा डेटा आत्ता चॅटमध्ये पुन्हा लिहिण्याची आवश्यकता नाही.
+2] फक्त डेटाचे विश्लेषण करा आणि तुम्ही तो वाचला आहे याची पुष्टी करा.
+3] पुष्टीसाठी (Verification) फक्त सद्यस्थिती खाली दिलेल्या फॉरमॅटमध्ये लिहून द्या:
+
+लग्न:
+चंद्र राशी:
+जन्म नक्षत्र आणि पद:
+पाया:
+वर्ण:
+योनी:
+गण:
+वश्य:
+नाडी:
+नामाक्षर:
+दशा भोग्य:
+
+यानंतर मी थेट विश्लेषणाशी संबंधित विशिष्ट प्रश्न विचारेन, तेव्हा तुम्हाला हा संपूर्ण डेटा वापरायचा आहे.
+
+----------
+
+जन्म-दोषांच्या तपासणीसाठी खालील मूल्ये कुंडली PDF आणि दिलेल्या डेटामधून काढून सूचीच्या रूपात द्या - कोणतेही विश्लेषण किंवा निष्कर्ष देऊ नका, फक्त मूल्ये द्या:
+
+1] चंद्र कोणत्या भावात आहे आणि चंद्रावर कोणत्या पाप ग्रहांची (मंगळ, शनि, राहू, केतू, सूर्य) युती किंवा दृष्टी आहे?
+2] जन्म नक्षत्र कोणते आहे - ते गंडमूल नक्षत्रांपैकी (अश्विनी, मघा, मूळ, अश्लेषा, ज्येष्ठा, रेवती) आहे का?
+3] लग्नाचा अंश किती आहे (लग्न संधीच्या तपासणीसाठी)?
+4] जन्म तिथी, करण आणि योग कोणते आहेत (अमावस्या, भद्रा करण, तिथी गंडांत तपासणीसाठी)?
+5] जन्माच्या वेळी सूर्य-चंद्राची स्थिती - जन्म ग्रहण काळ किंवा संक्रांती काळाच्या आसपासचा आहे का?
+6] चंद्राच्या स्थितीवरून बालारिष्टाच्या अटी (दुष्ट भावात चंद्र, पाप युती/दृष्टी, भंगाच्या अटी - शुभ ग्रहांची दृष्टी/केंद्र स्थिती) पूर्ण होतात की नाहीत - मूल्यांसह लिहा.
+
+----------
+
+आतापर्यंत तुम्हाला कुंडली विश्लेषणासाठी कोणकोणती माहिती मिळाली, याची short मध्ये यादी द्या.
+
+----------
+
+तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटा क्रॉसचेक करून घ्या.
+2] कोणत्याही प्रकारची साखर-लेप (Sugar-coating) करू नका. एखाद्या तारखेत काही दोष, कमजोरी किंवा नकारात्मक बाब असेल तर ती स्पष्टपणे सांगा - कोणतीही तारीख जबरदस्तीने शुभ सांगू नका.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्यांशाने (जसे 'नक्कीच', 'जरूर', 'खालीलप्रमाणे आहे') करू नका, थेट विश्लेषणापासून सुरुवात करा.
+4] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का - फक्त कोणते आदेश पाळाल ते सांगा.
+
+----------
+
+आता आपण शिशुच्या कुंडलीचे विश्लेषण काढणार आहोत, त्यापूर्वी लक्षात ठेवण्याच्या गोष्टी:
+
+1] हे Analysis जन्मलेल्या शिशुच्या (मुलाच्या) स्वतःच्या कुंडलीचे आहे - संबोधन आई-वडिलांशी करायचे आहे आणि मुलाचा उल्लेख नेहमी तृतीय पुरुषात करायचा आहे (जसे 'तुमचे मूल', 'त्याचा स्वभाव'). मुलाशी थेट संबोधन अजिबात करू नका.
+2] विश्लेषण करताना मुलाच्या सध्याच्या वयाचे लक्ष ठेवा - सध्या 2026 सुरू आहे. दोषांचा सावधानता-काळ आणि संस्कारांच्या वेळा मुलाच्या वयानुसारच सांगायच्या आहेत.
+3] सर्व मूल्ये, तारखा आणि कालावधी फक्त दिलेल्या डेटामधूनच (कुंडली PDF, अवकहडा डेटा, दशा TXT) घ्यायचे आहेत - स्वतःच्या मनाने कोणतेही मूल्य किंवा तारीख बनवू किंवा बदलू नका.
+4] दोषांबद्दल घाबरवणारी भाषा अजिबात लिहू नका - जो दोष आहे तो स्पष्ट सांगा, पण सोबत त्याचा भंग (रद्दीकरण) आहे की नाही आणि उपाय अवश्य द्या, जेणेकरून आई-वडील घाबरणार नाहीत, समजूतदारपणे पावले उचलतील.
+5] शिक्षण आणि करिअरबद्दल येथे फक्त आवडीची दिशा सांगायची आहे - पक्की भविष्यवाणी (जसे 'मूल डॉक्टरच होईल') अजिबात करू नका.
+6] आरोग्याबद्दल फक्त ज्योतिषीय प्रवृत्ती आणि सावधानतेची क्षेत्रे सांगायची आहेत - कोणताही medical सल्ला किंवा आजाराचा पक्का दावा करू नका.
+
+----------
+
+जातकाच्या (शिशुच्या) कुंडलीच्या आधारावर खालील पॉइंट्सचे गहन आणि विस्तारपूर्वक विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा सर्व बिंदूंसोबत त्यांच्या प्रत्येक उपबिंदूचेही विश्लेषण विस्तारपूर्वक व्हावे, शेवटी प्रत्येक बिंदूचा निष्कर्ष (Detailed Conclusion) देखील द्या. संबोधन आई-वडिलांशी ठेवा.
+
+भाग 1: शिशुचा आधार - अवकहडा, नामाक्षर आणि शुभ बिंदू
+➤ जन्म परिचय: मुलाचे लग्न, चंद्र राशी आणि जन्म नक्षत्र-पद कोणते आहे? या तिघांवरून मुलाच्या जीवनाची मूलभूत दिशा कोणती बनते?
+➤ अवकहडा चक्र: मुलाचा पाया (सोने, चांदी, तांबे किंवा लोखंड) कोणता आहे आणि कुटुंबासाठी त्याचा अर्थ काय आहे? वर्ण, योनी, गण, वश्य आणि नाडी काय आहेत - प्रत्येकाचा मुलाच्या स्वभावावर आणि जीवनावर काय संकेत आहे?
+➤ नामाक्षर: जन्म नक्षत्र आणि त्याच्या पदाप्रमाणे मुलाच्या नावाचे योग्य पहिले अक्षर कोणते आहे? मुलाचे नाव आधीच ठेवलेले असेल तर ते नामाक्षराशी जुळते की नाही ते सांगा, आणि नावाच्या 2-3 योग्य सूचना देखील द्या (अर्थासह).
+➤ शुभ बिंदू: मुलासाठी शुभ अंक, शुभ दिवस, शुभ रंग आणि शुभ दिशा कोणती आहेत?
+
+----------
+
+भाग 2: जन्म-दोष तपासणी आणि उपाय
+(प्रत्येक दोषाची तपासणी वेगळी करा - आधी स्पष्ट लिहा की तो दोष आहे की नाही, मग ज्या मूल्याच्या आधारावर निष्कर्ष काढला आहे ते मूल्य लिहा, मग प्रभाव आणि उपाय द्या)
+➤ गंडमूल नक्षत्र: मुलाचा जन्म गंडमूल नक्षत्रात झाला आहे का? असेल तर कोणत्या नक्षत्र-पदात, त्याचा प्रभाव कोणावर पडतो (मुलावर, आई-वडिलांवर किंवा कुटुंबावर) आणि त्याची शांती कधी आणि कशी करावी?
+➤ बालारिष्ट: कुंडलीत बालारिष्ट आहे का? असेल तर तो किती Strong आहे, त्याचा काळ कोणत्या वयापर्यंत आहे, आणि त्याचा भंग (रद्दीकरण) आहे की नाही - भंगाच्या अटींसह स्पष्ट करा.
+➤ लग्न संधी आणि गंडांत: लग्न संधी, लग्न गंडांत किंवा तिथी गंडांत यांपैकी कोणतीही स्थिती आहे की नाही?
+➤ विशेष जन्म-परिस्थिती: अमावस्या, भद्रा करण, ग्रहण काळ, संक्रांती काळ, आई-वडील किंवा भावंडाच्या जन्म नक्षत्रात जन्म - यांपैकी कोणतीही परिस्थिती लागू होते की नाही? लागू होत असेल तर त्याचा उपाय काय आहे?
+➤ नजर दोष: मुलाला नजर लागण्याची प्रवृत्ती किती आहे आणि त्यापासून बचावाचे सोपे उपाय काय आहेत?
+➤ आई-वडिलांसाठी सावधानता: कोणत्या वयापर्यंत मुलाच्या आरोग्याची विशेष काळजी घ्यायची आहे आणि कोणत्या गोष्टींचे लक्ष ठेवायचे आहे? (घाबरवणारी भाषा अजिबात लिहू नका - प्रत्येक गोष्ट उपायासोबत द्या.)
+
+----------
+
+भाग 3: संस्कार आणि त्यांचे मुहूर्त
+(प्रत्येक संस्कारासाठी - परंपरागत वय/कालावधी, मुलाच्या कुंडलीप्रमाणे सर्वात शुभ कालावधी आणि संक्षिप्त विधी-टिप्पणी द्या. तारखा फक्त दिलेल्या मुहूर्त डेटामधूनच घ्या, स्वतःच्या मनाने कोणतीही तारीख बनवू नका.)
+➤ नामकरण संस्कार: नामकरण बाकी असेल तर त्यासाठी शुभ कालावधी आणि लक्षात ठेवण्याच्या गोष्टी.
+➤ अन्नप्राशन: मुलाच्या वयाप्रमाणे अन्नप्राशनाची सर्वात शुभ वेळ कधी पडेल?
+➤ मुंडन (चूडाकर्म): मुंडन कोणत्या वर्षी करणे सर्वात शुभ राहील आणि कोणती वेळ टाळावी?
+➤ विद्यारंभ: मुलाचे शिक्षण सुरू करण्याची (अक्षर-लेखन) सर्वात योग्य वेळ आणि वय कोणते आहे?
+➤ उपनयन (मुंज): मुलावर लागू होत असेल तर उपनयनाचे योग्य वय आणि कालावधी काय आहे? लागू होत नसेल तर फक्त इतकेच लिहा की हा संस्कार या मुलावर लागू होत नाही.
+➤ ज्या संस्कारांची वेळ निघून गेली आहे, त्यांचा उल्लेख फक्त एका ओळीत करा.
+
+----------
+
+भाग 4: स्वभाव, आरोग्य आणि शिक्षणाची दिशा
+➤ स्वभाव आणि व्यक्तिमत्त्व: लग्न, चंद्र राशी आणि जन्म नक्षत्राच्या आधारावर मुलाचा स्वभाव कसा असेल - त्याची बलस्थाने (तीक्ष्ण बुद्धी, भावुकता, हट्टीपणा, सर्जनशीलता इत्यादी जे लागू होईल ते) आणि ज्या गोष्टींवर आई-वडिलांनी सुरुवातीपासून लक्ष द्यावे त्या गोष्टी स्पष्ट लिहा.
+➤ मन आणि भावना: मूल भावनिकदृष्ट्या कसे असेल - आई-वडिलांशी जोडलेपण, संवेदनशीलता आणि त्याचे मन समजून घेण्याची गुरुकिल्ली काय आहे?
+➤ आरोग्य: आरोग्याची ज्योतिषीय प्रवृत्ती कशी आहे - कोणत्या क्षेत्रांत (पचन, श्वसन, त्वचा, डोळे इत्यादी जे लागू होईल ते) सावधानता ठेवायची आहे आणि कोणत्या वयापर्यंत विशेष काळजी घ्यायची आहे? (कोणताही medical सल्ला देऊ नका, फक्त प्रवृत्ती आणि सावधानता सांगा.)
+➤ शिक्षणाची दिशा: अभ्यासात मुलाची आवड कोणत्या दिशेने असेल - भाषा, गणित, विज्ञान, कला, खेळ - कोणत्या क्षेत्रात त्याची नैसर्गिक बलस्थान आहे? ही फक्त दिशा आहे, सविस्तर Education Analysis वेगळा product आहे - याचा उल्लेख एका ओळीत करा.
+➤ संगोपनाच्या व्यावहारिक गोष्टी: वरील विश्लेषणाच्या आधारावर आई-वडिलांसाठी 3-4 व्यावहारिक गोष्टी - मुलाला कसे प्रोत्साहित करावे, कोणत्या सवयी सुरुवातीपासून वाढवाव्यात आणि कोणत्या गोष्टी टाळाव्यात.
+
+----------
+
+भाग 5: योग, भाग्य आणि बालपणाची दशा-रूपरेखा
+➤ प्रमुख योग: मुलाच्या कुंडलीत कोणते प्रमुख योग आणि राजयोग आहेत? प्रत्येक योगाचे नाव, तो कोणत्या ग्रहांपासून बनला आहे आणि त्याचे बळ Percentage मध्ये किती Strong आहे - तयार फल लिहू नका, मुलाच्या कुंडलीच्या मूल्यांवरून निष्कर्ष काढा.
+➤ भाग्याची दिशा: लग्नेश, भाग्येश (नवव्या भावाचा स्वामी) आणि चंद्राच्या स्थितीच्या आधारावर मुलाच्या भाग्याची मूलभूत दिशा काय आहे - जीवनात उन्नतीचा पाया मुख्यतः कोणत्या क्षेत्रातून बनेल?
+➤ बालपणाच्या दशा: जन्मापासून आतापर्यंत कोणत्या महादशा-अंतर्दशा चालल्या आणि सध्या कोणती सुरू आहे - मुलावर त्यांचा परिणाम (आरोग्य, स्वभाव, अभ्यासाची सुरुवात) कसा राहिला आणि राहील?
+➤ पुढील रूपरेखा: पुढील महादशा कधीपासून सुरू होईल आणि बालपण-किशोरवस्थेचे मोठे टप्पे (अभ्यासाची भक्कम सुरुवात, आवड स्पष्ट होणे इत्यादी) कोणत्या दशेत पडतील - तारखा आणि वयासह लिहा.
+
+----------
+
+भाग 6: अंतिम निष्कर्ष (Final Conclusion) आणि आई-वडिलांसाठी मार्गदर्शन
+➤ समग्र निष्कर्ष: मुलाच्या कुंडलीचे एकूण स्वरूप एका स्पष्ट परिच्छेदात सांगा - मुलाची सर्वात मोठी बलस्थान, सर्वात मोठी सावधानता आणि जीवनाची मूलभूत दिशा.
+➤ आई-वडिलांसाठी सर्वात महत्त्वाचे 2-3 सल्ले वेगळे आणि स्पष्ट लिहा - संगोपन, आरोग्याची काळजी आणि आवडीला प्रोत्साहन देण्याच्या दृष्टीने.
+
+(लक्षात ठेवा: या Analysis मध्ये आई-वडिलांचे जास्तीत जास्त 3 Personal Questions समाविष्ट आहेत - ते प्रश्न वेगळे दिले जातील आणि त्यांची उत्तरे या भागानंतर त्याच क्रमाने द्यायची आहेत.)
+
+----------
+
+➤ आई-वडिलांनी आपल्या मुलाबद्दल माहिती दिली आहे आणि आई-वडिलांचे काही प्रश्न आहेत, प्रथम दिलेली माहिती सूचीबद्ध करा, त्यानंतर सर्व प्रश्न सूचीबद्ध करा :
+
+----------
+
+आता आई-वडिलांनी मुलाबद्दल दिलेल्या माहितीचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, प्रत्येक घटनेचे विस्ताराने विश्लेषण झाले पाहिजे, जर उपाय आवश्यक असतील तर उपायांसह, सुरुवात पहिल्या घटनेच्या विश्लेषणाने करा, बाकीचे नंतर विचारते.
+
+----------
+
+➤ आई-वडिलांचे काही प्रश्न आहेत, प्रथम सर्व प्रश्न सूचीबद्ध करा :
+
+जातकाचे सवाल :
+
+----------
+
+आता आई-वडिलांनी दिलेल्या प्रश्नांचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, प्रत्येक प्रश्नाचे विस्ताराने विश्लेषण झाले पाहिजे, जर उपाय आवश्यक असतील तर उपायांसह, सुरुवात पहिल्या प्रश्नाच्या विश्लेषणाने करा, बाकीचे नंतर विचारते.
+
+----------
+
+आतापर्यंत केलेल्या सर्व विश्लेषणांचे पुन्हा लिहून त्यांचे संक्षिप्त उत्तर द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल, यामुळे जातक आधीच short मध्ये उत्तर वाचेल आणि त्याला ज्या भागाचे विश्लेषण तपशीलवार वाचायचे आहे, तो भाग शोधेल...
+
+मुख्य मुद्दे :
+(मुख्य मुद्दे - नामाक्षर आणि अवकहडाचा सार, दोष-तपासणीचा निकाल आणि उपाय, संस्कारांच्या वेळा, स्वभाव आणि शिक्षणाची दिशा, सद्य दशा, आई-वडिलांसाठी सर्वात महत्त्वाचा सल्ला - बस इतकेच, प्रत्येक मुद्दा 2-3 ओळींत)
+
+----------
+
+आता अंतिम तपासणी करा - कोणतेही नवीन विश्लेषण किंवा निष्कर्ष अजिबात देऊ नका.
+
+वर दिलेली सर्व उत्तरे आणि निष्कर्ष मूळ डेटाशी (कुंडली PDF, अवकहडा डेटा आणि दशा TXT) जुळवा - लग्न, चंद्र राशी, जन्म नक्षत्र-पद, पाया, वर्ण, योनी, गण, वश्य, नाडी, नामाक्षर, दोष-तपासणीची आधार-मूल्ये (चंद्राचा भाव, पाप ग्रहांची युती-दृष्टी, गंडमूल नक्षत्र, लग्नाचा अंश, जन्म तिथी-करण-योग), संस्कारांचे कालावधी, आणि सर्व दशा Systems च्या महादशा-अंतर्दशा-प्रत्यंतर्दशांचे नाव व तारखा - प्रत्येक मूल्य तपासा.
+
+निकाल फक्त चुकांच्या यादीत द्या: भाग/प्रश्न क्रमांक, चुकीचे लिहिलेले मूल्य, बरोबर मूल्य. जिथे चूक नसेल तिथे काहीही लिहू नका. शेवटी फक्त एक ओळ लिहा: 'तपासणी पूर्ण - एकूण X चुका सापडल्या.' उत्तरे पुन्हा लिहू नका.`;
+
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
+
+        // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
+        const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
+        
+        function processData() {
+            const container = document.getElementById('prompt-container');
+            // पहले डैश लाइन्स से तोडें
+            let parts = getRawData().split(separatorRegex);
+
+            parts.forEach((part, index) => {
+                let cleanText = part.trim();
+                
+                // फिल्टरिंग लॉजिक
+                const lines = cleanText.split('\n');
+                const filteredLines = lines.filter(line => {
+                    const l = line.trim();
+                    // जंक (MMM... RRR... PPPP...) हटाएं
+                    if (l.match(/^[M|P|C|H|R]{5,}$/)) return false;
+                    // सिर्फ डैश वाली लाइन हटाएं
+                    if (l.match(/^-{5,}$/)) return false;
+                    return true;
+                });
+                
+                cleanText = filteredLines.join('\n').trim();
+
+                if (cleanText.length > 5) { // खाली या बहुत छोटी स्ट्रिंग न दिखाएं
+                    createCard(cleanText, index + 1);
+                }
+            });
+        }
+
+        function createCard(text, id) {
+            const container = document.getElementById('prompt-container');
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            header.innerHTML = `<span>Prompt #${id}</span>`;
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+            content.innerText = text;
+
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = 'Copy Prompt';
+            btn.onclick = () => copyText(text, btn);
+
+            card.appendChild(header);
+            card.appendChild(content);
+            card.appendChild(btn);
+            container.appendChild(card);
+        }
+
+        function showBtnFeedback(btn, success){
+            if(!btn) return;
+            var origText = btn.innerText;
+            var origBg = btn.style.backgroundColor;
+            btn.innerText = success ? "\u2713 Copied!" : "\u2717 Failed";
+            btn.style.backgroundColor = success ? "#2e7d32" : "#c62828";
+            btn.style.color = "#fff";
+            setTimeout(function(){ btn.innerText = origText; btn.style.backgroundColor = origBg; }, 2000);
+        }
+        function copyText(text, btn) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast();
+                    showBtnFeedback(btn, true);
+                }).catch(err => {
+                    fallbackCopy(text, btn);
+                });
+            } else {
+                fallbackCopy(text, btn);
+            }
+        }
+
+        function fallbackCopy(text, btn) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed'; // Avoid scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                var ok = document.execCommand('copy');
+                showToast();
+                showBtnFeedback(btn, ok);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                showBtnFeedback(btn, false);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast() {
+            var x = document.getElementById("snackbar");
+            x.className = "toast show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        // Initialize
+        processData();
+
+    </script>
+</body>
+</html>
