@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shishu Kundali Analysis - Sanjivani Jyotish Sansthan</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans Devanagari','Poppins',sans-serif; background:#FFF9EF; color:#33241A; line-height:1.65; }
+  body.lang-hi .en { display:none !important; }
+  body.lang-en .hi { display:none !important; }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 16px 40px; }
+
+  /* header bar */
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 4px; }
+  .brand { font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; color:#7B1E1E; letter-spacing:.3px; }
+  .brand small { display:block; font-size:11px; font-weight:600; color:#B4762A; letter-spacing:2px; }
+  .lang-toggle { background:#7B1E1E; color:#FFF3D6; border:none; padding:8px 18px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 3px 8px rgba(123,30,30,.35); }
+  .lang-toggle:hover { background:#932626; }
+
+  /* hero */
+  .hero { padding:34px 26px 28px; background:linear-gradient(160deg,#FFF3D6 0%,#FFE7C2 55%,#FFDFE0 100%); border:1px solid #EFD9A7; border-radius:22px; box-shadow:0 10px 28px rgba(160,100,20,.12); margin-bottom:34px; }
+  .hero-grid { display:flex; gap:30px; align-items:center; }
+  .hero-photo { flex:0 0 300px; perspective:900px; }
+  .hero-photo img { width:100%; height:320px; object-fit:contain; display:block; transform:rotateY(-10deg) rotateX(2deg); filter:drop-shadow(16px 20px 12px rgba(90,50,10,.35)); transition:transform .45s ease, filter .45s ease; }
+  .hero:hover .hero-photo img { transform:rotateY(0deg) rotateX(0deg); filter:drop-shadow(0 10px 10px rgba(90,50,10,.25)); }
+  .hero-text { flex:1; text-align:left; }
+  .hero-text h1 { font-size:31px; font-weight:800; color:#7B1E1E; line-height:1.35; }
+  .hero-text h1 .grad { background:linear-gradient(90deg,#B3540A,#D97706,#B91C1C); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-text p.lead { font-size:17.5px; font-weight:700; color:#5C4632; margin-top:12px; }
+  .hero-text p.sub { font-size:16px; color:#5C4632; margin-top:6px; }
+  .chips { margin-top:18px; display:flex; flex-wrap:wrap; gap:10px; }
+  .chip { background:#fff; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:14px; padding:7px 16px; border-radius:999px; box-shadow:0 2px 6px rgba(160,100,20,.15); }
+  @media (max-width:760px){ .hero-grid{flex-direction:column;} .hero-text{text-align:center;} .chips{justify-content:center;} .hero-text h1{font-size:26px;} .hero-photo{flex:0 0 auto; width:230px;} .hero-photo img{height:280px;} }
+
+  /* blocks */
+  .block { background:#fff; border:1px solid #F0DFBB; border-left:6px solid #D97706; border-radius:16px; padding:22px 24px; margin-top:26px; box-shadow:0 6px 18px rgba(160,100,20,.08); }
+  .block h2 { font-size:21px; color:#7B1E1E; margin-bottom:8px; }
+  .block p { font-size:15.5px; color:#43322A; }
+  .block.gold { border-left-color:#B91C1C; background:linear-gradient(180deg,#FFFDF6,#FFF7E6); }
+  .bhead { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .bhead h2 { margin-bottom:0 !important; }
+  .bicon { width:46px; height:46px; flex:0 0 46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:linear-gradient(135deg,#F59E0B,#B3540A); box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .block.gold .bicon { background:linear-gradient(135deg,#B91C1C,#7B1E1E); box-shadow:0 4px 10px rgba(123,30,30,.35); }
+  .taglabel { font-size:13.5px; font-weight:700; color:#7B1E1E; margin-top:14px; }
+  .ptags { display:flex; flex-wrap:wrap; gap:9px; margin-top:4px; }
+  .ptag { display:inline-flex; align-items:center; gap:8px; background:#FFFDF6; border:1.5px solid #E3B341; border-radius:999px; padding:6px 15px 6px 7px; font-size:14.5px; color:#4A2C14; box-shadow:0 2px 6px rgba(123,30,30,.10); }
+  .ptag .n { background:linear-gradient(135deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:12.5px; min-width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0 3px; flex:none; }
+  .cnt { margin-left:auto; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:13px; padding:4px 14px; border-radius:999px; white-space:nowrap; }
+  .sysbadges { margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; }
+  .sysbadges span { background:linear-gradient(90deg,#7B1E1E,#B91C1C); color:#FFE9B0; font-weight:700; font-size:14px; padding:6px 18px; border-radius:999px; box-shadow:0 3px 8px rgba(123,30,30,.30); }
+
+  /* areas checklist */
+  .chk { display:grid; grid-template-columns:repeat(2,1fr); gap:2px 22px; margin-top:6px; }
+  .chk span { font-size:15px; color:#4A382C; padding:7px 2px; border-bottom:1px dashed #EBDCC0; }
+  .chk span::before { content:"\2713  "; color:#B3541E; font-weight:800; }
+  .chk.mute span { font-size:13.5px; color:#97836C; border-bottom-color:#F0E7D2; }
+  .chk.mute span::before { content:"\2013  "; color:#C4AE87; }
+  @media (max-width:640px){ .chk{grid-template-columns:1fr;} }
+  .featlist { margin-top:4px; }
+  .featlist p { font-size:15.5px; color:#43322A; margin:9px 0; }
+  .featlist p b { color:#7B1E1E; }
+
+  /* price options */
+  .sec-title { text-align:center; margin:42px 0 6px; font-size:28px; font-weight:800; color:#7B1E1E; }
+  .sec-sub { text-align:center; color:#7A6248; font-size:15px; margin-bottom:24px; }
+  .qnote { background:#FFF6E3; border:1.5px solid #E3B341; border-left:6px solid #D97706; border-radius:12px; padding:12px 18px; font-size:15.5px; color:#5a4636; margin:18px 0 8px; }
+  .ogrid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:820px; margin:0 auto; }
+  @media (max-width:640px){ .ogrid{grid-template-columns:1fr;} }
+  .ocard { background:#fff; border:1.5px solid #F0DFBB; border-radius:20px; padding:26px 22px 22px; text-align:center; box-shadow:0 8px 22px rgba(160,100,20,.10); display:flex; flex-direction:column; }
+  .ocard.best { border:2px solid #D97706; }
+  .ocard .otag { display:inline-block; background:#FFF3D6; border:1.5px solid #E3B341; color:#7B1E1E; font-weight:700; font-size:12.5px; padding:3px 14px; border-radius:999px; margin-bottom:10px; }
+  .ocard h3 { font-size:20px; color:#7B1E1E; font-weight:700; }
+  .ocard .oprice { font-family:'Poppins',sans-serif; font-size:36px; font-weight:800; color:#C0392B; margin:8px 0 2px; }
+  .ocard p { font-size:14.5px; color:#55433A; flex:1; margin:4px 0 16px; }
+  .btn { display:inline-block; background:linear-gradient(90deg,#B3540A,#D97706); color:#fff; text-decoration:none; font-weight:700; font-size:15.5px; padding:11px 26px; border-radius:999px; box-shadow:0 4px 10px rgba(200,110,10,.35); }
+  .btn:hover { filter:brightness(1.08); }
+
+  .doubts p { margin:7px 0; font-size:15.5px; }
+
+  /* footer */
+  .footer { margin-top:42px; text-align:center; background:#FFF3D6; border:1px solid #EFD9A7; border-radius:16px; padding:20px 14px; font-size:14.5px; color:#5C4632; }
+  .footer a { color:#B3540A; font-weight:700; text-decoration:none; }
+  .footer .line { font-weight:700; color:#7B1E1E; }
+</style>
+</head>
+<body class="lang-hi">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Sanjivani Jyotish<small>SANJIVANI JYOTISH SANSTHAN</small></div>
+    <button class="lang-toggle" onclick="toggleLanguage()">English / हिंदी</button>
+  </div>
+
+  <div class="hero">
+    <div class="hero-grid">
+      <div class="hero-photo"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgnBImyvZR9Jdv3qrf1ji9JmajVcx7z32iD2dSHXMcEu4u88spZ0_L7DBROeWsAEXCAsJ3o5g9JMRaXRSnTfH10A6iUuWaemU1KVIA9dEW7hF_NbkRKqUAfSzlR2EVzRwBw3Yc1Qg57hBq7pvK8PWOD9fc9q91YagQaQ3YDIi9pJbx16NnLPqE-vUxqiu8/s1050/krishna-shishu-chart-3d-transparent.png" alt="Shishu Kundali"></div>
+      <div class="hero-text">
+        <h1><span class="hi"><span class="grad">स्पेशल शिशु कुंडली</span> एनालिसिस</span><span class="en"><span class="grad">Special Shishu Kundali</span> Analysis</span></h1>
+        <p class="lead hi">आपके बच्चे की कुंडली उसके बारे में क्या कहती है?</p>
+        <p class="lead en">What does your child's Kundali say about him/her?</p>
+        <p class="sub hi">बच्चे के जन्म के साथ ही उसकी कुंडली में उसके स्वभाव, स्वास्थ्य, भाग्य और आगे के जीवन की रूपरेखा छिपी होती है। यह Analysis आपके बच्चे की अपनी कुंडली से बताता है - उसका नामाक्षर और अवकहड़ा, जन्म के दोष हैं या नहीं और उनके उपाय, संस्कारों के शुभ समय, स्वभाव और शिक्षा की दिशा, और बचपन की दशाओं का उस पर असर - ताकि आप शुरू से ही सही कदम उठा सकें।</p>
+        <p class="sub en">With a child's birth, the outline of his/her nature, health, fortune and future life lies hidden in his/her Kundali itself. This Analysis tells you from your child's own Kundali - his/her Namakshara and Avakahada, whether birth doshas are present or not and their remedies, the auspicious timings of the sanskars, nature and the direction of education, and the effect of the childhood dashas on him/her - so that you can take the right steps right from the beginning.</p>
+        <div class="chips">
+          <div class="chip"><span class="hi">100% Manual एनालिसिस</span><span class="en">100% Manual Analysis</span></div>
+          <div class="chip"><span class="hi">Micro-Level Analysis</span><span class="en">Micro-Level Analysis</span></div>
+          <div class="chip"><span class="hi">PDF + Audio Note विकल्प</span><span class="en">PDF + Audio Note Option</span></div>
+          <div class="chip"><span class="hi">Doubts Clearance बिल्कुल Free</span><span class="en">Doubts Clearance Absolutely Free</span></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">इस Analysis में शामिल सभी 6 भाग</span><span class="en">All 6 Parts Included in This Analysis</span></h2>
+  <p class="sec-sub hi">जन्म से बचपन तक - आपके बच्चे का Complete Analysis, भाग-दर-भाग</p>
+  <p class="sec-sub en">From birth through childhood - a Complete Analysis of your child, part by part</p>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">👶</div><h2><span class="hi">भाग 1: शिशु का आधार - अवकहड़ा, नामाक्षर और शुभ बिंदु</span><span class="en">Part 1: The Child's Basis - Avakahada, Namakshara and Auspicious Points</span></h2></div>
+    <div class="chk hi"><span>➤ <b>जन्म परिचय:</b> बच्चे का लग्न, चंद्र राशि और जन्म नक्षत्र-पद क्या है? इन तीनों से बच्चे के जीवन की बुनियादी दिशा क्या बनती है?</span><span>➤ <b>अवकहड़ा चक्र:</b> बच्चे का पाया कौन सा है और परिवार के लिए उसका अर्थ क्या है? वर्ण, योनि, गण, वश्य और नाड़ी - हर एक का बच्चे के स्वभाव और जीवन पर क्या संकेत है?</span><span>➤ <b>नामाक्षर:</b> जन्म नक्षत्र और उसके पद के अनुसार बच्चे के नाम का सही प्रथम अक्षर कौन सा है? रखा गया नाम नामाक्षर से मेल खाता है या नहीं - और नाम के उपयुक्त सुझाव अर्थ सहित।</span><span>➤ <b>शुभ बिंदु:</b> बच्चे के लिए शुभ अंक, शुभ दिन, शुभ रंग और शुभ दिशा कौन सी हैं?</span></div>
+    <div class="chk en"><span>➤ <b>Birth Introduction:</b> What are the child's Lagna, Moon sign and birth Nakshatra-Pada? What basic direction of the child's life is formed from these three?</span><span>➤ <b>Avakahada Chakra:</b> What is the child's Paya, and what does it mean for the family? Varna, Yoni, Gana, Vashya and Nadi - what does each indicate about the child's nature and life?</span><span>➤ <b>Namakshara:</b> According to the birth Nakshatra and its Pada, what is the correct first letter of the child's name? Whether the kept name matches the Namakshara or not - and suitable name suggestions with meanings.</span><span>➤ <b>Auspicious Points:</b> What are the lucky number, lucky day, lucky colour and lucky direction for the child?</span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🛡️</div><h2><span class="hi">भाग 2: जन्म-दोष Analysis और उपाय</span><span class="en">Part 2: Birth Dosha Examination and Remedies</span></h2></div>
+    <div class="chk hi"><span>➤ <b>हर दोष का अलग Analysis:</b> पहले Clear लिखा जाएगा कि वह दोष है या नहीं, फिर जिस मान के आधार पर Conclusion निकाला है वह मान, फिर प्रभाव और उपाय।</span><span>➤ <b>गंडमूल और बालारिष्ट:</b> जन्म गंडमूल नक्षत्र में है या नहीं? बालारिष्ट है तो कितना Strong है, किस आयु तक है, और उसका भंग (रद्दीकरण) है या नहीं?</span><span>➤ <b>गंडांत और विशेष परिस्थितियाँ:</b> लग्न संधि, लग्न/तिथि गंडांत, अमावस्या, भद्रा करण, ग्रहण काल, संक्रांति काल - इनमें से कोई स्थिति लागू होती है या नहीं?</span><span>➤ <b>नज़र दोष और सावधानी:</b> बच्चे को नज़र लगने की प्रवृत्ति कितनी है, बचाव के सरल उपाय क्या हैं, और किस आयु तक स्वास्थ्य का विशेष ध्यान रखना है? (हर बात उपाय के साथ - डराने वाली भाषा बिल्कुल नहीं।)</span></div>
+    <div class="chk en"><span>➤ <b>Separate Examination of Each Dosha:</b> First it will be written clearly whether that dosha is present or not, then the value on the basis of which the Conclusion has been drawn, then the effect and the remedy.</span><span>➤ <b>Gandmool and Balarishta:</b> Is the birth in a Gandmool Nakshatra or not? If Balarishta is present, how strong is it, up to what age, and is there its cancellation (bhanga) or not?</span><span>➤ <b>Gandant and Special Circumstances:</b> Lagna Sandhi, Lagna/Tithi Gandant, Amavasya, Bhadra Karana, eclipse period, Sankranti period - does any of these apply or not?</span><span>➤ <b>Nazar Dosha and Caution:</b> How strong is the tendency of catching the evil eye, what are the simple protective remedies, and up to what age should special care of health be taken? (Everything with its remedy - no frightening language at all.)</span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🪔</div><h2><span class="hi">भाग 3: संस्कार और उनके मुहूर्त</span><span class="en">Part 3: Sanskars and Their Muhurat</span></h2></div>
+    <div class="chk hi"><span>➤ <b>नामकरण और अन्नप्राशन:</b> यदि बाकी हों तो उनके लिए शुभ अवधि और ध्यान रखने योग्य बातें; अन्नप्राशन का सबसे शुभ समय बच्चे की आयु के हिसाब से कब पड़ेगा?</span><span>➤ <b>मुंडन (चूड़ाकर्म):</b> मुंडन किस वर्ष में कराना सबसे शुभ रहेगा और किस समय टालना चाहिए?</span><span>➤ <b>विद्यारंभ:</b> बच्चे की पढ़ाई शुरू करने (अक्षर-लेखन) का सबसे उपयुक्त समय और आयु कौन सी है?</span><span>➤ <b>उपनयन (जनेऊ):</b> लागू होता हो तो उपयुक्त आयु और अवधि; लागू न हो तो Clear उल्लेख। जिन संस्कारों का समय निकल चुका हो, उनका एक पंक्ति में उल्लेख।</span></div>
+    <div class="chk en"><span>➤ <b>Namkaran and Annaprashan:</b> If they are still pending, the auspicious period for them and the points to keep in mind; according to the child's age, when will the most auspicious time for Annaprashan fall?</span><span>➤ <b>Mundan (Chudakarma):</b> In which year will it be most auspicious to perform the Mundan, and which time should be avoided?</span><span>➤ <b>Vidyarambh:</b> What is the most suitable time and age for starting the child's education (Akshar-Lekhan)?</span><span>➤ <b>Upanayan (Janeu):</b> If it applies, the suitable age and period; if it does not apply, a clear mention. The sanskars whose time has already passed will be mentioned in one line each.</span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🧒</div><h2><span class="hi">भाग 4: स्वभाव, स्वास्थ्य और शिक्षा की दिशा</span><span class="en">Part 4: Nature, Health and Direction of Education</span></h2></div>
+    <div class="chk hi"><span>➤ <b>स्वभाव और व्यक्तित्व:</b> लग्न, चंद्र राशि और जन्म नक्षत्र के आधार पर बच्चे का स्वभाव - उसकी मज़बूत बातें और जिन बातों पर शुरू से ध्यान देना चाहिए।</span><span>➤ <b>मन और भावनाएँ:</b> बच्चा भावनात्मक रूप से कैसा रहेगा - माता-पिता से जुड़ाव, संवेदनशीलता और उसके मन को समझने की कुंजी।</span><span>➤ <b>स्वास्थ्य:</b> स्वास्थ्य की ज्योतिषीय प्रवृत्ति - किन क्षेत्रों में सावधानी रखनी है और किस आयु तक विशेष ध्यान रखना है? (कोई Medical सलाह नहीं, सिर्फ प्रवृत्ति और सावधानी।)</span><span>➤ <b>शिक्षा की दिशा और परवरिश:</b> पढ़ाई में रुचि किस ओर रहेगी, किस क्षेत्र में प्राकृतिक मज़बूती है - यह सिर्फ दिशा है (Detailed Education Analysis अलग Product है); साथ में परवरिश की 3-4 व्यावहारिक बातें।</span></div>
+    <div class="chk en"><span>➤ <b>Nature and Personality:</b> On the basis of the Lagna, Moon sign and birth Nakshatra, the child's nature - his/her strong points and the points to pay attention to from the beginning.</span><span>➤ <b>Mind and Emotions:</b> How will the child be emotionally - attachment to the parents, sensitivity, and the key to understanding his/her mind.</span><span>➤ <b>Health:</b> The astrological tendency of health - in which areas should caution be kept, and up to what age should special care be taken? (No medical advice; only tendencies and cautions.)</span><span>➤ <b>Direction of Education and Upbringing:</b> Towards what will the interest in studies be, in which field is the natural strength - this is only a direction (the detailed Education Analysis is a separate product); along with it, 3-4 practical points of upbringing.</span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🌟</div><h2><span class="hi">भाग 5: योग, भाग्य और बचपन की दशा-रूपरेखा</span><span class="en">Part 5: Yogas, Fortune and the Dasha Outline of Childhood</span></h2></div>
+    <div class="chk hi"><span>➤ <b>प्रमुख योग:</b> कुंडली में कौन से प्रमुख योग और राजयोग हैं? हर योग किन ग्रहों से बना है और उसका बल Percentage में कितना Strong है?</span><span>➤ <b>भाग्य की दिशा:</b> लग्नेश, भाग्येश और चंद्र की स्थिति से बच्चे के भाग्य की बुनियादी दिशा - उन्नति का आधार मुख्य रूप से किस क्षेत्र से बनेगा?</span><span>➤ <b>बचपन की दशाएँ:</b> जन्म से अब तक कौन सी महादशा-अंतर्दशा चलीं और इस समय कौन सी चल रही है - बच्चे के स्वास्थ्य, स्वभाव और पढ़ाई की शुरुआत पर उनका असर।</span><span>➤ <b>आगे की रूपरेखा:</b> अगली महादशा कब से शुरू होगी और बचपन-किशोरावस्था के बड़े पड़ाव किस दशा में पड़ेंगे - तारीखों और आयु सहित।</span></div>
+    <div class="chk en"><span>➤ <b>Major Yogas:</b> Which major yogas and Rajyogas are present in the Kundali? From which planets is each yoga formed, and how strong is it in Percentage?</span><span>➤ <b>Direction of Fortune:</b> From the positions of the Lagnesh, Bhagyesh and the Moon, the basic direction of the child's fortune - mainly from which area will the foundation of progress be formed?</span><span>➤ <b>Childhood Dashas:</b> From birth till now, which Mahadasha-Antardasha have run, and which is running at present - their effect on the child's health, nature and the beginning of studies.</span><span>➤ <b>Outline Ahead:</b> From when will the next Mahadasha begin, and in which dasha will the major milestones of childhood-adolescence fall - along with dates and age.</span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🏆</div><h2><span class="hi">भाग 6: Final Conclusion और माता-पिता के लिए मार्गदर्शन</span><span class="en">Part 6: Final Conclusion and Guidance for the Parents</span></h2></div>
+    <div class="chk hi"><span>➤ <b>समग्र Conclusion:</b> बच्चे की कुंडली का कुल स्वरूप एक Clear पैराग्राफ में - बच्चे की सबसे बड़ी मज़बूती, सबसे बड़ी सावधानी और जीवन की बुनियादी दिशा।</span><span>➤ <b>सबसे महत्वपूर्ण सलाह:</b> माता-पिता के लिए सबसे ज़रूरी 2-3 सलाह अलग से Clear रूप में - परवरिश, स्वास्थ्य की देखभाल और रुचि को बढ़ावा देने के हिसाब से।</span><span>➤ <b>आपके 3 Personal Questions:</b> इस Analysis में माता-पिता के अधिकतम 3 Personal Questions शामिल हैं - उनके जवाब इसी Analysis में दिए जाएँगे।</span></div>
+    <div class="chk en"><span>➤ <b>Overall Conclusion:</b> The total picture of the child's Kundali in one clear paragraph - the child's biggest strength, the biggest caution, and the basic direction of life.</span><span>➤ <b>The Most Important Advice:</b> The 2-3 most important pieces of advice for the parents, stated separately and clearly - for upbringing, care of health, and promoting the child's interests.</span><span>➤ <b>Your 3 Personal Questions:</b> A maximum of 3 Personal Questions of the parents are included in this Analysis - their answers will be given within this Analysis itself.</span></div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">हमारा एनालिसिस इतना गहरा क्यों है?</span><span class="en">Why Is Our Analysis So Deep?</span></h2>
+  <p class="sec-sub hi">शिशु कुंडली Analysis के असली Checking Points - जिनसे हर बच्चे की कुंडली का गहराई से Analysis होता है</p>
+  <p class="sec-sub en">The real checking points of Shishu Kundali Analysis - through which every child's Kundali is analysed in depth</p>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">पराशरी</span><span class="en">Parashari</span></h2><span class="cnt hi">10 Points</span><span class="cnt en">10 Points</span></div>
+    <div class="ptags"><span class="ptag"><span class="n">1</span><span class="hi">अवकहड़ा चक्र - पाया, वर्ण, गण, नाड़ी</span><span class="en">Avakahada Chakra - Paya, Varna, Gana, Nadi</span></span><span class="ptag"><span class="n">2</span><span class="hi">नामाक्षर - नक्षत्र-पद से नाम का अक्षर</span><span class="en">Namakshara - Name Letter from Nakshatra-Pada</span></span><span class="ptag"><span class="n">3</span><span class="hi">गंडमूल नक्षत्र Analysis</span><span class="en">Gandmool Nakshatra Check</span></span><span class="ptag"><span class="n">4</span><span class="hi">बालारिष्ट और उसका भंग</span><span class="en">Balarishta and Its Cancellation</span></span><span class="ptag"><span class="n">5</span><span class="hi">लग्न/तिथि गंडांत Analysis</span><span class="en">Lagna/Tithi Gandant Check</span></span><span class="ptag"><span class="n">6</span><span class="hi">विशेष जन्म-परिस्थितियाँ - अमावस्या, भद्रा, ग्रहण</span><span class="en">Special Birth Circumstances - Amavasya, Bhadra, Eclipse</span></span><span class="ptag"><span class="n">7</span><span class="hi">नज़र दोष Analysis</span><span class="en">Nazar Dosha Check</span></span><span class="ptag"><span class="n">8</span><span class="hi">लग्न-चंद्र-नक्षत्र से स्वभाव</span><span class="en">Nature from Lagna-Moon-Nakshatra</span></span><span class="ptag"><span class="n">9</span><span class="hi">योग और राजयोग का बल</span><span class="en">Strength of Yogas and Rajyogas</span></span><span class="ptag"><span class="n">10</span><span class="hi">भाग्येश और लग्नेश की स्थिति</span><span class="en">Position of Bhagyesh and Lagnesh</span></span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">जैमिनी</span><span class="en">Jaimini</span></h2><span class="cnt hi">3 Points</span><span class="cnt en">3 Points</span></div>
+    <div class="ptags"><span class="ptag"><span class="n">1</span><span class="hi">चर कारक</span><span class="en">Chara Karaka</span></span><span class="ptag"><span class="n">2</span><span class="hi">आरूढ़ लग्न</span><span class="en">Arudha Lagna</span></span><span class="ptag"><span class="n">3</span><span class="hi">उपपद लग्न</span><span class="en">Upapada Lagna</span></span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">KP</span><span class="en">KP</span></h2><span class="cnt hi">1 Points</span><span class="cnt en">1 Points</span></div>
+    <div class="ptags"><span class="ptag"><span class="n">1</span><span class="hi">5वें भाव का CSL</span><span class="en">CSL of the 5th House</span></span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">BNN</span><span class="en">BNN</span></h2><span class="cnt hi">2 Points</span><span class="cnt en">2 Points</span></div>
+    <div class="ptags"><span class="ptag"><span class="n">1</span><span class="hi">गुरु गोचर से पड़ाव</span><span class="en">Milestones from Jupiter Transit</span></span><span class="ptag"><span class="n">2</span><span class="hi">ग्रह-युग्म फल</span><span class="en">Results of Planet Pairs</span></span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🔯</div><h2><span class="hi">D60</span><span class="en">D60</span></h2><span class="cnt hi">2 Points</span><span class="cnt en">2 Points</span></div>
+    <div class="ptags"><span class="ptag"><span class="n">1</span><span class="hi">D60 में लग्न-चंद्र</span><span class="en">Lagna-Moon in D60</span></span><span class="ptag"><span class="n">2</span><span class="hi">पूर्व कर्म का संकेत</span><span class="en">Indication of Past Karma</span></span></div>
+  </div>
+
+  <div class="block">
+    <div class="bhead"><div class="bicon">🔍</div><h2><span class="hi">ध्यान रहे : 100% Manual In-depth Analysis</span><span class="en">Please Note : 100% Manual In-depth Analysis</span></h2></div>
+    <p class="hi">इस Analysis में ग्रहों की Strength का <b>Highly Micro-Level</b> चेक किया जाता है। इसीलिए इसमें दिया हुआ Analysis पूरी तरीके से हमारी Deep Research और मेहनत का नतीजा है, जिससे Analysis Delivery में 1 से 2 दिन का समय लग सकता है। कृपया इसका ध्यान रखें।</p>
+    <p class="en">This Analysis involves a <b>Highly Micro-Level</b> examination of planetary Strength. Therefore, the detailed insights provided in this Analysis are purely the result of our Deep Research and hard work, due to which the Analysis Delivery may take 1 to 2 days. Please keep this in mind.</p>
+    <p class="taglabel hi">* Micro-Level Analysis में शामिल :</p><p class="taglabel en">* Micro-Level Analysis includes :</p>
+    <div class="sysbadges"><span class="hi">अस्त</span><span class="en">Combust (Ast)</span><span class="hi">वक्री</span><span class="en">Retrograde (Vakri)</span><span class="hi">वर्गोत्तम</span><span class="en">Vargottam</span><span class="hi">शत्रु/मित्र/सम राशि</span><span class="en">Enemy/Friend/Neutral signs</span><span class="hi">उच्च/नीच/नीचभंग</span><span class="en">Exalted/Debilitated/Neechbhang</span><span class="hi">षड्बल</span><span class="en">Shadbala</span><span class="hi">भावबल</span><span class="en">Bhavabala</span><span class="hi">अष्टकवर्ग</span><span class="en">Ashtakvarga</span><span class="hi">भिन्नाष्टकवर्ग</span><span class="en">Bhinnashtakvarga</span><span class="hi">षोडशवर्ग</span><span class="en">Shodashvarga</span><span class="hi">विंशोपक</span><span class="en">Vimsopaka</span><span class="hi">चलित</span><span class="en">Chalit</span><span class="hi">नवांश</span><span class="en">Navamsha</span><span class="hi">स्वांश-कारकांश</span><span class="en">Svamsha-Karakamsha</span><span class="hi">आरूढ़ पद</span><span class="en">Arudha Pada</span><span class="hi">चर कारक</span><span class="en">Chara Karaka</span><span class="hi">पुष्कर भाग</span><span class="en">Pushkar Bhaga</span><span class="hi">मृत्यु भाग</span><span class="en">Mrityu Bhaga</span><span class="hi">नवतारा चक्र</span><span class="en">Navatara Chakra</span><span class="hi">योग-दोष</span><span class="en">Yoga-Dosha</span><span class="hi">अर्गला</span><span class="en">Argala</span><span class="hi">उपग्रह</span><span class="en">Upagraha</span><span class="hi">स्पेशल लग्न</span><span class="en">Special Lagna</span></div>
+    <p class="taglabel hi" style="margin-top:14px;">दशा पद्धतियाँ :</p><p class="taglabel en" style="margin-top:14px;">Dasha systems :</p>
+    <div class="sysbadges"><span class="hi">विंशोत्तरी दशा</span><span class="en">Vimshottari Dasha</span><span class="hi">योगिनी दशा</span><span class="en">Yogini Dasha</span><span class="hi">त्रिभागी दशा</span><span class="en">Tribhagi Dasha</span><span class="hi">अष्टोत्तरी दशा</span><span class="en">Ashtottari Dasha</span><span class="hi">KP दशा</span><span class="en">KP Dasha</span><span class="hi">चर दशा</span><span class="en">Chara Dasha</span><span class="hi">डबल ट्रांजिट</span><span class="en">Double Transit</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🎧</div><h2>Mode of Consultation</h2></div>
+    <p class="hi">In-depth और Deep Analysis की PDF + 20 Minute की Audio Voice Note (Simple भाषा में समझाई हुई)।</p>
+    <p class="en">In-depth &amp; Deep Analysis PDF + 20-Minute Audio Voice Note (explained in simple language).</p>
+    <div class="sysbadges"><span>📄 PDF</span><span>🎧 Audio Voice Note</span></div>
+  </div>
+
+  <div class="block gold">
+    <div class="bhead"><div class="bicon">🌟</div><h2>हमारी विशेषता / Our Specialty</h2></div>
+    <p class="hi">Accurate Prediction के लिए हम 4 Main Astrological Systems से Planets की Strength और State का In-depth Analysis करने के बाद ही किसी Conclusion पर पहुँचते हैं। और एक ऐसी Analysis बनाते हैं जो सिर्फ़ आपके लिए Personally तैयार की जाती है। इसीलिए आप हमारी Accuracy पर पूरी तरीके से भरोसा कर सकते हैं।</p>
+    <p class="en">For Accurate Prediction, we reach a Conclusion only after doing an In-depth Analysis of the Strength and State of Planets through 4 Main Astrological Systems. And we create an Analysis that is Personally prepared only for you. That is why you can completely trust our Accuracy.</p>
+    <div class="sysbadges"><span class="hi">पराशरी</span><span class="en">Parashari</span><span class="hi">जैमिनी</span><span class="en">Jaimini</span><span>KP</span><span>BNN</span></div>
+  </div>
+
+  <h2 class="sec-title"><span class="hi">अपना Option चुनें</span><span class="en">Choose Your Option</span></h2>
+  <p class="sec-sub hi">आपके बच्चे की कुंडली का संपूर्ण Analysis - सिर्फ़ ₹299 में</p>
+  <p class="sec-sub en">A complete Analysis of your child's Kundali - in just ₹299</p>
+
+  <div class="ogrid" style="grid-template-columns:1fr;max-width:430px;">
+    <div class="ocard best">
+      <div><span class="otag hi">👶 शिशु कुंडली</span><span class="otag en">👶 Shishu Kundali</span></div>
+      <h3><span class="hi">स्पेशल शिशु कुंडली एनालिसिस</span><span class="en">Special Shishu Kundali Analysis</span></h3>
+      <div class="oprice">₹299</div>
+      <p class="hi">बच्चे का अवकहड़ा और नामाक्षर, जन्म-दोषों का Analysis और उपाय, संस्कारों के मुहूर्त, स्वभाव-स्वास्थ्य-शिक्षा की दिशा, योग-भाग्य और बचपन की दशा-रूपरेखा - Final Conclusion सहित। साथ में माता-पिता के 3 Personal Questions के जवाब भी।</p>
+      <p class="en">The child's Avakahada and Namakshara, examination of birth doshas and remedies, Muhurat of the sanskars, nature-health-direction of education, yogas-fortune and the dasha outline of childhood - with the Final Conclusion. Answers to the parents' 3 Personal Questions are also included.</p>
+      <a class="btn hi" target="_blank" href="https://pages.razorpay.com/Shishu-Kundali-Analysis">अभी ऑर्डर करें →</a>
+      <a class="btn en" target="_blank" href="https://pages.razorpay.com/Shishu-Kundali-Analysis-Eng">Order Now →</a>
+    </div>
+  </div>
+
+  <div class="block doubts">
+    <div class="bhead"><div class="bicon">💬</div><h2><span class="hi">एनालिसिस के बाद के सवाल (Doubts)</span><span class="en">Post-Analysis Queries (Doubts)</span></h2></div>
+    <p class="hi">➤ <b>डाउट्स क्लीयरेंस:</b> PDF में जवाब पढ़कर या Audio Voice Note सुनकर अगर मन में कोई डाउट रहा तो इसकी चिंता न करें। PDF में पहले से सभी डाउट्स का समाधान किया जाता है।</p>
+    <p class="hi">➤ <b>हमारा कमिटमेंट:</b> अगर फिर भी कोई डाउट हो तो updated PDF/Audio Voice Note भेजकर आपके सभी Doubts क्लियर किए जाते हैं। हम अपने क्लाइंट्स का साथ कभी नहीं छोड़ते जब तक उनके सभी डाउट्स क्लियर नहीं हो जाते।</p>
+    <p class="hi">➤ <b>कोई अतिरिक्त शुल्क नहीं:</b> आपको दोबारा डाउट्स क्लीयर करने के लिए कोई Extra चार्ज नहीं देना होता है। यह सर्विस एनालिसिस के Price में ही Included है।</p>
+    <p class="en">➤ <b>Doubts Clearance:</b> If you have any doubts in your mind after reading the answers in the PDF or listening to the Audio Voice Note, don't worry. All potential doubts are already addressed in the PDF itself.</p>
+    <p class="en">➤ <b>Our Commitment:</b> If you still have any doubts, they will be resolved by sending you an updated PDF/Audio Voice Note. We never leave our clients' side until all their doubts are fully cleared.</p>
+    <p class="en">➤ <b>No Extra Charges:</b> You do not have to pay any extra charges for getting your doubts cleared again. This service is already included in the analysis price.</p>
+  </div>
+
+  <div class="footer">
+    <div class="line">◆ Sanjivani Jyotish Sansthan ◆</div>
+    <div style="margin-top:8px;">
+      📧 <a href="mailto:komalastro14@gmail.com">komalastro14@gmail.com</a> &nbsp;|&nbsp;
+      Insta : <a target="_blank" href="https://instagram.com/astro.komal">astro.komal</a> • <a target="_blank" href="https://instagram.com/astro.sanjivani">astro.sanjivani</a> &nbsp;|&nbsp;
+      Telegram : <a target="_blank" href="https://t.me/Sanjivani_Jyotish">Sanjivani_Jyotish</a> &nbsp;|&nbsp;
+      WhatsApp : <a target="_blank" href="https://wa.me/919552636556">9552636556</a>
+    </div>
+    <div style="margin-top:6px; font-size:13px;">© Sanjivani Jyotish Sansthan | Astro Komal</div>
+  </div>
+
+</div>
+<script>
+  function toggleLanguage() {
+    document.body.classList.toggle('lang-en');
+    document.body.classList.toggle('lang-hi');
+  }
+</script>
+</body>
+</html>
