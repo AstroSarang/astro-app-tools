@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>कुंडली रिपोर्ट मेकर v2</title>
+<title>कुंडली रिपोर्ट मेकर v2.2</title>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -33,8 +33,8 @@
   .okmsg { color: #1b7a3d; font-weight: bold; }
   .err { color: #c00; font-weight: bold; }
   .work { color: #b7791f; font-weight: bold; }
-  .ribbon-demo { margin-top: 10px; background: #f6f6f6; border-radius: 8px; padding: 10px; text-align: center; }
-  .ribbon-demo .wr { display: inline-block; background: #fff; border-left: 14px solid #e8912d; border-right: 14px solid #e8912d; padding: 6px 34px; font-family: Georgia, serif; font-weight: bold; color: #C0392B; font-size: 20px; }
+  .ribbon-demo { margin-top: 10px; background: #fdf6e3; border: 2px solid #d4a017; border-radius: 14px; padding: 10px; text-align: center; }
+  .ribbon-demo .wr { display: inline-block; background: transparent; padding: 6px 34px; font-family: Georgia, serif; font-weight: bold; color: #C0392B; font-size: 20px; }
   .cap { font-size: 12px; color: #777; margin-top: 6px; text-align: center; }
   .note { background: #fff8e1; border: 1px solid #f0d97a; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #8a6d3b; margin-top: 18px; }
   .togglerow { display: flex; justify-content: space-between; align-items: center; background: #f4faf5; border: 1px solid #cfe3d2; border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 14px; cursor: pointer; }
@@ -47,32 +47,35 @@
   .row2 > div { flex: 1; }
   /* CSV page (hidden render area) */
   #pdf-wrapper { display: none; }
-  #report-container { width: 210mm; padding: 15mm; box-sizing: border-box; background: #fff; margin: auto; }
-  #report-container .sansthan-name { font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 700; text-align: center; color: #d35400; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-  #report-container .main-title { font-size: 24px; font-weight: bold; color: #4a4a4a; margin-bottom: 12px; border-bottom: 3px solid #ef8c56; padding-bottom: 4px; display: inline-block; }
+  #report-container { width: 210mm; height: 297mm; padding: 11mm 12mm; box-sizing: border-box; background: #FFF9EF; border: 3px double #C9A227; margin: auto; display: flex; flex-direction: column; }
+  #report-container .sansthan-name { font-family: Georgia, 'Times New Roman', serif; font-size: 30px; font-weight: 700; text-align: center; color: #7B1E1E; margin-bottom: 4px; letter-spacing: .5px; }
+  #report-container .sansthan-sub { text-align: center; color: #8a6d1f; font-size: 14px; margin-bottom: 12px; }
+  #report-container .gold-rule { height: 0; border-top: 2px solid #C9A227; border-bottom: 1px solid #C9A227; padding-top: 1px; margin: 0 8mm 14px; }
+  #report-container .main-title { font-size: 24px; font-weight: bold; color: #7B1E1E; margin-bottom: 12px; border-bottom: 3px solid #C9A227; padding-bottom: 4px; display: inline-block; }
   #report-container .single-layout { display: flex; justify-content: space-between; gap: 15px; margin-top: 10px; }
-  #report-container .column { width: 48%; border-radius: 6px; overflow: hidden; }
+  #report-container .column { width: 48%; border-radius: 6px; overflow: hidden; border: 1px solid #d9b64a; }
   #report-container .col-header { text-align: center; padding: 8px; font-weight: 600; color: #fff; font-size: 18px; }
-  #report-container .header-yellow { background-color: #f3c86c; }
-  #report-container .header-orange { background-color: #ef8c56; }
+  #report-container .header-yellow { background: linear-gradient(135deg,#8a5a13,#C9A227); }
+  #report-container .header-orange { background: linear-gradient(135deg,#5f1212,#7B1E1E); }
   #report-container .single-table { width: 100%; border-collapse: collapse; }
-  #report-container .single-table td { padding: 9.5px 12px; border: 1px solid #e0e0e0; text-align: center; font-size: 15px; }
-  #report-container .single-table tr:nth-child(even) { background-color: #f9f9f9; }
-  #report-container .summary-boxes { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 25px; }
-  #report-container .box { width: 31%; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 0; text-align: center; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
-  #report-container .box-title { color: #555; font-size: 14px; margin-bottom: 6px; }
+  #report-container .single-table td { padding: 9.5px 12px; border: 1px solid #e7d9ae; text-align: center; font-size: 15px; color: #333; background: #fffdf6; }
+  #report-container .single-table tr:nth-child(even) td { background-color: #faf0d7; }
+  #report-container .summary-boxes { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: auto; }
+  #report-container .box { width: 31%; border: 1.5px solid #C9A227; border-radius: 8px; padding: 12px 0; text-align: center; background: #fffdf6; box-shadow: 0 2px 6px rgba(123,30,30,.10); }
+  #report-container .box-title { color: #7B1E1E; font-size: 14px; margin-bottom: 6px; font-weight: 600; }
   #report-container .box-value { font-size: 16px; font-weight: 600; }
-  #report-container .val-green { color: #8bc34a; } #report-container .val-blue { color: #00bcd4; } #report-container .val-orange { color: #ff9800; }
+  #report-container .val-green { color: #7B1E1E; } #report-container .val-blue { color: #7B1E1E; } #report-container .val-orange { color: #7B1E1E; }
+  #report-container .page-foot { margin-top: 14px; padding-top: 10px; border-top: 2px solid #C9A227; text-align: center; color: #7B1E1E; font-size: 13px; font-weight: 600; }
   #report-container .milan-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-  #report-container .milan-table th, #report-container .milan-table td { border: 1px solid #999; padding: 6px 8px; font-size: 13px; text-align: left; }
-  #report-container .milan-table th { background-color: #eee; font-weight: bold; text-align: center; font-size: 14px; }
+  #report-container .milan-table th, #report-container .milan-table td { border: 1px solid #d9b64a; padding: 6px 8px; font-size: 13px; text-align: left; background: #fffdf6; }
+  #report-container .milan-table th { background: #7B1E1E; color: #fff; font-weight: bold; text-align: center; font-size: 14px; }
 </style>
 </head>
 <body>
 <div class="card">
   <div class="hd">
     <h2>🪔 कुंडली रिपोर्ट मेकर</h2>
-    <div class="sub">कवर + जन्म-विवरण पेज + कुंडली + एंडिंग + कैटलॉग → एक PDF रिपोर्ट &nbsp;•&nbsp; v2</div>
+    <div class="sub">कवर + जन्म-विवरण पेज + कुंडली + एंडिंग + कैटलॉग → एक PDF रिपोर्ट &nbsp;•&nbsp; v2.2</div>
   </div>
 
   <label class="lbl">1️⃣ कवर अपलोड करें (2 पेज वाला)</label>
@@ -82,7 +85,7 @@
   <label class="lbl">2️⃣ क्लाइंट का नाम (English)</label>
   <input type="text" id="clientName" placeholder="जैसे: Rahul" autocomplete="off">
   <div class="ribbon-demo"><div class="wr"><span id="ribbonDemoText">Rahul</span></div></div>
-  <div class="cap">कवर page 2 के नाम वाली पट्टी पर ऐसे लिखा जाएगा (लंबा नाम अपने-आप छोटा होगा)</div>
+  <div class="cap">कवर page 2 के बीच वाले नाम-box में ऐसे लिखा जाएगा (लंबा नाम अपने-आप छोटा होगा)</div>
 
   <label class="lbl">3️⃣ CSV से जन्म-विवरण पेज बनाएं</label>
   <div style="font-size:13px;color:#555;">रिपोर्ट की भाषा</div>
@@ -220,16 +223,17 @@ $('makePageBtn').onclick=async()=>{
     const rows=txt.split('\n').filter(r=>r.trim()!=='');
     const isMilan=rows[0].split(',').length>=3;
     const c=$('report-container');
-    c.innerHTML=`<div class="sansthan-name">Sanjivani Jyotish Sansthan</div>`;
+    c.innerHTML=`<div class="sansthan-name">Sanjivani Jyotish Sansthan</div><div class="sansthan-sub">✦ आपका भविष्य, हमारा मार्गदर्शन ✦</div><div class="gold-rule"></div>`;
     if(isMilan) sBuildMilan(rows,c,lang); else sBuildSingle(rows,c,lang);
+    c.innerHTML+=`<div class="page-foot">◆ Sanjivani Jyotish Sansthan | Sarangdhar14@gmail.com | 9637970660 ◆</div>`;
     const wrapper=$('pdf-wrapper'); wrapper.style.display='block';
     await new Promise(r=>setTimeout(r,60));
-    const canvas=await window.html2canvas(c,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+    const canvas=await window.html2canvas(c,{scale:2,useCORS:true,backgroundColor:'#FFF9EF'});
     wrapper.style.display='none';
     const pageDoc=await PDFLib.PDFDocument.create();
     const img=await pageDoc.embedJpg(canvas.toDataURL('image/jpeg',1.0));
-    const wPt=595.28, hPt=wPt*canvas.height/canvas.width;
-    pageDoc.addPage([wPt,hPt]).drawImage(img,{x:0,y:0,width:wPt,height:hPt});
+    /* पेज हमेशा पूरा Letter size (612 x 792) — report के बाकी pages के बराबर */
+    pageDoc.addPage([612,792]).drawImage(img,{x:0,y:0,width:612,height:792});
     csvBytes=await pageDoc.save();
     $('csvStatus').innerHTML=`<span class="okmsg">✔ पेज तैयार है — रिपोर्ट में जुड़ेगा।</span>`;
   }catch(e){
@@ -257,7 +261,9 @@ $('resetBtn').onclick=()=>{
 };
 
 /* ---------- build ---------- */
-const RIBBON_X=450, RIBBON_Y=401, RIBBON_MAXW=200, NAME_START_SIZE=30;
+/* नाम-box geometry (नया cover, 11 Nov 2026) — box page के बीच में: केंद्र (306, 302.5) drawText space
+   (MediaBox shift +7.92 सहित), MAXW 440, start size 34 */
+const RIBBON_X=306, RIBBON_Y=302.5, RIBBON_MAXW=440, NAME_START_SIZE=34;
 $('buildBtn').onclick=async()=>{
   const btn=$('buildBtn'), st=$('buildStatus');
   const setW=m=>{st.innerHTML=`<span class="work">${m}</span>`;};
