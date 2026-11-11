@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>कुंडली रिपोर्ट असेंबलर v8 — Sanjivani Jyotish Sansthan</title>
+<title>कुंडली रिपोर्ट असेंबलर v8.1 — Sanjivani Jyotish Sansthan</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -53,8 +53,8 @@
   .status .err { color:#a93226; font-weight:bold; }
   .status .work { color:#8a6d3b; }
   /* ribbon live preview */
-  .ribbon-demo { margin:12px auto 4px; width:340px; max-width:100%; height:66px; background:#e67e22; border-radius:6px; position:relative; }
-  .ribbon-demo .wr { position:absolute; left:64px; right:14px; top:14px; bottom:14px; background:#fff; clip-path:polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%, 7% 50%); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .ribbon-demo { margin:12px auto 4px; width:340px; max-width:100%; height:66px; background:#fdf6e3; border:2px solid #d4a017; border-radius:14px; position:relative; }
+  .ribbon-demo .wr { position:absolute; left:8px; right:8px; top:8px; bottom:8px; background:transparent; display:flex; align-items:center; justify-content:center; overflow:hidden; }
   .ribbon-demo .wr span { color:#C0392B; font-family:Georgia,'Times New Roman',serif; font-weight:bold; font-size:22px; white-space:nowrap; }
   .cap { text-align:center; font-size:12px; color:#8a6d3b; margin-top:6px; }
   .hidden { display:none !important; }
@@ -158,7 +158,7 @@
     <label class="lbl">2️⃣ क्लाइंट का नाम (English)</label>
     <input type="text" id="clientName" placeholder="जैसे: Rahul" autocomplete="off">
     <div class="ribbon-demo"><div class="wr"><span id="ribbonDemoText">Rahul</span></div></div>
-    <div class="cap">कवर page 2 के white ribbon में ऐसे दिखेगा — लाल, serif bold, centered (लंबा नाम अपने-आप छोटा होगा)</div>
+    <div class="cap">कवर page 2 के नाम वाले box में ऐसे दिखेगा — गहरा लाल, serif bold, centered (लंबा नाम अपने-आप छोटा होगा)</div>
 
     <label class="lbl">3️⃣ कैटलॉग भाषा</label>
     <select id="catalogSel">
@@ -409,10 +409,10 @@ $('makePageBtn').onclick=async()=>{
 <script>
 'use strict';
 /* ================= REPORT ASSEMBLY ================= */
-/* ribbon geometry (cover p2) — measured from template render.
-   NOTE: cover MediaBox is [0,7.92,612,799.92], so drawText user-space y is shifted;
-   true ribbon center in drawText space = (450.5, 400.9) */
-const RIBBON_X=450, RIBBON_Y=401, RIBBON_MAXW=200, NAME_START_SIZE=30;
+/* name-box geometry (cover p2, NEW cover 11 Nov 2026) — box measured from template render:
+   x 42.8–568.6, top-based center y = 497.4. NOTE: cover MediaBox is [0,7.92,612,799.92],
+   so drawText user-space y is shifted (+7.92); true box center in drawText space = (306, 302.5) */
+const RIBBON_X=306, RIBBON_Y=302.5, RIBBON_MAXW=440, NAME_START_SIZE=34;
 function range(a,b){const r=[];for(let i=a;i<b;i++)r.push(i);return r;}
 $('catalogSel').onchange=e=>localStorage.setItem('sra_catalog',e.target.value);
 $('buildBtn').onclick=async()=>{
@@ -433,7 +433,7 @@ $('buildBtn').onclick=async()=>{
   btn.disabled=true; btn.textContent='बन रही है...';
   try{
     setW('कवर पर नाम लिखा जा रहा है...');
-    /* 1. cover + name on page 2 (ribbon center 450,391) */
+    /* 1. cover + name on page 2 (name-box center 306, 302.5) */
     const coverDoc=await PDFLib.PDFDocument.load(tplState.cover.bytes.slice(0));
     const font=await coverDoc.embedFont(PDFLib.StandardFonts.TimesRomanBold);
     const nameColor=PDFLib.rgb(192/255,57/255,43/255); // #C0392B
