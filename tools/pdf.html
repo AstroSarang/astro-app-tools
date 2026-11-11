@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>कुंडली रिपोर्ट असेंबलर v8.1 — Sanjivani Jyotish Sansthan</title>
+<title>कुंडली रिपोर्ट असेंबलर v8.2 — Sanjivani Jyotish Sansthan</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -62,25 +62,28 @@
   .rowbtns .btn { margin-top:0; }
   /* hidden render area for self-made kundli page (same as Gemini tool) */
   #pdf-wrapper { display:none; }
-  #report-container { width:210mm; padding:15mm; box-sizing:border-box; background:#fff; margin:auto; }
-  #report-container .sansthan-name { font-family:'Poppins',sans-serif; font-size:28px; font-weight:700; text-align:center; color:#d35400; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px; }
-  #report-container .main-title { font-size:24px; font-weight:bold; color:#4a4a4a; margin-bottom:12px; border-bottom:3px solid #ef8c56; padding-bottom:4px; display:inline-block; }
+  #report-container { width:210mm; height:297mm; padding:11mm 12mm; box-sizing:border-box; background:#FFF9EF; border:3px double #C9A227; margin:auto; display:flex; flex-direction:column; }
+  #report-container .sansthan-name { font-family:Georgia,'Times New Roman',serif; font-size:30px; font-weight:700; text-align:center; color:#7B1E1E; margin-bottom:4px; letter-spacing:.5px; }
+  #report-container .sansthan-sub { text-align:center; color:#8a6d1f; font-size:14px; margin-bottom:12px; }
+  #report-container .gold-rule { height:0; border-top:2px solid #C9A227; border-bottom:1px solid #C9A227; padding-top:1px; margin:0 8mm 14px; }
+  #report-container .main-title { font-size:24px; font-weight:bold; color:#7B1E1E; margin-bottom:12px; border-bottom:3px solid #C9A227; padding-bottom:4px; display:inline-block; }
   #report-container .single-layout { display:flex; justify-content:space-between; gap:15px; margin-top:10px; }
-  #report-container .column { width:48%; border-radius:6px; overflow:hidden; }
+  #report-container .column { width:48%; border-radius:6px; overflow:hidden; border:1px solid #d9b64a; }
   #report-container .col-header { text-align:center; padding:8px; font-weight:600; color:#fff; font-size:18px; }
-  #report-container .header-yellow { background-color:#f3c86c; }
-  #report-container .header-orange { background-color:#ef8c56; }
+  #report-container .header-yellow { background:linear-gradient(135deg,#8a5a13,#C9A227); }
+  #report-container .header-orange { background:linear-gradient(135deg,#5f1212,#7B1E1E); }
   #report-container .single-table { width:100%; border-collapse:collapse; }
-  #report-container .single-table td { padding:9.5px 12px; border:1px solid #e0e0e0; text-align:center; font-size:15px; }
-  #report-container .single-table tr:nth-child(even) { background-color:#f9f9f9; }
-  #report-container .summary-boxes { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; margin-top:25px; }
-  #report-container .box { width:31%; border:1px solid #e0e0e0; border-radius:6px; padding:12px 0; text-align:center; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.06); }
-  #report-container .box-title { color:#555; font-size:14px; margin-bottom:6px; }
+  #report-container .single-table td { padding:9.5px 12px; border:1px solid #e7d9ae; text-align:center; font-size:15px; color:#333; background:#fffdf6; }
+  #report-container .single-table tr:nth-child(even) td { background-color:#faf0d7; }
+  #report-container .summary-boxes { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; margin-top:auto; }
+  #report-container .box { width:31%; border:1.5px solid #C9A227; border-radius:8px; padding:12px 0; text-align:center; background:#fffdf6; box-shadow:0 2px 6px rgba(123,30,30,.10); }
+  #report-container .box-title { color:#7B1E1E; font-size:14px; margin-bottom:6px; font-weight:600; }
   #report-container .box-value { font-size:16px; font-weight:600; }
-  #report-container .val-green { color:#8bc34a; } #report-container .val-blue { color:#00bcd4; } #report-container .val-orange { color:#ff9800; }
+  #report-container .val-green { color:#7B1E1E; } #report-container .val-blue { color:#7B1E1E; } #report-container .val-orange { color:#7B1E1E; }
+  #report-container .page-foot { margin-top:14px; padding-top:10px; border-top:2px solid #C9A227; text-align:center; color:#7B1E1E; font-size:13px; font-weight:600; }
   #report-container .milan-table { width:100%; border-collapse:collapse; margin-top:10px; }
-  #report-container .milan-table th, #report-container .milan-table td { border:1px solid #999; padding:6px 8px; font-size:13px; text-align:left; }
-  #report-container .milan-table th { background-color:#eee; font-weight:bold; text-align:center; font-size:14px; }
+  #report-container .milan-table th, #report-container .milan-table td { border:1px solid #d9b64a; padding:6px 8px; font-size:13px; text-align:left; background:#fffdf6; }
+  #report-container .milan-table th { background:#7B1E1E; color:#fff; font-weight:bold; text-align:center; font-size:14px; }
   #report-container .milan-table td:first-child { background-color:#fdfdfd; font-weight:600; color:#333; }
 </style>
 </head>
@@ -384,18 +387,19 @@ $('makePageBtn').onclick=async()=>{
     const rows=txt.split('\n').filter(r=>r.trim()!=='');
     const isMilan=rows[0].split(',').length>=3;
     const c=$('report-container');
-    c.innerHTML=`<div class="sansthan-name">Sanjivani Jyotish Sansthan</div>`;
+    c.innerHTML=`<div class="sansthan-name">Sanjivani Jyotish Sansthan</div><div class="sansthan-sub">✦ आपका भविष्य, हमारा मार्गदर्शन ✦</div><div class="gold-rule"></div>`;
     if(isMilan) sBuildMilan(rows,c,lang); else sBuildSingle(rows,c,lang);
+    c.innerHTML+=`<div class="page-foot">◆ Sanjivani Jyotish Sansthan | 📧 Komalastro14@gmail.com | Insta : astro.komal ◆</div>`;
     const wrapper=$('pdf-wrapper'); wrapper.style.display='block';
     await new Promise(r=>setTimeout(r,60)); // let layout settle
     /* rasterize with html2canvas, then build an exact content-fit page with pdf-lib —
        the image IS the page, so no empty top/bottom space and no blank 2nd page */
-    const canvas=await window.html2canvas(c,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+    const canvas=await window.html2canvas(c,{scale:2,useCORS:true,backgroundColor:'#FFF9EF'});
     wrapper.style.display='none';
     const pageDoc=await PDFLib.PDFDocument.create();
     const img=await pageDoc.embedJpg(canvas.toDataURL('image/jpeg',1.0));
-    const wPt=595.28, hPt=wPt*canvas.height/canvas.width; // A4 width, height fits content
-    pageDoc.addPage([wPt,hPt]).drawImage(img,{x:0,y:0,width:wPt,height:hPt});
+    /* पेज हमेशा पूरा Letter size (612 x 792) — report के बाकी pages के बराबर */
+    pageDoc.addPage([612,792]).drawImage(img,{x:0,y:0,width:612,height:792});
     selfMadeBytes=await pageDoc.save();
     selfStatusMsg();
     $('selfStatus').innerHTML=`<span class="okmsg">✔ पेज तैयार है — अब नीचे नाम व कैटलॉग चुनकर "रिपोर्ट बनाएं" दबाएं।</span>`;
