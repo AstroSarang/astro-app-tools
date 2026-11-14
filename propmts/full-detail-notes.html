@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Detail Notes v1.0</title>
+    <title>Full Detail Notes v1.1</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -97,7 +97,7 @@
 </head>
 <body>
 
-    <h1>📝 Full Detail Notes v1.0</h1>
+    <h1>📝 Full Detail Notes v1.1</h1>
     <p style="text-align:center; color:#666; font-size:14px; margin:4px 0 10px;">Ques report में जिस सवाल का जवाब दूसरे product से जुड़ा हो, उस जवाब के अंत में यह note लगाएँ - भाषा चुनो, note copy करो।</p>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
@@ -115,106 +115,185 @@
 
     <script>
         let currentLang = 'hi';
-        const titles_hi = [
-  "मैरिज टाइमिंग",
-  "करियर",
-  "वर्षफल / Year Book",
-  "मैरिज",
-  "एजुकेशन",
-  "संतान",
-  "मिलान",
-  "पूरी कुंडली",
-  "गुरु गोचर",
-  "साढ़ेसाती",
-  "शुभ मुहूर्त",
-  "शिशु कुंडली",
-  "जन्म समय (BTR)"
+        const cards_hi = [
+  {
+    "h": "⚠️ Warning Note - दूसरे व्यक्ति का Analysis",
+    "t": "Warning: [संबंध] के बारे में ऊपर दिया गया analysis केवल आपकी कुंडली के आधार पर है। उनके बारे में और अधिक accurate और detailed जानकारी के लिए उनकी खुद की कुंडली का होना भी जरूरी है। उनकी कुंडली देखे बिना complete और पूरी तरह accurate analysis संभव नहीं होगा।"
+  },
+  {
+    "h": "Note #1 - मैरिज टाइमिंग",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया मैरिज टाइमिंग analysis सिर्फ प्रमुख दशाओं पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, मैरिज टाइमिंग report लगभग 15 layers से check की जाती है, ताकि timing को absolute accuracy से predict किया जा सके। इसमें Yogini, Tribhagi, Ashtottari Dasha, Ashtakvarga, Bhaavbal-Shadbala, Double Transit, D60 Confirmation जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate timing के लिए, हमारी मैरिज टाइमिंग report order करें।)"
+  },
+  {
+    "h": "Note #2 - करियर",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया करियर analysis सिर्फ प्रमुख ग्रहों पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, करियर report लगभग 20+ layers से check की जाती है, ताकि career flow को absolute accuracy से predict किया जा सके। इसमें four systems, SAV-BAV, D60 confirmation जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate career flow के लिए, हमारी करियर report order करें।)"
+  },
+  {
+    "h": "Note #3 - वर्षफल / Year Book",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया वर्षफल analysis सिर्फ पाराशरी पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, Year Book report लगभग 10+ layers से check की जाती है, ताकि पूरे वर्ष का वर्षफल absolute accuracy से दिया जा सके। इसमें four Dasha systems, Gochar, Tajik Varshphal Kundli जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate वर्षफल के लिए, हमारी Year Book report order करें।)"
+  },
+  {
+    "h": "Note #4 - मैरिज",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया मैरिज analysis सिर्फ सप्तम भाव, सप्तमेश और शुक्र पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, मैरिज report लगभग 25 layers से check की जाती है, ताकि जीवनसाथी का स्वभाव और profile absolute accuracy से predict किया जा सके। इसमें Navamsha (D9), Shadbala, Jaimini, BNN, KP जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate मैरिज analysis के लिए, हमारी मैरिज report order करें।)"
+  },
+  {
+    "h": "Note #5 - एजुकेशन",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया एजुकेशन analysis सिर्फ पंचम भाव, पंचमेश, गुरु और बुध पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, एजुकेशन report लगभग 24 layers से check की जाती है, ताकि education flow और exam results को absolute accuracy से predict किया जा सके। इसमें Navamsha (D9), Chaturvimshamsha (D24), Jaimini, BNN, KP जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate एजुकेशन analysis के लिए, हमारी एजुकेशन report order करें।)"
+  },
+  {
+    "h": "Note #6 - संतान",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया संतान analysis सिर्फ पंचम भाव, पंचमेश और गुरु पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, संतान report लगभग 16 layers से check की जाती है, ताकि संतान की संभावना और timing को absolute accuracy से predict किया जा सके। इसमें Navamsha (D9), Saptamsha (D7), Bija-Kshetra Sphuta, Jaimini, BNN, KP, D60 Confirmation जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate संतान analysis के लिए, हमारी संतान report order करें।)"
+  },
+  {
+    "h": "Note #7 - मिलान",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया मिलान analysis सिर्फ अष्टकूट मिलान पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, मिलान report लगभग 22 layers से check की जाती है, ताकि compatibility को absolute accuracy से predict किया जा सके। इसमें Dashakoot, Mangal Dosh, Navamsha (D9), Panchadha Maitri, Jaimini, BNN, KP जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate मिलान के लिए, हमारी मिलान report order करें।)"
+  },
+  {
+    "h": "Note #8 - पूरी कुंडली",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया कुंडली analysis सिर्फ प्रमुख ग्रहों और भावों पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, Full Kundli report लगभग 26 layers से check की जाती है, ताकि पूरी कुंडली का analysis absolute accuracy से दिया जा सके। इसमें four systems, 16 Divisional Charts, SAV-BAV, D60 confirmation जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate कुंडली analysis के लिए, हमारी Full Kundli report order करें।)"
+  },
+  {
+    "h": "Note #9 - गुरु गोचर",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया गुरु गोचर analysis सिर्फ गुरु के गोचर पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, गुरु गोचर report लगभग 8 layers से check की जाती है, ताकि गोचर के effects को absolute accuracy से predict किया जा सके। इसमें BAV-SAV, Dasha-Transit Synergy, Navamsha (D9), Double Transit जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate गोचर effects के लिए, हमारी गुरु गोचर report order करें।)"
+  },
+  {
+    "h": "Note #10 - साढ़ेसाती",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया साढ़ेसाती analysis सिर्फ शनि के गोचर पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, साढ़ेसाती report लगभग 8 layers से check की जाती है, ताकि साढ़ेसाती के effects को absolute accuracy से predict किया जा सके। इसमें Shadbala, Dasha Systems, Master Timeline, Transit Saturn जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate साढ़ेसाती analysis के लिए, हमारी साढ़ेसाती report order करें।)"
+  },
+  {
+    "h": "Note #11 - शुभ मुहूर्त",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया मुहूर्त analysis सिर्फ पंचांग पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, शुभ मुहूर्त report लगभग 8 layers से check की जाती है, ताकि सटीक मुहूर्त को absolute accuracy से determine किया जा सके। इसमें Panchang Shuddhi, Chandra-Bala, Tara-Bala, Tribala, Lagna Shuddhi जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate मुहूर्त के लिए, हमारी शुभ मुहूर्त report order करें।)"
+  },
+  {
+    "h": "Note #12 - शिशु कुंडली",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया शिशु कुंडली analysis सिर्फ जन्म कुंडली (D1) पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, शिशु कुंडली report लगभग 16 layers से check की जाती है, ताकि बच्चे के पहले वर्ष को absolute accuracy से analyze किया जा सके। इसमें Avakahada Chakra, Gandmool, Balarishta, Jaimini, BNN, KP, D60 जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate शिशु कुंडली analysis के लिए, हमारी शिशु कुंडली report order करें।)"
+  },
+  {
+    "h": "Note #13 - जन्म समय (BTR)",
+    "t": "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया जन्म समय analysis सिर्फ दिए गए जन्म समय पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, BTR report life events और divisional charts (D45, D5, D6, D8, D11, D27) से check की जाती है, ताकि जन्म समय को absolute accuracy से determine किया जा सके। इसमें event matching, divisional charts और dasha verification जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate जन्म समय के लिए, हमारी BTR report order करें।)"
+  }
 ];
-        const titles_en = [
-  "Marriage Timing",
-  "Career",
-  "Varshphal / Year Book",
-  "Marriage",
-  "Education",
-  "Child Birth",
-  "Milan",
-  "Full Kundli",
-  "Jupiter Transit",
-  "Sadesati",
-  "Shubh Muhurat",
-  "Shishu Kundali",
-  "Birth Time (BTR)"
+        const cards_en = [
+  {
+    "h": "⚠️ Warning Note - Other Person's Analysis",
+    "t": "Warning: The above analysis about [relationship] is based only on your kundali. For more accurate and detailed information about them, their own kundali is also necessary. Without seeing their kundali, a complete and fully accurate analysis is not possible."
+  },
+  {
+    "h": "Note #1 - Marriage Timing",
+    "t": "(Note: Please note that the marriage timing given below in this report is analyzed only from the major dashas. To make it more accurate, the marriage timing report is checked from around 15 layers so that the timing can be predicted with absolute accuracy. Advanced astrology like Yogini, Tribhagi, Ashtottari Dasha, Ashtakvarga, Bhaavbal-Shadbala, Double Transit, D60 Confirmation are used in it. Hence, for more accurate timing, order our marriage timing report.)"
+  },
+  {
+    "h": "Note #2 - Career",
+    "t": "(Note: Please note that the career analysis given below in this report is based on the major planets only. To make it more accurate, the career report is checked with around 20+ layers so that the career flow can be predicted with absolute accuracy. Advanced astrology like four systems, SAV-BAV, D60 confirmation are used in it. Therefore, order our career report for more accurate career flow.)"
+  },
+  {
+    "h": "Note #3 - Varshphal / Year Book",
+    "t": "(Note: Please note that the Varshphal analysis given below in this report is calculated only from Parashari. To make it more accurate, the Varshphal report is checked with about 10+ layers so that the Varshphal for the entire year can be given absolutely accurately. Advanced astrology like the four Dasha systems, Gochar, Tajik Varshphal Kundli are used in it. Therefore, for more accurate Varshphal, order our Varshphal report.)"
+  },
+  {
+    "h": "Note #4 - Marriage",
+    "t": "(Note: Please note that the marriage analysis given below in this report is analyzed only from the 7th house, its lord and Venus. To make it more accurate, the marriage report is checked with around 25 layers so that the spouse's nature and profile can be predicted with absolute accuracy. Advanced astrology like Navamsha (D9), Shadbala, Jaimini, BNN, KP are used in it. Hence, for more accurate marriage analysis, order our marriage report.)"
+  },
+  {
+    "h": "Note #5 - Education",
+    "t": "(Note: Please note that the education analysis given below in this report is analyzed only from the 5th house, its lord, Jupiter and Mercury. To make it more accurate, the education report is checked with around 24 layers so that the education flow and exam results can be predicted with absolute accuracy. Advanced astrology like Navamsha (D9), Chaturvimshamsha (D24), Jaimini, BNN, KP are used in it. Hence, for more accurate education analysis, order our education report.)"
+  },
+  {
+    "h": "Note #6 - Child Birth",
+    "t": "(Note: Please note that the child birth analysis given below in this report is analyzed only from the 5th house, its lord and Jupiter. To make it more accurate, the child birth report is checked with around 16 layers so that the possibility and timing of children can be predicted with absolute accuracy. Advanced astrology like Navamsha (D9), Saptamsha (D7), Bija-Kshetra Sphuta, Jaimini, BNN, KP, D60 Confirmation are used in it. Hence, for more accurate child birth analysis, order our child birth report.)"
+  },
+  {
+    "h": "Note #7 - Milan",
+    "t": "(Note: Please note that the matching analysis given below in this report is analyzed only from Ashtakoot matching. To make it more accurate, the Milan report is checked with around 22 layers so that the compatibility can be predicted with absolute accuracy. Advanced astrology like Dashakoot, Mangal Dosh, Navamsha (D9), Panchadha Maitri, Jaimini, BNN, KP are used in it. Hence, for more accurate matching, order our Milan report.)"
+  },
+  {
+    "h": "Note #8 - Full Kundli",
+    "t": "(Note: Please note that the Kundli analysis given below in this report is based on the major planets and houses only. To make it more accurate, the Full Kundli report is checked with around 26 layers so that the complete Kundli analysis can be given with absolute accuracy. Advanced astrology like four systems, 16 Divisional Charts, SAV-BAV, D60 confirmation are used in it. Therefore, order our Full Kundli report for more accurate Kundli analysis.)"
+  },
+  {
+    "h": "Note #9 - Jupiter Transit",
+    "t": "(Note: Please note that the Jupiter transit analysis given below in this report is analyzed only from Jupiter's transit. To make it more accurate, the Jupiter Transit report is checked with around 8 layers so that the transit effects can be predicted with absolute accuracy. Advanced astrology like BAV-SAV, Dasha-Transit Synergy, Navamsha (D9), Double Transit are used in it. Hence, for more accurate transit effects, order our Jupiter Transit report.)"
+  },
+  {
+    "h": "Note #10 - Sadesati",
+    "t": "(Note: Please note that the Sadesati analysis given below in this report is analyzed only from Saturn's transit. To make it more accurate, the Sadesati report is checked with around 8 layers so that the Sadesati effects can be predicted with absolute accuracy. Advanced astrology like Shadbala, Dasha Systems, Master Timeline, Transit Saturn are used in it. Hence, for more accurate Sadesati analysis, order our Sadesati report.)"
+  },
+  {
+    "h": "Note #11 - Shubh Muhurat",
+    "t": "(Note: Please note that the Muhurat analysis given below in this report is analyzed only from the Panchang. To make it more accurate, the Shubh Muhurat report is checked with around 8 layers so that the exact Muhurat can be determined with absolute accuracy. Advanced astrology like Panchang Shuddhi, Chandra-Bala, Tara-Bala, Tribala, Lagna Shuddhi are used in it. Hence, for more accurate Muhurat, order our Shubh Muhurat report.)"
+  },
+  {
+    "h": "Note #12 - Shishu Kundali",
+    "t": "(Note: Please note that the child Kundli analysis given below in this report is analyzed only from the birth chart (D1). To make it more accurate, the Shishu Kundali report is checked with around 16 layers so that the child's first year can be analyzed with absolute accuracy. Advanced astrology like Avakahada Chakra, Gandmool, Balarishta, Jaimini, BNN, KP, D60 are used in it. Hence, for more accurate child Kundli analysis, order our Shishu Kundali report.)"
+  },
+  {
+    "h": "Note #13 - Birth Time (BTR)",
+    "t": "(Note: Please note that the birth time analysis given below in this report is based on the given birth time only. To make it more accurate, the BTR report is checked with life events and divisional charts (D45, D5, D6, D8, D11, D27) so that the birth time can be determined with absolute accuracy. Advanced astrology like event matching, divisional charts and dasha verification are used in it. Hence, for more accurate birth time, order our BTR report.)"
+  }
 ];
-        const titles_mr = [
-  "मॅरेज टायमिंग",
-  "करिअर",
-  "वर्षफल / Year Book",
-  "मॅरेज",
-  "शिक्षण",
-  "संतान",
-  "मिलन",
-  "संपूर्ण कुंडली",
-  "गुरु गोचर",
-  "साडेसाती",
-  "शुभ मुहूर्त",
-  "शिशु कुंडली",
-  "जन्म वेळ (BTR)"
-];
-        const rawData_hi = [
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया मैरिज टाइमिंग analysis सिर्फ प्रमुख दशाओं पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, मैरिज टाइमिंग report लगभग 15 layers से check की जाती है, ताकि timing को absolute accuracy से predict किया जा सके। इसमें Yogini, Tribhagi, Ashtottari Dasha, Ashtakvarga, Bhaavbal-Shadbala, Double Transit, D60 Confirmation जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate timing के लिए, हमारी मैरिज टाइमिंग report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया करियर analysis सिर्फ प्रमुख ग्रहों पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, करियर report लगभग 20+ layers से check की जाती है, ताकि career flow को absolute accuracy से predict किया जा सके। इसमें four systems, SAV-BAV, D60 confirmation जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate career flow के लिए, हमारी करियर report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया वर्षफल analysis सिर्फ पाराशरी पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, Year Book report लगभग 10+ layers से check की जाती है, ताकि पूरे वर्ष का वर्षफल absolute accuracy से दिया जा सके। इसमें four Dasha systems, Gochar, Tajik Varshphal Kundli जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate वर्षफल के लिए, हमारी Year Book report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया मैरिज analysis सिर्फ सप्तम भाव, सप्तमेश और शुक्र पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, मैरिज report लगभग 25 layers से check की जाती है, ताकि जीवनसाथी का स्वभाव और profile absolute accuracy से predict किया जा सके। इसमें Navamsha (D9), Shadbala, Jaimini, BNN, KP जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate मैरिज analysis के लिए, हमारी मैरिज report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया एजुकेशन analysis सिर्फ पंचम भाव, पंचमेश, गुरु और बुध पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, एजुकेशन report लगभग 24 layers से check की जाती है, ताकि education flow और exam results को absolute accuracy से predict किया जा सके। इसमें Navamsha (D9), Chaturvimshamsha (D24), Jaimini, BNN, KP जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate एजुकेशन analysis के लिए, हमारी एजुकेशन report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया संतान analysis सिर्फ पंचम भाव, पंचमेश और गुरु पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, संतान report लगभग 16 layers से check की जाती है, ताकि संतान की संभावना और timing को absolute accuracy से predict किया जा सके। इसमें Navamsha (D9), Saptamsha (D7), Bija-Kshetra Sphuta, Jaimini, BNN, KP, D60 Confirmation जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate संतान analysis के लिए, हमारी संतान report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया मिलान analysis सिर्फ अष्टकूट मिलान पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, मिलान report लगभग 22 layers से check की जाती है, ताकि compatibility को absolute accuracy से predict किया जा सके। इसमें Dashakoot, Mangal Dosh, Navamsha (D9), Panchadha Maitri, Jaimini, BNN, KP जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate मिलान के लिए, हमारी मिलान report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया कुंडली analysis सिर्फ प्रमुख ग्रहों और भावों पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, Full Kundli report लगभग 26 layers से check की जाती है, ताकि पूरी कुंडली का analysis absolute accuracy से दिया जा सके। इसमें four systems, 16 Divisional Charts, SAV-BAV, D60 confirmation जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate कुंडली analysis के लिए, हमारी Full Kundli report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया गुरु गोचर analysis सिर्फ गुरु के गोचर पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, गुरु गोचर report लगभग 8 layers से check की जाती है, ताकि गोचर के effects को absolute accuracy से predict किया जा सके। इसमें BAV-SAV, Dasha-Transit Synergy, Navamsha (D9), Double Transit जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate गोचर effects के लिए, हमारी गुरु गोचर report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया साढ़ेसाती analysis सिर्फ शनि के गोचर पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, साढ़ेसाती report लगभग 8 layers से check की जाती है, ताकि साढ़ेसाती के effects को absolute accuracy से predict किया जा सके। इसमें Shadbala, Dasha Systems, Master Timeline, Transit Saturn जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate साढ़ेसाती analysis के लिए, हमारी साढ़ेसाती report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया मुहूर्त analysis सिर्फ पंचांग पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, शुभ मुहूर्त report लगभग 8 layers से check की जाती है, ताकि सटीक मुहूर्त को absolute accuracy से determine किया जा सके। इसमें Panchang Shuddhi, Chandra-Bala, Tara-Bala, Tribala, Lagna Shuddhi जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate मुहूर्त के लिए, हमारी शुभ मुहूर्त report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया शिशु कुंडली analysis सिर्फ जन्म कुंडली (D1) पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, शिशु कुंडली report लगभग 16 layers से check की जाती है, ताकि बच्चे के पहले वर्ष को absolute accuracy से analyze किया जा सके। इसमें Avakahada Chakra, Gandmool, Balarishta, Jaimini, BNN, KP, D60 जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate शिशु कुंडली analysis के लिए, हमारी शिशु कुंडली report order करें।)",
-  "(Note: कृपया ध्यान दें कि इस report में नीचे दिया गया जन्म समय analysis सिर्फ दिए गए जन्म समय पर आधारित है। इसे और ज़्यादा accurate बनाने के लिए, BTR report life events और divisional charts (D45, D5, D6, D8, D11, D27) से check की जाती है, ताकि जन्म समय को absolute accuracy से determine किया जा सके। इसमें event matching, divisional charts और dasha verification जैसी Advanced astrology use होती है। इसलिए, और ज़्यादा accurate जन्म समय के लिए, हमारी BTR report order करें।)"
-];
-        const rawData_en = [
-  "(Note: Please note that the marriage timing given below in this report is analyzed only from the major dashas. To make it more accurate, the marriage timing report is checked from around 15 layers so that the timing can be predicted with absolute accuracy. Advanced astrology like Yogini, Tribhagi, Ashtottari Dasha, Ashtakvarga, Bhaavbal-Shadbala, Double Transit, D60 Confirmation are used in it. Hence, for more accurate timing, order our marriage timing report.)",
-  "(Note: Please note that the career analysis given below in this report is based on the major planets only. To make it more accurate, the career report is checked with around 20+ layers so that the career flow can be predicted with absolute accuracy. Advanced astrology like four systems, SAV-BAV, D60 confirmation are used in it. Therefore, order our career report for more accurate career flow.)",
-  "(Note: Please note that the Varshphal analysis given below in this report is calculated only from Parashari. To make it more accurate, the Varshphal report is checked with about 10+ layers so that the Varshphal for the entire year can be given absolutely accurately. Advanced astrology like the four Dasha systems, Gochar, Tajik Varshphal Kundli are used in it. Therefore, for more accurate Varshphal, order our Varshphal report.)",
-  "(Note: Please note that the marriage analysis given below in this report is analyzed only from the 7th house, its lord and Venus. To make it more accurate, the marriage report is checked with around 25 layers so that the spouse's nature and profile can be predicted with absolute accuracy. Advanced astrology like Navamsha (D9), Shadbala, Jaimini, BNN, KP are used in it. Hence, for more accurate marriage analysis, order our marriage report.)",
-  "(Note: Please note that the education analysis given below in this report is analyzed only from the 5th house, its lord, Jupiter and Mercury. To make it more accurate, the education report is checked with around 24 layers so that the education flow and exam results can be predicted with absolute accuracy. Advanced astrology like Navamsha (D9), Chaturvimshamsha (D24), Jaimini, BNN, KP are used in it. Hence, for more accurate education analysis, order our education report.)",
-  "(Note: Please note that the child birth analysis given below in this report is analyzed only from the 5th house, its lord and Jupiter. To make it more accurate, the child birth report is checked with around 16 layers so that the possibility and timing of children can be predicted with absolute accuracy. Advanced astrology like Navamsha (D9), Saptamsha (D7), Bija-Kshetra Sphuta, Jaimini, BNN, KP, D60 Confirmation are used in it. Hence, for more accurate child birth analysis, order our child birth report.)",
-  "(Note: Please note that the matching analysis given below in this report is analyzed only from Ashtakoot matching. To make it more accurate, the Milan report is checked with around 22 layers so that the compatibility can be predicted with absolute accuracy. Advanced astrology like Dashakoot, Mangal Dosh, Navamsha (D9), Panchadha Maitri, Jaimini, BNN, KP are used in it. Hence, for more accurate matching, order our Milan report.)",
-  "(Note: Please note that the Kundli analysis given below in this report is based on the major planets and houses only. To make it more accurate, the Full Kundli report is checked with around 26 layers so that the complete Kundli analysis can be given with absolute accuracy. Advanced astrology like four systems, 16 Divisional Charts, SAV-BAV, D60 confirmation are used in it. Therefore, order our Full Kundli report for more accurate Kundli analysis.)",
-  "(Note: Please note that the Jupiter transit analysis given below in this report is analyzed only from Jupiter's transit. To make it more accurate, the Jupiter Transit report is checked with around 8 layers so that the transit effects can be predicted with absolute accuracy. Advanced astrology like BAV-SAV, Dasha-Transit Synergy, Navamsha (D9), Double Transit are used in it. Hence, for more accurate transit effects, order our Jupiter Transit report.)",
-  "(Note: Please note that the Sadesati analysis given below in this report is analyzed only from Saturn's transit. To make it more accurate, the Sadesati report is checked with around 8 layers so that the Sadesati effects can be predicted with absolute accuracy. Advanced astrology like Shadbala, Dasha Systems, Master Timeline, Transit Saturn are used in it. Hence, for more accurate Sadesati analysis, order our Sadesati report.)",
-  "(Note: Please note that the Muhurat analysis given below in this report is analyzed only from the Panchang. To make it more accurate, the Shubh Muhurat report is checked with around 8 layers so that the exact Muhurat can be determined with absolute accuracy. Advanced astrology like Panchang Shuddhi, Chandra-Bala, Tara-Bala, Tribala, Lagna Shuddhi are used in it. Hence, for more accurate Muhurat, order our Shubh Muhurat report.)",
-  "(Note: Please note that the child Kundli analysis given below in this report is analyzed only from the birth chart (D1). To make it more accurate, the Shishu Kundali report is checked with around 16 layers so that the child's first year can be analyzed with absolute accuracy. Advanced astrology like Avakahada Chakra, Gandmool, Balarishta, Jaimini, BNN, KP, D60 are used in it. Hence, for more accurate child Kundli analysis, order our Shishu Kundali report.)",
-  "(Note: Please note that the birth time analysis given below in this report is based on the given birth time only. To make it more accurate, the BTR report is checked with life events and divisional charts (D45, D5, D6, D8, D11, D27) so that the birth time can be determined with absolute accuracy. Advanced astrology like event matching, divisional charts and dasha verification are used in it. Hence, for more accurate birth time, order our BTR report.)"
-];
-        const rawData_mr = [
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले मॅरेज टायमिंग analysis फक्त प्रमुख दशांवर आधारित आहे. ते अधिक accurate करण्यासाठी, मॅरेज टायमिंग report सुमारे 15 layers द्वारे तपासली जाते, जेणेकरून टायमिंग absolute accuracy ने predict करता येईल. यामध्ये Yogini, Tribhagi, Ashtottari Dasha, Ashtakvarga, Bhaavbal-Shadbala, Double Transit, D60 Confirmation सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate टायमिंगसाठी आमची मॅरेज टायमिंग report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले करिअर analysis फक्त प्रमुख ग्रहांवर आधारित आहे. ते अधिक accurate करण्यासाठी, करिअर report सुमारे 20+ layers द्वारे तपासली जाते, जेणेकरून career flow absolute accuracy ने predict करता येईल. यामध्ये four systems, SAV-BAV, D60 confirmation सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate career flow साठी आमची करिअर report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले वर्षफल analysis फक्त पाराशरीवर आधारित आहे. ते अधिक accurate करण्यासाठी, Year Book report सुमारे 10+ layers द्वारे तपासली जाते, जेणेकरून संपूर्ण वर्षाचे वर्षफल absolute accuracy ने देता येईल. यामध्ये four Dasha systems, Gochar, Tajik Varshphal Kundli सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate वर्षफलासाठी आमची Year Book report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले मॅरेज analysis फक्त सप्तम भाव, सप्तमेश आणि शुक्रावर आधारित आहे. ते अधिक accurate करण्यासाठी, मॅरेज report सुमारे 25 layers द्वारे तपासली जाते, जेणेकरून जीवनसाथीचा स्वभाव आणि profile absolute accuracy ने predict करता येईल. यामध्ये Navamsha (D9), Shadbala, Jaimini, BNN, KP सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate मॅरेज analysis साठी आमची मॅरेज report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले शिक्षण analysis फक्त पंचम भाव, पंचमेश, गुरु आणि बुधावर आधारित आहे. ते अधिक accurate करण्यासाठी, शिक्षण report सुमारे 24 layers द्वारे तपासली जाते, जेणेकरून शिक्षण flow आणि exam results absolute accuracy ने predict करता येतील. यामध्ये Navamsha (D9), Chaturvimshamsha (D24), Jaimini, BNN, KP सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate शिक्षण analysis साठी आमची शिक्षण report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले संतान analysis फक्त पंचम भाव, पंचमेश आणि गुरूवर आधारित आहे. ते अधिक accurate करण्यासाठी, संतान report सुमारे 16 layers द्वारे तपासली जाते, जेणेकरून संतानाची शक्यता आणि वेळ absolute accuracy ने predict करता येईल. यामध्ये Navamsha (D9), Saptamsha (D7), Bija-Kshetra Sphuta, Jaimini, BNN, KP, D60 Confirmation सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate संतान analysis साठी आमची संतान report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले मिलन analysis फक्त अष्टकूट मिलनावर आधारित आहे. ते अधिक accurate करण्यासाठी, मिलन report सुमारे 22 layers द्वारे तपासली जाते, जेणेकरून compatibility absolute accuracy ने predict करता येईल. यामध्ये Dashakoot, Mangal Dosh, Navamsha (D9), Panchadha Maitri, Jaimini, BNN, KP सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate मिलनासाठी आमची मिलन report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले कुंडली analysis फक्त प्रमुख ग्रह आणि भावांवर आधारित आहे. ते अधिक accurate करण्यासाठी, Full Kundli report सुमारे 26 layers द्वारे तपासली जाते, जेणेकरून संपूर्ण कुंडली analysis absolute accuracy ने देता येईल. यामध्ये four systems, 16 Divisional Charts, SAV-BAV, D60 confirmation सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate कुंडली analysis साठी आमची Full Kundli report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले गुरु गोचर analysis फक्त गुरूच्या गोचरावर आधारित आहे. ते अधिक accurate करण्यासाठी, गुरु गोचर report सुमारे 8 layers द्वारे तपासली जाते, जेणेकरून गोचराचे effects absolute accuracy ने predict करता येतील. यामध्ये BAV-SAV, Dasha-Transit Synergy, Navamsha (D9), Double Transit सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate गोचर effects साठी आमची गुरु गोचर report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले साडेसाती analysis फक्त शनीच्या गोचरावर आधारित आहे. ते अधिक accurate करण्यासाठी, साडेसाती report सुमारे 8 layers द्वारे तपासली जाते, जेणेकरून साडेसातीचे effects absolute accuracy ने predict करता येतील. यामध्ये Shadbala, Dasha Systems, Master Timeline, Transit Saturn सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate साडेसाती analysis साठी आमची साडेसाती report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले मुहूर्त analysis फक्त पंचांगावर आधारित आहे. ते अधिक accurate करण्यासाठी, शुभ मुहूर्त report सुमारे 8 layers द्वारे तपासली जाते, जेणेकरून अचूक मुहूर्त absolute accuracy ने determine करता येईल. यामध्ये Panchang Shuddhi, Chandra-Bala, Tara-Bala, Tribala, Lagna Shuddhi सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate मुहूर्तासाठी आमची शुभ मुहूर्त report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले शिशु कुंडली analysis फक्त जन्म कुंडलीवर (D1) आधारित आहे. ते अधिक accurate करण्यासाठी, शिशु कुंडली report सुमारे 16 layers द्वारे तपासली जाते, जेणेकरून बाळाचे पहिले वर्ष absolute accuracy ने analyze करता येईल. यामध्ये Avakahada Chakra, Gandmool, Balarishta, Jaimini, BNN, KP, D60 सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate शिशु कुंडली analysis साठी आमची शिशु कुंडली report order करा.)",
-  "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले जन्म वेळ analysis फक्त दिलेल्या जन्म वेळेवर आधारित आहे. ते अधिक accurate करण्यासाठी, BTR report life events आणि divisional charts (D45, D5, D6, D8, D11, D27) द्वारे तपासली जाते, जेणेकरून जन्म वेळ absolute accuracy ने determine करता येईल. यामध्ये event matching, divisional charts आणि dasha verification सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate जन्म वेळेसाठी आमची BTR report order करा.)"
+        const cards_mr = [
+  {
+    "h": "⚠️ Warning Note - दुसऱ्या व्यक्तीचे Analysis",
+    "t": "Warning: [नाते] बद्दल वर दिलेले analysis फक्त तुमच्या कुंडलीवर आधारित आहे. त्यांच्याबद्दल अधिक accurate आणि detailed माहितीसाठी त्यांची स्वतःची कुंडली असणेही आवश्यक आहे. त्यांची कुंडली पाहिल्याशिवाय complete आणि पूर्णपणे accurate analysis शक्य होणार नाही."
+  },
+  {
+    "h": "Note #1 - मॅरेज टायमिंग",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले मॅरेज टायमिंग analysis फक्त प्रमुख दशांवर आधारित आहे. ते अधिक accurate करण्यासाठी, मॅरेज टायमिंग report सुमारे 15 layers द्वारे तपासली जाते, जेणेकरून टायमिंग absolute accuracy ने predict करता येईल. यामध्ये Yogini, Tribhagi, Ashtottari Dasha, Ashtakvarga, Bhaavbal-Shadbala, Double Transit, D60 Confirmation सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate टायमिंगसाठी आमची मॅरेज टायमिंग report order करा.)"
+  },
+  {
+    "h": "Note #2 - करिअर",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले करिअर analysis फक्त प्रमुख ग्रहांवर आधारित आहे. ते अधिक accurate करण्यासाठी, करिअर report सुमारे 20+ layers द्वारे तपासली जाते, जेणेकरून career flow absolute accuracy ने predict करता येईल. यामध्ये four systems, SAV-BAV, D60 confirmation सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate career flow साठी आमची करिअर report order करा.)"
+  },
+  {
+    "h": "Note #3 - वर्षफल / Year Book",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले वर्षफल analysis फक्त पाराशरीवर आधारित आहे. ते अधिक accurate करण्यासाठी, Year Book report सुमारे 10+ layers द्वारे तपासली जाते, जेणेकरून संपूर्ण वर्षाचे वर्षफल absolute accuracy ने देता येईल. यामध्ये four Dasha systems, Gochar, Tajik Varshphal Kundli सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate वर्षफलासाठी आमची Year Book report order करा.)"
+  },
+  {
+    "h": "Note #4 - मॅरेज",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले मॅरेज analysis फक्त सप्तम भाव, सप्तमेश आणि शुक्रावर आधारित आहे. ते अधिक accurate करण्यासाठी, मॅरेज report सुमारे 25 layers द्वारे तपासली जाते, जेणेकरून जीवनसाथीचा स्वभाव आणि profile absolute accuracy ने predict करता येईल. यामध्ये Navamsha (D9), Shadbala, Jaimini, BNN, KP सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate मॅरेज analysis साठी आमची मॅरेज report order करा.)"
+  },
+  {
+    "h": "Note #5 - शिक्षण",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले शिक्षण analysis फक्त पंचम भाव, पंचमेश, गुरु आणि बुधावर आधारित आहे. ते अधिक accurate करण्यासाठी, शिक्षण report सुमारे 24 layers द्वारे तपासली जाते, जेणेकरून शिक्षण flow आणि exam results absolute accuracy ने predict करता येतील. यामध्ये Navamsha (D9), Chaturvimshamsha (D24), Jaimini, BNN, KP सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate शिक्षण analysis साठी आमची शिक्षण report order करा.)"
+  },
+  {
+    "h": "Note #6 - संतान",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले संतान analysis फक्त पंचम भाव, पंचमेश आणि गुरूवर आधारित आहे. ते अधिक accurate करण्यासाठी, संतान report सुमारे 16 layers द्वारे तपासली जाते, जेणेकरून संतानाची शक्यता आणि वेळ absolute accuracy ने predict करता येईल. यामध्ये Navamsha (D9), Saptamsha (D7), Bija-Kshetra Sphuta, Jaimini, BNN, KP, D60 Confirmation सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate संतान analysis साठी आमची संतान report order करा.)"
+  },
+  {
+    "h": "Note #7 - मिलन",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले मिलन analysis फक्त अष्टकूट मिलनावर आधारित आहे. ते अधिक accurate करण्यासाठी, मिलन report सुमारे 22 layers द्वारे तपासली जाते, जेणेकरून compatibility absolute accuracy ने predict करता येईल. यामध्ये Dashakoot, Mangal Dosh, Navamsha (D9), Panchadha Maitri, Jaimini, BNN, KP सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate मिलनासाठी आमची मिलन report order करा.)"
+  },
+  {
+    "h": "Note #8 - संपूर्ण कुंडली",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले कुंडली analysis फक्त प्रमुख ग्रह आणि भावांवर आधारित आहे. ते अधिक accurate करण्यासाठी, Full Kundli report सुमारे 26 layers द्वारे तपासली जाते, जेणेकरून संपूर्ण कुंडली analysis absolute accuracy ने देता येईल. यामध्ये four systems, 16 Divisional Charts, SAV-BAV, D60 confirmation सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate कुंडली analysis साठी आमची Full Kundli report order करा.)"
+  },
+  {
+    "h": "Note #9 - गुरु गोचर",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले गुरु गोचर analysis फक्त गुरूच्या गोचरावर आधारित आहे. ते अधिक accurate करण्यासाठी, गुरु गोचर report सुमारे 8 layers द्वारे तपासली जाते, जेणेकरून गोचराचे effects absolute accuracy ने predict करता येतील. यामध्ये BAV-SAV, Dasha-Transit Synergy, Navamsha (D9), Double Transit सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate गोचर effects साठी आमची गुरु गोचर report order करा.)"
+  },
+  {
+    "h": "Note #10 - साडेसाती",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले साडेसाती analysis फक्त शनीच्या गोचरावर आधारित आहे. ते अधिक accurate करण्यासाठी, साडेसाती report सुमारे 8 layers द्वारे तपासली जाते, जेणेकरून साडेसातीचे effects absolute accuracy ने predict करता येतील. यामध्ये Shadbala, Dasha Systems, Master Timeline, Transit Saturn सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate साडेसाती analysis साठी आमची साडेसाती report order करा.)"
+  },
+  {
+    "h": "Note #11 - शुभ मुहूर्त",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले मुहूर्त analysis फक्त पंचांगावर आधारित आहे. ते अधिक accurate करण्यासाठी, शुभ मुहूर्त report सुमारे 8 layers द्वारे तपासली जाते, जेणेकरून अचूक मुहूर्त absolute accuracy ने determine करता येईल. यामध्ये Panchang Shuddhi, Chandra-Bala, Tara-Bala, Tribala, Lagna Shuddhi सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate मुहूर्तासाठी आमची शुभ मुहूर्त report order करा.)"
+  },
+  {
+    "h": "Note #12 - शिशु कुंडली",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले शिशु कुंडली analysis फक्त जन्म कुंडलीवर (D1) आधारित आहे. ते अधिक accurate करण्यासाठी, शिशु कुंडली report सुमारे 16 layers द्वारे तपासली जाते, जेणेकरून बाळाचे पहिले वर्ष absolute accuracy ने analyze करता येईल. यामध्ये Avakahada Chakra, Gandmool, Balarishta, Jaimini, BNN, KP, D60 सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate शिशु कुंडली analysis साठी आमची शिशु कुंडली report order करा.)"
+  },
+  {
+    "h": "Note #13 - जन्म वेळ (BTR)",
+    "t": "(Note: कृपया नोंद घ्या की या report मध्ये खाली दिलेले जन्म वेळ analysis फक्त दिलेल्या जन्म वेळेवर आधारित आहे. ते अधिक accurate करण्यासाठी, BTR report life events आणि divisional charts (D45, D5, D6, D8, D11, D27) द्वारे तपासली जाते, जेणेकरून जन्म वेळ absolute accuracy ने determine करता येईल. यामध्ये event matching, divisional charts आणि dasha verification सारखी Advanced astrology वापरली जाते. म्हणून, अधिक accurate जन्म वेळेसाठी आमची BTR report order करा.)"
+  }
 ];
 
-        function getRawData() {
-            if (currentLang === 'en') return rawData_en;
-            if (currentLang === 'mr') return rawData_mr;
-            return rawData_hi;
-        }
-        function getTitles() {
-            if (currentLang === 'en') return titles_en;
-            if (currentLang === 'mr') return titles_mr;
-            return titles_hi;
+        function getCards() {
+            if (currentLang === 'en') return cards_en;
+            if (currentLang === 'mr') return cards_mr;
+            return cards_hi;
         }
         function changeLanguage(lang) {
             currentLang = lang;
@@ -223,25 +302,24 @@
         }
 
         function processData() {
-            const parts = getRawData();
-            const titles = getTitles();
-            parts.forEach((part, index) => {
-                let cleanText = part.trim();
+            const cards = getCards();
+            cards.forEach((c) => {
+                let cleanText = c.t.trim();
                 if (cleanText.length > 5) {
-                    createCard(cleanText, titles[index] || ('Note #' + (index + 1)), index + 1);
+                    createCard(cleanText, c.h);
                 }
             });
         }
 
-        function createCard(text, title, id) {
+        function createCard(text, header) {
             const container = document.getElementById('prompt-container');
 
             const card = document.createElement('div');
             card.className = 'card';
 
-            const header = document.createElement('div');
-            header.className = 'card-header';
-            header.innerHTML = '<span>Note #' + id + ' - ' + title + '</span>';
+            const headerEl = document.createElement('div');
+            headerEl.className = 'card-header';
+            headerEl.innerHTML = '<span>' + header + '</span>';
 
             const content = document.createElement('div');
             content.className = 'card-content';
@@ -252,7 +330,7 @@
             btn.innerText = 'Copy Note';
             btn.onclick = () => copyText(text, btn);
 
-            card.appendChild(header);
+            card.appendChild(headerEl);
             card.appendChild(content);
             card.appendChild(btn);
             container.appendChild(card);
