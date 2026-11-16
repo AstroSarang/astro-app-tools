@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🔯 KP ज्योतिष महा-कैलकुलेटर v27.1</title>
+<title>🔯 KP ज्योतिष महा-कैलकुलेटर v27.2</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   * { box-sizing: border-box; }
@@ -29,6 +29,9 @@
   .ruling { background: #f3e5f5; border-radius: 8px; padding: 12px; margin-top: 12px; font-size: 14px; }
   .ruling b { color: #6a1b9a; }
   .note { font-size: 12px; color: #888; margin-top: 8px; }
+  .analysis { margin-top: 12px; border-top: 1px dashed #ce93d8; padding-top: 10px; }
+  .analysis h3 { font-size: 16px; color: #4a148c; margin: 0 0 6px; }
+  .aline { font-size: 15px; line-height: 1.9; }
   .status { font-size: 13px; color: #666; margin: 8px 0; }
   .astro-code-row { display: flex; gap: 8px; align-items: end; }
   .astro-code-row input { flex: 1; }
@@ -57,7 +60,7 @@
 </head>
 <body>
 <div class="container">
-  <h1>🔯 KP ज्योतिष महा-कैलकुलेटर v27.1</h1>
+  <h1>🔯 KP ज्योतिष महा-कैलकुलेटर v27.2</h1>
   <div class="subtitle">Krishnamurti Paddhati — Planets, Cusps, Significators + Event Verdicts (App-verified)</div>
 
   <div class="card">
@@ -114,21 +117,25 @@
       <h2>🪐 KP Planet Positions (KP Ayanamsa)</h2>
       <div id="planetTable"></div>
       <div class="note">RL=Rashi Lord, NL=Nakshatra Lord, SL=Sub Lord, SSL=Sub-Sub Lord</div>
+      <div id="planetAnalysis" class="analysis"></div>
     </div>
     <div class="card">
       <h2>🏠 KP Placidus Bhava Details</h2>
       <div id="bhavaTable"></div>
       <div class="ruling" id="rulingPlanets"></div>
+      <div id="bhavaAnalysis" class="analysis"></div>
     </div>
     <div class="card">
       <h2>📊 KP Planet Significators</h2>
       <div id="planetSigTable"></div>
       <div class="note">A: NL के घर में | B: ग्रह जिस भाव में | C: NL के स्वामित्व वाले भाव | D: ग्रह के स्वामित्व वाले भाव</div>
+      <div id="planetSigAnalysis" class="analysis"></div>
     </div>
     <div class="card">
       <h2>📊 KP House Significators</h2>
       <div id="houseSigTable"></div>
       <div class="note">1: भाववासियों के नक्षत्र में (9 ग्रह) | 2: भाव में स्थित | 3: भावेश के नक्षत्र में (9 ग्रह) | 4: भावेश</div>
+      <div id="houseSigAnalysis" class="analysis"></div>
     </div>
     </div>
   </div>
@@ -1104,6 +1111,42 @@ document.querySelectorAll('.vtab').forEach(b=>{
   });
 });
 
+// ===== v27.2: Written analysis (tables -> plain sentences for Gemini) =====
+const BHAVA_ORDINAL = ['पहले','दूसरे','तीसरे','चौथे','पाँचवें','छठे','सातवें','आठवें','नौवें','दसवें','ग्यारहवें','बारहवें'];
+const _hi = s => PLANET_HINDI[s] || s;
+function bhavaAnalysisLines(cuspData){
+  return cuspData.map(c=>{
+    const o = BHAVA_ORDINAL[c.bhava-1];
+    return `${o} भाव का CSL ${_hi(c.sl)} है, SSL ${_hi(c.ssl)} है, NL ${_hi(c.nl)} है और RL ${_hi(c.rl)} है।`;
+  });
+}
+function planetAnalysisLines(allBodies){
+  return allBodies.map(b=>{
+    return `${b.name} का SL ${_hi(b.sl)} है, SSL ${_hi(b.ssl)} है, NL ${_hi(b.nl)} है और RL ${_hi(b.rl)} है।`;
+  });
+}
+function planetSigLines(pSig){
+  return pSig.map(s=>{
+    const parts = [];
+    if(s.a !== '-' && s.a !== '' && s.a != null) parts.push(`A - ${s.a}`);
+    if(s.b !== '-' && s.b !== '' && s.b != null) parts.push(`B - ${s.b}`);
+    if(s.c && s.c !== '-') parts.push(`C - ${s.c}`);
+    if(s.d && s.d !== '-') parts.push(`D - ${s.d}`);
+    return `${s.name}: ${parts.join(', ')}।`;
+  });
+}
+function houseSigLines(hSig){
+  return hSig.map(s=>{
+    const parts = [];
+    if(s.l1 && s.l1 !== '-') parts.push(`L1 - ${sigNames(s.l1)}`);
+    if(s.l2 && s.l2 !== '-') parts.push(`L2 - ${sigNames(s.l2)}`);
+    if(s.l3 && s.l3 !== '-') parts.push(`L3 - ${sigNames(s.l3)}`);
+    if(s.l4 && s.l4 !== '-') parts.push(`L4 - ${sigNames(s.l4)}`);
+    const o = BHAVA_ORDINAL[s.h-1];
+    return `${o} भाव के significators: ${parts.join('; ')}।`;
+  });
+}
+
 function renderTables(){
   const {allBodies, cuspData, pSig, hSig, ruling} = lastResults;
   // Planet table
@@ -1112,6 +1155,7 @@ function renderTables(){
     h+=`<tr><td><b>${b.name}</b></td><td>${b.rl}</td><td>${b.nl}</td><td>${b.sl}</td><td>${b.ssl}</td><td>${fmtDeg(b.sid)}</td><td>${RASHI_NAMES[b.rashi]}</td><td>${NAK_NAMES[b.nakIdx]}</td><td>${b.pada}</td></tr>`;
   }
   document.getElementById('planetTable').innerHTML=h+'</table>';
+  document.getElementById('planetAnalysis').innerHTML='<h3>📝 ग्रह विश्लेषण</h3>'+planetAnalysisLines(allBodies).map(l=>`<div class="aline">${l}</div>`).join('');
 
   // Bhava table
   h='<table><tr><th>Bhava</th><th>RL</th><th>NL</th><th>SL</th><th>SSL</th><th>Cusp</th><th>Rashi</th><th>Nakshatra</th><th>Paada</th></tr>';
@@ -1120,32 +1164,43 @@ function renderTables(){
   }
   document.getElementById('bhavaTable').innerHTML=h+'</table>';
   document.getElementById('rulingPlanets').innerHTML=`<b>Ruling Planets:</b> लग्न RL: ${ruling.lagnaRL} | लग्न NL: ${ruling.lagnaNL} | चंद्र RL: ${ruling.moonRL} | चंद्र NL: ${ruling.moonNL} | वार: ${ruling.day}`;
+  document.getElementById('bhavaAnalysis').innerHTML='<h3>📝 भाव विश्लेषण</h3>'+bhavaAnalysisLines(cuspData).map(l=>`<div class="aline">${l}</div>`).join('');
 
   // Planet significators
   h='<table><tr><th>Planet</th><th>Level-A</th><th>Level-B</th><th>Level-C</th><th>Level-D</th></tr>';
   for(const s of pSig) h+=`<tr><td><b>${s.name}</b></td><td>${s.a}</td><td>${s.b}</td><td>${s.c}</td><td>${s.d}</td></tr>`;
   document.getElementById('planetSigTable').innerHTML=h+'</table>';
+  document.getElementById('planetSigAnalysis').innerHTML='<h3>⭐ ग्रह Significators - विश्लेषण</h3>'+planetSigLines(pSig).map(l=>`<div class="aline">${l}</div>`).join('');
 
   // House significators (all 4 levels verified)
   h='<table><tr><th>House</th><th>Level-1</th><th>Level-2</th><th>Level-3</th><th>Level-4</th></tr>';
   for(const s of hSig) h+=`<tr><td><b>${s.h}</b></td><td>${s.l1}</td><td>${s.l2}</td><td>${s.l3}</td><td>${s.l4}</td></tr>`;
   document.getElementById('houseSigTable').innerHTML=h+'</table>';
+  document.getElementById('houseSigAnalysis').innerHTML='<h3>🏠 भाव Significators - विश्लेषण</h3>'+houseSigLines(hSig).map(l=>`<div class="aline">${l}</div>`).join('');
 }
 
 function downloadTablesTxt(){
   if(!lastResults) return;
   const {allBodies, cuspData, pSig, hSig, ruling} = lastResults;
-  let t='KP TABLES v27.1\n==============\n\n';
+  let t='KP TABLES v27.2\n==============\n\n';
   t+='PLANET POSITIONS (KP Ayanamsa)\n';
   t+='Planet | RL | NL | SL | SSL | Degree | Rashi | Nakshatra | Paada\n';
   for(const b of allBodies) t+=`${b.name} | ${b.rl} | ${b.nl} | ${b.sl} | ${b.ssl} | ${fmtDeg(b.sid)} | ${RASHI_EN[b.rashi]} | ${b.pada}\n`;
+  t+='\nग्रह विश्लेषण\n------------\n';
+  for(const l of planetAnalysisLines(allBodies)) t+=l+'\n';
   t+='\nPLACIDUS BHAVA\nBhava | RL | NL | SL | SSL | Cusp\n';
   for(const c of cuspData) t+=`${c.bhava} | ${c.rl} | ${c.nl} | ${c.sl} | ${c.ssl} | ${fmtDeg(c.cusp)}\n`;
   t+=`\nRULING PLANETS: Lagna RL=${ruling.lagnaRL}, Lagna NL=${ruling.lagnaNL}, Moon RL=${ruling.moonRL}, Moon NL=${ruling.moonNL}, Day=${ruling.day}\n`;
+  t+='\nभाव विश्लेषण\n------------\n';
+  for(const l of bhavaAnalysisLines(cuspData)) t+=l+'\n';
   t+='\nPLANET SIGNIFICATORS (A/B/C/D)\n';
   for(const s of pSig) t+=`${s.name}: ${s.a} | ${s.b} | ${s.c} | ${s.d}\n`;
+  t+='\nग्रह SIGNIFICATORS - विश्लेषण\n----------------------------\n';
+  for(const l of planetSigLines(pSig)) t+=l+'\n';
   t+='\nHOUSE SIGNIFICATORS (1/2/3/4)\n';
   for(const s of hSig) t+=`House ${s.h}: ${s.l1} | ${s.l2} | ${s.l3} | ${s.l4}\n`;
+  t+='\nभाव SIGNIFICATORS - विश्लेषण\n----------------------------\n';
+  for(const l of houseSigLines(hSig)) t+=l+'\n';
   const blob=new Blob([t],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob); a.download='KP-Tables.txt'; a.click();
@@ -1153,7 +1208,7 @@ function downloadTablesTxt(){
 function downloadVerdictsTxt(){
   if(!lastResults) return;
   const {verdicts} = lastResults;
-  let t='KP EVENT VERDICTS v27.1\n=====================\n\n';
+  let t='KP EVENT VERDICTS v27.2\n=====================\n\n';
   if(verdicts){
     t+='EVENT VERDICTS\n--------------\n';
     for(const [k,label] of [['vivah','VIVAH'],['santan','SANTAN'],['career','CAREER'],['dhan','DHAN'],['shiksha','SHIKSHA'],['videsh','VIDESH'],['swasthya','SWASTHYA'],['court','COURT'],['vahan','VAHAN']]){
