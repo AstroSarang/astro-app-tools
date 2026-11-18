@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>कुंडली रिपोर्ट असेंबलर v8.3 — Sanjivani Jyotish Sansthan</title>
+<title>कुंडली रिपोर्ट असेंबलर v8.4 — Sanjivani Jyotish Sansthan</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -96,7 +96,7 @@
   <div class="card" id="setupScreen">
     <span class="tag">पहली बार — एक बार सेटअप</span>
     <h2>टेम्पलेट PDFs download हो रहे हैं</h2>
-    <p class="desc">5 टेम्पलेट files internet से download होकर आपके browser में save हो जाएँगी — उसके बाद कभी download/upload नहीं करना पड़ेगा।</p>
+    <p class="desc">7 टेम्पलेट files internet से download होकर आपके browser में save हो जाएँगी — उसके बाद कभी download/upload नहीं करना पड़ेगा।</p>
     <div class="status" id="setupStatus" style="font-size:15px;"></div>
     <div class="note" id="setupNote"></div>
     <button class="btn orange hidden" id="retryBtn">🔄 पुनः प्रयास करें</button>
@@ -161,9 +161,9 @@
     <label class="lbl">2️⃣ क्लाइंट का नाम (English)</label>
     <input type="text" id="clientName" placeholder="जैसे: Rahul" autocomplete="off">
     <div class="ribbon-demo"><div class="wr"><span id="ribbonDemoText">Rahul</span></div></div>
-    <div class="cap">कवर page 2 के नाम वाले box में ऐसे दिखेगा — गहरा लाल, serif bold, centered (लंबा नाम अपने-आप छोटा होगा)</div>
+    <div class="cap">कवर page 3 के नाम वाले box में ऐसे दिखेगा — गहरा लाल, serif bold, centered (लंबा नाम अपने-आप छोटा होगा)</div>
 
-    <label class="lbl">3️⃣ कैटलॉग भाषा</label>
+    <label class="lbl">3️⃣ भाषा (कवर + कैटलॉग)</label>
     <select id="catalogSel">
       <option value="cat_mr">मराठी (default)</option>
       <option value="cat_hi">हिन्दी</option>
@@ -172,7 +172,7 @@
 
     <button class="btn" id="buildBtn">📥 रिपोर्ट बनाएं और डाउनलोड करें</button>
     <div class="status" id="buildStatus"></div>
-    <div class="note">पेज क्रम: कवर (2) → कुंडली → एंडिंग (1) → कैटलॉग &nbsp;•&nbsp; फाइल नाम: <b><span id="fnamePreview">Client</span>-Kundli-Report.pdf</b></div>
+    <div class="note">पेज क्रम: कवर (3) → कुंडली → एंडिंग (1) → कैटलॉग &nbsp;•&nbsp; फाइल नाम: <b><span id="fnamePreview">Client</span>-Kundli-Report.pdf</b></div>
   </div>
 </div>
 
@@ -196,11 +196,13 @@ async function idbGetAll(){const d=await idb();return new Promise((res,rej)=>{co
 /* ================= Template definitions (GitHub + jsDelivr) ================= */
 const TPL_BASE='https://cdn.jsdelivr.net/gh/AstroSarang/sanjivani-templates@main/';
 const TPLS=[
-  {key:'cover',  label:'📄 01 — कवर (नाम वाला)',   expect:2,  file:'01%20Komal%201ST.pdf'},
-  {key:'ending', label:'📄 02 — एंडिंग पेज',       expect:1,  file:'02%20Komal%20LAST.pdf'},
-  {key:'cat_hi', label:'📄 03 — कैटलॉग हिन्दी',    expect:19, file:'03%20Astro%20Komal%20Jyotish%20Sansthan%20Hindi.pdf'},
-  {key:'cat_en', label:'📄 04 — कैटलॉग English',   expect:19, file:'04%20Astro%20Komal%20Jyotish%20Sansthan%20Eng.pdf'},
-  {key:'cat_mr', label:'📄 05 — कैटलॉग मराठी',     expect:24, file:'05%20Astro%20Komal%20Jyotish%20Sansthan%20Marathi.pdf'},
+  {key:'cover_hi', label:'📄 01 — कवर हिन्दी',   expect:3, file:'01%20Komal%201ST%20Hindi.pdf'},
+  {key:'cover_en', label:'📄 01 — कवर English', expect:3, file:'01%20Komal%201ST%20English.pdf'},
+  {key:'cover_mr', label:'📄 01 — कवर मराठी',   expect:3, file:'01%20Komal%201ST%20Marathi.pdf'},
+  {key:'ending', label:'📄 02 — एंडिंग पेज',       expect:1, file:'02%20Komal%20LAST.pdf'},
+  {key:'cat_hi', label:'📄 03 — कैटलॉग हिन्दी',    expect:29, file:'03%202027%20Astro%20Komal%20Product%20-%20Hindi.pdf'},
+  {key:'cat_en', label:'📄 04 — कैटलॉग English',   expect:29, file:'04%202027%20of%20Astro%20Komal%20Product%20-%20English.pdf'},
+  {key:'cat_mr', label:'📄 05 — कैटलॉग मराठी',     expect:29, file:'05%202027%20Astro%20Komal%20Product%20-%20Marathi.pdf'},
 ];
 const tplState={}; // key -> {bytes:ArrayBuffer, pages}
 </script>
@@ -212,7 +214,7 @@ async function fetchTemplates(){
   $('retryBtn').classList.add('hidden');
   for(let i=0;i<TPLS.length;i++){
     const t=TPLS[i];
-    $('setupStatus').innerHTML=`<span class="work">⬇ ${t.label} download हो रहा है... (${i+1}/5)</span>`;
+    $('setupStatus').innerHTML=`<span class="work">⬇ ${t.label} download हो रहा है... (${i+1}/7)</span>`;
     let resp;
     try{ resp=await fetch(TPL_BASE+t.file,{cache:'no-store'}); }
     catch(e){ throw new Error('Internet नहीं मिल पा रहा — net चालू करके पुनः प्रयास करें।'); }
@@ -225,7 +227,7 @@ async function fetchTemplates(){
     await idbPut(t.key,{bytes:buf, pages, savedAt:Date.now()});
     tplState[t.key]={bytes:buf, pages};
   }
-  $('setupStatus').innerHTML='<span class="okmsg">✔ 5 टेम्पलेट download होकर browser में save हो गए!</span>';
+  $('setupStatus').innerHTML='<span class="okmsg">✔ 7 टेम्पलेट download होकर browser में save हो गए!</span>';
   setTimeout(showMain, 900);
 }
 async function startSetupDownload(){
@@ -343,7 +345,7 @@ $('redownloadBtn').onclick=async()=>{
 };
 function showMain(){
   $('setupScreen').classList.add('hidden'); $('mainScreen').classList.remove('hidden');
-  $('tplSavedNote').innerHTML='✔ 5 टेम्पलेट saved हैं ('+TPLS.map(t=>tplState[t.key].pages+'p').join(' / ')+')';
+  $('tplSavedNote').innerHTML='✔ 7 टेम्पलेट saved हैं ('+TPLS.map(t=>tplState[t.key].pages+'p').join(' / ')+')';
   const savedCat=localStorage.getItem('sra_catalog'); if(savedCat) $('catalogSel').value=savedCat;
   window.scrollTo(0,0);
 }
@@ -422,8 +424,9 @@ $('makePageBtn').onclick=async()=>{
 <script>
 'use strict';
 /* ================= REPORT ASSEMBLY ================= */
-/* name-box geometry (cover p2, NEW cover 11 Nov 2026) — box measured from template render:
-   x 42.8–568.6, top-based center y = 497.4. NOTE: cover MediaBox is [0,7.92,612,799.92],
+/* name-box geometry (cover p3, NEW 3-page language covers 18 Nov 2026) — box re-measured
+   from template render: x 44.2–566.9, top-based center y = 497.6, same as old cover, so
+   RIBBON_X/RIBBON_Y unchanged. NOTE: cover MediaBox is [0,7.92,612,799.92],
    so drawText user-space y is shifted (+7.92); true box center in drawText space = (306, 302.5) */
 const RIBBON_X=306, RIBBON_Y=302.5, RIBBON_MAXW=440, NAME_START_SIZE=34;
 function range(a,b){const r=[];for(let i=a;i<b;i++)r.push(i);return r;}
@@ -444,21 +447,23 @@ $('buildBtn').onclick=async()=>{
     if(!kParts.length){ fail('खुद बनाई कुंडली के लिए ऊपर PDF upload करें और/या CSV से पेज बनाएं।'); return; }
   }
   btn.disabled=true; btn.textContent='बन रही है...';
+  const catKey=$('catalogSel').value; // भाषा: कवर + कैटलॉग दोनों इसी से
+  const coverKey='cover_'+catKey.slice(4); // cat_hi -> cover_hi, cat_en -> cover_en, cat_mr -> cover_mr
   try{
     setW('कवर पर नाम लिखा जा रहा है...');
-    /* 1. cover + name on page 2 (name-box center 306, 302.5) */
-    const coverDoc=await PDFLib.PDFDocument.load(tplState.cover.bytes.slice(0));
+    /* 1. cover + name on page 3 (name-box center 306, 302.5) */
+    const coverDoc=await PDFLib.PDFDocument.load(tplState[coverKey].bytes.slice(0));
     const font=await coverDoc.embedFont(PDFLib.StandardFonts.TimesRomanBold);
     const nameColor=PDFLib.rgb(192/255,57/255,43/255); // #C0392B
     let size=NAME_START_SIZE;
     while(size>8 && font.widthOfTextAtSize(name,size)>RIBBON_MAXW) size-=0.5;
     const tw=font.widthOfTextAtSize(name,size);
-    coverDoc.getPage(1).drawText(name,{x:RIBBON_X-tw/2, y:RIBBON_Y-0.33*size, size, font, color:nameColor});
+    coverDoc.getPage(2).drawText(name,{x:RIBBON_X-tw/2, y:RIBBON_Y-0.33*size, size, font, color:nameColor});
     /* 2. merge */
     const merged=await PDFLib.PDFDocument.create();
     const addAll=async(src,idx)=>{ (await merged.copyPages(src,idx)).forEach(p=>merged.addPage(p)); };
     setW('कवर जुड़ रहा है...');
-    await addAll(coverDoc,[0,1]);
+    await addAll(coverDoc,[0,1,2]);
     setW('कुंडली जुड़ रही है...');
     for(const part of kParts){
       const kDoc=await PDFLib.PDFDocument.load(part.bytes.slice(0));
@@ -470,7 +475,6 @@ $('buildBtn').onclick=async()=>{
     setW('एंडिंग पेज जुड़ रहा है...');
     const eDoc=await PDFLib.PDFDocument.load(tplState.ending.bytes.slice(0));
     await addAll(eDoc,[0]);
-    const catKey=$('catalogSel').value;
     setW('कैटलॉग जुड़ रहा है...');
     const cDoc=await PDFLib.PDFDocument.load(tplState[catKey].bytes.slice(0));
     await addAll(cDoc,range(0,cDoc.getPageCount()));
