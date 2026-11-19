@@ -97,7 +97,7 @@
 </head>
 <body>
 
-    <h1>Jupiter Transit Prompts v2.4</h1>
+    <h1>Jupiter Transit Prompts v2.5</h1>
     <div style="text-align:center; margin:10px 0;">
         <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
         <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
@@ -319,7 +319,36 @@ Next Task :
 
 जातक के सवाल :
 ----------
-अब जातक के सवालों का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर करें, हर सवाल का विस्तार से विश्लेषण होना चाहिए, यदि उपाय आवश्यक हो तो उपायों सहित, शुरुआत पहले सवाल के विश्लेषण से करें, बाकी बाद में पूछती हूँ।`;
+अब जातक के सवालों का गहन शोध करके ज्योतिषीय विश्लेषण विस्तार से और निष्कर्ष देकर करें, हर सवाल का विस्तार से विश्लेषण होना चाहिए, यदि उपाय आवश्यक हो तो उपायों सहित, शुरुआत पहले सवाल के विश्लेषण से करें, बाकी बाद में पूछती हूँ।
+----------
+अब तक किये गए सभी निम्मलिखित भागों और सवालों को फिर से लिखकर उनका संक्षिप्त उत्तर दीजिये, क्योंकि यह सूचि इस विश्लेषण के सबसे पहले लगायी जाएगी, इससे जातक पहले ही शार्ट में जवाब पढ़ लेगा और उसे जिस भाग का विश्लेषण विस्तार से पढना है, उस भाग को ढूंढेगा...
+1] गुरु गोचर का तकनीकी आधार?
+➤ अष्टकवर्ग परिणाम
+➤ गोचर का भाव प्रभाव (लग्न और चंद्र से)
+2] गोचर की दृष्टियाँ और जीवन के क्षेत्रों पर प्रभाव?
+➤ गुरु की 5वीं, 7वीं और 9वीं दृष्टि
+➤ करियर और व्यवसाय
+➤ स्वास्थ्य और निजी जीवन
+➤ रिश्ते और विवाह
+3] दशा और गोचर का समन्वय?
+4] गोचर का सूक्ष्म प्रभाव (D9 नवमांश अवलोकन)?
+5] हर महीने का सूक्ष्म दशा-गोचर विश्लेषण?
+➤ पहला महिना
+➤ दूसरा महिना
+➤ तिसरा महिना
+➤ चौथा महिना
+➤ पांचवा महिना
+➤ छठा महिना
+➤ सातवाँ महिना
+➤ आठवां महिना
+➤ नौवां महिना
+➤ दसवां महिना
+➤ ग्यारहवां महिना
+➤ बारहवां महिना
+6] निष्कर्ष और वैदिक उपाय?
+➤ समग्र गोचर निष्कर्ष
+➤ सटीक उपाय
+जातक के सवाल :`;
         const rawData_en = `This PDF is the kundali of a 00-year-old male/female native ...; you must save all the information from it so the kundali can be analyzed. While analyzing, do not write page references of the PDF, but give a list of which page the following information is on - meaning it will be easier for you too to find later:
 
 1] Planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord, Jaimini Chara Karaka)
@@ -525,7 +554,36 @@ Now do in-depth research on the information given by the native and give the ast
 
 Questions of the native:
 ----------
-Now do in-depth research on the questions of the native and give the astrological analysis in detail with conclusions, every question should be analysed in detail, if remedies are necessary then along with remedies, begin with the analysis of the first question, I will ask the rest later.`;
+Now do in-depth research on the questions of the native and give the astrological analysis in detail with conclusions, every question should be analysed in detail, if remedies are necessary then along with remedies, begin with the analysis of the first question, I will ask the rest later.
+----------
+Now rewrite all the following parts and questions analyzed so far and give their brief answers, because this list will be placed at the very beginning of this analysis, so that the native reads the short answers first and finds the part whose detailed analysis they want to read...
+1] Technical basis of Jupiter's gochar?
+➤ Ashtakavarga result
+➤ Bhava effect of gochar (from lagna and Moon)
+2] Drishtis of gochar and effect on areas of life?
+➤ Jupiter's 5th, 7th and 9th drishti
+➤ Career and business
+➤ Health and personal life
+➤ Relationships and marriage
+3] Coordination of dasha and gochar (Dasha & Transit Synergy)?
+4] Subtle effect of gochar (D9 Navamsha observation)?
+5] Subtle dasha-gochar analysis of every month (Monthly Analysis)?
+➤ First month
+➤ Second month
+➤ Third month
+➤ Fourth month
+➤ Fifth month
+➤ Sixth month
+➤ Seventh month
+➤ Eighth month
+➤ Ninth month
+➤ Tenth month
+➤ Eleventh month
+➤ Twelfth month
+6] Conclusion and Vedic remedies?
+➤ Overall gochar conclusion
+➤ Exact remedies
+Questions of the native:`;
         const rawData_mr = `हे PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... ची कुंडली आहे, यामधील सर्व माहिती तुम्ही जतन करून ठेवली पाहिजे, जेणेकरून कुंडलीचे विश्लेषण करता येईल, विश्लेषण करताना PDF च्या पानांचा संदर्भ लिहू नका पण खालील माहिती कोणत्या पानावर आहे, याची सूची द्या म्हणजे तुम्हालाही पुढे शोधण्यात सोपे जाईल :
 
 1] ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
@@ -731,7 +789,36 @@ Next Task :
 
 जातकाचे सवाल :
 ----------
-आता जातकाने दिलेल्या प्रश्नांचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, प्रत्येक प्रश्नाचे विस्ताराने विश्लेषण झाले पाहिजे, जर उपाय आवश्यक असतील तर उपायांसह, सुरुवात पहिल्या प्रश्नाच्या विश्लेषणाने करा, बाकीचे नंतर विचारते.`;
+आता जातकाने दिलेल्या प्रश्नांचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, प्रत्येक प्रश्नाचे विस्ताराने विश्लेषण झाले पाहिजे, जर उपाय आवश्यक असतील तर उपायांसह, सुरुवात पहिल्या प्रश्नाच्या विश्लेषणाने करा, बाकीचे नंतर विचारते.
+----------
+आतापर्यंत विश्लेषण केलेल्या सर्व खालील भागांचे आणि प्रश्नांचे पुन्हा लिहून त्यांची संक्षिप्त उत्तरे द्या, कारण ही यादी या विश्लेषणाच्या अगदी सुरुवातीला लावली जाईल, यामुळे जातक आधीच short मध्ये उत्तर वाचेल आणि त्याला ज्या भागाचे विश्लेषण तपशीलवार वाचायचे आहे, तो भाग शोधेल...
+1] गुरू गोचराचा तांत्रिक आधार?
+➤ अष्टकवर्ग परिणाम
+➤ गोचराचा भाव प्रभाव (लग्न आणि चंद्रापासून)
+2] गोचराच्या दृष्ट्या आणि जीवनाच्या क्षेत्रांवर परिणाम?
+➤ गुरूची 5वी, 7वी आणि 9वी दृष्टी
+➤ करिअर आणि व्यवसाय
+➤ आरोग्य आणि वैयक्तिक जीवन
+➤ नातेसंबंध आणि विवाह
+3] दशा आणि गोचर यांचा समन्वय (Dasha & Transit Synergy)?
+4] गोचराचा सूक्ष्म प्रभाव (D9 नवमांश अवलोकन)?
+5] प्रत्येक महिन्याचे सूक्ष्म दशा-गोचर विश्लेषण (Monthly Analysis)?
+➤ पहिला महिना
+➤ दुसरा महिना
+➤ तिसरा महिना
+➤ चौथा महिना
+➤ पाचवा महिना
+➤ सहावा महिना
+➤ सातवा महिना
+➤ आठवा महिना
+➤ नववा महिना
+➤ दहावा महिना
+➤ अकरावा महिना
+➤ बारावा महिना
+6] निष्कर्ष आणि वैदिक उपाय?
+➤ एकंदर गोचर निष्कर्ष
+➤ अचूक उपाय
+जातकाचे सवाल:`;
         let currentLang = 'hi';
         function getRawData() {
             if (currentLang === 'en') return rawData_en;
