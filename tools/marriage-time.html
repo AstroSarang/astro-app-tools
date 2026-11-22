@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marriage Time Calculator v1.4</title>
+<title>Marriage Time Calculator v2.0</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,8 +33,8 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Marriage Time Calculator v1.4</h1>
-<p class="small" id="horizon-note">Astro Code से विवाह का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
+<h1>Marriage Time Calculator v2.0</h1>
+<p class="small" id="horizon-note">Astro Code से विवाह का समय - v2.0: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus)। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
 <input type="text" id="astro-code" value="" placeholder="AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN-DDDMME">
@@ -696,6 +696,30 @@ async function computeAll(code, setStatus, startYear, gender){
     vimAds, yogAds, triAds, charaAds, curMD, wins, cuspKP, cuspWS, housesOwned};
 }
 
+// ================= v2.0 shared helpers (BNN ranges / KP transit) =================
+// Moved out of computeFinal so computeTransits can build the B/K window sets too.
+function mergeRanges(ranges, gapDays){
+  const rs = ranges.filter(r=>r.end>r.start).sort((a,b)=>a.start-b.start);
+  const out = [];
+  for(const r of rs){
+    const last = out[out.length-1];
+    if(last && (r.start-last.end)/86400000 <= gapDays) last.end = new Date(Math.max(last.end, r.end));
+    else out.push({start:new Date(r.start), end:new Date(r.end)});
+  }
+  return out;
+}
+const satApproves = (satSign, targetSign) => [0,2,6,9].includes((targetSign-satSign+12)%12);
+const satSegsApproval = (satSegs, targetSign) => satSegs.filter(s=>satApproves(s.sign, targetSign));
+const jupYutiSegs = (jupSegs, targetSign) => jupSegs.filter(s=>s.sign===targetSign);
+function overlapRanges(aSegs, bSegs){
+  const out = [];
+  for(const a of aSegs) for(const b of bSegs){
+    const s = new Date(Math.max(a.start, b.start)), e = new Date(Math.min(a.end, b.end));
+    if(e>s) out.push({start:s, end:e});
+  }
+  return out;
+}
+
 // ================= transits =================
 async function computeTransits(D, setStatus){
   const scanEnd = new Date(Math.max(HEND.getTime(), ...D.wins.map(w=>w.end.getTime())));
@@ -704,19 +728,40 @@ async function computeTransits(D, setStatus){
   const daySign = new Map();
   const jupEntries = [], satEntries = [], venEntries = [];
   let prevJ = null, prevS = null, prevV = null;
+  // v2.0: Exact Jupiter Return - transit Guru longitude == natal Guru longitude
+  const natalJupLon = D.pl['Jupiter'].lon;
+  const exactReturnDays = [];
+  let prevJupDiff = null;
   let d = new Date(scanStart);
   let n = 0;
   while(d<=scanEnd){
     const jd = swe.julianDay(d.getUTCFullYear(), d.getUTCMonth()+1, d.getUTCDate(), 12.0);
     const ay = swe.getAyanamsa(jd);
-    const js = Math.floor(norm360(swe.calculatePosition(jd, SEP.Jupiter, 0).longitude - ay)/30);
+    const jLon = norm360(swe.calculatePosition(jd, SEP.Jupiter, 0).longitude - ay);
+    const js = Math.floor(jLon/30);
+    const jDiff = ((jLon - natalJupLon + 540) % 360) - 180;
+    // genuine crossing: daily change <1 deg; at the +/-180 wrap (transit Guru opposite
+    // natal Guru) diff jumps ~354 deg in one day - that is NOT a Return, ignore it
+    if(prevJupDiff!==null && Math.abs(jDiff - prevJupDiff) < 5 && ((prevJupDiff<=0 && jDiff>0) || (prevJupDiff>=0 && jDiff<0))) exactReturnDays.push(new Date(d));
+    prevJupDiff = jDiff;
     const ss2 = Math.floor(norm360(swe.calculatePosition(jd, SEP.Saturn, 0).longitude - ay)/30);
     const vs = Math.floor(norm360(swe.calculatePosition(jd, SEP.Venus, 0).longitude - ay)/30);
     if(prevJ!==null && js!==prevJ) jupEntries.push({sign:js, entry:new Date(d)});
     if(prevS!==null && ss2!==prevS) satEntries.push({sign:ss2, entry:new Date(d)});
     if(prevV!==null && vs!==prevV) venEntries.push({sign:vs, entry:new Date(d)});
     prevJ = js; prevS = ss2; prevV = vs;
-    daySign.set(d.toISOString().slice(0,10), {jup:js, sat:ss2, ven:vs});
+    // v2.0: month scoring needs all 7 planets, but only on 1st/15th (month snapshots)
+    const dc = d.getUTCDate();
+    let extra = {};
+    if(dc===1 || dc===15){
+      extra = {
+        sun: Math.floor(norm360(swe.calculatePosition(jd, SEP.Sun, 0).longitude - ay)/30),
+        moon: Math.floor(norm360(swe.calculatePosition(jd, SEP.Moon, 0).longitude - ay)/30),
+        mars: Math.floor(norm360(swe.calculatePosition(jd, SEP.Mars, 0).longitude - ay)/30),
+        merc: Math.floor(norm360(swe.calculatePosition(jd, SEP.Mercury, 0).longitude - ay)/30)
+      };
+    }
+    daySign.set(d.toISOString().slice(0,10), {jup:js, sat:ss2, ven:vs, ...extra});
     d = addDays(d,1); n++;
     if(n%600===0){ setStatus(`गोचर scan: ${fmt(d)} तक...`); await tick(); }
   }
@@ -725,7 +770,7 @@ async function computeTransits(D, setStatus){
   let y = scanStart.getUTCFullYear(), m = scanStart.getUTCMonth()+1;
   while(!(y===scanEnd.getUTCFullYear() && m>scanEnd.getUTCMonth()+1) && (y<scanEnd.getUTCFullYear() || (y===scanEnd.getUTCFullYear() && m<=scanEnd.getUTCMonth()+1))){
     const mid = daySign.get(key(y,m,15)), first = daySign.get(key(y,m,1));
-    if(mid) months.push({y, m, jup:mid.jup, sat:mid.sat, ven:mid.ven, jup1:first?first.jup:mid.jup, sat1:first?first.sat:mid.sat});
+    if(mid) months.push({y, m, sun:mid.sun, moon:mid.moon, mars:mid.mars, merc:mid.merc, jup:mid.jup, sat:mid.sat, ven:mid.ven, jup1:first?first.jup:mid.jup, sat1:first?first.sat:mid.sat});
     m++; if(m>12){ m=1; y++; }
     if(y>scanEnd.getUTCFullYear()+1) break;
   }
@@ -850,6 +895,31 @@ async function computeTransits(D, setStatus){
     const fin = (eff[0]!=='सीधा संबंध नहीं' && (qual==='High'||qual==='Medium')) ? 'प्रबल संभावना' : (eff[0]!=='सीधा संबंध नहीं' ? 'औसत' : 'न्यून');
     return {sign:c.sign, start:c.start, end:c.end, sav:savv, bav:bavv, bal, qual, eff:eff.join(' ; '), sup:sup.join(' ; '), fin, L:Lbb, M:bhavaOf(c.sign, D.pl['Moon'].sign)};
   });
+  // ---- v2.0: BNN activation ranges + KP transit ranges (shared with computeFinal) ----
+  const venAppr = [...satSegsApproval(satSegsH, D.pl['Venus'].sign), ...satSegsApproval(satSegsH, D.pl['Jupiter'].sign)];
+  const karakaAppr = D.gender==='female'
+    ? [...satSegsApproval(satSegsH, D.pl['Venus'].sign), ...satSegsApproval(satSegsH, D.pl['Mars'].sign), ...satSegsApproval(satSegsH, D.pl['Jupiter'].sign)]
+    : venAppr;
+  const bnnVenus = mergeRanges(overlapRanges(jupYutiSegs(jupSegsH, D.pl['Venus'].sign), karakaAppr), 180);
+  const bnnMars = D.gender==='female' ? mergeRanges(overlapRanges(jupYutiSegs(jupSegsH, D.pl['Mars'].sign), karakaAppr), 180) : [];
+  const bnnReturn = mergeRanges(overlapRanges(jupYutiSegs(jupSegsH, D.pl['Jupiter'].sign), karakaAppr), 180);
+  const bnnKaraka = [...bnnVenus, ...bnnMars].sort((a,b)=>a.start-b.start);
+  const sigPlanets = [...new Set([...P9.filter(p=>D.kpSig[p].houses.includes(2)), ...P9.filter(p=>D.kpSig[p].houses.includes(7)), ...P9.filter(p=>D.kpSig[p].houses.includes(11))])];
+  const sigSigns = [...new Set(sigPlanets.map(p=>D.pl[p].sign))];
+  const satHitsSig = satSign => sigSigns.includes(satSign) || sigSigns.some(s=>[0,2,6,9].includes((s-satSign+12)%12));
+  const kpMonths = [];
+  for(const mo of months){
+    if(mo.y===HEND.getUTCFullYear() && mo.m>10) continue;
+    if(sigSigns.includes(mo.jup) && satHitsSig(mo.sat)) kpMonths.push({y:mo.y, m:mo.m});
+  }
+  const kpRanges = [];
+  for(const km of kpMonths){
+    const d0 = new Date(Date.UTC(km.y, km.m-1, 1));
+    const last = kpRanges[kpRanges.length-1];
+    if(last && (d0-last.end)/86400000 <= 35) last.end = new Date(Date.UTC(km.y, km.m-1, 1));
+    else kpRanges.push({start:d0, end:new Date(Date.UTC(km.y, km.m-1, 1))});
+  }
+  const kpRangeTxt = kpRanges.map(r=>`${fmtMY(r.start)} - ${fmtMY(r.end)}`);
   // ---- window scoring ----
   const segMonths = (w, segs, sign) => {
     let tot = 0;
@@ -932,8 +1002,124 @@ async function computeTransits(D, setStatus){
     return {...w, id:'W'+(i+1), kpClean:clean, kpPos:q.pos, kpNeg:q.neg, kpSc, bnnSc, bnnLbl, mdSc, adSc, bonus, dtSc, p29, p29Sc, total, pct, overlapTxt,
       hasVenusYuti: actMonths>0, venusYutiMonths:actMonths};
   });
+  // ================= v2.0: month-level scoring =================
+  // Same components as window scoring, but evaluated per month (15th-day snapshot).
+  // New v2.0 factors: Tribhagi MD KP-clean (+5), UL-rashi Chara AD (+5),
+  // transit saptamesh in 7th house sign (+5), BNN Guru drishti on karaka (+5).
+  // Exact Jupiter Return months (transit Guru longitude == natal Guru longitude)
+  const exactReturnMonths = new Set(exactReturnDays.map(dt=>dt.getUTCFullYear()+'-'+(dt.getUTCMonth()+1)));
+  const saptSignM = D.pl[D.saptamesh].sign;
+  const supSignsM = [saptSignM, (saptSignM+4)%12, (saptSignM+8)%12];
+  const PLANET_KEY = {Sun:'sun', Moon:'moon', Mars:'mars', Mercury:'merc', Jupiter:'jup', Venus:'ven', Saturn:'sat'};
+  const saptKey = PLANET_KEY[D.saptamesh];
+  const monthScoresRaw = months.map(mo=>{
+    const mid = new Date(Date.UTC(mo.y, mo.m-1, 15));
+    const m0 = new Date(Date.UTC(mo.y, mo.m-1, 1));
+    const m1 = new Date(Date.UTC(mo.y, mo.m, 1));
+    // Vimshottari AD at mid-month
+    let adLord = null;
+    for(const md of D.vim){
+      if(md.start<=mid && mid<md.end){
+        for(const ad of md.ads){ if(ad.start<=mid && mid<ad.end){ adLord = ad.lord; break; } }
+        break;
+      }
+    }
+    const q = adLord ? D.kpQual(adLord) : {pos:[], neg:[1]};
+    const clean = q.neg.length===0;
+    const kpSc = clean?15:5;
+    // Tribhagi MD at mid-month
+    const triMd = D.tri.find(m=>m.start<=mid && mid<m.end);
+    const triQ = triMd ? D.kpQual(triMd.lord) : {pos:[], neg:[1]};
+    const triKp = (triQ.pos.length>0 && triQ.neg.length===0) ? 5 : ((triQ.pos.length===0 && triQ.neg.length>0) ? -5 : 0);
+    // BNN activation from mid-month Guru sign
+    const gSign = mo.jup;
+    let bnnSc, bnnLbl;
+    if(gSign===D.pl['Jupiter'].sign){ bnnSc=10; bnnLbl='Jupiter Return'; }
+    else if(gSign===D.pl['Venus'].sign || (D.gender==='female' && gSign===D.pl['Mars'].sign)){
+      if(D.gender==='female'){ bnnSc = (D.pl['Venus'].sign===D.pl['Mars'].sign)?9:5; bnnLbl = gSign===D.pl['Venus'].sign?'गुरु नाताल शुक्र पर':'गुरु नाताल मंगल पर'; }
+      else { bnnSc=9; bnnLbl='गुरु नाताल शुक्र पर'; }
+    }
+    else if(gSign===saptSignM){ bnnSc=5; bnnLbl='गुरु सप्तमेश पर'; }
+    else if(supSignsM.includes(gSign)){ bnnSc=5; bnnLbl='सहायक (सप्तमेश पर दृष्टि)'; }
+    else { bnnSc=-10; bnnLbl='कोई युति नहीं'; }
+    // BNN drishti: Guru 5/7/9 on a karaka sign, only when there is no yuti that month
+    let drishti = 0;
+    const hasYuti = (bnnLbl==='Jupiter Return' || bnnLbl==='गुरु नाताल शुक्र पर' || bnnLbl==='गुरु नाताल मंगल पर' || bnnLbl==='गुरु सप्तमेश पर');
+    if(!hasYuti){
+      const drSigns = [(gSign+4)%12, (gSign+6)%12, (gSign+8)%12];
+      const karakaSigns = [D.pl['Venus'].sign, D.pl['Jupiter'].sign, ...(D.gender==='female'?[D.pl['Mars'].sign]:[])];
+      if(karakaSigns.some(s=>drSigns.includes(s))) drishti = 5;
+    }
+    // Chara at mid-month
+    const {md:chMd, ad:chAd} = charaAt(mid);
+    const mdSc = chMd ? (D.A_set.includes(chMd.rashi)?10:(D.B_set.includes(chMd.rashi)?5:0)) : 0;
+    const adSc = chAd ? (D.A_set.includes(chAd.rashi)?5:(D.B_set.includes(chAd.rashi)?2:0)) : 0;
+    const bonus = (chMd && chAd && chAd.rashi===chMd.rashi) ? 5 : 0;
+    const ulAd = (chAd && chAd.rashi===D.UL) ? 15 : 0;
+    // Double Transit + P29 for the month
+    const dt = dtRow(mo);
+    const dtSc = dt.conc==='प्रबल'?10:(dt.comb==='सक्रिय'?5:0);
+    let p29best = 0;
+    for(const p of venPeriodsF){
+      if(p.end<=m0 || p.start>=m1) continue;
+      p29best = Math.max(p29best, venCheck(p.sign).length);
+    }
+    const p29Sc = (p29best===2 && clean)?5:(p29best>=1?2:0);
+    // transit saptamesh planet in 7th house sign
+    const saptTrans = (mo[saptKey]===D.s7) ? 5 : 0;
+    const exactRet = exactReturnMonths.has(mo.y+'-'+mo.m) ? 20 : 0;
+    const total = 30+kpSc+bnnSc+drishti+mdSc+adSc+bonus+dtSc+p29Sc+triKp+ulAd+saptTrans+exactRet;
+    return {y:mo.y, m:mo.m, total, kpSc, bnnSc, bnnLbl, drishti, mdSc, adSc, bonus, dtSc, p29Sc, triKp, ulAd, saptTrans, exactRet, adLord, clean, triLord: triMd?triMd.lord:null};
+  });
+  // ================= v2.0: four independent window sets + consensus =================
+  const sysWindows = {
+    P: D.wins.map(w=>({start:new Date(w.start), end:new Date(w.end), sys:'P', label:w.id})),
+    J: D.charaAds.filter(({ad})=>D.A_set.includes(ad.rashi)).map(({md,ad})=>({start:new Date(ad.start), end:new Date(ad.end), sys:'J', label:`चर ${SIGNS[md.rashi]}-${SIGNS[ad.rashi]}`})),
+    B: [...bnnKaraka, ...bnnReturn].sort((a,b)=>a.start-b.start).map(r=>({start:new Date(r.start), end:new Date(r.end), sys:'B', label:'BNN activation'})),
+    K: kpRanges.map(r=>({start:new Date(r.start), end:new Date(r.end), sys:'K', label:'KP transit'}))
+  };
+  // month-level system coverage, then merge consecutive months with the same system set
+  const monthScores = monthScoresRaw.map(ms=>{
+    const m0 = new Date(Date.UTC(ms.y, ms.m-1, 1)), m1 = new Date(Date.UTC(ms.y, ms.m, 1));
+    const sys = [];
+    if(sysWindows.P.some(r=>r.end>m0 && r.start<m1)) sys.push('P');
+    if(sysWindows.J.some(r=>r.end>m0 && r.start<m1)) sys.push('J');
+    if(sysWindows.B.some(r=>r.end>m0 && r.start<m1)) sys.push('B');
+    if(sysWindows.K.some(r=>r.end>m0 && r.start<m1)) sys.push('K');
+    return {...ms, systems:sys};
+  });
+  const consensus = [];
+  for(const ms of monthScores){
+    const key = ms.systems.join('');
+    const last = consensus[consensus.length-1];
+    if(last && last.sysKey===key){
+      last.end = new Date(Date.UTC(ms.y, ms.m, 1));
+      last.months.push(ms);
+    } else {
+      consensus.push({start:new Date(Date.UTC(ms.y, ms.m-1, 1)), end:new Date(Date.UTC(ms.y, ms.m, 1)), sysKey:key, systems:ms.systems, months:[ms]});
+    }
+  }
+  for(const seg of consensus){
+    seg.bestMonth = seg.months.reduce((a,b)=>b.total>=a.total?b:a, seg.months[0]);
+    seg.bestScore = seg.bestMonth.total;
+    // female: both karaka activations inside the segment -> +4 (v1.4 graded rule, segment level)
+    let bothKaraka = false;
+    if(D.gender==='female'){
+      const hasV = seg.months.some(ms=>ms.bnnLbl==='गुरु नाताल शुक्र पर');
+      const hasM = seg.months.some(ms=>ms.bnnLbl==='गुरु नाताल मंगल पर');
+      bothKaraka = hasV && hasM;
+    }
+    seg.bothKaraka = bothKaraka;
+    seg.score = seg.bestScore + (bothKaraka?4:0);
+    const bm = new Date(Date.UTC(seg.bestMonth.y, seg.bestMonth.m-1, 15));
+    seg.parWin = scored.find(w=>w.start<=bm && bm<w.end) || null;
+  }
+  consensus.sort((a,b)=>(b.score-a.score) || (b.systems.length-a.systems.length) || ((b.end-b.start)-(a.end-a.start)));
+  consensus.forEach((s,i)=>{ s.id = 'C'+(i+1); });
   return {months, jupEntries, satEntries, venEntries, jupSegsH, satSegsH, venSegsH, jupSegsF, venSegsF,
-    mtt, dtRows, venPeriods, p30, scored, POINTS, dtRow, venCheck, scanEnd};
+    mtt, dtRows, venPeriods, p30, scored, POINTS, dtRow, venCheck, scanEnd,
+    bnnVenus, bnnMars, bnnKaraka, bnnReturn, sigPlanets, sigSigns, kpRanges, kpRangeTxt, exactReturnDays,
+    monthScores, sysWindows, consensus};
 }
 
 // ================= P22 / BNN final / KP transit / final =================
@@ -966,59 +1152,37 @@ function computeFinal(D, T){
   const cond2 = (!D.isShukla && D.isDay) || (D.isShukla && !D.isDay);
   const ashApplicable = cond1 && cond2;
   const ashCurMD = D.ash.find(m=>m.start<=HSTART && HSTART<m.end);
-  // ---- BNN final ranges ----
-  const mergeRanges = (ranges, gapDays) => {
-    const rs = ranges.filter(r=>r.end>r.start).sort((a,b)=>a.start-b.start);
-    const out = [];
-    for(const r of rs){
-      const last = out[out.length-1];
-      if(last && (r.start-last.end)/86400000 <= gapDays) last.end = new Date(Math.max(last.end, r.end));
-      else out.push({start:new Date(r.start), end:new Date(r.end)});
-    }
-    return out;
-  };
-  const satApproves = (satSign, targetSign) => [0,2,6,9].includes((targetSign-satSign+12)%12);
-  const satSegsApproval = targetSign => T.satSegsH.filter(s=>satApproves(s.sign, targetSign));
-  const jupYutiSegs = targetSign => T.jupSegsH.filter(s=>s.sign===targetSign);
-  const overlapRanges = (aSegs, bSegs) => {
-    const out = [];
-    for(const a of aSegs) for(const b of bSegs){
-      const s = new Date(Math.max(a.start, b.start)), e = new Date(Math.min(a.end, b.end));
-      if(e>s) out.push({start:s, end:e});
-    }
-    return out;
-  };
-  const venAppr = [...satSegsApproval(D.pl['Venus'].sign), ...satSegsApproval(D.pl['Jupiter'].sign)];
-  // female: karaka = Venus (self) + Mars (husband); Shani approval on either karaka + Jupiter
-  const karakaAppr = D.gender==='female'
-    ? [...satSegsApproval(D.pl['Venus'].sign), ...satSegsApproval(D.pl['Mars'].sign), ...satSegsApproval(D.pl['Jupiter'].sign)]
-    : venAppr;
-  const bnnVenus = mergeRanges(overlapRanges(jupYutiSegs(D.pl['Venus'].sign), karakaAppr), 180);
-  const bnnMars = D.gender==='female' ? mergeRanges(overlapRanges(jupYutiSegs(D.pl['Mars'].sign), karakaAppr), 180) : [];
-  const bnnReturn = mergeRanges(overlapRanges(jupYutiSegs(D.pl['Jupiter'].sign), karakaAppr), 180);
-  const bnnKaraka = [...bnnVenus, ...bnnMars].sort((a,b)=>a.start-b.start);
-  // ---- KP transit ranges ----
-  const sigPlanets = [...new Set([...P9.filter(p=>D.kpSig[p].houses.includes(2)), ...P9.filter(p=>D.kpSig[p].houses.includes(7)), ...P9.filter(p=>D.kpSig[p].houses.includes(11))])];
-  const sigSigns = [...new Set(sigPlanets.map(p=>D.pl[p].sign))];
-  const satHitsSig = satSign => sigSigns.includes(satSign) || sigSigns.some(s=>[0,2,6,9].includes((s-satSign+12)%12));
-  const kpMonths = [];
-  for(const mo of T.months){
-    if(mo.y===HEND.getUTCFullYear() && mo.m>10) continue;
-    if(sigSigns.includes(mo.jup) && satHitsSig(mo.sat)) kpMonths.push({y:mo.y, m:mo.m});
-  }
-  const kpRanges = [];
-  for(const km of kpMonths){
-    const d0 = new Date(Date.UTC(km.y, km.m-1, 1));
-    const last = kpRanges[kpRanges.length-1];
-    if(last && (d0-last.end)/86400000 <= 35) last.end = new Date(Date.UTC(km.y, km.m-1, 1));
-    else kpRanges.push({start:d0, end:new Date(Date.UTC(km.y, km.m-1, 1))});
-  }
-  const kpRangeTxt = kpRanges.map(r=>`${fmtMY(r.start)} - ${fmtMY(r.end)}`);
-  // ---- final ----
+  // ---- BNN final ranges + KP transit ranges (v2.0: computed in computeTransits) ----
+  const {bnnVenus, bnnMars, bnnKaraka, bnnReturn, sigPlanets, sigSigns, kpRanges, kpRangeTxt} = T;
+  // ---- final (v2.0: consensus segments) ----
   const ranked = [...T.scored].sort((a,b)=>(b.total+(b.hasVenusYuti?10:0))-(a.total+(a.hasVenusYuti?10:0)));
-  const top = ranked[0], second = ranked[1];
   const topScore = T.scored.slice().sort((a,b)=>b.total-a.total);
-  // most probable year: year with most Jupiter-activation months inside top window
+  const segs = (T.consensus||[]).filter(s=>s.systems.length>0);
+  let top, second;
+  if(segs.length){
+    top = segs[0]; second = segs[1] || null;
+  } else if(topScore.length){
+    const mkSeg = w => ({id:w.id, start:w.start, end:w.end, systems:['P'], bestMonth:null, bestScore:w.total, score:w.total, bothKaraka:false, parWin:w});
+    top = mkSeg(topScore[0]);
+    second = topScore[1] ? mkSeg(topScore[1]) : null;
+  } else {
+    top = {id:'-', start:HSTART, end:HEND, systems:[], bestMonth:null, bestScore:0, score:0, bothKaraka:false, parWin:null};
+    second = null;
+  }
+  // Parashari display fields from the overlapping window (Step 17 needs ad/yogMd/kpClean)
+  const pctBand = t => t>=80?'80-85%':(t>=75?'75-80%':(t>=65?'65-70%':(t>=55?'55-60%':(t>=45?'45-50%':'40-45%'))));
+  const parFields = seg => {
+    const pw = seg.parWin || null;
+    seg.ad = pw ? pw.ad : '-';
+    seg.yogMd = pw ? pw.yogMd : '-';
+    seg.yogPl = pw ? pw.yogPl : '-';
+    seg.kpClean = pw ? pw.kpClean : false;
+    seg.bnnLbl = pw ? pw.bnnLbl : '-';
+    if(seg.pct===undefined) seg.pct = pctBand(seg.bestScore!==undefined&&seg.bestScore!==null?seg.bestScore:(seg.total||0));
+  };
+  parFields(top);
+  if(second) parFields(second);
+  // most probable year: year with most Jupiter-activation months inside top segment
   // (Venus-yuti: Jupiter in natal Venus sign, OR Jupiter Return: Jupiter in natal Jupiter sign)
   const venSign = D.pl['Venus'].sign, jupSign = D.pl['Jupiter'].sign;
   const marsSign = D.pl['Mars'].sign;
@@ -1053,7 +1217,7 @@ function computeFinal(D, T){
   const kCnt = (karakaMonthsByYear[bestYear]||new Set()).size;
   const karakaMech = D.gender==='female' ? (vCnt>0 && mCnt>0 ? 'karaka' : (mCnt>0 ? 'mars' : 'venus')) : 'venus';
   const bestMechanism = kCnt>rCnt ? karakaMech : (rCnt>kCnt ? 'return' : (kCnt>0 ? 'both' : 'none'));
-  // peak months: last cluster in bestYear where (Venus-yuti OR Jupiter Return) + DT प्रबल
+  // peak months: longest contiguous cluster in bestYear where (Venus-yuti OR Jupiter Return) + DT प्रबल
   const dtPrabal = new Set(T.dtRows.filter(r=>r.conc==='प्रबल').map(r=>`${r.y}-${r.m}`));
   const peakKeys = [], peakKeyKind = {};
   for(const s of T.jupSegsF){
@@ -1100,12 +1264,12 @@ function computeFinal(D, T){
       return apprRanges.some(r=> d0 < r.end && d1 > r.start);
     });
   }
-  const unStart = new Date(Math.min(top.start, second?second.start:top.start));
-  const unanimous = `${fmtMY(unStart)} - ${fmtMY(top.end)}`;
+  const unanimous = `${fmtMY(top.start)} - ${fmtMY(top.end)}`;
   return {moonSaptameshLord, moonSaptameshSign, p22Vim, p22Tri, p22Yog, p22Wins,
     cond1, cond2, ashApplicable, ashCurMD,
     bnnVenus, bnnMars, bnnKaraka, bnnReturn, sigPlanets, sigSigns, kpRanges, kpRangeTxt,
-    ranked, top, second, topScore, bestYear, peakTxt, unanimous, bestMechanism, peakMechanism, peakHasSatApproval, peakKinds};
+    ranked, top, second, topScore, bestYear, peakTxt, unanimous, bestMechanism, peakMechanism, peakHasSatApproval, peakKinds,
+    consensus: segs, sysWindows: T.sysWindows, monthScores: T.monthScores};
 }
 // ================= Jaimini influence =================
 function jaiminiInfluence(D, rashi){
@@ -1500,12 +1664,14 @@ function buildSections(D, T, F){
   }
   // ---------- Step 17: Alternates + Final + Notes ----------
   {
-    const byScore = [...T.scored].sort((a,b)=>b.total-a.total);
-    const alts = byScore.slice(2);
+    const alts = (F.consensus||[]).slice(1);
     let h = `<h2>7. Alternate Windows + Final Conclusion</h2><h3>P43 Alternate Windows</h3>`;
     h += `<table><tr><th>Alternate Window</th><th>अवधि</th><th>संभावना</th><th>आधार</th></tr>`;
-    for(const w of alts)
-      h += `<tr><td>${w.id}</td><td>${fmtMY(w.start)} - ${fmtMY(w.end)}</td><td>${w.pct}</td><td>${HI[D.curMD.lord]}-${HI[w.ad]} + ${w.yogMd} (${HI[w.yogPl]}) + BNN ${w.bnnLbl}</td></tr>`;
+    for(const w of alts){
+      const pw = w.parWin;
+      const basis = (pw?`${HI[D.curMD.lord]}-${HI[pw.ad]} + ${pw.yogMd} (${HI[pw.yogPl]}) + `:``) + `Systems ${w.systems.join('+')}${w.bothKaraka?' + दोनों कारक':''}`;
+      h += `<tr><td>${w.id}</td><td>${fmtMY(w.start)} - ${fmtMY(w.end)}</td><td>score ${w.score}</td><td>${esc(basis)}</td></tr>`;
+    }
     h += `</table>`;
     const top = F.top, second = F.second;
     h += `<h3>P44 Part 5 - Final Conclusion</h3><div class="verdict">`;
@@ -1525,15 +1691,16 @@ function buildSections(D, T, F){
     }
     else mechTxt = `गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर`;
     const apprTxt = F.peakHasSatApproval ? ', शनि की अनुमति के साथ' : '';
-    h += `<p><b>सबसे संभावित वर्ष: ${F.bestYear}${F.peakTxt?(' (खासकर '+F.peakTxt+')'):''} - High Chances।</b> इस समय: विंशोत्तरी ${HI[curMD.lord]}-${HI[top.ad]} AD (KP ${top.kpClean?'clean':'संघर्ष के साथ'}), योगिनी ${top.yogMd} (${HI[top.yogPl]}), त्रिभागी ${HI[(D.tri.find(m=>m.start<=top.start && top.start<m.end)||{lord:'-'}).lord]} MD, चर ${(D.chara.find(m=>m.start<=top.start && top.start<m.end)||{rashi:0}).rashi!==undefined?SIGNS[D.chara.find(m=>m.start<=top.start && top.start<m.end).rashi]:'-'} MD, ${mechTxt}${apprTxt}।</p>`;
-    if(second) h += `<p><b>दूसरा सबसे Strong समय: ${fmtMY(second.start)} - ${fmtMY(second.end)} (${second.pct})</b> - विंशोत्तरी ${HI[curMD.lord]}-${HI[second.ad]} AD, BNN ${second.bnnLbl}।</p>`;
+    h += `<p><b>सबसे संभावित वर्ष: ${F.bestYear}${F.peakTxt?(' (खासकर '+F.peakTxt+')'):''} - High Chances।</b> इस समय: विंशोत्तरी ${HI[curMD.lord]}-${(HI[top.ad]||'-')} AD (KP ${top.kpClean?'clean':'संघर्ष के साथ'}), योगिनी ${top.yogMd} (${(HI[top.yogPl]||'-')}), त्रिभागी ${(HI[(D.tri.find(m=>m.start<=top.start && top.start<m.end)||{lord:'-'}).lord]||'-')} MD, चर ${(D.chara.find(m=>m.start<=top.start && top.start<m.end)||{rashi:0}).rashi!==undefined?SIGNS[D.chara.find(m=>m.start<=top.start && top.start<m.end).rashi]:'-'} MD, ${mechTxt}${apprTxt}।</p>`;
+    if(second) h += `<p><b>दूसरा सबसे Strong समय: ${fmtMY(second.start)} - ${fmtMY(second.end)} (${second.pct})</b> - विंशोत्तरी ${HI[curMD.lord]}-${(HI[second.ad]||'-')} AD, BNN ${(second.bnnLbl||'-')}।</p>`;
     h += `<p><b>Final Marriage Time: ${F.unanimous}, सबसे संभावित वर्ष ${F.bestYear}${F.peakTxt?(' ('+F.peakTxt+')'):''} - High Chances।</b></p></div>`;
     h += `<h2>Notes - (verify) वाली चीजें</h2><ul>`;
     h += `<li><b>Shadbala / Bhava Bala - (verify):</b> standard textbook method से compute किए गए हैं (JyotishApp PDF के values hardcode नहीं किए गए)। इसलिए इनके अंक PDF से अलग हो सकते हैं - खासकर शनि।</li>`;
     h += `<li><b>Tribhagi - नियम dasha v6.1 tool से:</b> त्रिभागी दशा PDF में नहीं है (सिर्फ Kaala Bala का Tribhaga component है) - इसके नियम dasha-merged v6.1 tool के logic से लिए गए हैं।</li>`;
     h += `<li><b>Chara dasha - VERIFIED:</b> KN Rao नियम, Haripal.pdf की Chara Dasha table से मिलान किया हुआ (धनु से backward, सिंह MD 14 Feb 2024 - 14 Feb 2030)।</li>`;
     h += `<li><b>D60 - VERIFIED:</b> Haripal.pdf p.16 Shashtyamsha chart से 9/9 ग्रह मिलान (sign = natal_sign + pada, degree = (degree - pada×0.5)×60)।</li>`;
-    h += `<li><b>P22 / P29 - (verify):</b> दोनों v4.0 additions हैं, किसी real case में test नहीं हुए हैं - tool में prompt file की जगह पर ही डाले गए हैं।</li>`;
+    h += `<li><b>P22 / P29 - (verify):</b> दोनों v4.0 additions हैं, किसी real case में test नहीं हुए हैं - tool में prompt file की जगह पर ही डाले गए हैं।</li>
+    <li><b>v2.0 - Independent windows + month scoring:</b> final जवाब चारों systems की स्वतंत्र windows (पराशरी/जैमिनी/BNN/KP) की consensus से निकलता है, हर महीने को अलग score मिलता है। नए factors: Exact Jupiter Return वाला महीना (+20), UL राशि वाली चर AD (+15), त्रिभागी MD lord की KP qualification (clean +5 / neg -5), BNN Return (sign +10), गोचर सप्तमेश का 7वें भाव में होना (+5), BNN में गुरु की कारक राशियों पर दृष्टि (+5)। Final = सबसे अच्छा महीना (score); tie पर consensus (ज्यादा systems)।</li>`;
     h += `<li>सभी तारीखें Swiss Ephemeris (Lahiri) से compute की गई हैं; विंशोत्तरी तारीखें JyotishApp PDF से ~2 दिन अलग हो सकती हैं (PDF anchor); गोचर तारीखें daily scan से ±1 दिन हो सकती हैं।</li></ul>`;
     h += QUAL(`Final: ${top.id} + ${second?second.id:''} (${F.unanimous}), सबसे संभावित वर्ष ${F.bestYear}। Alternates ${alts.map(w=>w.id).join('/')}। यही tool का अंतिम नतीजा है।`);
     S.push(h);
@@ -1541,6 +1708,46 @@ function buildSections(D, T, F){
       const t2 = [...T.scored].sort((a,b)=>b.total-a.total).slice(0,2);
       return [new Date(Math.min(t2[0].start, t2[1]?t2[1].start:t2[0].start)), new Date(Math.max(t2[0].end, t2[1]?t2[1].end:t2[0].end))];
     }
+  }
+  // ---------- Step 18: v2.0 Independent Windows + Month Scoring + Consensus ----------
+  {
+    let h = `<h2>8. Independent Windows + Month Scoring + Consensus (v2.0)</h2>`;
+    h += `<p class="note">v2.0 में final जवाब किसी एक system की window से नहीं, चारों systems की स्वतंत्र windows की consensus से निकलता है। हर महीने को अलग से score मिलता है, और सबसे अच्छे महीने वाली consensus segment ही Final Marriage Time है। Exact Jupiter Return वाले महीने को +20 bonus मिलता है।</p>`;
+    h += `<h3>8.1 चारों Systems की स्वतंत्र Windows</h3><table><tr><th>System</th><th>Windows (अवधि)</th></tr>`;
+    const sysNames = {P:'पराशरी (विंशोत्तरी AD × योगिनी MD)', J:'जैमिनी (चर AD, A-rank राशि)', B:'BNN (गुरु activation + Jupiter Return, शनि approval)', K:'KP (गुरु+शनि सिग्निफिकेटर्स पर)'};
+    for(const k of ['P','J','B','K']){
+      const ws = T.sysWindows[k];
+      h += `<tr><td>${sysNames[k]}</td><td>${ws.length?ws.map(w=>`${fmtMY(w.start)} - ${fmtMY(w.end)}`).join('; '):'कोई नहीं'}</td></tr>`;
+    }
+    h += `</table>`;
+    h += `<h3>8.2 Month Scores (सबसे अच्छे 12 महीने)</h3><table><tr><th>महीना</th><th>Score</th><th>Systems</th><th>मुख्य कारण</th></tr>`;
+    const topMonths = [...T.monthScores].sort((a,b)=>b.total-a.total).slice(0,12);
+    for(const ms of topMonths){
+      const parts = [];
+      if(ms.exactRet) parts.push(`Exact Jupiter Return (+${ms.exactRet})`);
+      if(ms.bnnSc>0) parts.push(`BNN ${ms.bnnLbl} (${ms.bnnSc})`);
+      if(ms.drishti) parts.push(`गुरु दृष्टि कारक पर (+${ms.drishti})`);
+      if(ms.mdSc) parts.push(`चर MD ${ms.mdSc}`);
+      if(ms.adSc) parts.push(`चर AD ${ms.adSc}`);
+      if(ms.bonus) parts.push(`AD=MD bonus (+${ms.bonus})`);
+      if(ms.dtSc) parts.push(`DT ${ms.dtSc}`);
+      if(ms.p29Sc) parts.push(`P29 ${ms.p29Sc}`);
+      if(ms.triKp>0) parts.push(`त्रिभागी ${HI[ms.triLord]} clean (+${ms.triKp})`);
+      else if(ms.triKp<0) parts.push(`त्रिभागी ${HI[ms.triLord]} neg (${ms.triKp})`);
+      if(ms.ulAd) parts.push(`UL राशि AD (+${ms.ulAd})`);
+      if(ms.saptTrans) parts.push(`सप्तमेश 7वें में (+${ms.saptTrans})`);
+      parts.push(`KP ${ms.clean?'clean':'संघर्ष'} (${ms.kpSc})`);
+      h += `<tr><td>${fmtYM(ms.y, ms.m)}</td><td>${ms.total}</td><td>${ms.systems.length?ms.systems.join('+'):'-'}</td><td>${esc(parts.join('; '))}</td></tr>`;
+    }
+    h += `</table>`;
+    h += `<h3>8.3 Consensus Segments (ranked)</h3><table><tr><th>Segment</th><th>अवधि</th><th>Systems</th><th>सबसे अच्छा महीना (score)</th><th>Segment Score</th></tr>`;
+    for(const s of F.consensus){
+      h += `<tr><td>${s.id}</td><td>${fmtMY(s.start)} - ${fmtMY(s.end)}</td><td>${s.systems.join(' + ')||'-'}</td><td>${s.bestMonth?fmtYM(s.bestMonth.y, s.bestMonth.m)+' ('+s.bestScore+')':'-'}</td><td>${s.score}${s.bothKaraka?' (दोनों कारक +4)':''}</td></tr>`;
+    }
+    h += `</table>`;
+    h += `<div class="verdict"><p><b>v2.0 Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}${F.peakTxt?(' ('+F.peakTxt+')'):''} - High Chances।</b> Systems: ${F.top.systems.join(' + ')}; सबसे अच्छा महीना: ${F.top.bestMonth?fmtYM(F.top.bestMonth.y, F.top.bestMonth.m)+' (score '+F.top.bestScore+')':'-'}।</p></div>`;
+    h += QUAL(`Consensus Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}। यही tool का अंतिम नतीजा है।`);
+    S.push(h);
   }
   return S;
 }
@@ -1619,7 +1826,7 @@ window.runCalc = async function(mode){
   try{
     const setStatus = t => { stEl.textContent = t; };
     const D = await computeAll(code, setStatus, startYear, gender);
-    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। लिंग: ${gender==='female'?'महिला (जीवनसाथी कारक मंगल)':'पुरुष (जीवनसाथी कारक शुक्र)'}। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
+    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - v2.0: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus)। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। लिंग: ${gender==='female'?'महिला (जीवनसाथी कारक मंगल)':'पुरुष (जीवनसाथी कारक शुक्र)'}। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
     setStatus(`गोचर scan हो रहा है (नवंबर ${HSTART.getUTCFullYear()} - अक्टूबर ${HSTART.getUTCFullYear()+8} + windows)...`);
     await tick();
     const T = await computeTransits(D, setStatus);
