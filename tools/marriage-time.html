@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marriage Time Calculator v1.2</title>
+<title>Marriage Time Calculator v1.3</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,7 +33,7 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Marriage Time Calculator v1.2</h1>
+<h1>Marriage Time Calculator v1.3</h1>
 <p class="small" id="horizon-note">Astro Code से विवाह का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
@@ -684,10 +684,12 @@ async function computeAll(code, setStatus, startYear){
 // ================= transits =================
 async function computeTransits(D, setStatus){
   const scanEnd = new Date(Math.max(HEND.getTime(), ...D.wins.map(w=>w.end.getTime())));
+  // scan start: earliest window start (so pre-horizon Jupiter Return etc. is visible)
+  const scanStart = new Date(Math.min(HSTART.getTime(), ...D.wins.map(w=>w.start.getTime())));
   const daySign = new Map();
   const jupEntries = [], satEntries = [], venEntries = [];
   let prevJ = null, prevS = null, prevV = null;
-  let d = new Date(HSTART);
+  let d = new Date(scanStart);
   let n = 0;
   while(d<=scanEnd){
     const jd = swe.julianDay(d.getUTCFullYear(), d.getUTCMonth()+1, d.getUTCDate(), 12.0);
@@ -705,7 +707,7 @@ async function computeTransits(D, setStatus){
   }
   const key = (y,m,dd) => `${y}-${String(m).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
   const months = []; // monthly signs, 15th (DT) + 1st (MTT gochar)
-  let y = HSTART.getUTCFullYear(), m = 11;
+  let y = scanStart.getUTCFullYear(), m = scanStart.getUTCMonth()+1;
   while(!(y===scanEnd.getUTCFullYear() && m>scanEnd.getUTCMonth()+1) && (y<scanEnd.getUTCFullYear() || (y===scanEnd.getUTCFullYear() && m<=scanEnd.getUTCMonth()+1))){
     const mid = daySign.get(key(y,m,15)), first = daySign.get(key(y,m,1));
     if(mid) months.push({y, m, jup:mid.jup, sat:mid.sat, ven:mid.ven, jup1:first?first.jup:mid.jup, sat1:first?first.sat:mid.sat});
@@ -721,13 +723,14 @@ async function computeTransits(D, setStatus){
     segs.push({sign:cur, start:new Date(cs), end:new Date(endDate)});
     return segs;
   };
-  const nov1 = daySign.get(key(HSTART.getUTCFullYear(),11,1));
+  const s0 = daySign.get(key(scanStart.getUTCFullYear(), scanStart.getUTCMonth()+1, scanStart.getUTCDate()));
+  const nov1 = s0; // signs on scan start (was: signs on Nov 1 of HSTART year)
   const oct31 = new Date(Date.UTC(HSTART.getUTCFullYear()+8,9,31));
-  const jupSegsH = segmentsFromEntries(jupEntries, nov1.jup, new Date(HSTART), oct31);
-  const satSegsH = segmentsFromEntries(satEntries, nov1.sat, new Date(HSTART), oct31);
-  const venSegsH = segmentsFromEntries(venEntries, nov1.ven, new Date(HSTART), oct31);
-  const jupSegsF = segmentsFromEntries(jupEntries, nov1.jup, new Date(HSTART), scanEnd);
-  const venSegsF = segmentsFromEntries(venEntries, nov1.ven, new Date(HSTART), scanEnd);
+  const jupSegsH = segmentsFromEntries(jupEntries, nov1.jup, new Date(scanStart), oct31);
+  const satSegsH = segmentsFromEntries(satEntries, nov1.sat, new Date(scanStart), oct31);
+  const venSegsH = segmentsFromEntries(venEntries, nov1.ven, new Date(scanStart), oct31);
+  const jupSegsF = segmentsFromEntries(jupEntries, nov1.jup, new Date(scanStart), scanEnd);
+  const venSegsF = segmentsFromEntries(venEntries, nov1.ven, new Date(scanStart), scanEnd);
   // ---- Master Time-Table ----
   const fmtAdList = items => {
     const seen = [];
@@ -982,56 +985,85 @@ function computeFinal(D, T){
   const ranked = [...T.scored].sort((a,b)=>(b.total+(b.hasVenusYuti?10:0))-(a.total+(a.hasVenusYuti?10:0)));
   const top = ranked[0], second = ranked[1];
   const topScore = T.scored.slice().sort((a,b)=>b.total-a.total);
-  // most probable year: year with most Venus-yuti months inside top window
-  const yutiMonthsByYear = {};
+  // most probable year: year with most Jupiter-activation months inside top window
+  // (Venus-yuti: Jupiter in natal Venus sign, OR Jupiter Return: Jupiter in natal Jupiter sign)
+  const venSign = D.pl['Venus'].sign, jupSign = D.pl['Jupiter'].sign;
+  const actMonthsByYear = {}, venusMonthsByYear = {}, returnMonthsByYear = {};
   for(const s of T.jupSegsF){
-    if(s.sign!==D.pl['Venus'].sign) continue;
+    const isVen = s.sign===venSign, isRet = s.sign===jupSign;
+    if(!isVen && !isRet) continue;
     const a = new Date(Math.max(s.start, top.start)), b = new Date(Math.min(s.end, top.end));
     if(b<=a) continue;
     let cur = new Date(Date.UTC(a.getUTCFullYear(), a.getUTCMonth(), 1));
     while(cur<b){
       const yk = cur.getUTCFullYear();
-      yutiMonthsByYear[yk] = (yutiMonthsByYear[yk]||0)+1;
+      const kk = `${yk}-${cur.getUTCMonth()+1}`;
+      (actMonthsByYear[yk] = actMonthsByYear[yk] || new Set()).add(kk);
+      if(isVen) venusMonthsByYear[yk] = (venusMonthsByYear[yk]||0)+1;
+      if(isRet) returnMonthsByYear[yk] = (returnMonthsByYear[yk]||0)+1;
       cur = new Date(Date.UTC(yk, cur.getUTCMonth()+1, 1));
     }
   }
   let bestYear = null, bestCount = -1;
-  for(const [yk,c] of Object.entries(yutiMonthsByYear)) if(c>bestCount){ bestCount = c; bestYear = +yk; }
+  for(const [yk,set] of Object.entries(actMonthsByYear)) if(set.size>bestCount){ bestCount = set.size; bestYear = +yk; }
   if(bestYear===null){
     const yc = {};
     let cur = new Date(Date.UTC(top.start.getUTCFullYear(), top.start.getUTCMonth(), 1));
     while(cur<top.end){ const yk = cur.getUTCFullYear(); yc[yk]=(yc[yk]||0)+1; cur = new Date(Date.UTC(yk, cur.getUTCMonth()+1, 1)); }
     for(const [yk,c] of Object.entries(yc)) if(c>bestCount){ bestCount = c; bestYear = +yk; }
   }
-  // peak months: last cluster in bestYear where Venus-yuti + DT प्रबल
+  // mechanism that won bestYear: 'venus' | 'return' | 'both' | 'none'
+  const vCnt = venusMonthsByYear[bestYear]||0, rCnt = returnMonthsByYear[bestYear]||0;
+  const bestMechanism = vCnt>rCnt ? 'venus' : (rCnt>vCnt ? 'return' : (vCnt>0 ? 'both' : 'none'));
+  // peak months: last cluster in bestYear where (Venus-yuti OR Jupiter Return) + DT प्रबल
   const dtPrabal = new Set(T.dtRows.filter(r=>r.conc==='प्रबल').map(r=>`${r.y}-${r.m}`));
-  const peakKeys = [];
+  const peakKeys = [], peakKeyKind = {};
   for(const s of T.jupSegsF){
-    if(s.sign!==D.pl['Venus'].sign) continue;
+    if(s.sign!==venSign && s.sign!==jupSign) continue;
     const a = new Date(Math.max(s.start, top.start)), b = new Date(Math.min(s.end, top.end));
     if(b<=a) continue;
     let cur = new Date(Date.UTC(a.getUTCFullYear(), a.getUTCMonth(), 1));
     while(cur<b){
       const kk = `${cur.getUTCFullYear()}-${cur.getUTCMonth()+1}`;
-      if(cur.getUTCFullYear()===bestYear && dtPrabal.has(kk)) peakKeys.push(kk);
+      if(cur.getUTCFullYear()===bestYear && dtPrabal.has(kk)){
+        peakKeys.push(kk);
+        peakKeyKind[kk] = (peakKeyKind[kk]||'') + (s.sign===venSign?'V':'') + (s.sign===jupSign?'R':'');
+      }
       cur = new Date(Date.UTC(cur.getUTCFullYear(), cur.getUTCMonth()+1, 1));
     }
   }
-  let peakTxt = '';
+  let peakTxt = '', peakMechanism = bestMechanism, peakHasSatApproval = false;
   if(peakKeys.length){
-    const idxs = peakKeys.map(k=>{ const [yy,mm] = k.split('-').map(Number); return yy*12+mm; }).sort((a,b)=>a-b);
-    // last contiguous cluster
-    let cluster = [idxs[idxs.length-1]];
-    for(let i=idxs.length-2;i>=0;i--){ if(idxs[i]===cluster[0]-1) cluster.unshift(idxs[i]); else break; }
+    const idxs = [...new Set(peakKeys.map(k=>{ const [yy,mm] = k.split('-').map(Number); return yy*12+mm; }))].sort((a,b)=>a-b);
+    // longest contiguous cluster (tie -> earliest)
+    let cluster = [], curCl = [idxs[0]];
+    for(let i=1;i<idxs.length;i++){
+      if(idxs[i]===curCl[curCl.length-1]+1) curCl.push(idxs[i]);
+      else { if(curCl.length>cluster.length) cluster = curCl; curCl = [idxs[i]]; }
+    }
+    if(curCl.length>cluster.length) cluster = curCl;
     const f = v => `${MON_HI[(v-1)%12]}`;
     peakTxt = cluster.length>1 ? `${f(cluster[0])} - ${f(cluster[cluster.length-1])} ${bestYear}` : `${f(cluster[0])} ${bestYear}`;
+    // mechanism of the peak cluster itself (may differ from the year's winning mechanism)
+    const k2idx = k => { const [yy,mm] = k.split('-').map(Number); return yy*12+mm; };
+    const clKeys = peakKeys.filter(k=>cluster.includes(k2idx(k)));
+    const hasV = clKeys.some(k=>(peakKeyKind[k]||'').includes('V'));
+    const hasR = clKeys.some(k=>(peakKeyKind[k]||'').includes('R'));
+    peakMechanism = hasV&&hasR ? 'both' : (hasR ? 'return' : 'venus');
+    // Saturn approval honestly: only if the peak months overlap the matching BNN range
+    const apprRanges = peakMechanism==='return' ? bnnReturn : (peakMechanism==='venus' ? bnnVenus : [...bnnVenus, ...bnnReturn]);
+    peakHasSatApproval = cluster.some(idx=>{
+      const yy = Math.floor((idx-1)/12), mm = ((idx-1)%12)+1;
+      const d0 = new Date(Date.UTC(yy, mm-1, 1)), d1 = new Date(Date.UTC(yy, mm, 1));
+      return apprRanges.some(r=> d0 < r.end && d1 > r.start);
+    });
   }
   const unStart = new Date(Math.min(top.start, second?second.start:top.start));
   const unanimous = `${fmtMY(unStart)} - ${fmtMY(top.end)}`;
   return {moonSaptameshLord, moonSaptameshSign, p22Vim, p22Tri, p22Yog, p22Wins,
     cond1, cond2, ashApplicable, ashCurMD,
     bnnVenus, bnnReturn, sigPlanets, sigSigns, kpRanges, kpRangeTxt,
-    ranked, top, second, topScore, bestYear, peakTxt, unanimous};
+    ranked, top, second, topScore, bestYear, peakTxt, unanimous, bestMechanism, peakMechanism, peakHasSatApproval};
 }
 // ================= Jaimini influence =================
 function jaiminiInfluence(D, rashi){
@@ -1430,7 +1462,9 @@ function buildSections(D, T, F){
     h += `<h3>P44 Part 5 - Final Conclusion</h3><div class="verdict">`;
     h += `<p><b>चारों Systems का मिलान:</b> पराशरी - ${fmtMY(top2range()[0])} - ${fmtMY(top2range()[1])} सबसे Strong। जैमिनी - चर ${SIGNS[D.chara.find(m=>m.start<=HSTART && HSTART<m.end).rashi]} MD (${D.A_set.includes(D.chara.find(m=>m.start<=HSTART && HSTART<m.end).rashi)?'A':'B'})। BNN - ${F.bnnVenus.length?fmtMY(F.bnnVenus[0].start)+' - '+fmtMY(F.bnnVenus[0].end):''} (गुरु शुक्र पर) सबसे Strong। KP - ${F.kpRangeTxt.join(', ')} (गुरु+शनि सिग्निफिकेटर्स पर)।</p>`;
     h += `<p><b>Unanimous Period (सभी Systems एक साथ): ${F.unanimous}।</b></p>`;
-    h += `<p><b>सबसे संभावित वर्ष: ${F.bestYear}${F.peakTxt?(' (खासकर '+F.peakTxt+')'):''} - High Chances।</b> इस समय: विंशोत्तरी ${HI[curMD.lord]}-${HI[top.ad]} AD (KP ${top.kpClean?'clean':'संघर्ष के साथ'}), योगिनी ${top.yogMd} (${HI[top.yogPl]}), त्रिभागी ${HI[(D.tri.find(m=>m.start<=top.start && top.start<m.end)||{lord:'-'}).lord]} MD, चर ${(D.chara.find(m=>m.start<=top.start && top.start<m.end)||{rashi:0}).rashi!==undefined?SIGNS[D.chara.find(m=>m.start<=top.start && top.start<m.end).rashi]:'-'} MD, गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर, शनि की अनुमति के साथ।</p>`;
+    const mechTxt = F.peakMechanism==='return' ? `गुरु ${SIGNS[D.pl['Jupiter'].sign]} में नाताल गुरु पर (Jupiter Return)` : F.peakMechanism==='both' ? `गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर और ${SIGNS[D.pl['Jupiter'].sign]} में नाताल गुरु पर (Jupiter Return)` : `गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर`;
+    const apprTxt = F.peakHasSatApproval ? ', शनि की अनुमति के साथ' : '';
+    h += `<p><b>सबसे संभावित वर्ष: ${F.bestYear}${F.peakTxt?(' (खासकर '+F.peakTxt+')'):''} - High Chances।</b> इस समय: विंशोत्तरी ${HI[curMD.lord]}-${HI[top.ad]} AD (KP ${top.kpClean?'clean':'संघर्ष के साथ'}), योगिनी ${top.yogMd} (${HI[top.yogPl]}), त्रिभागी ${HI[(D.tri.find(m=>m.start<=top.start && top.start<m.end)||{lord:'-'}).lord]} MD, चर ${(D.chara.find(m=>m.start<=top.start && top.start<m.end)||{rashi:0}).rashi!==undefined?SIGNS[D.chara.find(m=>m.start<=top.start && top.start<m.end).rashi]:'-'} MD, ${mechTxt}${apprTxt}।</p>`;
     if(second) h += `<p><b>दूसरा सबसे Strong समय: ${fmtMY(second.start)} - ${fmtMY(second.end)} (${second.pct})</b> - विंशोत्तरी ${HI[curMD.lord]}-${HI[second.ad]} AD, BNN ${second.bnnLbl}।</p>`;
     h += `<p><b>Final Marriage Time: ${F.unanimous}, सबसे संभावित वर्ष ${F.bestYear}${F.peakTxt?(' ('+F.peakTxt+')'):''} - High Chances।</b></p></div>`;
     h += `<h2>Notes - (verify) वाली चीजें</h2><ul>`;
