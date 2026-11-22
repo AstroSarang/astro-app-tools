@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marriage Time Calculator v1.1</title>
+<title>Marriage Time Calculator v1.2</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,11 +33,16 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Marriage Time Calculator v1.1</h1>
-<p class="small">Astro Code से विवाह का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
+<h1>Marriage Time Calculator v1.2</h1>
+<p class="small" id="horizon-note">Astro Code से विवाह का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
 <input type="text" id="astro-code" value="" placeholder="AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN-DDDMME">
+</p>
+<p>
+<label for="start-year"><b>गणना शुरू करने का साल:</b></label><br>
+<input type="number" id="start-year" value="2026" min="1900" max="2036" step="1" style="width:130px;padding:8px;font-size:15px">
+<span class="small">8 साल का horizon इसी साल के नवंबर से शुरू होगा - भूतकाल check करने के लिए पुराना साल डालें।</span>
 </p>
 <p>
 <button class="btn-main" id="btn-steps" onclick="runCalc('steps')">गणना करें (एक-एक करके)</button>
@@ -387,9 +392,11 @@ function argala(pl, sign){
   return [arg,vir];
 }
 // ================= main compute =================
-const HSTART = new Date(Date.UTC(2026,10,1));
-const HEND = new Date(Date.UTC(2034,10,1));
-async function computeAll(code, setStatus){
+let HSTART = new Date(Date.UTC(2026,10,1));
+let HEND = new Date(Date.UTC(2034,10,1));
+async function computeAll(code, setStatus, startYear){
+  HSTART = new Date(Date.UTC(startYear,10,1));
+  HEND = new Date(Date.UTC(startYear+8,10,1));
   const ad = parseCode(code);
   if(!ad) throw new Error('गलत Astro Code - प्रारूप: AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W');
   setStatus('Ephemeris लोड हो रहा है...');
@@ -680,7 +687,7 @@ async function computeTransits(D, setStatus){
   const daySign = new Map();
   const jupEntries = [], satEntries = [], venEntries = [];
   let prevJ = null, prevS = null, prevV = null;
-  let d = new Date(Date.UTC(2026,10,1));
+  let d = new Date(HSTART);
   let n = 0;
   while(d<=scanEnd){
     const jd = swe.julianDay(d.getUTCFullYear(), d.getUTCMonth()+1, d.getUTCDate(), 12.0);
@@ -698,12 +705,12 @@ async function computeTransits(D, setStatus){
   }
   const key = (y,m,dd) => `${y}-${String(m).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
   const months = []; // monthly signs, 15th (DT) + 1st (MTT gochar)
-  let y = 2026, m = 11;
+  let y = HSTART.getUTCFullYear(), m = 11;
   while(!(y===scanEnd.getUTCFullYear() && m>scanEnd.getUTCMonth()+1) && (y<scanEnd.getUTCFullYear() || (y===scanEnd.getUTCFullYear() && m<=scanEnd.getUTCMonth()+1))){
     const mid = daySign.get(key(y,m,15)), first = daySign.get(key(y,m,1));
     if(mid) months.push({y, m, jup:mid.jup, sat:mid.sat, ven:mid.ven, jup1:first?first.jup:mid.jup, sat1:first?first.sat:mid.sat});
     m++; if(m>12){ m=1; y++; }
-    if(y>2040) break;
+    if(y>scanEnd.getUTCFullYear()+1) break;
   }
   const segmentsFromEntries = (entries, startSign, startDate, endDate) => {
     const segs = []; let cur = startSign, cs = new Date(startDate);
@@ -714,13 +721,13 @@ async function computeTransits(D, setStatus){
     segs.push({sign:cur, start:new Date(cs), end:new Date(endDate)});
     return segs;
   };
-  const nov1 = daySign.get('2026-11-01');
-  const oct31 = new Date(Date.UTC(2034,9,31));
-  const jupSegsH = segmentsFromEntries(jupEntries, nov1.jup, new Date(Date.UTC(2026,10,1)), oct31);
-  const satSegsH = segmentsFromEntries(satEntries, nov1.sat, new Date(Date.UTC(2026,10,1)), oct31);
-  const venSegsH = segmentsFromEntries(venEntries, nov1.ven, new Date(Date.UTC(2026,10,1)), oct31);
-  const jupSegsF = segmentsFromEntries(jupEntries, nov1.jup, new Date(Date.UTC(2026,10,1)), scanEnd);
-  const venSegsF = segmentsFromEntries(venEntries, nov1.ven, new Date(Date.UTC(2026,10,1)), scanEnd);
+  const nov1 = daySign.get(key(HSTART.getUTCFullYear(),11,1));
+  const oct31 = new Date(Date.UTC(HSTART.getUTCFullYear()+8,9,31));
+  const jupSegsH = segmentsFromEntries(jupEntries, nov1.jup, new Date(HSTART), oct31);
+  const satSegsH = segmentsFromEntries(satEntries, nov1.sat, new Date(HSTART), oct31);
+  const venSegsH = segmentsFromEntries(venEntries, nov1.ven, new Date(HSTART), oct31);
+  const jupSegsF = segmentsFromEntries(jupEntries, nov1.jup, new Date(HSTART), scanEnd);
+  const venSegsF = segmentsFromEntries(venEntries, nov1.ven, new Date(HSTART), scanEnd);
   // ---- Master Time-Table ----
   const fmtAdList = items => {
     const seen = [];
@@ -745,7 +752,7 @@ async function computeTransits(D, setStatus){
     return out;
   };
   const mtt = [];
-  for(let yy=2026; yy<=2033; yy++){
+  for(let yy=HSTART.getUTCFullYear(); yy<=HSTART.getUTCFullYear()+7; yy++){
     const ws = new Date(Date.UTC(yy,10,1)), we = new Date(Date.UTC(yy+1,10,1));
     const vimL = fmtAdList(adListInWindow(D.vim, ws, we, x=>HI[x.lord]));
     const yogL = fmtAdList(adListInWindow(D.yog, ws, we, x=>`${x.lord} (${HI[YOG2PL[x.lord]]})`));
@@ -778,7 +785,7 @@ async function computeTransits(D, setStatus){
     else { comb='निष्क्रिय'; conc='न्यून'; }
     return {gj, sj, comb, conc};
   };
-  const dtRows = months.filter(t=>!(t.y===2034 && t.m>10)).map(mo=>({y:mo.y, m:mo.m, ...dtRow(mo)}));
+  const dtRows = months.filter(t=>!(t.y===HEND.getUTCFullYear() && t.m>10)).map(mo=>({y:mo.y, m:mo.m, ...dtRow(mo)}));
   // ---- Venus P29 periods ----
   const venCheck = sign => {
     const out = [];
@@ -960,7 +967,7 @@ function computeFinal(D, T){
   const satHitsSig = satSign => sigSigns.includes(satSign) || sigSigns.some(s=>[0,2,6,9].includes((s-satSign+12)%12));
   const kpMonths = [];
   for(const mo of T.months){
-    if(mo.y===2034 && mo.m>10) continue;
+    if(mo.y===HEND.getUTCFullYear() && mo.m>10) continue;
     if(sigSigns.includes(mo.jup) && satHitsSig(mo.sat)) kpMonths.push({y:mo.y, m:mo.m});
   }
   const kpRanges = [];
@@ -1085,7 +1092,7 @@ function buildSections(D, T, F){
   }
   // ---------- Step 2: Timing setup ----------
   {
-    let h = `<h2>2. Timing Setup</h2><h3>2.1 Master Time-Table (8 साल, नवंबर 2026 - अक्टूबर 2034)</h3>`;
+    let h = `<h2>2. Timing Setup</h2><h3>2.1 Master Time-Table (8 साल, नवंबर ${HSTART.getUTCFullYear()} - अक्टूबर ${HSTART.getUTCFullYear()+8})</h3>`;
     h += `<table><tr><th>समय (वर्ष)</th><th>विंशोत्तरी दशा (MD-AD)</th><th>योगिनी दशा (MD-AD)</th><th>चर दशा (MD-AD)</th><th>त्रिभागी दशा (MD-AD)</th><th>गुरु गोचर (लग्न/चंद्र से भाव)</th><th>शनि गोचर (लग्न/चंद्र से भाव)</th></tr>`;
     for(const r of T.mtt) h += `<tr><td>${r.year}</td><td>${esc(r.vim)}</td><td>${esc(r.yog)}</td><td>${esc(r.chara)}</td><td>${esc(r.tri)}</td><td>${esc(r.guruGochar)}</td><td>${esc(r.shaniGochar)}</td></tr>`;
     h += `</table><h3>2.2 P18 Groups A-F (ग्रह निकालना)</h3>`;
@@ -1443,7 +1450,7 @@ function buildSections(D, T, F){
   return S;
 }
 // ================= step modes =================
-let SECTIONS = [], lastCode = null, shownCount = 0;
+let SECTIONS = [], lastKey = null, shownCount = 0;
 function updateProgress(){
   const el = document.getElementById('progress');
   if(!SECTIONS.length){ el.textContent = ''; return; }
@@ -1487,7 +1494,15 @@ window.runCalc = async function(mode){
   const errEl = document.getElementById('error');
   const stEl = document.getElementById('status');
   errEl.innerHTML = '';
-  if(code===lastCode && SECTIONS.length){
+  const yearRaw = document.getElementById('start-year').value.trim();
+  const startYear = Number(yearRaw);
+  if(!yearRaw || !Number.isInteger(startYear) || startYear<1900 || startYear>2036){
+    errEl.innerHTML = `<div class="err">गलत साल - गणना शुरू करने का साल 1900 से 2036 के बीच डालें (जैसे 2026)।</div>`;
+    stEl.textContent = 'गणना पूरी नहीं हो सकी।';
+    return;
+  }
+  const runKey = code+'|'+startYear;
+  if(runKey===lastKey && SECTIONS.length){
     if(mode==='all'){ showAll(); stEl.textContent = 'सभी चरण एक साथ दिखाए गए।'; }
     else {
       document.querySelectorAll('.step').forEach(el=>el.classList.remove('visible'));
@@ -1501,15 +1516,16 @@ window.runCalc = async function(mode){
   document.getElementById('btn-all').disabled = true;
   try{
     const setStatus = t => { stEl.textContent = t; };
-    const D = await computeAll(code, setStatus);
-    setStatus('गोचर scan हो रहा है (नवंबर 2026 - अक्टूबर 2034 + windows)...');
+    const D = await computeAll(code, setStatus, startYear);
+    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
+    setStatus(`गोचर scan हो रहा है (नवंबर ${HSTART.getUTCFullYear()} - अक्टूबर ${HSTART.getUTCFullYear()+8} + windows)...`);
     await tick();
     const T = await computeTransits(D, setStatus);
     const F = computeFinal(D, T);
     setStatus('नतीजे बनाए जा रहे हैं...');
     await tick();
     SECTIONS = buildSections(D, T, F);
-    lastCode = code;
+    lastKey = runKey;
     renderSections();
     if(mode==='all'){ showAll(); stEl.textContent = 'गणना पूर्ण - सभी '+SECTIONS.length+' चरण एक साथ दिखाए गए।'; }
     else { showStep(1); stEl.textContent = 'गणना पूर्ण - चरण 1 / '+SECTIONS.length+' दिखाया गया। "अगला चरण" से आगे बढ़ें।'; }
