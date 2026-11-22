@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marriage Time Calculator v1.3</title>
+<title>Marriage Time Calculator v1.4</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,7 +33,7 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Marriage Time Calculator v1.3</h1>
+<h1>Marriage Time Calculator v1.4</h1>
 <p class="small" id="horizon-note">Astro Code से विवाह का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
@@ -43,6 +43,12 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 <label for="start-year"><b>गणना शुरू करने का साल:</b></label><br>
 <input type="number" id="start-year" value="2026" min="1900" max="2036" step="1" style="width:130px;padding:8px;font-size:15px">
 <span class="small">8 साल का horizon इसी साल के नवंबर से शुरू होगा - भूतकाल check करने के लिए पुराना साल डालें।</span>
+</p>
+<p>
+<label><b>जातक का लिंग (Gender):</b></label><br>
+<label><input type="radio" name="gender" value="male"> पुरुष</label>&nbsp;&nbsp;
+<label><input type="radio" name="gender" value="female"> महिला</label>
+<span class="small">BNN में जीवनसाथी कारक पुरुष के लिए शुक्र, महिला के लिए मंगल है।</span>
 </p>
 <p>
 <button class="btn-main" id="btn-steps" onclick="runCalc('steps')">गणना करें (एक-एक करके)</button>
@@ -394,7 +400,7 @@ function argala(pl, sign){
 // ================= main compute =================
 let HSTART = new Date(Date.UTC(2026,10,1));
 let HEND = new Date(Date.UTC(2034,10,1));
-async function computeAll(code, setStatus, startYear){
+async function computeAll(code, setStatus, startYear, gender){
   HSTART = new Date(Date.UTC(startYear,10,1));
   HEND = new Date(Date.UTC(startYear+8,10,1));
   const ad = parseCode(code);
@@ -539,6 +545,8 @@ async function computeAll(code, setStatus, startYear){
   const cslPlanet = c7sl;
   const [cslNl,cslSl,cslSsl] = kpSub(pl[cslPlanet].lon);
   const [c5plNl,c5plSl] = kpSub(pl[c5sl].lon);
+  // Spouse karaka (MTR v4.0): male = Venus, female = Mars
+  const spouseKaraka = gender==='female' ? 'Mars' : 'Venus';
   const groups = {
     A:{'सप्तमेश':[saptamesh],'7वें भाव का नक्षत्र स्वामी':[nakLordOf(cuspWS(7))],
       '7वें भाव में बैठे ग्रह':Object.keys(pl).filter(p=>pl[p].sign===s7),
@@ -562,11 +570,15 @@ async function computeAll(code, setStatus, startYear){
       'लग्न का नक्षत्र स्वामी':[nakLordOf(ascLon)],
       'लग्नेश की राशि का स्वामी':[SIGN_LORD[pl[lagnesh].sign]],
       'लग्नेश से युति':Object.keys(pl).filter(p=>p!==lagnesh && pl[p].sign===pl[lagnesh].sign)},
-    E:{'शुक्र की राशि का स्वामी':[SIGN_LORD[pl['Venus'].sign]],
-      'शुक्र के नक्षत्र का स्वामी':[nakLordOf(pl['Venus'].lon)],
+    E:{...(gender==='female'
+      ? {'मंगल की राशि का स्वामी':[SIGN_LORD[pl['Mars'].sign]],
+         'मंगल के नक्षत्र का स्वामी':[nakLordOf(pl['Mars'].lon)],
+         'मंगल से सप्तम का स्वामी':[SIGN_LORD[(pl['Mars'].sign+6)%12]]}
+      : {'शुक्र की राशि का स्वामी':[SIGN_LORD[pl['Venus'].sign]],
+         'शुक्र के नक्षत्र का स्वामी':[nakLordOf(pl['Venus'].lon)],
+         'शुक्र से सप्तम का स्वामी':[SIGN_LORD[(pl['Venus'].sign+6)%12]]}),
       'गुरु की राशि का स्वामी':[SIGN_LORD[pl['Jupiter'].sign]],
       'गुरु के नक्षत्र का स्वामी':[nakLordOf(pl['Jupiter'].lon)],
-      'शुक्र से सप्तम का स्वामी':[SIGN_LORD[(pl['Venus'].sign+6)%12]],
       'चंद्र से सप्तम का स्वामी':[SIGN_LORD[(pl['Moon'].sign+6)%12]],
       '5वें भाव का स्वामी':[SIGN_LORD[s5]],
       '5वें भाव में बैठे ग्रह':Object.keys(pl).filter(p=>pl[p].sign===s5),
@@ -597,7 +609,10 @@ async function computeAll(code, setStatus, startYear){
     'B':{'द्वितीयेश':'द्वितीयेश','2रे भाव में बैठे ग्रह':'2रे भाव में बैठा','2रे भाव का नक्षत्र स्वामी':`2रे भाव का नक्षत्र स्वामी (${NAK[Math.floor(cuspWS(2)/13.3333333)]})`,'द्वितीयेश की राशि का स्वामी':'द्वितीयेश की राशि का स्वामी','द्वितीयेश से युति':'द्वितीयेश से युति','2रे भाव का सिग्निफिकेटर':'2रे भाव का सिग्निफिकेटर'},
     'C':{'एकादशेश':'एकादशेश','11वें भाव में बैठे ग्रह':'11वें भाव में बैठा','11वें भाव का नक्षत्र स्वामी':`11वें भाव का नक्षत्र स्वामी (${NAK[Math.floor(cuspWS(11)/13.3333333)]})`,'एकादशेश की राशि का स्वामी':'एकादशेश की राशि का स्वामी','एकादशेश से युति':'एकादशेश से युति','11वें भाव का सिग्निफिकेटर':'11वें भाव का सिग्निफिकेटर'},
     'D':{'लग्नेश':'लग्नेश','लग्न में बैठे ग्रह':'लग्न में बैठा','लग्न का नक्षत्र स्वामी':`लग्न का नक्षत्र स्वामी (${NAK[Math.floor(ascLon/13.3333333)]})`,'लग्नेश की राशि का स्वामी':'लग्नेश की राशि का स्वामी','लग्नेश से युति':'लग्नेश से युति'},
-    'E':{'शुक्र की राशि का स्वामी':'शुक्र की राशि का स्वामी','शुक्र के नक्षत्र का स्वामी':'शुक्र के नक्षत्र का स्वामी','गुरु की राशि का स्वामी':'गुरु की राशि का स्वामी','गुरु के नक्षत्र का स्वामी':'गुरु के नक्षत्र का स्वामी','शुक्र से सप्तम का स्वामी':'शुक्र से सप्तम का स्वामी','चंद्र से सप्तम का स्वामी':'चंद्र से सप्तम का स्वामी','5वें भाव का स्वामी':'5वें भाव का स्वामी','5वें भाव में बैठे ग्रह':'5वें भाव में बैठा','5वें भाव पर दृष्टि':'5वें भाव पर दृष्टि','5th CSL':'5वें भाव का CSL','5th CSL NL':'5वें भाव के CSL का नक्षत्र स्वामी','5th CSL SL':'5वें भाव के CSL का उप-स्वामी'},
+    'E':{...(gender==='female'
+      ? {'मंगल की राशि का स्वामी':'मंगल की राशि का स्वामी','मंगल के नक्षत्र का स्वामी':'मंगल के नक्षत्र का स्वामी','मंगल से सप्तम का स्वामी':'मंगल से सप्तम का स्वामी'}
+      : {'शुक्र की राशि का स्वामी':'शुक्र की राशि का स्वामी','शुक्र के नक्षत्र का स्वामी':'शुक्र के नक्षत्र का स्वामी','शुक्र से सप्तम का स्वामी':'शुक्र से सप्तम का स्वामी'}),
+      'गुरु की राशि का स्वामी':'गुरु की राशि का स्वामी','गुरु के नक्षत्र का स्वामी':'गुरु के नक्षत्र का स्वामी','चंद्र से सप्तम का स्वामी':'चंद्र से सप्तम का स्वामी','5वें भाव का स्वामी':'5वें भाव का स्वामी','5वें भाव में बैठे ग्रह':'5वें भाव में बैठा','5वें भाव पर दृष्टि':'5वें भाव पर दृष्टि','5th CSL':'5वें भाव का CSL','5th CSL NL':'5वें भाव के CSL का नक्षत्र स्वामी','5th CSL SL':'5वें भाव के CSL का उप-स्वामी'},
     'F':{'D9 सप्तमेश':'D9 सप्तमेश','D9 7वें भाव में बैठे ग्रह':'D9 7वें भाव में बैठा','D9 7वें भाव पर दृष्टि':'D9 7वें भाव पर दृष्टि','D9 सप्तमेश की राशि का स्वामी':'D9 सप्तमेश की राशि का स्वामी','D9 सप्तमेश से युति':'D9 सप्तमेश से युति','D9 लग्नेश':'D9 लग्नेश','D9 लग्नेश की राशि का स्वामी':'D9 लग्नेश की राशि का स्वामी','D9 लग्न में बैठे ग्रह':'D9 लग्न में बैठा','D9 2रे + 11वें भाव का स्वामी':'D9 2रे/11वें भाव का स्वामी'}
   };
   const roles = {}; const roleCount = {};
@@ -610,9 +625,9 @@ async function computeAll(code, setStatus, startYear){
       }
     }
   }
-  roles['Venus'].unshift('विवाह का नैसर्गिक कारक');
+  roles[spouseKaraka].unshift('विवाह का नैसर्गिक कारक');
   const rankA = [];
-  for(const p of ['Venus',saptamesh,lagnesh,cslPlanet,d9Saptamesh,d9Lagnesh]) if(!rankA.includes(p)) rankA.push(p);
+  for(const p of [spouseKaraka,saptamesh,lagnesh,cslPlanet,d9Saptamesh,d9Lagnesh]) if(!rankA.includes(p)) rankA.push(p);
   const rest = P9.filter(p=>!rankA.includes(p));
   const rankB = rest.filter(p=>roleCount[p]>=3).sort((a,b)=>roleCount[b]-roleCount[a]);
   const rankC = rest.filter(p=>roleCount[p]<3);
@@ -671,7 +686,7 @@ async function computeAll(code, setStatus, startYear){
     wins.push({ad:ad.lord, yogMd:ym.lord, yogPl:YOG2PL[ym.lord], start:ov[0], end:ov[1], adStart:a0, adEnd:a1});
   }
   wins.sort((a,b)=>a.start-b.start);
-  return {ad, pl, lagna, ascLon, d9, d9Lagna, d60, d60Lagna, moonLon, sunLon, nakIdx, remFrac, birth, birthHour,
+  return {ad, pl, lagna, ascLon, d9, d9Lagna, d60, d60Lagna, moonLon, sunLon, nakIdx, remFrac, birth, birthHour, gender, spouseKaraka,
     vim, yog, tri, ash, ashIdx, ashFrac, chara, elong, isShukla, tithi, isDay, sr, ss,
     sbRes, bhavaBala, bav, sav, savBhava, bavBhava, kpSig, kpQual, karakas, AL, UL, A7, karakansh,
     s7, s2, s11, s5, s9, saptamesh, dwitiyesh, ekadashesh, lagnesh, d9s7, d9Saptamesh, d9Lagnesh,
@@ -876,14 +891,26 @@ async function computeTransits(D, setStatus){
     const clean = q.neg.length===0;
     const kpSc = clean?15:5;
     const ymV = segMonths(w, jupSegsF, D.pl['Venus'].sign);
+    const ymM = segMonths(w, jupSegsF, D.pl['Mars'].sign);
     const ymG = segMonths(w, jupSegsF, D.pl['Jupiter'].sign);
     const ymS = segMonths(w, jupSegsF, D.pl[D.saptamesh].sign);
-    const dom = [[ymV,9,'Venus'],[ymG,15,'Return'],[ymS,5,'saptamesh']].sort((a,b)=>b[0]-a[0])[0];
+    // BNN karaka activation - male: Venus only (9); female: Venus + Mars graded -
+    // dono ek hi window me hon to full 9, sirf ek ho to half 5 (all-or-nothing gate nahi)
+    let actMonths, actScore, actLbl;
+    if(D.gender==='female'){
+      const both = ymV>0 && ymM>0;
+      actMonths = D.pl['Venus'].sign===D.pl['Mars'].sign ? ymV : (ymV+ymM);
+      actScore = both ? 9 : 5;
+      actLbl = both ? 'गुरु नाताल शुक्र + मंगल पर' : (ymV>0 ? 'गुरु नाताल शुक्र पर' : (ymM>0 ? 'गुरु नाताल मंगल पर' : ''));
+    } else {
+      actMonths = ymV; actScore = 9; actLbl = 'गुरु नाताल शुक्र पर';
+    }
+    const dom = [[actMonths,actScore,'Karaka'],[ymG,15,'Return'],[ymS,5,'saptamesh']].sort((a,b)=>b[0]-a[0])[0];
     const ssSign = D.pl[D.saptamesh].sign;
     const supSigns = [ssSign, (ssSign+4)%12, (ssSign+8)%12];
     const sup = jupSegsF.some(s=>supSigns.includes(s.sign) && s.end>w.start && s.start<w.end);
     let bnnSc, bnnLbl;
-    if(dom[0]>0){ bnnSc = dom[1]; bnnLbl = dom[2]==='Venus'?'गुरु नाताल शुक्र पर':(dom[2]==='Return'?'Jupiter Return (नाताल गुरु पर)':'गुरु सप्तमेश पर'); }
+    if(dom[0]>0){ bnnSc = dom[1]; bnnLbl = dom[2]==='Karaka'?actLbl:(dom[2]==='Return'?'Jupiter Return (नाताल गुरु पर)':'गुरु सप्तमेश पर'); }
     else if(sup){ bnnSc = 5; bnnLbl = 'सहायक (सप्तमेश पर दृष्टि)'; }
     else { bnnSc = -10; bnnLbl = 'कोई युति नहीं'; }
     const {md, ad} = charaAt(w.start);
@@ -903,7 +930,7 @@ async function computeTransits(D, setStatus){
     const pct = total>=80?'80-85%':(total>=75?'75-80%':(total>=65?'65-70%':(total>=55?'55-60%':(total>=45?'45-50%':'40-45%'))));
     const overlapTxt = `विंशोत्तरी ${HI[D.curMD.lord]}-${HI[w.ad]} + योगिनी ${w.yogMd} (${HI[w.yogPl]}) + त्रिभागी ${D.tri.find(m=>m.start<=w.start && w.start<m.end)?.lord ? HI[D.tri.find(m=>m.start<=w.start && w.start<m.end).lord] : '-'} + चर ${md?SIGNS[md.rashi]:'-'} (${md?(D.A_set.includes(md.rashi)?'A':(D.B_set.includes(md.rashi)?'B':'-')):'-'}) + BNN ${bnnLbl}`;
     return {...w, id:'W'+(i+1), kpClean:clean, kpPos:q.pos, kpNeg:q.neg, kpSc, bnnSc, bnnLbl, mdSc, adSc, bonus, dtSc, p29, p29Sc, total, pct, overlapTxt,
-      hasVenusYuti: ymV>0, venusYutiMonths:ymV};
+      hasVenusYuti: actMonths>0, venusYutiMonths:actMonths};
   });
   return {months, jupEntries, satEntries, venEntries, jupSegsH, satSegsH, venSegsH, jupSegsF, venSegsF,
     mtt, dtRows, venPeriods, p30, scored, POINTS, dtRow, venCheck, scanEnd};
@@ -962,8 +989,14 @@ function computeFinal(D, T){
     return out;
   };
   const venAppr = [...satSegsApproval(D.pl['Venus'].sign), ...satSegsApproval(D.pl['Jupiter'].sign)];
-  const bnnVenus = mergeRanges(overlapRanges(jupYutiSegs(D.pl['Venus'].sign), venAppr), 180);
-  const bnnReturn = mergeRanges(overlapRanges(jupYutiSegs(D.pl['Jupiter'].sign), venAppr), 180);
+  // female: karaka = Venus (self) + Mars (husband); Shani approval on either karaka + Jupiter
+  const karakaAppr = D.gender==='female'
+    ? [...satSegsApproval(D.pl['Venus'].sign), ...satSegsApproval(D.pl['Mars'].sign), ...satSegsApproval(D.pl['Jupiter'].sign)]
+    : venAppr;
+  const bnnVenus = mergeRanges(overlapRanges(jupYutiSegs(D.pl['Venus'].sign), karakaAppr), 180);
+  const bnnMars = D.gender==='female' ? mergeRanges(overlapRanges(jupYutiSegs(D.pl['Mars'].sign), karakaAppr), 180) : [];
+  const bnnReturn = mergeRanges(overlapRanges(jupYutiSegs(D.pl['Jupiter'].sign), karakaAppr), 180);
+  const bnnKaraka = [...bnnVenus, ...bnnMars].sort((a,b)=>a.start-b.start);
   // ---- KP transit ranges ----
   const sigPlanets = [...new Set([...P9.filter(p=>D.kpSig[p].houses.includes(2)), ...P9.filter(p=>D.kpSig[p].houses.includes(7)), ...P9.filter(p=>D.kpSig[p].houses.includes(11))])];
   const sigSigns = [...new Set(sigPlanets.map(p=>D.pl[p].sign))];
@@ -988,10 +1021,11 @@ function computeFinal(D, T){
   // most probable year: year with most Jupiter-activation months inside top window
   // (Venus-yuti: Jupiter in natal Venus sign, OR Jupiter Return: Jupiter in natal Jupiter sign)
   const venSign = D.pl['Venus'].sign, jupSign = D.pl['Jupiter'].sign;
-  const actMonthsByYear = {}, venusMonthsByYear = {}, returnMonthsByYear = {};
+  const marsSign = D.pl['Mars'].sign;
+  const actMonthsByYear = {}, venusMonthsByYear = {}, marsMonthsByYear = {}, returnMonthsByYear = {}, karakaMonthsByYear = {};
   for(const s of T.jupSegsF){
-    const isVen = s.sign===venSign, isRet = s.sign===jupSign;
-    if(!isVen && !isRet) continue;
+    const isVen = s.sign===venSign, isMar = D.gender==='female' && s.sign===marsSign, isRet = s.sign===jupSign;
+    if(!isVen && !isMar && !isRet) continue;
     const a = new Date(Math.max(s.start, top.start)), b = new Date(Math.min(s.end, top.end));
     if(b<=a) continue;
     let cur = new Date(Date.UTC(a.getUTCFullYear(), a.getUTCMonth(), 1));
@@ -999,7 +1033,9 @@ function computeFinal(D, T){
       const yk = cur.getUTCFullYear();
       const kk = `${yk}-${cur.getUTCMonth()+1}`;
       (actMonthsByYear[yk] = actMonthsByYear[yk] || new Set()).add(kk);
+      if(isVen||isMar) (karakaMonthsByYear[yk] = karakaMonthsByYear[yk] || new Set()).add(kk);
       if(isVen) venusMonthsByYear[yk] = (venusMonthsByYear[yk]||0)+1;
+      if(isMar) marsMonthsByYear[yk] = (marsMonthsByYear[yk]||0)+1;
       if(isRet) returnMonthsByYear[yk] = (returnMonthsByYear[yk]||0)+1;
       cur = new Date(Date.UTC(yk, cur.getUTCMonth()+1, 1));
     }
@@ -1013,13 +1049,15 @@ function computeFinal(D, T){
     for(const [yk,c] of Object.entries(yc)) if(c>bestCount){ bestCount = c; bestYear = +yk; }
   }
   // mechanism that won bestYear: 'venus' | 'return' | 'both' | 'none'
-  const vCnt = venusMonthsByYear[bestYear]||0, rCnt = returnMonthsByYear[bestYear]||0;
-  const bestMechanism = vCnt>rCnt ? 'venus' : (rCnt>vCnt ? 'return' : (vCnt>0 ? 'both' : 'none'));
+  const vCnt = venusMonthsByYear[bestYear]||0, mCnt = marsMonthsByYear[bestYear]||0, rCnt = returnMonthsByYear[bestYear]||0;
+  const kCnt = (karakaMonthsByYear[bestYear]||new Set()).size;
+  const karakaMech = D.gender==='female' ? (vCnt>0 && mCnt>0 ? 'karaka' : (mCnt>0 ? 'mars' : 'venus')) : 'venus';
+  const bestMechanism = kCnt>rCnt ? karakaMech : (rCnt>kCnt ? 'return' : (kCnt>0 ? 'both' : 'none'));
   // peak months: last cluster in bestYear where (Venus-yuti OR Jupiter Return) + DT प्रबल
   const dtPrabal = new Set(T.dtRows.filter(r=>r.conc==='प्रबल').map(r=>`${r.y}-${r.m}`));
   const peakKeys = [], peakKeyKind = {};
   for(const s of T.jupSegsF){
-    if(s.sign!==venSign && s.sign!==jupSign) continue;
+    if(s.sign!==venSign && s.sign!==jupSign && !(D.gender==='female' && s.sign===marsSign)) continue;
     const a = new Date(Math.max(s.start, top.start)), b = new Date(Math.min(s.end, top.end));
     if(b<=a) continue;
     let cur = new Date(Date.UTC(a.getUTCFullYear(), a.getUTCMonth(), 1));
@@ -1027,12 +1065,12 @@ function computeFinal(D, T){
       const kk = `${cur.getUTCFullYear()}-${cur.getUTCMonth()+1}`;
       if(cur.getUTCFullYear()===bestYear && dtPrabal.has(kk)){
         peakKeys.push(kk);
-        peakKeyKind[kk] = (peakKeyKind[kk]||'') + (s.sign===venSign?'V':'') + (s.sign===jupSign?'R':'');
+        peakKeyKind[kk] = (peakKeyKind[kk]||'') + (s.sign===venSign?'V':'') + (D.gender==='female' && s.sign===marsSign?'M':'') + (s.sign===jupSign?'R':'');
       }
       cur = new Date(Date.UTC(cur.getUTCFullYear(), cur.getUTCMonth()+1, 1));
     }
   }
-  let peakTxt = '', peakMechanism = bestMechanism, peakHasSatApproval = false;
+  let peakTxt = '', peakMechanism = bestMechanism, peakHasSatApproval = false, peakKinds = {v:false, m:false, r:false};
   if(peakKeys.length){
     const idxs = [...new Set(peakKeys.map(k=>{ const [yy,mm] = k.split('-').map(Number); return yy*12+mm; }))].sort((a,b)=>a-b);
     // longest contiguous cluster (tie -> earliest)
@@ -1048,10 +1086,14 @@ function computeFinal(D, T){
     const k2idx = k => { const [yy,mm] = k.split('-').map(Number); return yy*12+mm; };
     const clKeys = peakKeys.filter(k=>cluster.includes(k2idx(k)));
     const hasV = clKeys.some(k=>(peakKeyKind[k]||'').includes('V'));
+    const hasM = clKeys.some(k=>(peakKeyKind[k]||'').includes('M'));
     const hasR = clKeys.some(k=>(peakKeyKind[k]||'').includes('R'));
-    peakMechanism = hasV&&hasR ? 'both' : (hasR ? 'return' : 'venus');
+    const hasK = hasV||hasM;
+    peakMechanism = hasR&&hasK ? 'both' : (hasR ? 'return' : (hasV&&hasM ? 'karaka' : (hasM ? 'mars' : 'venus')));
+    peakKinds = {v:hasV, m:hasM, r:hasR};
     // Saturn approval honestly: only if the peak months overlap the matching BNN range
-    const apprRanges = peakMechanism==='return' ? bnnReturn : (peakMechanism==='venus' ? bnnVenus : [...bnnVenus, ...bnnReturn]);
+    const bnnKarakaRanges = D.gender==='female' ? [...bnnVenus, ...bnnMars] : bnnVenus;
+    const apprRanges = peakMechanism==='return' ? bnnReturn : (peakMechanism==='venus' ? bnnVenus : (peakMechanism==='mars' ? bnnMars : (peakMechanism==='karaka' ? bnnKarakaRanges : [...bnnKarakaRanges, ...bnnReturn])));
     peakHasSatApproval = cluster.some(idx=>{
       const yy = Math.floor((idx-1)/12), mm = ((idx-1)%12)+1;
       const d0 = new Date(Date.UTC(yy, mm-1, 1)), d1 = new Date(Date.UTC(yy, mm, 1));
@@ -1062,8 +1104,8 @@ function computeFinal(D, T){
   const unanimous = `${fmtMY(unStart)} - ${fmtMY(top.end)}`;
   return {moonSaptameshLord, moonSaptameshSign, p22Vim, p22Tri, p22Yog, p22Wins,
     cond1, cond2, ashApplicable, ashCurMD,
-    bnnVenus, bnnReturn, sigPlanets, sigSigns, kpRanges, kpRangeTxt,
-    ranked, top, second, topScore, bestYear, peakTxt, unanimous, bestMechanism, peakMechanism, peakHasSatApproval};
+    bnnVenus, bnnMars, bnnKaraka, bnnReturn, sigPlanets, sigSigns, kpRanges, kpRangeTxt,
+    ranked, top, second, topScore, bestYear, peakTxt, unanimous, bestMechanism, peakMechanism, peakHasSatApproval, peakKinds};
 }
 // ================= Jaimini influence =================
 function jaiminiInfluence(D, rashi){
@@ -1113,10 +1155,11 @@ function buildSections(D, T, F){
     const d60SaptameshHouse = bhavaOf(D.d60[d60Saptamesh].sign, D.d60Lagna.sign);
     const d60Ok = ![6,8,12].includes(d60SaptameshHouse);
     const promiseYes = cslQ.pos.length>0;
+    const skPl = D.gender==='female' ? 'Mars' : 'Venus';
     h += `<h2>1. Promise (विवाह का वादा) - संक्षिप्त verdict</h2><div class="verdict">`;
     h += `<p><b>पराशरी:</b> सप्तमेश ${HI[D.saptamesh]} ${SIGNS[D.pl[D.saptamesh].sign]} में (${D.pl[D.saptamesh].house}वें भाव), शुक्र ${D.pl['Venus'].house}वें भाव में, गुरु लग्नेश - विवाह का वादा ${parashariStrong?'Strong है':'है'}। 7वां भाव ${occ7.length?('में '+occ7.map(p=>HI[p]).join(', ')+' बैठे हैं'):'खाली है'}${asp7.length?(' पर '+asp7.map(p=>HI[p]).join(', ')+' की दृष्टि है'):' पर किसी की दृष्टि नहीं है'}।</p>`;
     h += `<p><b>जैमिनी:</b> DK ${HI[D.karakas['DK']]}, UL ${SIGNS[D.UL]}, A7 ${SIGNS[D.A7]}, कारकांश ${SIGNS[D.karakansh]} - विवाह का वादा है${dkInfUL?', UL पर '+jaiminiInfluence(D, D.UL).join('; '):''}।</p>`;
-    h += `<p><b>BNN:</b> जीव कारक गुरु ${D.pl['Jupiter'].house}वें भाव में है, पर शुक्र ${D.pl['Venus'].house}वें भाव में ${D.sbRes.shadbala['Venus'].rupas>=MINR['Venus']?'Strong':'कमजोर (verify)'} है - विवाह होगा, गुरु की दशा/गोचर में समय निकलेगा।</p>`;
+    h += `<p><b>BNN:</b> जीव कारक गुरु ${D.pl['Jupiter'].house}वें भाव में है, पर ${D.gender==='female'?'मंगल':'शुक्र'} ${D.pl[skPl].house}वें भाव में ${D.sbRes.shadbala[skPl].rupas>=MINR[skPl]?'Strong':'कमजोर (verify)'} है - विवाह होगा, गुरु की दशा/गोचर में समय निकलेगा।</p>`;
     h += `<p><b>KP:</b> 7th CSL ${HI[D.cslPlanet]} ${cslQ.pos.length?cslQ.pos.map(x=>x+'वां').join(', ')+' भाव का सिग्निफिकेटर है':'2, 7, 11 का सिग्निफिकेटर नहीं है'} (विवाह का वादा ${promiseYes?'है':'कमजोर है'})${cslQ.neg.length?`, पर ${cslQ.neg.map(x=>x+'वां').join(', ')} भाव भी signify करता है - विवाह बाधाओं/संघर्ष के बाद, देर से हो सकता है`:''}। 2, 7, 11 के सिग्निफिकेटर: ${sig2.map(p=>HI[p]).join(', ')} (2रा), ${sig7.map(p=>HI[p]).join(', ')} (7वां), ${sig11.map(p=>HI[p]).join(', ')} (11वां)।</p>`;
     h += `<p><b>Promise Verdict: विवाह का वादा ${promiseYes?'है - High Chances':'कमजोर है'}।</b> D60 लग्न ${SIGNS[D.d60Lagna.sign]}, D60 में सप्तमेश ${HI[d60Saptamesh]} ${D.d60Lagna.sign===D.d60[d60Saptamesh].sign?'लग्न में':'D60 के '+d60SaptameshHouse+'वें भाव में'} - D60 से ${d60Ok?'विरोध नहीं दिखता':'सावधानी का संकेत है'} (verified)।</p></div>`;
     h += QUAL(`Promise: ${HI[curMD.lord]} महादशा (${fmt(curMD.start)} - ${fmt(curMD.end)}) - विवाह इसी महादशा में। आगे Timing setup में यही MD जाती है।`);
@@ -1138,7 +1181,7 @@ function buildSections(D, T, F){
     h += `<h3>2.3 P19 Planet Role List + Ranking</h3><table><tr><th>ग्रह</th><th>भूमिकाएँ</th></tr>`;
     for(const p of D.roleOrder) h += `<tr><td>${HI[p]}</td><td>${D.roles[p].join('; ')}</td></tr>`;
     h += `</table><p><b>Ranking Group A (high):</b> ${D.ranking.A.map(p=>HI[p]).join(', ')}। <b>Group B (medium):</b> ${D.ranking.B.map(p=>HI[p]).join(', ')}। <b>Group C (low/supporting):</b> ${D.ranking.C.map(p=>HI[p]).join(', ')}।</p>`;
-    h += `<p class="small">Ranking नियम: A = सप्तमेश / लग्नेश / शुक्र (विवाह कारक) / 7th CSL / D9 सप्तमेश / D9 लग्नेश। B = बाकी में 3 या ज्यादा भूमिकाएँ। C = बाकी।</p>`;
+    h += `<p class="small">Ranking नियम: A = सप्तमेश / लग्नेश / ${D.gender==='female'?'मंगल':'शुक्र'} (विवाह कारक) / 7th CSL / D9 सप्तमेश / D9 लग्नेश। B = बाकी में 3 या ज्यादा भूमिकाएँ। C = बाकी।</p>`;
     const abList = [...D.ranking.A, ...D.ranking.B].map(p=>HI[p]).join(', ');
     h += QUAL(`${HI[curMD.lord]} MD + A/B ग्रह (${abList}) - केतु बाहर। आगे Parashari layer में यही ग्रहों की दशाएँ check होंगी।`);
     S.push(h);
@@ -1369,14 +1412,15 @@ function buildSections(D, T, F){
     const yutiRows = [];
     for(const s of T.jupSegsH){
       if(s.sign===D.pl['Jupiter'].sign) yutiRows.push([`नाताल गुरु (${SIGNS[s.sign]}) पर युति - Jupiter Return`, s.start, s.end]);
-      else if(s.sign===D.pl['Venus'].sign) yutiRows.push([`नाताल शुक्र (${SIGNS[s.sign]}) पर युति - सबसे महत्वपूर्ण`, s.start, s.end]);
+      else if(s.sign===D.pl['Venus'].sign) yutiRows.push([D.gender==='female' ? `नाताल शुक्र (${SIGNS[s.sign]}) पर युति - स्वयं` : `नाताल शुक्र (${SIGNS[s.sign]}) पर युति - सबसे महत्वपूर्ण`, s.start, s.end]);
+      else if(D.gender==='female' && s.sign===D.pl['Mars'].sign) yutiRows.push([`नाताल मंगल (${SIGNS[s.sign]}) पर युति - पति कारक`, s.start, s.end]);
       else if(s.sign===D.pl[D.saptamesh].sign) yutiRows.push([`सप्तमेश ${HI[D.saptamesh]} (${SIGNS[s.sign]}) पर युति`, s.start, s.end]);
     }
     for(const [name,a,b] of yutiRows) h += `<tr><td>${name}</td><td>${fmt(a)} - ${fmt(b)}</td></tr>`;
     h += `</table>`;
     const supLines = [];
     for(const s of T.jupSegsH){
-      if([D.pl['Jupiter'].sign, D.pl['Venus'].sign, D.pl[D.saptamesh].sign].includes(s.sign)) continue;
+      if([D.pl['Jupiter'].sign, D.pl['Venus'].sign, D.pl[D.saptamesh].sign, ...(D.gender==='female'?[D.pl['Mars'].sign]:[])].includes(s.sign)) continue;
       const off7 = (D.s7-s.sign+12)%12, offS = (D.pl[D.saptamesh].sign-s.sign+12)%12;
       if(off7===4||off7===8) supLines.push(`गुरु ${SIGNS[s.sign]} में (${fmt(s.start)} - ${fmt(s.end)}) 7वें भाव पर ${off7===4?'5वीं':'9वीं'} दृष्टि`);
       if(offS===4||offS===8) supLines.push(`गुरु ${SIGNS[s.sign]} में (${fmt(s.start)} - ${fmt(s.end)}) सप्तमेश की राशि पर ${offS===4?'5वीं':'9वीं'} दृष्टि`);
@@ -1387,16 +1431,21 @@ function buildSections(D, T, F){
     for(const s of T.satSegsH){
       const appr = [];
       if([0,2,6,9].includes((D.pl['Venus'].sign-s.sign+12)%12)) appr.push('शुक्र ('+SIGNS[D.pl['Venus'].sign]+') पर');
+      if(D.gender==='female' && [0,2,6,9].includes((D.pl['Mars'].sign-s.sign+12)%12)) appr.push('मंगल ('+SIGNS[D.pl['Mars'].sign]+') पर');
       if([0,2,6,9].includes((D.pl['Jupiter'].sign-s.sign+12)%12)) appr.push('गुरु ('+SIGNS[D.pl['Jupiter'].sign]+') पर');
       if([0,2,6,9].includes((D.s7-s.sign+12)%12)) appr.push('7वें भाव ('+SIGNS[D.s7]+') पर');
       if([0,2,6,9].includes((D.pl[D.saptamesh].sign-s.sign+12)%12)) appr.push('सप्तमेश '+HI[D.saptamesh]+' ('+SIGNS[D.pl[D.saptamesh].sign]+') पर');
       h += `<tr><td>${SIGNS[s.sign]}</td><td>${fmt(s.start)} - ${fmt(s.end)}</td><td>${appr.length?appr.join(' ; '):'कोई approval नहीं'}</td></tr>`;
     }
     h += `</table>`;
-    h += `<h3>5.3 P40 Male-Specific + BNN Final</h3>`;
+    h += `<h3>5.3 P40 ${D.gender==='female'?'Female':'Male'}-Specific + BNN Final</h3>`;
     const rangeTxt = rs => rs.length?rs.map(r=>`${fmtMY(r.start)} - ${fmtMY(r.end)}`).join(', '):'कोई नहीं';
-    h += `<p>पुरुष जातक - गुरु का नाताल शुक्र से संबंध सबसे महत्वपूर्ण है। गुरु ${SIGNS[D.pl['Venus'].sign]} (नाताल शुक्र) पर ${rangeTxt(F.bnnVenus)} में है, और उसी समय शनि की अनुमति भी है - <b>गुरु तैयार + शनि की अनुमति दोनों एक साथ।</b> दूसरा Strong समय: गुरु ${SIGNS[D.pl['Jupiter'].sign]} (नाताल गुरु, Jupiter Return) पर ${rangeTxt(F.bnnReturn)}, शनि की अनुमति के साथ। <b>BNN Final: सबसे Strong ${rangeTxt(F.bnnVenus)} (गुरु शुक्र पर), दूसरा ${rangeTxt(F.bnnReturn)} (Jupiter Return)।</b></p>`;
-    h += QUAL(`BNN से qualified: ${rangeTxt(F.bnnVenus)} (गुरु ${SIGNS[D.pl['Venus'].sign]}/शुक्र पर + शनि approval) और ${rangeTxt(F.bnnReturn)} (Jupiter Return + शनि approval)। आगे KP layer में यही जाएँगी।`);
+    h += `<p>${D.gender==='female'
+      ? `स्त्री जातक - गुरु का नाताल शुक्र (स्वयं) और नाताल मंगल (पति) से संबंध सबसे महत्वपूर्ण है। गुरु ${SIGNS[D.pl['Venus'].sign]} (नाताल शुक्र) पर ${rangeTxt(F.bnnVenus)} में है और गुरु ${SIGNS[D.pl['Mars'].sign]} (नाताल मंगल) पर ${rangeTxt(F.bnnMars)} में है, और उसी समय शनि की अनुमति भी है - <b>गुरु तैयार + शनि की अनुमति दोनों एक साथ।</b> दूसरा Strong समय: गुरु ${SIGNS[D.pl['Jupiter'].sign]} (नाताल गुरु, Jupiter Return) पर ${rangeTxt(F.bnnReturn)}, शनि की अनुमति के साथ। <b>BNN Final: सबसे Strong ${rangeTxt(F.bnnKaraka)} (गुरु शुक्र + मंगल पर), दूसरा ${rangeTxt(F.bnnReturn)} (Jupiter Return)।</b>`
+      : `पुरुष जातक - गुरु का नाताल शुक्र से संबंध सबसे महत्वपूर्ण है। गुरु ${SIGNS[D.pl['Venus'].sign]} (नाताल शुक्र) पर ${rangeTxt(F.bnnVenus)} में है, और उसी समय शनि की अनुमति भी है - <b>गुरु तैयार + शनि की अनुमति दोनों एक साथ।</b> दूसरा Strong समय: गुरु ${SIGNS[D.pl['Jupiter'].sign]} (नाताल गुरु, Jupiter Return) पर ${rangeTxt(F.bnnReturn)}, शनि की अनुमति के साथ। <b>BNN Final: सबसे Strong ${rangeTxt(F.bnnVenus)} (गुरु शुक्र पर), दूसरा ${rangeTxt(F.bnnReturn)} (Jupiter Return)।</b>`}</p>`;
+    h += QUAL(D.gender==='female'
+      ? `BNN से qualified: ${rangeTxt(F.bnnVenus)} (गुरु ${SIGNS[D.pl['Venus'].sign]}/शुक्र पर + शनि approval), ${rangeTxt(F.bnnMars)} (गुरु ${SIGNS[D.pl['Mars'].sign]}/मंगल पर + शनि approval) और ${rangeTxt(F.bnnReturn)} (Jupiter Return + शनि approval)। आगे KP layer में यही जाएँगी।`
+      : `BNN से qualified: ${rangeTxt(F.bnnVenus)} (गुरु ${SIGNS[D.pl['Venus'].sign]}/शुक्र पर + शनि approval) और ${rangeTxt(F.bnnReturn)} (Jupiter Return + शनि approval)। आगे KP layer में यही जाएँगी।`);
     S.push(h);
   }
   // ---------- Step 15: KP 6.1 ----------
@@ -1460,9 +1509,21 @@ function buildSections(D, T, F){
     h += `</table>`;
     const top = F.top, second = F.second;
     h += `<h3>P44 Part 5 - Final Conclusion</h3><div class="verdict">`;
-    h += `<p><b>चारों Systems का मिलान:</b> पराशरी - ${fmtMY(top2range()[0])} - ${fmtMY(top2range()[1])} सबसे Strong। जैमिनी - चर ${SIGNS[D.chara.find(m=>m.start<=HSTART && HSTART<m.end).rashi]} MD (${D.A_set.includes(D.chara.find(m=>m.start<=HSTART && HSTART<m.end).rashi)?'A':'B'})। BNN - ${F.bnnVenus.length?fmtMY(F.bnnVenus[0].start)+' - '+fmtMY(F.bnnVenus[0].end):''} (गुरु शुक्र पर) सबसे Strong। KP - ${F.kpRangeTxt.join(', ')} (गुरु+शनि सिग्निफिकेटर्स पर)।</p>`;
+    h += `<p><b>चारों Systems का मिलान:</b> पराशरी - ${fmtMY(top2range()[0])} - ${fmtMY(top2range()[1])} सबसे Strong। जैमिनी - चर ${SIGNS[D.chara.find(m=>m.start<=HSTART && HSTART<m.end).rashi]} MD (${D.A_set.includes(D.chara.find(m=>m.start<=HSTART && HSTART<m.end).rashi)?'A':'B'})। BNN - ${F.bnnKaraka.length?fmtMY(F.bnnKaraka[0].start)+' - '+fmtMY(F.bnnKaraka[0].end):''} (गुरु ${D.gender==='female'?'शुक्र/मंगल':'शुक्र'} पर) सबसे Strong। KP - ${F.kpRangeTxt.join(', ')} (गुरु+शनि सिग्निफिकेटर्स पर)।</p>`;
     h += `<p><b>Unanimous Period (सभी Systems एक साथ): ${F.unanimous}।</b></p>`;
-    const mechTxt = F.peakMechanism==='return' ? `गुरु ${SIGNS[D.pl['Jupiter'].sign]} में नाताल गुरु पर (Jupiter Return)` : F.peakMechanism==='both' ? `गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर और ${SIGNS[D.pl['Jupiter'].sign]} में नाताल गुरु पर (Jupiter Return)` : `गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर`;
+    const pk = F.peakKinds || {};
+    let mechTxt;
+    if(F.peakMechanism==='return') mechTxt = `गुरु ${SIGNS[D.pl['Jupiter'].sign]} में नाताल गुरु पर (Jupiter Return)`;
+    else if(F.peakMechanism==='mars') mechTxt = `गुरु ${SIGNS[D.pl['Mars'].sign]} में नाताल मंगल पर`;
+    else if(F.peakMechanism==='karaka') mechTxt = `गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर और गुरु ${SIGNS[D.pl['Mars'].sign]} में नाताल मंगल पर`;
+    else if(F.peakMechanism==='both'){
+      const parts = [];
+      if(pk.v) parts.push(`गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर`);
+      if(pk.m) parts.push(`गुरु ${SIGNS[D.pl['Mars'].sign]} में नाताल मंगल पर`);
+      if(pk.r) parts.push(`गुरु ${SIGNS[D.pl['Jupiter'].sign]} में नाताल गुरु पर (Jupiter Return)`);
+      mechTxt = parts.length ? parts.join(' और ') : (D.gender==='female' ? `गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर और गुरु ${SIGNS[D.pl['Mars'].sign]} में नाताल मंगल पर और गुरु ${SIGNS[D.pl['Jupiter'].sign]} में नाताल गुरु पर (Jupiter Return)` : `गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर और ${SIGNS[D.pl['Jupiter'].sign]} में नाताल गुरु पर (Jupiter Return)`);
+    }
+    else mechTxt = `गुरु ${SIGNS[D.pl['Venus'].sign]} में नाताल शुक्र पर`;
     const apprTxt = F.peakHasSatApproval ? ', शनि की अनुमति के साथ' : '';
     h += `<p><b>सबसे संभावित वर्ष: ${F.bestYear}${F.peakTxt?(' (खासकर '+F.peakTxt+')'):''} - High Chances।</b> इस समय: विंशोत्तरी ${HI[curMD.lord]}-${HI[top.ad]} AD (KP ${top.kpClean?'clean':'संघर्ष के साथ'}), योगिनी ${top.yogMd} (${HI[top.yogPl]}), त्रिभागी ${HI[(D.tri.find(m=>m.start<=top.start && top.start<m.end)||{lord:'-'}).lord]} MD, चर ${(D.chara.find(m=>m.start<=top.start && top.start<m.end)||{rashi:0}).rashi!==undefined?SIGNS[D.chara.find(m=>m.start<=top.start && top.start<m.end).rashi]:'-'} MD, ${mechTxt}${apprTxt}।</p>`;
     if(second) h += `<p><b>दूसरा सबसे Strong समय: ${fmtMY(second.start)} - ${fmtMY(second.end)} (${second.pct})</b> - विंशोत्तरी ${HI[curMD.lord]}-${HI[second.ad]} AD, BNN ${second.bnnLbl}।</p>`;
@@ -1535,7 +1596,14 @@ window.runCalc = async function(mode){
     stEl.textContent = 'गणना पूरी नहीं हो सकी।';
     return;
   }
-  const runKey = code+'|'+startYear;
+  const genderEl = document.querySelector('input[name="gender"]:checked');
+  const gender = genderEl ? genderEl.value : '';
+  if(gender!=='male' && gender!=='female'){
+    errEl.innerHTML = `<div class="err">लिंग चुनें - पुरुष या महिला (BNN में जीवनसाथी कारक उसी से तय होता है)।</div>`;
+    stEl.textContent = 'गणना पूरी नहीं हो सकी।';
+    return;
+  }
+  const runKey = code+'|'+startYear+'|'+gender;
   if(runKey===lastKey && SECTIONS.length){
     if(mode==='all'){ showAll(); stEl.textContent = 'सभी चरण एक साथ दिखाए गए।'; }
     else {
@@ -1550,8 +1618,8 @@ window.runCalc = async function(mode){
   document.getElementById('btn-all').disabled = true;
   try{
     const setStatus = t => { stEl.textContent = t; };
-    const D = await computeAll(code, setStatus, startYear);
-    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
+    const D = await computeAll(code, setStatus, startYear, gender);
+    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। लिंग: ${gender==='female'?'महिला (जीवनसाथी कारक मंगल)':'पुरुष (जीवनसाथी कारक शुक्र)'}। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
     setStatus(`गोचर scan हो रहा है (नवंबर ${HSTART.getUTCFullYear()} - अक्टूबर ${HSTART.getUTCFullYear()+8} + windows)...`);
     await tick();
     const T = await computeTransits(D, setStatus);
