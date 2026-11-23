@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marriage Time Calculator v2.0</title>
+<title>Marriage Time Calculator v2.1</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,8 +33,8 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Marriage Time Calculator v2.0</h1>
-<p class="small" id="horizon-note">Astro Code से विवाह का समय - v2.0: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus)। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
+<h1>Marriage Time Calculator v2.1</h1>
+<p class="small" id="horizon-note">Astro Code से विवाह का समय - v2.1: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus) + दशा-बदलाव factors। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
 <input type="text" id="astro-code" value="" placeholder="AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN-DDDMME">
@@ -1002,11 +1002,23 @@ async function computeTransits(D, setStatus){
     return {...w, id:'W'+(i+1), kpClean:clean, kpPos:q.pos, kpNeg:q.neg, kpSc, bnnSc, bnnLbl, mdSc, adSc, bonus, dtSc, p29, p29Sc, total, pct, overlapTxt,
       hasVenusYuti: actMonths>0, venusYutiMonths:actMonths};
   });
-  // ================= v2.0: month-level scoring =================
+  // ================= v2.1: month-level scoring =================
   // Same components as window scoring, but evaluated per month (15th-day snapshot).
   // New v2.0 factors: Tribhagi MD KP-clean (+5), UL-rashi Chara AD (+5),
   // transit saptamesh in 7th house sign (+5), BNN Guru drishti on karaka (+5).
+  // New v2.1 factors: Vimshottari PD change to a 7th-significator lord (+12),
+  // Yogini MD change to Venus/Mars (+12), both in the same month (+25 convergence).
   // Exact Jupiter Return months (transit Guru longitude == natal Guru longitude)
+  // ---- v2.1: dasha-change triggers (A) ----
+  // pd7chg: a Vimshottari PD starts in this month and its lord signifies 7th house (+12).
+  // yogChg: a Yogini MD starts in this month and its planet is Venus or Mars (+12).
+  // pyBonus: BOTH fire in the same month - double dasha-change convergence (+25).
+  const pd7chgMonths = new Set();
+  for(const md of D.vim) for(const ad of md.ads) for(const pd of ad.pds){
+    if(D.kpQual(pd.lord).pos.includes(7)) pd7chgMonths.add(pd.start.getUTCFullYear()+'-'+(pd.start.getUTCMonth()+1));
+  }
+  const yogChgMonths = new Set();
+  for(const md of D.yog){ if(['Venus','Mars'].includes(YOG2PL[md.lord])) yogChgMonths.add(md.start.getUTCFullYear()+'-'+(md.start.getUTCMonth()+1)); }
   const exactReturnMonths = new Set(exactReturnDays.map(dt=>dt.getUTCFullYear()+'-'+(dt.getUTCMonth()+1)));
   const saptSignM = D.pl[D.saptamesh].sign;
   const supSignsM = [saptSignM, (saptSignM+4)%12, (saptSignM+8)%12];
@@ -1068,8 +1080,13 @@ async function computeTransits(D, setStatus){
     // transit saptamesh planet in 7th house sign
     const saptTrans = (mo[saptKey]===D.s7) ? 5 : 0;
     const exactRet = exactReturnMonths.has(mo.y+'-'+mo.m) ? 20 : 0;
-    const total = 30+kpSc+bnnSc+drishti+mdSc+adSc+bonus+dtSc+p29Sc+triKp+ulAd+saptTrans+exactRet;
-    return {y:mo.y, m:mo.m, total, kpSc, bnnSc, bnnLbl, drishti, mdSc, adSc, bonus, dtSc, p29Sc, triKp, ulAd, saptTrans, exactRet, adLord, clean, triLord: triMd?triMd.lord:null};
+    // v2.1 dasha-change triggers
+    const ymKey = mo.y+'-'+mo.m;
+    const pd7chg = pd7chgMonths.has(ymKey) ? 12 : 0;
+    const yogChg = yogChgMonths.has(ymKey) ? 12 : 0;
+    const pyBonus = (pd7chg && yogChg) ? 25 : 0;
+    const total = 30+kpSc+bnnSc+drishti+mdSc+adSc+bonus+dtSc+p29Sc+triKp+ulAd+saptTrans+exactRet+pd7chg+yogChg+pyBonus;
+    return {y:mo.y, m:mo.m, total, kpSc, bnnSc, bnnLbl, drishti, mdSc, adSc, bonus, dtSc, p29Sc, triKp, ulAd, saptTrans, exactRet, pd7chg, yogChg, pyBonus, adLord, clean, triLord: triMd?triMd.lord:null};
   });
   // ================= v2.0: four independent window sets + consensus =================
   const sysWindows = {
@@ -1700,7 +1717,7 @@ function buildSections(D, T, F){
     h += `<li><b>Chara dasha - VERIFIED:</b> KN Rao नियम, Haripal.pdf की Chara Dasha table से मिलान किया हुआ (धनु से backward, सिंह MD 14 Feb 2024 - 14 Feb 2030)।</li>`;
     h += `<li><b>D60 - VERIFIED:</b> Haripal.pdf p.16 Shashtyamsha chart से 9/9 ग्रह मिलान (sign = natal_sign + pada, degree = (degree - pada×0.5)×60)।</li>`;
     h += `<li><b>P22 / P29 - (verify):</b> दोनों v4.0 additions हैं, किसी real case में test नहीं हुए हैं - tool में prompt file की जगह पर ही डाले गए हैं।</li>
-    <li><b>v2.0 - Independent windows + month scoring:</b> final जवाब चारों systems की स्वतंत्र windows (पराशरी/जैमिनी/BNN/KP) की consensus से निकलता है, हर महीने को अलग score मिलता है। नए factors: Exact Jupiter Return वाला महीना (+20), UL राशि वाली चर AD (+15), त्रिभागी MD lord की KP qualification (clean +5 / neg -5), BNN Return (sign +10), गोचर सप्तमेश का 7वें भाव में होना (+5), BNN में गुरु की कारक राशियों पर दृष्टि (+5)। Final = सबसे अच्छा महीना (score); tie पर consensus (ज्यादा systems)।</li>`;
+    <li><b>v2.1 - Independent windows + month scoring:</b> final जवाब चारों systems की स्वतंत्र windows (पराशरी/जैमिनी/BNN/KP) की consensus से निकलता है, हर महीने को अलग score मिलता है। नए factors: Exact Jupiter Return वाला महीना (+20), UL राशि वाली चर AD (+15), त्रिभागी MD lord की KP qualification (clean +5 / neg -5), BNN Return (sign +10), गोचर सप्तमेश का 7वें भाव में होना (+5), BNN में गुरु की कारक राशियों पर दृष्टि (+5)। v2.1 में दशा-बदलाव factors जुड़े: विंशोत्तरी PD बदलाव - सप्तम भाव (+12), योगिनी MD बदलाव - कारक (+12), दोनों एक ही महीने में (+25 convergence)। Final = सबसे अच्छा महीना (score); tie पर consensus (ज्यादा systems)।</li>`;
     h += `<li>सभी तारीखें Swiss Ephemeris (Lahiri) से compute की गई हैं; विंशोत्तरी तारीखें JyotishApp PDF से ~2 दिन अलग हो सकती हैं (PDF anchor); गोचर तारीखें daily scan से ±1 दिन हो सकती हैं।</li></ul>`;
     h += QUAL(`Final: ${top.id} + ${second?second.id:''} (${F.unanimous}), सबसे संभावित वर्ष ${F.bestYear}। Alternates ${alts.map(w=>w.id).join('/')}। यही tool का अंतिम नतीजा है।`);
     S.push(h);
@@ -1711,8 +1728,8 @@ function buildSections(D, T, F){
   }
   // ---------- Step 18: v2.0 Independent Windows + Month Scoring + Consensus ----------
   {
-    let h = `<h2>8. Independent Windows + Month Scoring + Consensus (v2.0)</h2>`;
-    h += `<p class="note">v2.0 में final जवाब किसी एक system की window से नहीं, चारों systems की स्वतंत्र windows की consensus से निकलता है। हर महीने को अलग से score मिलता है, और सबसे अच्छे महीने वाली consensus segment ही Final Marriage Time है। Exact Jupiter Return वाले महीने को +20 bonus मिलता है।</p>`;
+    let h = `<h2>8. Independent Windows + Month Scoring + Consensus (v2.1)</h2>`;
+    h += `<p class="note">v2.1 में final जवाब किसी एक system की window से नहीं, चारों systems की स्वतंत्र windows की consensus से निकलता है। हर महीने को अलग से score मिलता है, और सबसे अच्छे महीने वाली consensus segment ही Final Marriage Time है। Exact Jupiter Return वाले महीने को +20 bonus मिलता है। v2.1 में दशा-बदलाव factors भी जुड़े हैं: विंशोत्तरी PD बदलाव (+12), योगिनी MD बदलाव (+12), दोनों एक ही महीने में (+25)।</p>`;
     h += `<h3>8.1 चारों Systems की स्वतंत्र Windows</h3><table><tr><th>System</th><th>Windows (अवधि)</th></tr>`;
     const sysNames = {P:'पराशरी (विंशोत्तरी AD × योगिनी MD)', J:'जैमिनी (चर AD, A-rank राशि)', B:'BNN (गुरु activation + Jupiter Return, शनि approval)', K:'KP (गुरु+शनि सिग्निफिकेटर्स पर)'};
     for(const k of ['P','J','B','K']){
@@ -1725,6 +1742,9 @@ function buildSections(D, T, F){
     for(const ms of topMonths){
       const parts = [];
       if(ms.exactRet) parts.push(`Exact Jupiter Return (+${ms.exactRet})`);
+      if(ms.pd7chg) parts.push(`विंशोत्तरी PD बदलाव - सप्तम भाव (+${ms.pd7chg})`);
+      if(ms.yogChg) parts.push(`योगिनी MD बदलाव - कारक (+${ms.yogChg})`);
+      if(ms.pyBonus) parts.push(`दशा बदलाव convergence (+${ms.pyBonus})`);
       if(ms.bnnSc>0) parts.push(`BNN ${ms.bnnLbl} (${ms.bnnSc})`);
       if(ms.drishti) parts.push(`गुरु दृष्टि कारक पर (+${ms.drishti})`);
       if(ms.mdSc) parts.push(`चर MD ${ms.mdSc}`);
@@ -1745,7 +1765,7 @@ function buildSections(D, T, F){
       h += `<tr><td>${s.id}</td><td>${fmtMY(s.start)} - ${fmtMY(s.end)}</td><td>${s.systems.join(' + ')||'-'}</td><td>${s.bestMonth?fmtYM(s.bestMonth.y, s.bestMonth.m)+' ('+s.bestScore+')':'-'}</td><td>${s.score}${s.bothKaraka?' (दोनों कारक +4)':''}</td></tr>`;
     }
     h += `</table>`;
-    h += `<div class="verdict"><p><b>v2.0 Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}${F.peakTxt?(' ('+F.peakTxt+')'):''} - High Chances।</b> Systems: ${F.top.systems.join(' + ')}; सबसे अच्छा महीना: ${F.top.bestMonth?fmtYM(F.top.bestMonth.y, F.top.bestMonth.m)+' (score '+F.top.bestScore+')':'-'}।</p></div>`;
+    h += `<div class="verdict"><p><b>v2.1 Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}${F.peakTxt?(' ('+F.peakTxt+')'):''} - High Chances।</b> Systems: ${F.top.systems.join(' + ')}; सबसे अच्छा महीना: ${F.top.bestMonth?fmtYM(F.top.bestMonth.y, F.top.bestMonth.m)+' (score '+F.top.bestScore+')':'-'}।</p></div>`;
     h += QUAL(`Consensus Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}। यही tool का अंतिम नतीजा है।`);
     S.push(h);
   }
@@ -1826,7 +1846,7 @@ window.runCalc = async function(mode){
   try{
     const setStatus = t => { stEl.textContent = t; };
     const D = await computeAll(code, setStatus, startYear, gender);
-    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - v2.0: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus)। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। लिंग: ${gender==='female'?'महिला (जीवनसाथी कारक मंगल)':'पुरुष (जीवनसाथी कारक शुक्र)'}। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
+    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - v2.1: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus) + दशा-बदलाव factors। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। लिंग: ${gender==='female'?'महिला (जीवनसाथी कारक मंगल)':'पुरुष (जीवनसाथी कारक शुक्र)'}। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
     setStatus(`गोचर scan हो रहा है (नवंबर ${HSTART.getUTCFullYear()} - अक्टूबर ${HSTART.getUTCFullYear()+8} + windows)...`);
     await tick();
     const T = await computeTransits(D, setStatus);
