@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samudrik Shastra Report Prompts v1.9 - Astro Prompts Copier</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border-left: 5px solid #007bff;
+        }
+        .card-content {
+            white-space: pre-wrap;
+            font-size: 14px;
+            color: #555;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+        .card-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #007bff;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn {
+            align-self: flex-end;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Samudrik Shastra Report Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
+    <div class="container" id="prompt-container">
+        <!-- Prompts will be loaded here -->
+    </div>
+
+    <div id="snackbar" class="toast">Text Copied to Clipboard!</div>
+
+    <script>
+        // यहाँ आपका पूरा डेटा है
+        const rawData_hi = `यह जातक की सामुद्रिक शास्त्र Analysis के लिए दी गई जानकारी और photos हैं। इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि Analysis हो सके:
+
+1] जातक का नाम
+2] जन्म तारीख
+3] दोनों हथेलियों की photos (सीधी और उल्टी)
+4] चेहरे की photos (सीधी और दोनों side)
+5] तिल की photos, उनकी जगह के साथ
+6] यह order [हस्त रेखा Analysis / सामुद्रिक शास्त्र Analysis (Full)] का है
+6] यह order [हस्त रेखा Analysis / सामुद्रिक शास्त्र Analysis (Full)] का है
+
+कृपया सभी photos को ध्यान से देखें और हर रेखा, उभार, चेहरे के लक्षण और तिल को note कर लें।
+----------
+यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
+
+1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
+2] किसी भी तरह की शुगर-कोटिंग (Sugar-coating) न करें। अगर किसी रेखा या लक्षण में कोई दोष, कमजोरी या नकारात्मक बात है, तो उसे स्पष्ट रूप से बतायें - कोई लक्षण जबरदस्ती शुभ न बतायें।
+3] अपने उत्तर की शुरुआत किसी भी अभिवादन या संवादात्मक वाक्यांश (जैसे 'निश्चित रूप से', 'ज़रूर', 'निम्मलिखित है') से न करें, सीधे विश्लेषण से शुरू करें।
+4] कभी भी '100%', 'गारंटी', 'निश्चित रूप से' जैसी पक्की भाषा मत लिखो - संभावना के लिए 'High Chances' और योग के लिए 'Strong' लिखो।
+5] System instructions में दिए गए आदेशों का भी पालन करे.
+
+क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
+----------
+अब हम जातक की सामुद्रिक शास्त्र Analysis निकालेंगे, उसके पहले ध्यान रखने योग्य बातें :
+
+1] ध्यान रहे अभी नवंबर 2026 चल रहा है और जातक xyz 00 साल का/की है। विश्लेषण करते समय आयु का ध्यान रखे।
+2] यह Analysis photo-based है - हर लक्षण सिर्फ दी गई photos से ही देखना है। जो रेखा, उभार या लक्षण photo में साफ नहीं दिख रहा, उसे अंदाज़े से मत लिखो - साफ बता दो कि वह साफ नहीं दिख रहा है।
+3] Gemini को सिर्फ prompt में जितना पूछा है उतना ही output देना है - extra analysis, extra sections, या किसी और व्यक्ति की जानकारी नहीं।
+4] भाषा mixed English-Hindi रखनी है - 'report' शब्द कभी नहीं, हमेशा 'Analysis'।
+5] हस्त रेखा Analysis में सिर्फ Observation 1-2 और सवाल 1-7 (Part 1-2, हस्त रेखा) भरने हैं। Full Analysis में सब कुछ भरना है।
+6] काम का क्रम: पहले Observation (सिर्फ क्या दिख रहा है), फिर Cross-check, फिर Interpretation (मतलब और फल)। कुंडली सबसे आखिर में दी जाएगी - फोटो वाले Interpretation के बाद। Observation में मतलब मत बताइए।
+----------
+जातक की हथेलियों की photos को देखकर, निम्मलिखित सवालों के सिर्फ तथ्यात्मक उत्तर दीजिए - सिर्फ बताइए क्या दिख रहा है, इसका मतलब या फल मत बताइए। हर सवाल का संक्षिप्त उत्तर दीजिए (1-2 lines में)। जो रेखा या लक्षण photo में साफ नहीं दिख रहा, उसे अंदाज़े से मत लिखिए - साफ बता दीजिए कि वह साफ नहीं दिख रहा है।
+
+Observation 1: हस्त रेखा (रेखाएँ)
+➤ हथेली का आकार और प्रकार: हथेली चौड़ी है या लंबी, उंगलियाँ छोटी हैं या लंबी, त्वचा कैसी है, हथेली लचीली है या सख्त है?
+➤ जीवन रेखा: जीवन रेखा कहाँ से शुरू होती है, कितनी लंबी और गहरी है, उसमें कोई टूट, द्वीप या शाखा है या नहीं?
+➤ मस्तिष्क रेखा: मस्तिष्क रेखा सीधी है या झुकी हुई, कितनी लंबी और साफ है?
+➤ हृदय रेखा: हृदय रेखा कहाँ तक जाती है, कैसी है (सीधी, झुकी हुई, टूटी हुई, शाखाओं वाली)?
+➤ भाग्य रेखा: भाग्य रेखा है या नहीं, कहाँ से शुरू होती है, कितनी साफ और लंबी है, उसमें कोई रुकावट है या नहीं?
+➤ सूर्य रेखा और बुध रेखा: सूर्य रेखा (प्रसिद्धि और सफलता) और बुध रेखा (व्यापार और स्वास्थ्य) कैसी हैं?
+➤ विवाह रेखाएँ: छोटी उंगली के नीचे कितनी विवाह रेखाएँ हैं, वे कैसी हैं (लंबी, छोटी, टूटी हुई, झुकी हुई)?
+----------
+जातक की हथेलियों की photos को देखकर, निम्मलिखित सवालों के सिर्फ तथ्यात्मक उत्तर दीजिए - सिर्फ बताइए क्या दिख रहा है, इसका मतलब या फल मत बताइए। हर सवाल का संक्षिप्त उत्तर दीजिए (1-2 lines में)। जो रेखा या लक्षण photo में साफ नहीं दिख रहा, उसे अंदाज़े से मत लिखिए - साफ बता दीजिए कि वह साफ नहीं दिख रहा है।
+
+Observation 2: हस्त रेखा (उंचवटे और चिन्ह)
+➤ सात उभार: गुरु, शनि, सूर्य, बुध, शुक्र, चंद्र और मंगल के उभार कितने उठे हुए या दबे हुए हैं?
+➤ उंगलियाँ और अँगूठा: उंगलियों की लंबाई और आकार, अँगूठे की लंबाई, लचीलापन और कोण कैसा है?
+➤ अन्य चिह्न: हथेली में तारा, त्रिभुज, जाल, द्वीप, वर्ग या क्रॉस जैसे चिह्न कहाँ-कहाँ हैं?
+➤ दोनों हाथों की तुलना: सीधे हाथ और उल्टे हाथ की रेखाओं में क्या अंतर है?
+----------
+जातक के चेहरे की photos को देखकर, निम्मलिखित सवालों के सिर्फ तथ्यात्मक उत्तर दीजिए - सिर्फ बताइए क्या दिख रहा है, इसका मतलब या फल मत बताइए। हर सवाल का संक्षिप्त उत्तर दीजिए (1-2 lines में)। जो रेखा या लक्षण photo में साफ नहीं दिख रहा, उसे अंदाज़े से मत लिखिए - साफ बता दीजिए कि वह साफ नहीं दिख रहा है।
+
+Observation 3: फेस रिडिंग (चेहरा, माथा, आँखें, नाक)
+➤ चेहरे का आकार: चेहरा गोल है, लंबा है, चौड़ा है या अंडाकार है?
+➤ माथा: माथा चौड़ा है या संकरा, ऊँचा है या नीचा, उस पर रेखाएँ कैसी हैं?
+➤ भौंहें: भौंहें घनी हैं या हल्की, सीधी हैं या झुकी हुई, आपस में जुड़ी हुई हैं या अलग हैं?
+➤ आँखें: आँखें बड़ी हैं या छोटी, चमकदार हैं या धुंधली, उनकी बनावट कैसी है?
+➤ नाक: नाक सीधी है या टेढ़ी, नथुने कैसे हैं, नाक की नोक कैसी है?
+----------
+जातक के चेहरे की photos को देखकर, निम्मलिखित सवालों के सिर्फ तथ्यात्मक उत्तर दीजिए - सिर्फ बताइए क्या दिख रहा है, इसका मतलब या फल मत बताइए। हर सवाल का संक्षिप्त उत्तर दीजिए (1-2 lines में)। जो रेखा या लक्षण photo में साफ नहीं दिख रहा, उसे अंदाज़े से मत लिखिए - साफ बता दीजिए कि वह साफ नहीं दिख रहा है।
+
+Observation 4: फेस रिडिंग (होंठ, ठुड्डी, कान, गाल)
+➤ होंठ और मुँह: होंठ मोटे हैं या पतले, मुँह बड़ा है या छोटा?
+➤ ठुड्डी और जबड़ा: ठुड्डी गोल है या नुकीली, जबड़ा मजबूत है या हल्का?
+➤ कान: कान बड़े हैं या छोटे, चिपके हुए हैं या बाहर निकले हुए, उनकी बनावट कैसी है?
+➤ गाल और रंग: गाल भरे हुए हैं या धँसे हुए, चेहरे का रंग कैसा है?
+----------
+जातक के तिलों और निशानों की photos को देखकर, निम्मलिखित सवालों के सिर्फ तथ्यात्मक उत्तर दीजिए - सिर्फ बताइए क्या दिख रहा है, इसका मतलब या फल मत बताइए। हर सवाल का संक्षिप्त उत्तर दीजिए (1-2 lines में)। जो रेखा या लक्षण photo में साफ नहीं दिख रहा, उसे अंदाज़े से मत लिखिए - साफ बता दीजिए कि वह साफ नहीं दिख रहा है।
+
+Observation 5: तिल और निशान
+➤ चेहरे के तिल: चेहरे पर तिल कहाँ-कहाँ हैं (माथा, आँख के पास, नाक, गाल, होंठ, ठुड्डी, कान)?
+➤ शरीर के तिल: शरीर पर तिल कहाँ-कहाँ हैं (गर्दन, छाती, हाथ, पीठ, पेट, पैर)?
+➤ जन्म निशान और अन्य निशान: कोई जन्म निशान, दाग या खास निशान है तो उसकी जगह और आकार क्या है?
+----------
+ऊपर निकाली गई सभी जानकारी को मूल data (photos) से क्रॉस चेक करके सुनिश्चित करिए की वो सही है या कोई त्रुटी है? जो त्रुटी हो उसकी ही सूचि दीजिए सिर्फ।
+----------
+ऊपर अब तक आपको Analysis के लिए दी गई कौन-कौन सी जानकारी प्राप्त हुई, उसकी short में सूची दीजिए।
+----------
+ऊपर Observation 1 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+1] ➤ हथेली का आकार और प्रकार: हथेली चौड़ी है या लंबी, उंगलियाँ छोटी हैं या लंबी, त्वचा कैसी है, हथेली लचीली है या सख्त है? इससे जातक का मूल स्वभाव (व्यावहारिक, भावुक, बौद्धिक या क्रियाशील) बताइए।
+2] ➤ जीवन रेखा: जीवन रेखा कहाँ से शुरू होती है, कितनी लंबी और गहरी है, उसमें कोई टूट, द्वीप या शाखा है या नहीं? इससे स्वास्थ्य, ऊर्जा और आयु के बारे में बताइए।
+----------
+ऊपर Observation 1 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+3] ➤ मस्तिष्क रेखा: मस्तिष्क रेखा सीधी है या झुकी हुई, कितनी लंबी और साफ है? इससे बुद्धि, सोचने का तरीका और निर्णय क्षमता बताइए।
+4] ➤ हृदय रेखा: हृदय रेखा कहाँ तक जाती है, कैसी है (सीधी, झुकी हुई, टूटी हुई, शाखाओं वाली)? इससे भावनाएँ, प्रेम जीवन और रिश्तों के बारे में बताइए।
+----------
+ऊपर Observation 1 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+5] ➤ भाग्य रेखा: भाग्य रेखा है या नहीं, कहाँ से शुरू होती है, कितनी साफ और लंबी है, उसमें कोई रुकावट है या नहीं? इससे करियर, धन और जीवन में बदलाव के समय बताइए।
+6] ➤ सूर्य रेखा और बुध रेखा: सूर्य रेखा (प्रसिद्धि और सफलता) और बुध रेखा (व्यापार और स्वास्थ्य) कैसी हैं? इनसे प्रसिद्धि, कला और व्यापार की संभावना बताइए।
+----------
+ऊपर Observation 1 और Observation 2 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+7] ➤ विवाह रेखाएँ: छोटी उंगली के नीचे कितनी विवाह रेखाएँ हैं, वे कैसी हैं (लंबी, छोटी, टूटी हुई, झुकी हुई)? इससे विवाह का समय, विवाह जीवन और जीवनसाथी के स्वभाव के बारे में बताइए।
+8] ➤ सात उभार: गुरु, शनि, सूर्य, बुध, शुक्र, चंद्र और मंगल के उभार कितने उठे हुए या दबे हुए हैं? हर उभार से संबंधित ग्रह का बल और उसका जातक के जीवन पर प्रभाव बताइए।
+----------
+ऊपर Observation 2 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+9] ➤ उंगलियाँ और अँगूठा: उंगलियों की लंबाई और आकार, अँगूठे की लंबाई, लचीलापन और कोण कैसा है? इससे इच्छाशक्ति, आत्मविश्वास और नेतृत्व क्षमता बताइए।
+10] ➤ अन्य चिह्न: हथेली में तारा, त्रिभुज, जाल, द्वीप, वर्ग या क्रॉस जैसे चिह्न कहाँ-कहाँ हैं? हर चिह्न का फल बताइए।
+----------
+ऊपर Observation 2 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+11] ➤ दोनों हाथों की तुलना: सीधे हाथ और उल्टे हाथ की रेखाओं में क्या अंतर है? इससे बताइए कि जातक का वर्तमान जीवन जन्मजात संभावना से कितना मेल खाता है और क्या बदल रहा है।
+----------
+ऊपर Observation 2 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+12] ➤ हस्त रेखा Conclusion: ऊपर के सभी बिंदुओं को मिलाकर हस्त रेखा का Overall Conclusion दीजिए - जातक की सबसे Strong बातें और ध्यान देने वाली बातें।
+----------
+ऊपर Observation 3 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+13] ➤ चेहरे का आकार: चेहरा गोल है, लंबा है, चौड़ा है या अंडाकार है? इससे जातक का मूल स्वभाव और जीवन का तरीका बताइए।
+14] ➤ माथा: माथा चौड़ा है या संकरा, ऊँचा है या नीचा, उस पर रेखाएँ कैसी हैं? इससे बुद्धि, भाग्य और शुरुआती जीवन बताइए।
+----------
+ऊपर Observation 3 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+15] ➤ भौंहें: भौंहें घनी हैं या हल्की, सीधी हैं या झुकी हुई, आपस में जुड़ी हुई हैं या अलग हैं? इससे स्वभाव, गुस्सा और निर्णय क्षमता बताइए।
+16] ➤ आँखें: आँखें बड़ी हैं या छोटी, चमकदार हैं या धुंधली, उनकी बनावट कैसी है? इससे चरित्र, भावनाएँ, बुद्धि और प्रेम जीवन बताइए।
+----------
+ऊपर Observation 3 और Observation 4 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+17] ➤ नाक: नाक सीधी है या टेढ़ी, नथुने कैसे हैं, नाक की नोक कैसी है? इससे धन, आत्मसम्मान और करियर बताइए।
+18] ➤ होंठ और मुँह: होंठ मोटे हैं या पतले, मुँह बड़ा है या छोटा? इससे वाणी, व्यवहार, प्रेम और धन के बारे में बताइए।
+----------
+ऊपर Observation 4 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+19] ➤ ठुड्डी और जबड़ा: ठुड्डी गोल है या नुकीली, जबड़ा मजबूत है या हल्का? इससे दृढ़ता, आयु और जीवन के आखिरी भाग बताइए।
+20] ➤ कान: कान बड़े हैं या छोटे, चिपके हुए हैं या बाहर निकले हुए, उनकी बनावट कैसी है? इससे आयु, बुद्धि और भाग्य बताइए।
+----------
+ऊपर Observation 4 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+21] ➤ गाल और रंग: गाल भरे हुए हैं या धँसे हुए, चेहरे का रंग कैसा है? इससे स्वास्थ्य, धन और स्वभाव बताइए।
+----------
+ऊपर Observation 4 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+22] ➤ फेस Conclusion: ऊपर के सभी बिंदुओं को मिलाकर फेस रिडिंग का Overall Conclusion दीजिए - जातक की सबसे Strong बातें और ध्यान देने वाली बातें।
+----------
+ऊपर Observation 5 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+23] ➤ चेहरे के तिल: चेहरे पर तिल कहाँ-कहाँ हैं (माथा, आँख के पास, नाक, गाल, होंठ, ठुड्डी, कान)? हर तिल की जगह के हिसाब से उसका फल बताइए।
+24] ➤ शरीर के तिल: शरीर पर तिल कहाँ-कहाँ हैं (गर्दन, छाती, हाथ, पीठ, पेट, पैर)? Client ने जो जगह बताई है, उसी हिसाब से हर तिल का फल बताइए।
+----------
+ऊपर Observation 5 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+25] ➤ जन्म निशान और अन्य निशान: कोई जन्म निशान, दाग या खास निशान है तो उसकी जगह और आकार के हिसाब से उसका फल बताइए।
+----------
+ऊपर Observation 5 में जो जानकारी निकली है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+26] ➤ तिल Conclusion: ऊपर के सभी बिंदुओं को मिलाकर तिल और निशानों का Overall Conclusion दीजिए।
+----------
+मैं आपको जातक की कुंडली की PDF upload कर रहा हूँ। यह prompt सिर्फ Full Analysis के लिए है - अगर यह हस्त रेखा Analysis का order है तो इस prompt को छोड़ दीजिए। उस PDF से कुंडली की निम्मलिखित जानकारी निकालिए - सिर्फ तथ्य बताइए, विश्लेषण मत कीजिए। हर सवाल का संक्षिप्त उत्तर दीजिए (1-2 lines में)।
+
+Observation 6: कुंडली के तथ्य
+➤ सप्तम भाव: सप्तम भाव में कौन-कौन से ग्रह हैं, सप्तमेश कौन है, वह किस राशि और भाव में है?
+➤ पंचम भाव: पंचम भाव में कौन-कौन से ग्रह हैं, पंचमेश कौन है, वह किस राशि और भाव में है?
+➤ दशम भाव: दशम भाव में कौन-कौन से ग्रह हैं, दशमेश कौन है, वह किस राशि और भाव में है?
+➤ धन भाव: द्वितीय भाव में कौन-कौन से ग्रह हैं, धनेश कौन है, वह किस राशि और भाव में है?
+➤ लग्न, चंद्र और सूर्य: लग्न कौन सा है, लग्नेश कौन है और कहाँ है? चंद्र किस राशि-भाव में है? सूर्य किस राशि-भाव में है?
+----------
+ऊपर Observation 6 में कुंडली के तथ्य और भाग 1-5 में हस्त रेखा, फेस रिडिंग और तिलों के बारे में जो विश्लेषण हुआ है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+27] ➤ हस्त रेखा vs कुंडली: हस्त रेखा में जो विवाह, संतान, करियर और धन के बारे में निकला है, वह कुंडली के सप्तम, पंचम, दशम और धन भावों से कितना मिलता है? जहाँ मिलता है वहाँ बताइए, जहाँ नहीं मिलता वहाँ भी साफ बताइए।
+----------
+ऊपर Observation 6 में कुंडली के तथ्य और भाग 1-5 में हस्त रेखा, फेस रिडिंग और तिलों के बारे में जो विश्लेषण हुआ है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+28] ➤ फेस रिडिंग vs कुंडली: चेहरे से जो स्वभाव, बुद्धि और भाग्य निकला है, वह कुंडली के लग्न, चंद्र और सूर्य की स्थिति से कितना मिलता है? जहाँ मिलता है वहाँ बताइए, जहाँ नहीं मिलता वहाँ भी साफ बताइए।
+----------
+ऊपर Observation 6 में कुंडली के तथ्य और भाग 1-5 में हस्त रेखा, फेस रिडिंग और तिलों के बारे में जो विश्लेषण हुआ है, उसके आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक विश्लेषण (Detailed Analysis) कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिन्दुओ का भी विश्लेषण विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का निष्कर्ष (Detailed Conclusion) भी दीजिए।
+
+29] ➤ Final Verdict: हस्त रेखा, फेस रिडिंग, तिल और कुंडली - चारों को मिलाकर Final Verdict दीजिए। जो बातें चारों में एक जैसी निकली हैं, उन्हें High Chances के साथ लिखिए। जो बातें सिर्फ एक जगह निकली हैं, उन्हें संभावना के रूप में लिखिए। तिलों से जो निकला है, वह कुंडली से कितना मिलता है, यह भी बताइए। अंत में यह भी बताइए कि कुल मिलाकर कुंडली से कितना मिलान हुआ।
+----------
+अब तक हुए सभी विश्लेषणों के आधार पर जातक के लिए उपाय दीजिए - जिन ग्रहों, रेखाओं या लक्षणों में कमजोरी निकली है, उनके लिए रत्न, मंत्र, दान या अन्य व्यावहारिक उपाय बताइए। हर उपाय के साथ यह भी बताइए कि वह किस कमजोरी के लिए है।
+----------
+अब पूरी Detailed Analysis हो गई है। उसके आधार पर जातक की सामुद्रिक शास्त्र Analysis का Brief निकालेंगे। निम्मलिखित सभी मुख्य सवालों के संक्षिप्त उत्तर दीजिए (प्रत्येक 2-3 lines में), सवाल नंबर के साथ, report में सबसे पहले।
+
+भाग 1: हस्त रेखा (रेखाएँ)
+1] हथेली का प्रकार और जातक का मूल स्वभाव क्या है?
+2] जीवन रेखा से स्वास्थ्य और आयु के बारे में क्या पता चलता है?
+3] मस्तिष्क रेखा से बुद्धि और निर्णय क्षमता कैसी है?
+4] हृदय रेखा से भावनाएँ और प्रेम जीवन कैसा है?
+5] भाग्य रेखा से करियर और धन की स्थिति कैसी है?
+6] सूर्य रेखा और बुध रेखा से प्रसिद्धि और व्यापार की संभावना कैसी है?
+7] विवाह रेखाओं से विवाह का समय और जीवनसाथी का स्वभाव कैसा है?
+
+भाग 2: हस्त रेखा (उंचवटे और चिन्ह)
+8] सातों उभारों से ग्रहों का बल कैसा है?
+9] उंगलियों और अँगूठे से इच्छाशक्ति और स्वभाव कैसा है?
+10] हथेली के अन्य चिह्नों से क्या विशेष बात पता चलती है?
+11] दोनों हाथों की तुलना से वर्तमान और भविष्य की संभावना में क्या अंतर है?
+12] हस्त रेखा का Overall Conclusion क्या है?
+
+भाग 3: फेस रिडिंग (चेहरा, माथा, आँखें, नाक)
+13] चेहरे के आकार से जातक का मूल स्वभाव क्या है?
+14] माथे से बुद्धि और भाग्य कैसा है?
+15] भौंहों से स्वभाव और निर्णय क्षमता कैसी है?
+16] आँखों से जातक का चरित्र और भावनाएँ कैसी हैं?
+17] नाक से धन और आत्मसम्मान कैसा है?
+
+भाग 4: फेस रिडिंग (होंठ, ठुड्डी, कान, गाल)
+18] होंठों और मुँह से वाणी और व्यवहार कैसा है?
+19] ठुड्डी और जबड़े से दृढ़ता और आयु कैसी है?
+20] कानों से आयु और बुद्धि कैसी है?
+21] गालों और रंग से स्वास्थ्य और स्वभाव कैसा है?
+22] फेस रिडिंग का Overall Conclusion क्या है?
+
+भाग 5: तिल और निशान
+23] चेहरे के तिलों से क्या फल मिलता है?
+24] शरीर के तिलों से क्या फल मिलता है?
+25] जन्म निशान या अन्य निशानों से क्या पता चलता है?
+26] तिल और निशानों का Overall Conclusion क्या है?
+
+भाग 6: कुंडली से Cross-check (सिर्फ Full Analysis में)
+27] हस्त रेखा के निष्कर्ष कुंडली से कितने मिलते हैं?
+28] फेस रिडिंग के निष्कर्ष कुंडली से कितने मिलते हैं?
+29] Cross-check के बाद Final Verdict क्या है?
+
+उपाय
+30] जातक के लिए कौन-कौन से उपाय हैं?
+
+जातक के सवाल :
+----------
+अब पूरी Analysis हो गई है। मूल data (photos और कुंडली के तथ्य) से हर hard fact को दोबारा मिलाकर जाँच कीजिए - रेखाओं की स्थिति, उभार, चेहरे के लक्षण, तिल की जगह, कुंडली के भाव और ग्रह, तारीखें और संख्याएँ। जो भी गलतियाँ मिलें, सिर्फ उनकी list दीजिए, पूरी Analysis दोबारा मत लिखिए। अंत में यह line लिखिए: जाँच पूर्ण - कुल X गलतियाँ मिलीं।`;
+        const rawData_en = `This is the information and photos given for the native's Samudrik Shastra Analysis. Save all of this information, so that the Analysis can be done:
+
+1] Name of the native
+2] Date of birth
+3] Photos of both palms (front and back)
+4] Photos of the face (front and both sides)
+5] Photos of moles, with their location
+6] This order is for [Hast Rekha Analysis / Samudrik Shastra Analysis (Full)]
+6] This order is for [Hast Rekha Analysis / Samudrik Shastra Analysis (Full)]
+
+Please look at all the photos carefully and note every line, mount, facial feature and mole.
+----------
+Make sure that you strictly follow the following instructions,
+
+1] Crosscheck the data before giving the output.
+2] Do not do any kind of sugar-coating. If there is any flaw, weakness or negative point in any line or feature, state it clearly - do not force any feature to look auspicious.
+3] Do not begin your answer with any greeting or conversational phrase (like 'definitely', 'surely', 'following is'), start directly with the analysis.
+4] Never use absolute language like '100%', 'guarantee' or 'definitely' - use 'High Chances' for probability and 'Strong' for a yog or signal.
+5] Follow the instructions given in the System instructions as well.
+
+Are you ready, just tell me which instructions you will follow.
+----------
+Now we will take out the native's Samudrik Shastra Analysis, before that the points to keep in mind:
+
+1] Keep in mind that November 2026 is going on right now and the native is xyz 00 years old. Keep the age in mind while analysing.
+2] This Analysis is photo-based - every feature has to be seen only from the given photos. Any line, mount or feature that is not clearly visible in the photo, do not write it by guessing - state clearly that it is not clearly visible.
+3] Gemini has to give only as much output as asked in the prompt - no extra analysis, no extra sections, and no information about any other person.
+4] Keep the language mixed English-Hindi - never use the word 'report', always 'Analysis'.
+5] In Hast Rekha Analysis, fill only Observations 1-2 and Questions 1-7 (Parts 1-2, Hast Rekha). In Full Analysis, fill everything.
+6] Order of work: first Observation (only what is visible), then Cross-check, then Interpretation (meaning and results). The kundali will be given at the very end - after the photo-based Interpretation. Do not give meanings in Observation.
+----------
+Looking at the photos of the native's palms, give only factual answers to the following questions - only tell what is visible, do not tell its meaning or result. Give a short answer to every question (in 1-2 lines). Any line or feature that is not clearly visible in the photo, do not write it by guessing - state clearly that it is not clearly visible.
+
+Observation 1: Hast Rekha (Lines)
+➤ Type and shape of the palm: Is the palm broad or long, are the fingers short or long, how is the skin, is the palm flexible or stiff?
+➤ Life Line: Where does the Life Line start, how long and deep is it, is there any break, island or branch in it?
+➤ Head Line: Is the Head Line straight or bent, how long and clear is it?
+➤ Heart Line: Till where does the Heart Line go, how is it (straight, bent, broken, branched)?
+➤ Fate Line: Is there a Fate Line or not, where does it start, how clear and long is it, is there any break in it?
+➤ Sun Line and Mercury Line: How are the Sun Line (fame and success) and Mercury Line (business and health)?
+➤ Marriage Lines: How many Marriage Lines are there below the little finger, how are they (long, short, broken, bent)?
+----------
+Looking at the photos of the native's palms, give only factual answers to the following questions - only tell what is visible, do not tell its meaning or result. Give a short answer to every question (in 1-2 lines). Any line or feature that is not clearly visible in the photo, do not write it by guessing - state clearly that it is not clearly visible.
+
+Observation 2: Hast Rekha (Mounts and Signs)
+➤ Seven Mounts: How raised or depressed are the mounts of Jupiter, Saturn, Sun, Mercury, Venus, Moon and Mars?
+➤ Fingers and Thumb: How are the length and shape of the fingers, the length, flexibility and angle of the thumb?
+➤ Other Signs: Where are signs like star, triangle, net, island, square or cross on the palm?
+➤ Comparison of Both Hands: What is the difference between the lines of the right hand and the left hand?
+----------
+Looking at the photos of the native's face, give only factual answers to the following questions - only tell what is visible, do not tell its meaning or result. Give a short answer to every question (in 1-2 lines). Any line or feature that is not clearly visible in the photo, do not write it by guessing - state clearly that it is not clearly visible.
+
+Observation 3: Face Reading (Face, Forehead, Eyes, Nose)
+➤ Shape of the Face: Is the face round, long, broad or oval?
+➤ Forehead: Is the forehead broad or narrow, high or low, how are the lines on it?
+➤ Eyebrows: Are the eyebrows thick or light, straight or bent, joined together or separate?
+➤ Eyes: Are the eyes big or small, bright or dull, how is their shape?
+➤ Nose: Is the nose straight or bent, how are the nostrils, how is the tip of the nose?
+----------
+Looking at the photos of the native's face, give only factual answers to the following questions - only tell what is visible, do not tell its meaning or result. Give a short answer to every question (in 1-2 lines). Any line or feature that is not clearly visible in the photo, do not write it by guessing - state clearly that it is not clearly visible.
+
+Observation 4: Face Reading (Lips, Chin, Ears, Cheeks)
+➤ Lips and Mouth: Are the lips thick or thin, is the mouth big or small?
+➤ Chin and Jaw: Is the chin round or pointed, is the jaw strong or light?
+➤ Ears: Are the ears big or small, attached or sticking out, how is their shape?
+➤ Cheeks and Complexion: Are the cheeks full or hollow, how is the complexion of the face?
+----------
+Looking at the photos of the native's moles and marks, give only factual answers to the following questions - only tell what is visible, do not tell its meaning or result. Give a short answer to every question (in 1-2 lines). Any line or feature that is not clearly visible in the photo, do not write it by guessing - state clearly that it is not clearly visible.
+
+Observation 5: Moles and Marks
+➤ Moles on the Face: Where are the moles on the face (forehead, near the eyes, nose, cheeks, lips, chin, ears)?
+➤ Moles on the Body: Where are the moles on the body (neck, chest, hands, back, stomach, legs)?
+➤ Birthmarks and Other Marks: If there is any birthmark, spot or special mark, what is its location and size?
+----------
+Cross-check all the information found above against the original data (photos) and ensure whether it is correct or if there is any error? Give only the list of errors, if any.
+----------
+Give a short list of all the information you have received so far for the Analysis.
+----------
+On the basis of the information found above in Observation 1, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+1] ➤ Type and shape of the palm: Is the palm broad or long, are the fingers short or long, how is the skin, is the palm flexible or stiff? From this tell the basic nature of the native (practical, emotional, intellectual or active).
+2] ➤ Life Line: Where does the Life Line start, how long and deep is it, is there any break, island or branch in it? From this tell about health, energy and age.
+----------
+On the basis of the information found above in Observation 1, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+3] ➤ Head Line: Is the Head Line straight or bent, how long and clear is it? From this tell about intelligence, way of thinking and decision-making capacity.
+4] ➤ Heart Line: Till where does the Heart Line go, how is it (straight, bent, broken, branched)? From this tell about emotions, love life and relationships.
+----------
+On the basis of the information found above in Observation 1, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+5] ➤ Fate Line: Is there a Fate Line or not, where does it start, how clear and long is it, is there any break in it? From this tell about career, wealth and the timings of changes in life.
+6] ➤ Sun Line and Mercury Line: How are the Sun Line (fame and success) and Mercury Line (business and health)? From these tell the possibility of fame, art and business.
+----------
+On the basis of the information found above in Observation 1 and Observation 2, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+7] ➤ Marriage Lines: How many Marriage Lines are there below the little finger, how are they (long, short, broken, bent)? From these tell about the timing of marriage, married life and the nature of the spouse.
+8] ➤ Seven Mounts: How raised or depressed are the mounts of Jupiter, Saturn, Sun, Mercury, Venus, Moon and Mars? Tell the strength of the planet related to each mount and its effect on the native's life.
+----------
+On the basis of the information found above in Observation 2, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+9] ➤ Fingers and Thumb: How are the length and shape of the fingers, the length, flexibility and angle of the thumb? From these tell about willpower, self-confidence and leadership capacity.
+10] ➤ Other Signs: Where are signs like star, triangle, net, island, square or cross on the palm? Tell the result of every sign.
+----------
+On the basis of the information found above in Observation 2, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+11] ➤ Comparison of Both Hands: What is the difference between the lines of the right hand and the left hand? From this tell how much the native's present life matches the inborn possibility and what is changing.
+----------
+On the basis of the information found above in Observation 2, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+12] ➤ Hast Rekha Conclusion: Combining all the above points, give the Overall Conclusion of Hast Rekha - the strongest points of the native and the points to pay attention to.
+----------
+On the basis of the information found above in Observation 3, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+13] ➤ Shape of the Face: Is the face round, long, broad or oval? From this tell the basic nature of the native and the way of life.
+14] ➤ Forehead: Is the forehead broad or narrow, high or low, how are the lines on it? From this tell about intelligence, fortune and early life.
+----------
+On the basis of the information found above in Observation 3, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+15] ➤ Eyebrows: Are the eyebrows thick or light, straight or bent, joined together or separate? From these tell about nature, anger and decision-making capacity.
+16] ➤ Eyes: Are the eyes big or small, bright or dull, how is their shape? From these tell about character, emotions, intelligence and love life.
+----------
+On the basis of the information found above in Observation 3 and Observation 4, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+17] ➤ Nose: Is the nose straight or bent, how are the nostrils, how is the tip of the nose? From this tell about wealth, self-respect and career.
+18] ➤ Lips and Mouth: Are the lips thick or thin, is the mouth big or small? From these tell about speech, behaviour, love and wealth.
+----------
+On the basis of the information found above in Observation 4, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+19] ➤ Chin and Jaw: Is the chin round or pointed, is the jaw strong or light? From these tell about firmness, age and the last part of life.
+20] ➤ Ears: Are the ears big or small, attached or sticking out, how is their shape? From these tell about age, intelligence and fortune.
+----------
+On the basis of the information found above in Observation 4, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+21] ➤ Cheeks and Complexion: Are the cheeks full or hollow, how is the complexion of the face? From these tell about health, wealth and nature.
+----------
+On the basis of the information found above in Observation 4, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+22] ➤ Face Conclusion: Combining all the above points, give the Overall Conclusion of Face Reading - the strongest points of the native and the points to pay attention to.
+----------
+On the basis of the information found above in Observation 5, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+23] ➤ Moles on the Face: Where are the moles on the face (forehead, near the eyes, nose, cheeks, lips, chin, ears)? Tell the result of every mole as per its location.
+24] ➤ Moles on the Body: Where are the moles on the body (neck, chest, hands, back, stomach, legs)? Tell the result of every mole as per the location told by the client.
+----------
+On the basis of the information found above in Observation 5, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+25] ➤ Birthmarks and Other Marks: If there is any birthmark, spot or special mark, tell its result as per its location and size.
+----------
+On the basis of the information found above in Observation 5, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+26] ➤ Moles Conclusion: Combining all the above points, give the Overall Conclusion of moles and marks.
+----------
+I am uploading the native's kundali PDF to you. This prompt is for Full Analysis only - if this is a Hast Rekha Analysis order, skip this prompt. From that PDF, extract the following information of the kundali - only state the facts, do not analyse. Give a short answer to every question (in 1-2 lines).
+
+Observation 6: Kundali Facts
+➤ 7th House: Which planets are in the 7th house, who is the 7th lord, and in which sign and house is it?
+➤ 5th House: Which planets are in the 5th house, who is the 5th lord, and in which sign and house is it?
+➤ 10th House: Which planets are in the 10th house, who is the 10th lord, and in which sign and house is it?
+➤ Wealth House: Which planets are in the 2nd house, who is the 2nd lord, and in which sign and house is it?
+➤ Lagna, Moon and Sun: Which Lagna is it, who is the Lagna lord and where is it? In which sign and house is the Moon? In which sign and house is the Sun?
+----------
+On the basis of the kundali facts found above in Observation 6 and the analysis of Hast Rekha, Face Reading and moles in Parts 1-5, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+27] ➤ Hast Rekha vs Kundali: How much do the marriage, children, career and wealth found in Hast Rekha match with the 7th, 5th, 10th and wealth houses of the kundali? Where they match, tell it, and where they do not match, tell that clearly too.
+----------
+On the basis of the kundali facts found above in Observation 6 and the analysis of Hast Rekha, Face Reading and moles in Parts 1-5, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+28] ➤ Face Reading vs Kundali: How much do the nature, intelligence and fortune found from the face match with the position of Lagna, Moon and Sun in the kundali? Where they match, tell it, and where they do not match, tell that clearly too.
+----------
+On the basis of the kundali facts found above in Observation 6 and the analysis of Hast Rekha, Face Reading and moles in Parts 1-5, do a deep and detailed analysis (Detailed Analysis) of the following points, keep in mind that along with all the points, each of their sub-points should also be analysed in detail, and at the end give the conclusion (Detailed Conclusion) of each point as well.
+
+29] ➤ Final Verdict: Combining Hast Rekha, Face Reading, moles and kundali - all four - give the Final Verdict. The points that came out the same in all four, write them with High Chances. The points that came out only in one place, write them as a possibility. Also tell how much what came out from the moles matches with the kundali. At the end, also tell how much the kundali matched overall.
+----------
+On the basis of all the analyses done so far, give remedies for the native - for the planets, lines or features in which weakness was found, tell gemstone, mantra, donation or other practical remedies. With every remedy, also tell which weakness it is for.
+----------
+Now the whole Detailed Analysis is done. On its basis, we will take out the Brief of the native's Samudrik Shastra Analysis. Give short answers to all the following main questions (2-3 lines each), with the question number, at the very beginning of the report.
+
+Part 1: Hast Rekha (Lines)
+1] What is the type of the palm and the basic nature of the native?
+2] What do the Life Line tell about health and age?
+3] How are the intelligence and decision-making capacity from the Head Line?
+4] How are the emotions and love life from the Heart Line?
+5] What is the position of career and wealth from the Fate Line?
+6] What is the possibility of fame and business from the Sun Line and Mercury Line?
+7] What is the timing of marriage and the nature of the spouse from the Marriage Lines?
+
+Part 2: Hast Rekha (Mounts and Signs)
+8] How is the strength of the planets from the seven mounts?
+9] How are willpower and nature from the fingers and thumb?
+10] What special thing is known from the other signs on the palm?
+11] What is the difference between present and future possibility from the comparison of both hands?
+12] What is the Overall Conclusion of Hast Rekha?
+
+Part 3: Face Reading (Face, Forehead, Eyes, Nose)
+13] What is the basic nature of the native from the shape of the face?
+14] How are intelligence and fortune from the forehead?
+15] How are nature and decision-making capacity from the eyebrows?
+16] How are the character and emotions of the native from the eyes?
+17] How are wealth and self-respect from the nose?
+
+Part 4: Face Reading (Lips, Chin, Ears, Cheeks)
+18] How are speech and behaviour from the lips and mouth?
+19] How are firmness and age from the chin and jaw?
+20] How are age and intelligence from the ears?
+21] How are health and nature from the cheeks and complexion?
+22] What is the Overall Conclusion of Face Reading?
+
+Part 5: Moles and Marks
+23] What is the result of the moles on the face?
+24] What is the result of the moles on the body?
+25] What is known from birthmarks or other marks?
+26] What is the Overall Conclusion of moles and marks?
+
+Part 6: Cross-check with Kundali (in Full Analysis only)
+27] How much do the conclusions of Hast Rekha match with the kundali?
+28] How much do the conclusions of Face Reading match with the kundali?
+29] What is the Final Verdict after the cross-check?
+
+Remedies
+30] What are the remedies for the native?
+
+Questions of the native:
+----------
+Now the whole Analysis is done. Recheck every hard fact against the original data (photos and the kundali facts) - position of lines, mounts, facial features, location of moles, houses and planets of the kundali, dates and numbers. Give only the list of the errors found, do not write the whole Analysis again. At the end write this line: Verification complete - total X errors found.`;
+        const rawData_mr = `ही जातकाच्या सामुद्रिक शास्त्र Analysis साठी दिलेली माहिती आणि photos आहेत. यातील सर्व माहिती तुम्हाला सेव करून ठेवायची आहे, जेणेकरून Analysis होऊ शकेल:
+
+1] जातकाचे नाव
+2] जन्म तारीख
+3] दोन्ही तळहातांचे photos (सरळ आणि उलटे)
+4] चेहऱ्याचे photos (सरळ आणि दोन्ही बाजू)
+5] तिळांचे photos, त्यांच्या जागेसह
+6] ही order [हस्त रेषा Analysis / सामुद्रिक शास्त्र Analysis (Full)] ची आहे
+6] ही order [हस्त रेषा Analysis / सामुद्रिक शास्त्र Analysis (Full)] ची आहे
+
+कृपया सर्व photos काळजीपूर्वक पहा आणि प्रत्येक रेषा, उंचवटा, चेहऱ्याचे लक्षण आणि तीळ note करून ठेवा.
+----------
+तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटा crosscheck करून घ्या.
+2] कोणत्याही प्रकारचे sugar-coating करू नका. कोणत्याही रेषेत किंवा लक्षणात काही दोष, कमजोरी किंवा नकारात्मक गोष्ट असेल, तर ती स्पष्टपणे सांगा - कोणतेही लक्षण जबरदस्तीने शुभ सांगू नका.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्याने (जसे 'निश्चितपणे', 'खात्रीने', 'खालीलप्रमाणे') करू नका, थेट विश्लेषणाने सुरुवात करा.
+4] '100%', 'गारंटी', 'निश्चितपणे' अशी पक्की भाषा कधीही लिहू नका - Probability साठी 'High Chances' आणि योगासाठी 'Strong' लिहा.
+5] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का, फक्त एवढेच सांगा की कोणत्या आदेशांचे पालन कराल.
+----------
+आता आपण जातकाची सामुद्रिक शास्त्र Analysis काढणार आहोत, त्याआधी लक्षात ठेवण्याच्या गोष्टी :
+
+1] लक्षात ठेवा की सध्या नोव्हेंबर 2026 चालू आहे आणि जातक xyz 00 वर्षांचा/ची आहे. विश्लेषण करताना वयाचे भान ठेवा.
+2] हे Analysis photo-based आहे - प्रत्येक लक्षण फक्त दिलेल्या photos वरूनच पाहायचे आहे. जी रेषा, उंचवटा किंवा लक्षण photo मध्ये स्पष्ट दिसत नाही, ते अंदाजाने लिहू नका - स्पष्टपणे सांगा की ते स्पष्ट दिसत नाही.
+3] Gemini ने prompt मध्ये जेवढे विचारले आहे तेवढेच output द्यायचे आहे - extra analysis, extra sections, किंवा इतर कोणत्याही व्यक्तीची माहिती नाही.
+4] भाषा mixed English-Hindi ठेवायची आहे - 'report' हा शब्द कधीही नाही, नेहमी 'Analysis'.
+5] हस्त रेषा Analysis मध्ये फक्त Observation 1-2 आणि सवाल 1-7 (Part 1-2, हस्त रेषा) भरायचे आहेत. Full Analysis मध्ये सर्व काही भरायचे आहे.
+6] कामाचा क्रम: आधी Observation (फक्त काय दिसत आहे), मग Cross-check, मग Interpretation (अर्थ आणि फळ). कुंडली अगदी शेवटी दिली जाईल - फोटो वाले Interpretation नंतर. Observation मध्ये अर्थ सांगू नका.
+----------
+जातकाच्या तळहातांच्या photos पाहून, खालील प्रश्नांची फक्त तथ्यात्मक उत्तरे द्या - फक्त काय दिसत आहे तेच सांगा, त्याचा अर्थ किंवा फळ सांगू नका. प्रत्येक प्रश्नाचे संक्षिप्त उत्तर द्या (1-2 lines मध्ये). जी रेषा किंवा लक्षण photo मध्ये स्पष्ट दिसत नाही, ते अंदाजाने लिहू नका - स्पष्टपणे सांगा की ते स्पष्ट दिसत नाही.
+
+Observation 1: हस्त रेषा (रेषा)
+➤ तळहाताचा आकार आणि प्रकार: तळहात रुंद आहे की लांब, बोटे लहान आहेत की लांब, त्वचा कशी आहे, तळहात लवचिक आहे की कडक आहे?
+➤ जीवन रेषा: जीवन रेषा कोठून सुरू होते, किती लांब आणि खोल आहे, तिच्यात काही तुट, बेट किंवा शाखा आहे का?
+➤ मस्तिष्क रेषा: मस्तिष्क रेषा सरळ आहे की वाकलेली, किती लांब आणि स्पष्ट आहे?
+➤ हृदय रेषा: हृदय रेषा कोठपर्यंत जाते, कशी आहे (सरळ, वाकलेली, तुटलेली, शाखा असलेली)?
+➤ भाग्य रेषा: भाग्य रेषा आहे की नाही, कोठून सुरू होते, किती स्पष्ट आणि लांब आहे, तिच्यात काही अडथळा आहे का?
+➤ सूर्य रेषा आणि बुध रेषा: सूर्य रेषा (प्रसिद्धी आणि यश) आणि बुध रेषा (व्यापार आणि आरोग्य) कशा आहेत?
+➤ विवाह रेषा: करंगळीखाली किती विवाह रेषा आहेत, त्या कशा आहेत (लांब, लहान, तुटलेल्या, वाकलेल्या)?
+----------
+जातकाच्या तळहातांच्या photos पाहून, खालील प्रश्नांची फक्त तथ्यात्मक उत्तरे द्या - फक्त काय दिसत आहे तेच सांगा, त्याचा अर्थ किंवा फळ सांगू नका. प्रत्येक प्रश्नाचे संक्षिप्त उत्तर द्या (1-2 lines मध्ये). जी रेषा किंवा लक्षण photo मध्ये स्पष्ट दिसत नाही, ते अंदाजाने लिहू नका - स्पष्टपणे सांगा की ते स्पष्ट दिसत नाही.
+
+Observation 2: हस्त रेषा (उंचवटे आणि चिन्हे)
+➤ सात उंचवटे: गुरु, शनि, सूर्य, बुध, शुक्र, चंद्र आणि मंगळ यांचे उंचवटे किती उंचावलेले किंवा दबलेले आहेत?
+➤ बोटे आणि अंगठा: बोटांची लांबी आणि आकार, अंगठ्याची लांबी, लवचिकता आणि कोन कसा आहे?
+➤ इतर चिन्हे: तळहातात तारा, त्रिकोण, जाळे, बेट, चौरस किंवा क्रॉस यांसारखी चिन्हे कोठे कोठे आहेत?
+➤ दोन्ही हातांची तुलना: उजव्या हाताच्या आणि डाव्या हाताच्या रेषांमध्ये काय फरक आहे?
+----------
+जातकाच्या चेहऱ्याच्या photos पाहून, खालील प्रश्नांची फक्त तथ्यात्मक उत्तरे द्या - फक्त काय दिसत आहे तेच सांगा, त्याचा अर्थ किंवा फळ सांगू नका. प्रत्येक प्रश्नाचे संक्षिप्त उत्तर द्या (1-2 lines मध्ये). जी रेषा किंवा लक्षण photo मध्ये स्पष्ट दिसत नाही, ते अंदाजाने लिहू नका - स्पष्टपणे सांगा की ते स्पष्ट दिसत नाही.
+
+Observation 3: फेस रिडिंग (चेहरा, कपाळ, डोळे, नाक)
+➤ चेहऱ्याचा आकार: चेहरा गोल आहे, लांब आहे, रुंद आहे की अंडाकृती आहे?
+➤ कपाळ: कपाळ रुंद आहे की अरुंद, उंच आहे की नीच, त्यावर रेषा कशा आहेत?
+➤ भुवया: भुवया दाट आहेत की विरळ, सरळ आहेत की वाकलेल्या, एकमेकांना जोडलेल्या आहेत की वेगळ्या आहेत?
+➤ डोळे: डोळे मोठे आहेत की लहान, तेजस्वी आहेत की निस्तेज, त्यांचा आकार कसा आहे?
+➤ नाक: नाक सरळ आहे की वाकडे, नाकपुड्या कशा आहेत, नाकाचे टोक कसे आहे?
+----------
+जातकाच्या चेहऱ्याच्या photos पाहून, खालील प्रश्नांची फक्त तथ्यात्मक उत्तरे द्या - फक्त काय दिसत आहे तेच सांगा, त्याचा अर्थ किंवा फळ सांगू नका. प्रत्येक प्रश्नाचे संक्षिप्त उत्तर द्या (1-2 lines मध्ये). जी रेषा किंवा लक्षण photo मध्ये स्पष्ट दिसत नाही, ते अंदाजाने लिहू नका - स्पष्टपणे सांगा की ते स्पष्ट दिसत नाही.
+
+Observation 4: फेस रिडिंग (ओठ, हनुवटी, कान, गाल)
+➤ ओठ आणि तोंड: ओठ जाड आहेत की पातळ, तोंड मोठे आहे की लहान?
+➤ हनुवटी आणि जबडा: हनुवटी गोल आहे की टोकदार, जबडा मजबूत आहे की हलका?
+➤ कान: कान मोठे आहेत की लहान, चिकटलेले आहेत की बाहेर आलेले, त्यांचा आकार कसा आहे?
+➤ गाल आणि रंग: गाल भरलेले आहेत की खपाटी गेलेले, चेहऱ्याचा रंग कसा आहे?
+----------
+जातकाच्या तिळांच्या आणि खुणांच्या photos पाहून, खालील प्रश्नांची फक्त तथ्यात्मक उत्तरे द्या - फक्त काय दिसत आहे तेच सांगा, त्याचा अर्थ किंवा फळ सांगू नका. प्रत्येक प्रश्नाचे संक्षिप्त उत्तर द्या (1-2 lines मध्ये). जी रेषा किंवा लक्षण photo मध्ये स्पष्ट दिसत नाही, ते अंदाजाने लिहू नका - स्पष्टपणे सांगा की ते स्पष्ट दिसत नाही.
+
+Observation 5: तीळ आणि खुणा
+➤ चेहऱ्यावरील तीळ: चेहऱ्यावर तीळ कोठे कोठे आहेत (कपाळ, डोळ्यांजवळ, नाक, गाल, ओठ, हनुवटी, कान)?
+➤ शरीरावरील तीळ: शरीरावर तीळ कोठे कोठे आहेत (मान, छाती, हात, पाठ, पोट, पाय)?
+➤ जन्मखूण आणि इतर खुणा: काही जन्मखूण, डाग किंवा खास खूण असेल, तर तिची जागा आणि आकार काय आहे?
+----------
+वर काढलेली सर्व माहिती मूळ data (photos) शी क्रॉस-चेक करून खात्री करा की ती बरोबर आहे की काही त्रुटी आहे? त्रुटी असल्यास फक्त त्यांचीच सूची द्या.
+----------
+वर आतापर्यंत तुम्हाला Analysis साठी दिलेली कोणती कोणती माहिती मिळाली, त्याची short मध्ये सूची द्या.
+----------
+वरील Observation 1 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+1] ➤ तळहाताचा आकार आणि प्रकार: तळहात रुंद आहे की लांब, बोटे लहान आहेत की लांब, त्वचा कशी आहे, तळहात लवचिक आहे की कडक आहे? यावरून जातकाचा मूळ स्वभाव (व्यावहारिक, भावनिक, बौद्धिक किंवा क्रियाशील) सांगा.
+2] ➤ जीवन रेषा: जीवन रेषा कोठून सुरू होते, किती लांब आणि खोल आहे, तिच्यात काही तुट, बेट किंवा शाखा आहे का? यावरून आरोग्य, ऊर्जा आणि आयुष्याबद्दल सांगा.
+----------
+वरील Observation 1 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+3] ➤ मस्तिष्क रेषा: मस्तिष्क रेषा सरळ आहे की वाकलेली, किती लांब आणि स्पष्ट आहे? यावरून बुद्धी, विचार करण्याची पद्धत आणि निर्णय क्षमता सांगा.
+4] ➤ हृदय रेषा: हृदय रेषा कोठपर्यंत जाते, कशी आहे (सरळ, वाकलेली, तुटलेली, शाखा असलेली)? यावरून भावना, प्रेम जीवन आणि नातेसंबंधांबद्दल सांगा.
+----------
+वरील Observation 1 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+5] ➤ भाग्य रेषा: भाग्य रेषा आहे की नाही, कोठून सुरू होते, किती स्पष्ट आणि लांब आहे, तिच्यात काही अडथळा आहे का? यावरून करियर, धन आणि आयुष्यातील बदलांच्या वेळा सांगा.
+6] ➤ सूर्य रेषा आणि बुध रेषा: सूर्य रेषा (प्रसिद्धी आणि यश) आणि बुध रेषा (व्यापार आणि आरोग्य) कशा आहेत? यावरून प्रसिद्धी, कला आणि व्यापाराची शक्यता सांगा.
+----------
+वरील Observation 1 आणि Observation 2 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+7] ➤ विवाह रेषा: करंगळीखाली किती विवाह रेषा आहेत, त्या कशा आहेत (लांब, लहान, तुटलेल्या, वाकलेल्या)? यावरून विवाहाची वेळ, वैवाहिक जीवन आणि जोडीदाराचा स्वभाव सांगा.
+8] ➤ सात उंचवटे: गुरु, शनि, सूर्य, बुध, शुक्र, चंद्र आणि मंगळ यांचे उंचवटे किती उंचावलेले किंवा दबलेले आहेत? प्रत्येक उंचवट्याशी संबंधित ग्रहाचे बळ आणि त्याचा जातकाच्या आयुष्यावर होणारा परिणाम सांगा.
+----------
+वरील Observation 2 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+9] ➤ बोटे आणि अंगठा: बोटांची लांबी आणि आकार, अंगठ्याची लांबी, लवचिकता आणि कोन कसा आहे? यावरून इच्छाशक्ती, आत्मविश्वास आणि नेतृत्व क्षमता सांगा.
+10] ➤ इतर चिन्हे: तळहातात तारा, त्रिकोण, जाळे, बेट, चौरस किंवा क्रॉस यांसारखी चिन्हे कोठे कोठे आहेत? प्रत्येक चिन्हाचे फळ सांगा.
+----------
+वरील Observation 2 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+11] ➤ दोन्ही हातांची तुलना: उजव्या हाताच्या आणि डाव्या हाताच्या रेषांमध्ये काय फरक आहे? यावरून सांगा की जातकाचे वर्तमान आयुष्य जन्मजात शक्यतेशी किती जुळते आणि काय बदलत आहे.
+----------
+वरील Observation 2 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+12] ➤ हस्त रेषा Conclusion: वरील सर्व मुद्दे एकत्र करून हस्त रेषेचा Overall Conclusion द्या - जातकाच्या सर्वात Strong गोष्टी आणि लक्ष देण्याच्या गोष्टी.
+----------
+वरील Observation 3 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+13] ➤ चेहऱ्याचा आकार: चेहरा गोल आहे, लांब आहे, रुंद आहे की अंडाकृती आहे? यावरून जातकाचा मूळ स्वभाव आणि जगण्याची पद्धत सांगा.
+14] ➤ कपाळ: कपाळ रुंद आहे की अरुंद, उंच आहे की नीच, त्यावर रेषा कशा आहेत? यावरून बुद्धी, भाग्य आणि सुरुवातीचे आयुष्य सांगा.
+----------
+वरील Observation 3 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+15] ➤ भुवया: भुवया दाट आहेत की विरळ, सरळ आहेत की वाकलेल्या, एकमेकांना जोडलेल्या आहेत की वेगळ्या आहेत? यावरून स्वभाव, राग आणि निर्णय क्षमता सांगा.
+16] ➤ डोळे: डोळे मोठे आहेत की लहान, तेजस्वी आहेत की निस्तेज, त्यांचा आकार कसा आहे? यावरून चरित्र, भावना, बुद्धी आणि प्रेम जीवन सांगा.
+----------
+वरील Observation 3 आणि Observation 4 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+17] ➤ नाक: नाक सरळ आहे की वाकडे, नाकपुड्या कशा आहेत, नाकाचे टोक कसे आहे? यावरून धन, आत्मसन्मान आणि करियर सांगा.
+18] ➤ ओठ आणि तोंड: ओठ जाड आहेत की पातळ, तोंड मोठे आहे की लहान? यावरून वाणी, वागणूक, प्रेम आणि धन याबद्दल सांगा.
+----------
+वरील Observation 4 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+19] ➤ हनुवटी आणि जबडा: हनुवटी गोल आहे की टोकदार, जबडा मजबूत आहे की हलका? यावरून दृढता, आयुष्य आणि आयुष्याचा शेवटचा भाग सांगा.
+20] ➤ कान: कान मोठे आहेत की लहान, चिकटलेले आहेत की बाहेर आलेले, त्यांचा आकार कसा आहे? यावरून आयुष्य, बुद्धी आणि भाग्य सांगा.
+----------
+वरील Observation 4 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+21] ➤ गाल आणि रंग: गाल भरलेले आहेत की खपाटी गेलेले, चेहऱ्याचा रंग कसा आहे? यावरून आरोग्य, धन आणि स्वभाव सांगा.
+----------
+वरील Observation 4 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+22] ➤ फेस Conclusion: वरील सर्व मुद्दे एकत्र करून फेस रिडिंगचा Overall Conclusion द्या - जातकाच्या सर्वात Strong गोष्टी आणि लक्ष देण्याच्या गोष्टी.
+----------
+वरील Observation 5 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+23] ➤ चेहऱ्यावरील तीळ: चेहऱ्यावर तीळ कोठे कोठे आहेत (कपाळ, डोळ्यांजवळ, नाक, गाल, ओठ, हनुवटी, कान)? प्रत्येक तिळाचे त्याच्या जागेनुसार फळ सांगा.
+24] ➤ शरीरावरील तीळ: शरीरावर तीळ कोठे कोठे आहेत (मान, छाती, हात, पाठ, पोट, पाय)? Client ने जी जागा सांगितली आहे, त्यानुसार प्रत्येक तिळाचे फळ सांगा.
+----------
+वरील Observation 5 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+25] ➤ जन्मखूण आणि इतर खुणा: काही जन्मखूण, डाग किंवा खास खूण असेल, तर तिच्या जागेनुसार आणि आकारानुसार तिचे फळ सांगा.
+----------
+वरील Observation 5 मध्ये जी माहिती निघाली आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+26] ➤ तीळ Conclusion: वरील सर्व मुद्दे एकत्र करून तीळ आणि खुणांचा Overall Conclusion द्या.
+----------
+मी तुम्हाला जातकाच्या कुंडलीची PDF upload करत आहे. ही prompt फक्त Full Analysis साठी आहे - जर ही हस्त रेषा Analysis ची order असेल तर ही prompt सोडून द्या. त्या PDF वरून कुंडलीची खालील माहिती काढा - फक्त तथ्य सांगा, विश्लेषण करू नका. प्रत्येक प्रश्नाचे संक्षिप्त उत्तर द्या (1-2 lines मध्ये).
+
+Observation 6: कुंडलीचे तथ्य
+➤ सप्तम भाव: सप्तम भावात कोणते ग्रह आहेत, सप्तमेश कोण आहे, तो कोणत्या राशीत आणि भावात आहे?
+➤ पंचम भाव: पंचम भावात कोणते ग्रह आहेत, पंचमेश कोण आहे, तो कोणत्या राशीत आणि भावात आहे?
+➤ दशम भाव: दशम भावात कोणते ग्रह आहेत, दशमेश कोण आहे, तो कोणत्या राशीत आणि भावात आहे?
+➤ धन भाव: द्वितीय भावात कोणते ग्रह आहेत, धनेश कोण आहे, तो कोणत्या राशीत आणि भावात आहे?
+➤ लग्न, चंद्र आणि सूर्य: लग्न कोणते आहे, लग्नेश कोण आहे आणि कोठे आहे? चंद्र कोणत्या राशीत-भावात आहे? सूर्य कोणत्या राशीत-भावात आहे?
+----------
+वरील Observation 6 मध्ये कुंडलीचे तथ्य आणि भाग 1-5 मध्ये हस्त रेषा, फेस रिडिंग आणि तिळांबद्दल जे विश्लेषण झाले आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+27] ➤ हस्त रेषा vs कुंडली: हस्त रेषेत विवाह, संतती, करियर आणि धन याबद्दल जे निघाले आहे, ते कुंडलीच्या सप्तम, पंचम, दशम आणि धन भावांशी किती जुळते? जिथे जुळते तिथे सांगा, जिथे जुळत नाही तिथेही स्पष्टपणे सांगा.
+----------
+वरील Observation 6 मध्ये कुंडलीचे तथ्य आणि भाग 1-5 मध्ये हस्त रेषा, फेस रिडिंग आणि तिळांबद्दल जे विश्लेषण झाले आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+28] ➤ फेस रिडिंग vs कुंडली: चेहऱ्यावरून स्वभाव, बुद्धी आणि भाग्य याबद्दल जे निघाले आहे, ते कुंडलीतील लग्न, चंद्र आणि सूर्य यांच्या स्थितीशी किती जुळते? जिथे जुळते तिथे सांगा, जिथे जुळत नाही तिथेही स्पष्टपणे सांगा.
+----------
+वरील Observation 6 मध्ये कुंडलीचे तथ्य आणि भाग 1-5 मध्ये हस्त रेषा, फेस रिडिंग आणि तिळांबद्दल जे विश्लेषण झाले आहे, त्याच्या आधारे खालील मुद्द्यांचे सखोल आणि विस्तृत विश्लेषण (Detailed Analysis) करा, लक्षात ठेवा की सर्व मुद्द्यांसोबत त्यांच्या प्रत्येक उपमुद्द्याचेही विश्लेषण विस्ताराने करायचे आहे, शेवटी प्रत्येक मुद्द्याचा निष्कर्ष (Detailed Conclusion) ही द्या.
+
+29] ➤ Final Verdict: हस्त रेषा, फेस रिडिंग, तीळ आणि कुंडली - चारही एकत्र करून Final Verdict द्या. ज्या गोष्टी चारही ठिकाणी सारख्याच निघाल्या आहेत, त्या High Chances सह लिहा. ज्या गोष्टी फक्त एकाच ठिकाणी निघाल्या आहेत, त्या शक्यता म्हणून लिहा. तिळांमधून जे निघाले आहे, ते कुंडलीशी किती जुळते, हे ही सांगा. शेवटी एकूण कुंडलीशी किती जुळले हेही सांगा.
+----------
+आतापर्यंत झालेल्या सर्व विश्लेषणांच्या आधारे जातकासाठी उपाय द्या - ज्या ग्रहांमध्ये, रेषांमध्ये किंवा लक्षणांमध्ये कमजोरी निघाली आहे, त्यासाठी रत्न, मंत्र, दान किंवा इतर व्यावहारिक उपाय सांगा. प्रत्येक उपायासोबत हेही सांगा की तो कोणत्या कमजोरीसाठी आहे.
+----------
+आता संपूर्ण Detailed Analysis झाले आहे. त्याच्या आधारे आपण जातकाच्या सामुद्रिक शास्त्र Analysis चा Brief काढणार आहोत. खालील सर्व मुख्य प्रश्नांची संक्षिप्त उत्तरे द्या (प्रत्येक 2-3 lines मध्ये), प्रश्न क्रमांकासह, report मध्ये सर्वात आधी.
+
+भाग 1: हस्त रेषा (रेषा)
+1] तळहाताचा प्रकार आणि जातकाचा मूळ स्वभाव काय आहे?
+2] जीवन रेषेवरून आरोग्य आणि आयुष्याबद्दल काय कळते?
+3] मस्तिष्क रेषेवरून बुद्धी आणि निर्णय क्षमता कशी आहे?
+4] हृदय रेषेवरून भावना आणि प्रेम जीवन कसे आहे?
+5] भाग्य रेषेवरून करियर आणि धनाची स्थिती कशी आहे?
+6] सूर्य रेषा आणि बुध रेषेवरून प्रसिद्धी आणि व्यापाराची शक्यता कशी आहे?
+7] विवाह रेषांवरून विवाहाची वेळ आणि जोडीदाराचा स्वभाव कसा आहे?
+
+भाग 2: हस्त रेषा (उंचवटे आणि चिन्हे)
+8] सात उंचवट्यांवरून ग्रहांचे बळ कसे आहे?
+9] बोटे आणि अंगठ्यावरून इच्छाशक्ती आणि स्वभाव कसा आहे?
+10] तळहातावरील इतर चिन्हांवरून काय विशेष गोष्ट कळते?
+11] दोन्ही हातांच्या तुलनेवरून वर्तमान आणि भविष्यातील शक्यतेमध्ये काय फरक आहे?
+12] हस्त रेषेचा Overall Conclusion काय आहे?
+
+भाग 3: फेस रिडिंग (चेहरा, कपाळ, डोळे, नाक)
+13] चेहऱ्याच्या आकारावरून जातकाचा मूळ स्वभाव काय आहे?
+14] कपाळावरून बुद्धी आणि भाग्य कसे आहे?
+15] भुवयांवरून स्वभाव आणि निर्णय क्षमता कशी आहे?
+16] डोळ्यांवरून जातकाचे चरित्र आणि भावना कशा आहेत?
+17] नाकावरून धन आणि आत्मसन्मान कसा आहे?
+
+भाग 4: फेस रिडिंग (ओठ, हनुवटी, कान, गाल)
+18] ओठ आणि तोंडावरून वाणी आणि वागणूक कशी आहे?
+19] हनुवटी आणि जबड्यावरून दृढता आणि आयुष्य कसे आहे?
+20] कानांवरून आयुष्य आणि बुद्धी कशी आहे?
+21] गाल आणि रंगावरून आरोग्य आणि स्वभाव कसा आहे?
+22] फेस रिडिंगचा Overall Conclusion काय आहे?
+
+भाग 5: तीळ आणि खुणा
+23] चेहऱ्यावरील तिळांवरून काय फळ मिळते?
+24] शरीरावरील तिळांवरून काय फळ मिळते?
+25] जन्मखूण किंवा इतर खुणांवरून काय कळते?
+26] तीळ आणि खुणांचा Overall Conclusion काय आहे?
+
+भाग 6: कुंडलीशी Cross-check (फक्त Full Analysis मध्ये)
+27] हस्त रेषेचे निष्कर्ष कुंडलीशी किती जुळतात?
+28] फेस रिडिंगचे निष्कर्ष कुंडलीशी किती जुळतात?
+29] Cross-check नंतर Final Verdict काय आहे?
+
+उपाय
+30] जातकासाठी कोणते उपाय आहेत?
+
+जातकाचे सवाल :
+----------
+आता संपूर्ण Analysis झाले आहे. मूळ data (photos आणि कुंडलीची तथ्ये) शी प्रत्येक hard fact पुन्हा पडताळून तपासा - रेषांची स्थिती, उंचवटे, चेहऱ्याची लक्षणे, तिळांची जागा, कुंडलीचे भाव आणि ग्रह, तारखा आणि संख्या. ज्या काही चुका आढळतील, फक्त त्यांची list द्या, संपूर्ण Analysis पुन्हा लिहू नका. शेवटी ही line लिहा: तपासणी पूर्ण - एकूण X चुका आढळल्या.`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
+
+        // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
+        const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
+        
+        function processData() {
+            const container = document.getElementById('prompt-container');
+            // पहले डैश लाइन्स से तोडें
+            let parts = getRawData().split(separatorRegex);
+
+            parts.forEach((part, index) => {
+                let cleanText = part.trim();
+                
+                // फिल्टरिंग लॉजिक
+                const lines = cleanText.split('\n');
+                const filteredLines = lines.filter(line => {
+                    const l = line.trim();
+                    // जंक (MMM... RRR... PPPP...) हटाएं
+                    if (l.match(/^[M|P|C|H|R]{5,}$/)) return false;
+                    // सिर्फ डैश वाली लाइन हटाएं
+                    if (l.match(/^-{5,}$/)) return false;
+                    return true;
+                });
+                
+                cleanText = filteredLines.join('\n').trim();
+
+                if (cleanText.length > 5) { // खाली या बहुत छोटी स्ट्रिंग न दिखाएं
+                    createCard(cleanText, index + 1);
+                }
+            });
+        }
+
+        function createCard(text, id) {
+            const container = document.getElementById('prompt-container');
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            header.innerHTML = `<span>Prompt #${id}</span>`;
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+            content.innerText = text;
+
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = 'Copy Prompt';
+            btn.onclick = () => copyText(text, btn);
+
+            card.appendChild(header);
+            card.appendChild(content);
+            card.appendChild(btn);
+            container.appendChild(card);
+        }
+
+        function showBtnFeedback(btn, success){
+            if(!btn) return;
+            var origText = btn.innerText;
+            var origBg = btn.style.backgroundColor;
+            btn.innerText = success ? "\u2713 Copied!" : "\u2717 Failed";
+            btn.style.backgroundColor = success ? "#2e7d32" : "#c62828";
+            btn.style.color = "#fff";
+            setTimeout(function(){ btn.innerText = origText; btn.style.backgroundColor = origBg; }, 2000);
+        }
+        function copyText(text, btn) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast();
+                    showBtnFeedback(btn, true);
+                }).catch(err => {
+                    fallbackCopy(text, btn);
+                });
+            } else {
+                fallbackCopy(text, btn);
+            }
+        }
+
+        function fallbackCopy(text, btn) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed'; // Avoid scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                var ok = document.execCommand('copy');
+                showToast();
+                showBtnFeedback(btn, ok);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                showBtnFeedback(btn, false);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast() {
+            var x = document.getElementById("snackbar");
+            x.className = "toast show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        // Initialize
+        processData();
+
+    </script>
+</body>
+</html>
