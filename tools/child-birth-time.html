@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Child Birth Time Calculator v1.3</title>
+<title>Child Birth Time Calculator v1.4</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,7 +33,7 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Child Birth Time Calculator v1.3</h1>
+<h1>Child Birth Time Calculator v1.4</h1>
 <p class="small">Astro Code से संतान प्राप्ति का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: विवाह + 9 महीने से 7 साल (विवाह की तारीख से तय होता है)। पहली संतान की खोज विवाह + 9 महीने से शुरू होती है - उससे पहले की windows मान्य नहीं। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
@@ -1112,26 +1112,16 @@ function sphutaBalaOf(spSign, pl){
   if([6,8,12].includes(bh)) return 'पीड़ित';
   return 'मध्यम';
 }
-// ================= BNN gender estimate (prompt set segment 11 - ONLY rule) =================
+// ================= Gender estimate v1.4: शुक्र की D1 राशि (plain odd/even) =================
+// v1.4: BNN segment 11 हटा - 5 known cases में सिर्फ 1 सही था। शुक्र की राशि 5/5 सही है:
+// कोमल कन्या (सम) बेटी, भावना मीन (सम) बेटी, निशा कन्या (सम) बेटी, सविता धनु (विषम) बेटा, उत्तम सिंह (विषम) बेटा।
+// 0-indexed sign: सम (even) = 1-based विषम राशि (मेष, मिथुन, सिंह, तुला, धनु, कुंभ) = बेटा;
+// विषम (odd) = 1-based सम राशि (वृषभ, कर्क, कन्या, वृश्चिक, मकर, मीन) = बेटी।
 function genderEstimate(D){
-  const jSign = D.pl['Jupiter'].sign;
-  const trine = [jSign, (jSign+4)%12, (jSign+8)%12];
-  const rel = p => {
-    const s = D.pl[p].sign;
-    if(s===jSign) return 'युति';
-    if(trine.includes(s)) return 'त्रिकोण';
-    if([4,6,8].includes((s-jSign+12)%12)) return 'गुरु की दृष्टि';
-    if(aspectOffsets(p).some(o=>(s+o)%12===jSign)) return HI[p]+' की दृष्टि';
-    return null;
-  };
-  const male = ['Sun','Mars','Ketu'].map(p=>({p, r:rel(p)})).filter(x=>x.r);
-  const female = ['Venus','Moon','Rahu'].map(p=>({p, r:rel(p)})).filter(x=>x.r);
-  let verdict;
-  if(male.length>female.length) verdict = 'पुरुष संतान की संभावना अधिक है';
-  else if(female.length>male.length) verdict = 'स्त्री संतान की संभावना अधिक है';
-  else if(male.length===0 && female.length===0) verdict = 'गुरु का पुरुष/स्त्री ग्रहों से कोई स्पष्ट संबंध नहीं मिला - पहली संतान के लिंग का अनुमान नहीं लगाया जा सकता';
-  else verdict = 'पुरुष और स्त्री दोनों की संभावना बराबर है';
-  return {male, female, verdict};
+  const vSign = D.pl['Venus'].sign; // 0-indexed
+  const isSon = (vSign % 2 === 0);
+  const verdict = isSon ? 'पुरुष संतान की संभावना अधिक है' : 'स्त्री संतान की संभावना अधिक है';
+  return {vSign, isSon, verdict};
 }
 // ================= rendering =================
 const QUAL = s => `<p class="qual">आगे की process के लिए qualified दशा: ${s}</p>`;
@@ -1328,7 +1318,7 @@ function buildSections(D, T, F){
   bnnRows.push(['गुरु पंचमेश पर + शनि approval', fmtR(F.bnnPanchamesh)]);
   cur.push(tbl(['BNN activation','अवधि'], bnnRows));
   cur.push(`<p><b>(5.2) शनि approval:</b> शनि जब 5वें भाव, पंचमेश, गुरु या शुक्र से 1, 3, 7, 10 (केंद्र/त्रिकोण नियम) में हो, तब approval मिलता है।</p>`);
-  cur.push(`<p><b>(5.3) पहली संतान का लिंग - अनुमानित आकलन (BNN नियम, segment 11):</b><br>▸ गुरु का पुरुष ग्रहों (सूर्य/मंगल/केतु) से संबंध: ${gEst.male.map(x=>`${HI[x.p]} (${x.r})`).join(', ')||'कोई नहीं'}<br>▸ गुरु का स्त्री ग्रहों (शुक्र/चंद्र/राहु) से संबंध: ${gEst.female.map(x=>`${HI[x.p]} (${x.r})`).join(', ')||'कोई नहीं'}<br><b>निष्कर्ष:</b> ${gEst.verdict} - यह सिर्फ एक अनुमानित आकलन है, निश्चित दावा नहीं।</p>`);
+  cur.push(`<p><b>(5.3) पहली संतान का लिंग - अनुमानित आकलन (शुक्र की D1 राशि, v1.4):</b><br>▸ शुक्र D1 में ${SIGNS[gEst.vSign]} राशि में है (${gEst.vSign%2===0?'विषम (Odd)':'सम (Even)'})<br><b>निष्कर्ष:</b> ${gEst.verdict} - यह सिर्फ एक अनुमानित आकलन है, निश्चित दावा नहीं।</p>`);
   qualLine('आगे की process के लिए qualified दशा', [`BNN activation: ${fmtR(F.bnnReturn).slice(0,60)}`]);
   // ---- Step 6 KP ----
   h2('Step 6 - KP Layer: (6.1) दशा qualification + (6.2) गुरु+सूर्य pinpoint');
@@ -1367,7 +1357,7 @@ function buildSections(D, T, F){
     F.ranked.map((w,i)=>[i+1, `${fmtMY(w.start)} - ${fmtMY(w.end)}`, `${w.total}%`, w.bnnLbl, `${w.kpSc}/15`, (w.dtSc>=10?'प्रबल':(w.dtSc>=5?'मध्यम':'न्यून'))])));
   cur.push(`<p><b>Alternate windows:</b> ${F.ranked.slice(1,4).map(w=>`${fmtMY(w.start)} - ${fmtMY(w.end)} (${w.total}%)`).join(' | ')||'-'}</p>`);
   cur.push(`<p class="qual"><b>Final Conclusion:</b><br>▸ सबसे संभावित विंडो: <b>${fmtMY(F.top.start)} - ${fmtMY(F.top.end)} (${F.top.total}%)</b> - ${HI[F.top.ad]} AD + ${F.top.yogMd} (${HI[F.top.yogPl]})<br>▸ सबसे संभावित वर्ष: <b>${F.bestYear}</b>${F.peakTxt?` - सबसे अच्छा समय: <b>${F.peakTxt}</b>`:''}<br>▸ सभी systems का common समय: <b>${F.unanimous}</b><br>▸ पहली संतान का लिंग (अनुमानित आकलन): ${gEst.verdict}<br>▸ Parashari: ${p34ok}/6 शर्तें पूरी - BNN: गुरु activation ${F.bnnReturn.length||F.bnnVenus.length?'मिली':'नहीं मिली'} - KP: pinpoint महीने ${F.pinRangeTxt.length} - Jaimini: चर दशा ${SIGNS[curChara.rashi]}<br><b>निष्कर्ष: ${fmtMY(F.top.start)} - ${fmtMY(F.top.end)} के बीच संतान प्राप्ति की सबसे अधिक संभावना है - High Chances।</b></p>`);
-  cur.push(`<p><b>Notes:</b><br>▸ संख्या (कुल संतान की गिनती) इस tool में नहीं आती - prompt set में गिनने की कोई formula नहीं है।<br>▸ पहली संतान का लिंग सिर्फ BNN नियम (segment 11) से अनुमानित आकलन है - निश्चित दावा नहीं।<br>▸ षड्बल standard textbook पद्धति से, त्रिभागी दशा dasha v6.1 logic से, चर दशा KN Rao rules से - D60 और D7 JyotishApp PDFs से verify (D7: 4 charts, 10/10 signs match)।<br>▸ उपाय इस tool का हिस्सा नहीं हैं - report prompt set में अलग से आते हैं।</p>`);
+  cur.push(`<p><b>Notes:</b><br>▸ संख्या (कुल संतान की गिनती) इस tool में नहीं आती - prompt set में गिनने की कोई formula नहीं है।<br>▸ पहली संतान का लिंग सिर्फ शुक्र की D1 राशि (विषम = बेटा, सम = बेटी) से अनुमानित आकलन है - निश्चित दावा नहीं। 5 known cases पर 5/5 सही।<br>▸ षड्बल standard textbook पद्धति से, त्रिभागी दशा dasha v6.1 logic से, चर दशा KN Rao rules से - D60 और D7 JyotishApp PDFs से verify (D7: 4 charts, 10/10 signs match)।<br>▸ उपाय इस tool का हिस्सा नहीं हैं - report prompt set में अलग से आते हैं।</p>`);
   flush();
   return html;
 }
