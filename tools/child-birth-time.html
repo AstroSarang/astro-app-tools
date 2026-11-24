@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Child Birth Time Calculator v1.4</title>
+<title>Child Birth Time Calculator v1.5</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,7 +33,7 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Child Birth Time Calculator v1.4</h1>
+<h1>Child Birth Time Calculator v1.5</h1>
 <p class="small">Astro Code से संतान प्राप्ति का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: विवाह + 9 महीने से 7 साल (विवाह की तारीख से तय होता है)। पहली संतान की खोज विवाह + 9 महीने से शुरू होती है - उससे पहले की windows मान्य नहीं। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
@@ -1112,17 +1112,6 @@ function sphutaBalaOf(spSign, pl){
   if([6,8,12].includes(bh)) return 'पीड़ित';
   return 'मध्यम';
 }
-// ================= Gender estimate v1.4: शुक्र की D1 राशि (plain odd/even) =================
-// v1.4: BNN segment 11 हटा - 5 known cases में सिर्फ 1 सही था। शुक्र की राशि 5/5 सही है:
-// कोमल कन्या (सम) बेटी, भावना मीन (सम) बेटी, निशा कन्या (सम) बेटी, सविता धनु (विषम) बेटा, उत्तम सिंह (विषम) बेटा।
-// 0-indexed sign: सम (even) = 1-based विषम राशि (मेष, मिथुन, सिंह, तुला, धनु, कुंभ) = बेटा;
-// विषम (odd) = 1-based सम राशि (वृषभ, कर्क, कन्या, वृश्चिक, मकर, मीन) = बेटी।
-function genderEstimate(D){
-  const vSign = D.pl['Venus'].sign; // 0-indexed
-  const isSon = (vSign % 2 === 0);
-  const verdict = isSon ? 'पुरुष संतान की संभावना अधिक है' : 'स्त्री संतान की संभावना अधिक है';
-  return {vSign, isSon, verdict};
-}
 // ================= rendering =================
 const QUAL = s => `<p class="qual">आगे की process के लिए qualified दशा: ${s}</p>`;
 const r2 = v => (Math.round(v*100)/100).toFixed(2);
@@ -1150,7 +1139,6 @@ function buildSections(D, T, F){
     : sphutaOf([D.pl['Moon'].lon, D.pl['Mars'].lon, D.pl['Jupiter'].lon]);
   const spBala = sphutaBalaOf(sp.sign, D.pl);
   const spIsVen = (sp.sign%2===0), spIsPha = sp.sign%2===1;
-  const gEst = genderEstimate(D);
   const d60s5 = (D.d60Lagna.sign+4)%12, d60Panchamesh = SIGN_LORD[d60s5];
   const d60PanchameshBhava = bhavaOf(D.d60[d60Panchamesh].sign, D.d60Lagna.sign);
   const d60Ok = ![6,8,12].includes(d60PanchameshBhava);
@@ -1309,7 +1297,7 @@ function buildSections(D, T, F){
   cur.push(`<p><b>अर्गला:</b><br>${argalaTxt.map(c=>`▸ ${c}`).join('<br>')}</p>`);
   qualLine('आगे की process के लिए qualified दशा', D.charaAds.filter(({ad})=>D.A_set.includes(ad.rashi)||D.B_set.includes(ad.rashi)).map(({md,ad})=>`${SIGNS[md.rashi]}-${SIGNS[ad.rashi]} AD (${fmtMY(ad.start)}-${fmtMY(ad.end)})`));
   // ---- Step 5 BNN ----
-  h2('Step 5 - BNN Layer: गुरु activation + शनि approval + पहली संतान का लिंग (अनुमानित आकलन)');
+  h2('Step 5 - BNN Layer: गुरु activation + शनि approval');
   cur.push(`<p><b>(5.1) गुरु activation:</b> गुरु की अंतर्दशा में गुरु ${D.pl['Jupiter'].house}वें भाव (${SIGNS[D.pl['Jupiter'].sign]}) में है। गुरु जब नाताल गुरु पर (${SIGNS[D.pl['Jupiter'].sign]}), नाताल शुक्र पर (${SIGNS[D.pl['Venus'].sign]}) या पंचमेश (${HI[D.panchamesh]}) पर (${SIGNS[D.pl[D.panchamesh].sign]}) गोचर करता है, तब संतान की activation होती है।</p>`);
   const bnnRows = [];
   const fmtR = rs => rs.map(r=>`${fmtMY(r.start)} - ${fmtMY(r.end)}`).join(' | ')||'-';
@@ -1318,7 +1306,6 @@ function buildSections(D, T, F){
   bnnRows.push(['गुरु पंचमेश पर + शनि approval', fmtR(F.bnnPanchamesh)]);
   cur.push(tbl(['BNN activation','अवधि'], bnnRows));
   cur.push(`<p><b>(5.2) शनि approval:</b> शनि जब 5वें भाव, पंचमेश, गुरु या शुक्र से 1, 3, 7, 10 (केंद्र/त्रिकोण नियम) में हो, तब approval मिलता है।</p>`);
-  cur.push(`<p><b>(5.3) पहली संतान का लिंग - अनुमानित आकलन (शुक्र की D1 राशि, v1.4):</b><br>▸ शुक्र D1 में ${SIGNS[gEst.vSign]} राशि में है (${gEst.vSign%2===0?'विषम (Odd)':'सम (Even)'})<br><b>निष्कर्ष:</b> ${gEst.verdict} - यह सिर्फ एक अनुमानित आकलन है, निश्चित दावा नहीं।</p>`);
   qualLine('आगे की process के लिए qualified दशा', [`BNN activation: ${fmtR(F.bnnReturn).slice(0,60)}`]);
   // ---- Step 6 KP ----
   h2('Step 6 - KP Layer: (6.1) दशा qualification + (6.2) गुरु+सूर्य pinpoint');
@@ -1356,8 +1343,8 @@ function buildSections(D, T, F){
   cur.push(tbl(['विंडो','अवधि','संभावना','BNN','KP','DT'],
     F.ranked.map((w,i)=>[i+1, `${fmtMY(w.start)} - ${fmtMY(w.end)}`, `${w.total}%`, w.bnnLbl, `${w.kpSc}/15`, (w.dtSc>=10?'प्रबल':(w.dtSc>=5?'मध्यम':'न्यून'))])));
   cur.push(`<p><b>Alternate windows:</b> ${F.ranked.slice(1,4).map(w=>`${fmtMY(w.start)} - ${fmtMY(w.end)} (${w.total}%)`).join(' | ')||'-'}</p>`);
-  cur.push(`<p class="qual"><b>Final Conclusion:</b><br>▸ सबसे संभावित विंडो: <b>${fmtMY(F.top.start)} - ${fmtMY(F.top.end)} (${F.top.total}%)</b> - ${HI[F.top.ad]} AD + ${F.top.yogMd} (${HI[F.top.yogPl]})<br>▸ सबसे संभावित वर्ष: <b>${F.bestYear}</b>${F.peakTxt?` - सबसे अच्छा समय: <b>${F.peakTxt}</b>`:''}<br>▸ सभी systems का common समय: <b>${F.unanimous}</b><br>▸ पहली संतान का लिंग (अनुमानित आकलन): ${gEst.verdict}<br>▸ Parashari: ${p34ok}/6 शर्तें पूरी - BNN: गुरु activation ${F.bnnReturn.length||F.bnnVenus.length?'मिली':'नहीं मिली'} - KP: pinpoint महीने ${F.pinRangeTxt.length} - Jaimini: चर दशा ${SIGNS[curChara.rashi]}<br><b>निष्कर्ष: ${fmtMY(F.top.start)} - ${fmtMY(F.top.end)} के बीच संतान प्राप्ति की सबसे अधिक संभावना है - High Chances।</b></p>`);
-  cur.push(`<p><b>Notes:</b><br>▸ संख्या (कुल संतान की गिनती) इस tool में नहीं आती - prompt set में गिनने की कोई formula नहीं है।<br>▸ पहली संतान का लिंग सिर्फ शुक्र की D1 राशि (विषम = बेटा, सम = बेटी) से अनुमानित आकलन है - निश्चित दावा नहीं। 5 known cases पर 5/5 सही।<br>▸ षड्बल standard textbook पद्धति से, त्रिभागी दशा dasha v6.1 logic से, चर दशा KN Rao rules से - D60 और D7 JyotishApp PDFs से verify (D7: 4 charts, 10/10 signs match)।<br>▸ उपाय इस tool का हिस्सा नहीं हैं - report prompt set में अलग से आते हैं।</p>`);
+  cur.push(`<p class="qual"><b>Final Conclusion:</b><br>▸ सबसे संभावित विंडो: <b>${fmtMY(F.top.start)} - ${fmtMY(F.top.end)} (${F.top.total}%)</b> - ${HI[F.top.ad]} AD + ${F.top.yogMd} (${HI[F.top.yogPl]})<br>▸ सबसे संभावित वर्ष: <b>${F.bestYear}</b>${F.peakTxt?` - सबसे अच्छा समय: <b>${F.peakTxt}</b>`:''}<br>▸ सभी systems का common समय: <b>${F.unanimous}</b><br>▸ Parashari: ${p34ok}/6 शर्तें पूरी - BNN: गुरु activation ${F.bnnReturn.length||F.bnnVenus.length?'मिली':'नहीं मिली'} - KP: pinpoint महीने ${F.pinRangeTxt.length} - Jaimini: चर दशा ${SIGNS[curChara.rashi]}<br><b>निष्कर्ष: ${fmtMY(F.top.start)} - ${fmtMY(F.top.end)} के बीच संतान प्राप्ति की सबसे अधिक संभावना है - High Chances।</b></p>`);
+  cur.push(`<p><b>Notes:</b><br>▸ संख्या (कुल संतान की गिनती) इस tool में नहीं आती - prompt set में गिनने की कोई formula नहीं है।<br>▸ पहली संतान का लिंग इस tool में नहीं आता - उसके लिए अलग Gender Determination Tool है।<br>▸ षड्बल standard textbook पद्धति से, त्रिभागी दशा dasha v6.1 logic से, चर दशा KN Rao rules से - D60 और D7 JyotishApp PDFs से verify (D7: 4 charts, 10/10 signs match)।<br>▸ उपाय इस tool का हिस्सा नहीं हैं - report prompt set में अलग से आते हैं।</p>`);
   flush();
   return html;
 }
