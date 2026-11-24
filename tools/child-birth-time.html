@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Child Birth Time Calculator v1.2</title>
+<title>Child Birth Time Calculator v1.3</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,8 +33,8 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Child Birth Time Calculator v1.2</h1>
-<p class="small">Astro Code से संतान प्राप्ति का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2033 (7 साल)। विवाह + 9 महीने से पहली संतान की खोज शुरू होती है - उससे पहले की windows मान्य नहीं। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
+<h1>Child Birth Time Calculator v1.3</h1>
+<p class="small">Astro Code से संतान प्राप्ति का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: विवाह + 9 महीने से 7 साल (विवाह की तारीख से तय होता है)। पहली संतान की खोज विवाह + 9 महीने से शुरू होती है - उससे पहले की windows मान्य नहीं। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
 <input type="text" id="astro-code" value="" placeholder="AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN-DDDMME">
@@ -402,14 +402,15 @@ function argala(pl, sign){
   return [arg,vir];
 }
 // ================= main compute =================
-const HSTART = new Date(Date.UTC(2026,10,1));
-const HEND = new Date(Date.UTC(2033,10,1));
 async function computeAll(code, gender, marriage, setStatus){
   const ad = parseCode(code);
   if(!ad) throw new Error('गलत Astro Code - प्रारूप: AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W');
   if(!marriage || !marriage.m || !marriage.y) throw new Error('विवाह का महीना-साल डालना जरूरी है - कृपया विवाह का महीना और साल चुनें।');
   const marriageLabel = fmtYM(marriage.y, marriage.m);
   const earliest = new Date(Date.UTC(marriage.y, marriage.m-1+9, 1));
+  // v1.3: horizon विवाह + 9 महीने से शुरू (fixed Nov 2026 हटाया) - 7 साल
+  const HSTART = new Date(earliest);
+  const HEND = new Date(Date.UTC(earliest.getUTCFullYear()+7, earliest.getUTCMonth(), 1));
   setStatus('Ephemeris लोड हो रहा है...');
   await loadEphem();
   const utcMs = Date.UTC(ad.y, ad.mo-1, ad.d, ad.hh, ad.mi, ad.ss) - ad.tzH*3600000;
@@ -707,7 +708,7 @@ async function computeAll(code, gender, marriage, setStatus){
   wins = keptWins;
   const sigPlanets = [...new Set([...P9.filter(p=>kpSig[p].houses.includes(2)), ...P9.filter(p=>kpSig[p].houses.includes(5)), ...P9.filter(p=>kpSig[p].houses.includes(11))])];
   const sigSigns = [...new Set(sigPlanets.map(p=>pl[p].sign))];
-  return {ad, gender, marriage, marriageLabel, earliest, removedWindows, clippedWindows, pl, lagna, ascLon, d9, d9Lagna, d60, d60Lagna, d7, d7Lagna, moonLon, sunLon, nakIdx, remFrac, birth, birthHour,
+  return {ad, gender, marriage, marriageLabel, earliest, HSTART, HEND, removedWindows, clippedWindows, pl, lagna, ascLon, d9, d9Lagna, d60, d60Lagna, d7, d7Lagna, moonLon, sunLon, nakIdx, remFrac, birth, birthHour,
     vim, yog, tri, chara, elong, isShukla, tithi, isDay, sr, ss,
     sbRes, bhavaBala, bav, sav, savBhava, bavBhava, kpSig, kpQual, karakas, AL, UL, A5, karakansh,
     s5, s2, s11, s7c, s9c, panchamesh, dwitiyesh, ekadashesh, saptamesh7, navamesh, lagnesh,
@@ -720,11 +721,11 @@ async function computeAll(code, gender, marriage, setStatus){
 
 // ================= transits =================
 async function computeTransits(D, setStatus){
-  const scanEnd = new Date(Math.max(HEND.getTime(), ...D.wins.map(w=>w.end.getTime())));
+  const scanEnd = new Date(Math.max(D.HEND.getTime(), ...D.wins.map(w=>w.end.getTime())));
   const daySign = new Map();
   const jupEntries = [], satEntries = [], venEntries = [], sunEntries = [];
   let prevJ = null, prevS = null, prevV = null, prevU = null;
-  let d = new Date(Date.UTC(2026,10,1));
+  let d = new Date(D.HSTART);
   let n = 0;
   while(d<=scanEnd){
     const jd = swe.julianDay(d.getUTCFullYear(), d.getUTCMonth()+1, d.getUTCDate(), 12.0);
@@ -744,7 +745,7 @@ async function computeTransits(D, setStatus){
   }
   const key = (y,m,dd) => `${y}-${String(m).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
   const months = []; // monthly signs, 15th (DT) + 1st (MTT gochar)
-  let y = 2026, m = 11;
+  let y = D.HSTART.getUTCFullYear(), m = D.HSTART.getUTCMonth()+1;
   while(!(y===scanEnd.getUTCFullYear() && m>scanEnd.getUTCMonth()+1) && (y<scanEnd.getUTCFullYear() || (y===scanEnd.getUTCFullYear() && m<=scanEnd.getUTCMonth()+1))){
     const mid = daySign.get(key(y,m,15)), first = daySign.get(key(y,m,1));
     if(mid) months.push({y, m, jup:mid.jup, sat:mid.sat, ven:mid.ven, sun:mid.sun, jup1:first?first.jup:mid.jup, sat1:first?first.sat:mid.sat, sun1:first?first.sun:mid.sun});
@@ -760,15 +761,15 @@ async function computeTransits(D, setStatus){
     segs.push({sign:cur, start:new Date(cs), end:new Date(endDate)});
     return segs;
   };
-  const nov1 = daySign.get('2026-11-01');
-  const oct31 = new Date(Date.UTC(2033,9,31));
-  const jupSegsH = segmentsFromEntries(jupEntries, nov1.jup, new Date(Date.UTC(2026,10,1)), oct31);
-  const satSegsH = segmentsFromEntries(satEntries, nov1.sat, new Date(Date.UTC(2026,10,1)), oct31);
-  const venSegsH = segmentsFromEntries(venEntries, nov1.ven, new Date(Date.UTC(2026,10,1)), oct31);
-  const sunSegsH = segmentsFromEntries(sunEntries, nov1.sun, new Date(Date.UTC(2026,10,1)), oct31);
-  const jupSegsF = segmentsFromEntries(jupEntries, nov1.jup, new Date(Date.UTC(2026,10,1)), scanEnd);
-  const venSegsF = segmentsFromEntries(venEntries, nov1.ven, new Date(Date.UTC(2026,10,1)), scanEnd);
-  const sunSegsF = segmentsFromEntries(sunEntries, nov1.sun, new Date(Date.UTC(2026,10,1)), scanEnd);
+  const hsSign = daySign.get(D.HSTART.toISOString().slice(0,10));
+  const hendLast = addDays(D.HEND, -1);
+  const jupSegsH = segmentsFromEntries(jupEntries, hsSign.jup, new Date(D.HSTART), hendLast);
+  const satSegsH = segmentsFromEntries(satEntries, hsSign.sat, new Date(D.HSTART), hendLast);
+  const venSegsH = segmentsFromEntries(venEntries, hsSign.ven, new Date(D.HSTART), hendLast);
+  const sunSegsH = segmentsFromEntries(sunEntries, hsSign.sun, new Date(D.HSTART), hendLast);
+  const jupSegsF = segmentsFromEntries(jupEntries, hsSign.jup, new Date(D.HSTART), scanEnd);
+  const venSegsF = segmentsFromEntries(venEntries, hsSign.ven, new Date(D.HSTART), scanEnd);
+  const sunSegsF = segmentsFromEntries(sunEntries, hsSign.sun, new Date(D.HSTART), scanEnd);
   // ---- Master Time-Table ----
   const fmtAdList = items => {
     const seen = [];
@@ -793,8 +794,10 @@ async function computeTransits(D, setStatus){
     return out;
   };
   const mtt = [];
-  for(let yy=2026; yy<=2032; yy++){
-    const ws = new Date(Date.UTC(yy,10,1)), we = new Date(Date.UTC(yy+1,10,1));
+  const sm = D.HSTART.getUTCMonth(); // 0-based: year-blocks start at HSTART month
+  for(let k=0; k<7; k++){
+    const yy = D.HSTART.getUTCFullYear()+k;
+    const ws = new Date(Date.UTC(yy,sm,1)), we = new Date(Date.UTC(yy+1,sm,1));
     const vimL = fmtAdList(adListInWindow(D.vim, ws, we, x=>HI[x.lord]));
     const yogL = fmtAdList(adListInWindow(D.yog, ws, we, x=>`${x.lord} (${HI[YOG2PL[x.lord]]})`));
     const chaL = [];
@@ -807,11 +810,12 @@ async function computeTransits(D, setStatus){
     }
     const chaS = chaL.map(([a,b])=>`${a} - ${b}`).join('; ');
     const triL = fmtAdList(adListInWindow(D.tri, ws, we, x=>HI[x.lord]));
-    const rows = months.filter(t=>((t.y===yy && t.m>=11)||(t.y===yy+1 && t.m<=10)));
+    const rows = months.filter(t=>((t.y===yy && t.m>=sm+1)||(t.y===yy+1 && t.m<=sm)));
     const gj = [...new Set(rows.map(t=>t.jup1))].sort((a,b)=>a-b);
     const gs = [...new Set(rows.map(t=>t.sat1))].sort((a,b)=>a-b);
     const go = ss2 => ss2.map(s=>`${SIGNS[s]} (L${bhavaOf(s,D.lagna)}/M${bhavaOf(s,D.pl['Moon'].sign)})`).join(', ');
-    mtt.push({year:`नव ${yy} - अक्टू ${yy+1}`, vim:vimL, yog:yogL, chara:chaS, tri:triL, guruGochar:go(gj), shaniGochar:go(gs)});
+    const endM = (sm+11)%12, endY = sm>0 ? yy+1 : yy;
+    mtt.push({year:`${MON_HI[sm]} ${yy} - ${MON_HI[endM]} ${endY}`, vim:vimL, yog:yogL, chara:chaS, tri:triL, guruGochar:go(gj), shaniGochar:go(gs)});
   }
   // ---- Double Transit (P28) ----
   const POINTS = [['5वां भाव',D.s5],['पंचमेश '+HI[D.panchamesh], D.pl[D.panchamesh].sign],['लग्न',D.lagna],['लग्नेश '+HI[D.lagnesh], D.pl[D.lagnesh].sign],['11वां भाव',D.s11],['लाभेश '+HI[D.ekadashesh], D.pl[D.ekadashesh].sign],['2रा भाव',D.s2],['द्वितीयेश '+HI[D.dwitiyesh], D.pl[D.dwitiyesh].sign],['नाताल गुरु',D.pl['Jupiter'].sign],['नाताल शुक्र',D.pl['Venus'].sign],['चंद्र लग्न',D.pl['Moon'].sign],['D9 लग्न',D.d9Lagna],['D9 5वां भाव',D.d9s5],['D7 लग्न',D.d7Lagna.sign],['D7 5वां भाव',D.d7s5]];
@@ -826,7 +830,9 @@ async function computeTransits(D, setStatus){
     else { comb='निष्क्रिय'; conc='न्यून'; }
     return {gj, sj, comb, conc};
   };
-  const dtRows = months.filter(t=>!(t.y===2033 && t.m>10)).map(mo=>({y:mo.y, m:mo.m, ...dtRow(mo)}));
+  const HENDy = D.HEND.getUTCFullYear(), HENDm = D.HEND.getUTCMonth()+1;
+  const withinH = t => (t.y<HENDy) || (t.y===HENDy && t.m<HENDm);
+  const dtRows = months.filter(withinH).map(mo=>({y:mo.y, m:mo.m, ...dtRow(mo)}));
   // ---- Guru+Surya pinpoint helpers (segment 39) ----
   const pinSigns = new Set([Math.floor(D.cuspKP(5)/30), D.pl[D.c5sl].sign, ...D.sigSigns]);
   const pinCheck = (jSign, sSign) => (pinSigns.has(jSign)?1:0) + (pinSigns.has(sSign)?1:0);
@@ -968,6 +974,8 @@ async function computeTransits(D, setStatus){
 
 // ================= P22-equivalent / BNN final / KP transit / pinpoint / final =================
 function computeFinal(D, T){
+  const HENDyF = D.HEND.getUTCFullYear(), HENDmF = D.HEND.getUTCMonth()+1;
+  const withinHF = mo => (mo.y<HENDyF) || (mo.y===HENDyF && mo.m<HENDmF);
   const mergeRanges = (ranges, gapDays) => {
     const rs = ranges.filter(r=>r.end>r.start).sort((a,b)=>a.start-b.start);
     const out = [];
@@ -999,7 +1007,7 @@ function computeFinal(D, T){
   const satHitsSig = satSign => sigSigns.includes(satSign) || sigSigns.some(s=>[0,2,6,9].includes((s-satSign+12)%12));
   const kpMonths = [];
   for(const mo of T.months){
-    if(mo.y===2033 && mo.m>10) continue;
+    if(!withinHF(mo)) continue;
     if(sigSigns.includes(mo.jup) && satHitsSig(mo.sat)) kpMonths.push({y:mo.y, m:mo.m});
   }
   const kpRanges = [];
@@ -1015,7 +1023,7 @@ function computeFinal(D, T){
   const pinSigns = new Set([cusp5Sign, D.pl[D.c5sl].sign, ...sigSigns]);
   const pinMonths = [];
   for(const mo of T.months){
-    if(mo.y===2033 && mo.m>10) continue;
+    if(!withinHF(mo)) continue;
     if(pinSigns.has(mo.jup) && pinSigns.has(mo.sun)) pinMonths.push({y:mo.y, m:mo.m, jup:mo.jup, sun:mo.sun});
   }
   const pinRanges = [];
@@ -1143,9 +1151,9 @@ function buildSections(D, T, F){
   const qualLine = (t, lines) => cur.push(`<p class="qual"><b>${t}:</b> ${lines.join('<br>')}</p>`);
   const cslQ = D.kpQual(D.cslPlanet);
   const curMD = D.curMD;
-  const curYog = D.yog.find(m=>m.start<=HSTART && HSTART<m.end) || D.yog[0];
-  const curTri = D.tri.find(m=>m.start<=HSTART && HSTART<m.end) || D.tri[0];
-  const curChara = D.chara.find(m=>m.start<=HSTART && HSTART<m.end) || D.chara[0];
+  const curYog = D.yog.find(m=>m.start<=D.HSTART && D.HSTART<m.end) || D.yog[0];
+  const curTri = D.tri.find(m=>m.start<=D.HSTART && D.HSTART<m.end) || D.tri[0];
+  const curChara = D.chara.find(m=>m.start<=D.HSTART && D.HSTART<m.end) || D.chara[0];
   const genderLabel = D.gender==='male' ? 'पुरुष की कुंडली' : 'स्त्री की कुंडली';
   const sp = D.gender==='male'
     ? sphutaOf([D.pl['Sun'].lon, D.pl['Venus'].lon, D.pl['Jupiter'].lon])
@@ -1167,7 +1175,7 @@ function buildSections(D, T, F){
   const promiseYes = cslQ.pos.length>0 && promiseChecks.filter(c=>c[0]==='अच्छा').length>=2;
   // ---- Step 1 ----
   h2('Step 1 - कुंडली सार + Promise of Progeny');
-  cur.push(`<p><b>विवाह:</b> ${D.marriageLabel} &nbsp;|&nbsp; <b>पहली संतान की खोज:</b> ${fmtMY(D.earliest)} से (विवाह + 9 महीने) &nbsp;|&nbsp; <b>Horizon:</b> अक्टूबर 2033 तक</p>`);
+  cur.push(`<p><b>विवाह:</b> ${D.marriageLabel} &nbsp;|&nbsp; <b>पहली संतान की खोज:</b> ${fmtMY(D.earliest)} से (विवाह + 9 महीने) &nbsp;|&nbsp; <b>Horizon:</b> ${fmtMY(addDays(D.HEND,-1))} तक</p>`);
   cur.push(`<p><b>Astro Code:</b> ${document.getElementById('astro-code').value} &nbsp;|&nbsp; <b>कुंडली:</b> ${genderLabel} &nbsp;|&nbsp; <b>लग्न:</b> ${SIGNS[D.lagna]} &nbsp;|&nbsp; <b>चंद्र:</b> ${SIGNS[D.pl['Moon'].sign]} (${NAK[D.nakIdx]}-${(Math.floor((D.pl["Moon"].lon%30)/3.3333333)+1)}; तिथि ${D.tithi}, ${D.isShukla?'शुक्ल':'कृष्ण'} पक्ष) &nbsp;|&nbsp; <b>पंचमेश:</b> ${HI[D.panchamesh]} &nbsp;|&nbsp; <b>5th CSL:</b> ${HI[D.cslPlanet]} &nbsp;|&nbsp; <b>D9 लग्न:</b> ${SIGNS[D.d9Lagna]} &nbsp;|&nbsp; <b>D7 लग्न:</b> ${SIGNS[D.d7Lagna.sign]} &nbsp;|&nbsp; <b>D60 लग्न:</b> ${SIGNS[D.d60Lagna.sign]}</p>`);
   cur.push(`<p><b>वर्तमान विंशोत्तरी महादशा:</b> ${HI[curMD.lord]} (${fmt(curMD.start)} - ${fmt(curMD.end)}) &nbsp;|&nbsp; <b>योगिनी महादशा:</b> ${HI[curYog.lord]} &nbsp;|&nbsp; <b>चर महादशा:</b> ${SIGNS[curChara.rashi]} &nbsp;|&nbsp; <b>त्रिभागी महादशा:</b> ${HI[curTri.lord]}</p>`);
   cur.push(tbl(['ग्रह','राशि','अंश','भाव','नक्षत्र','D9 राशि','D7 राशि','D60 राशि'],
@@ -1179,7 +1187,7 @@ function buildSections(D, T, F){
   cur.push(`<p><b>Promise of Progeny (संतान का वादा) - 5 systems:</b><br>${promiseChecks.map(c=>`▸ ${c[1]} - ${c[0]}`).join('<br>')}<br><b>निष्कर्ष:</b> ${promiseYes ? 'संतान का वादा है - High Chances' : 'संतान का वादा कमजोर/मिश्रित है - दशा-गोचर में समय लगेगा'}</p>`);
   qualLine('आगे की process के लिए qualified दशा', [`विंशोत्तरी MD ${HI[curMD.lord]} के अंदर की दशाएँ`]);
   // ---- Step 2 ----
-  h2('Step 2 - Timing Setup: Master Time-Table (7 साल, Nov 2026 - Oct 2033)');
+  h2(`Step 2 - Timing Setup: Master Time-Table (7 साल, ${fmtMY(D.HSTART)} - ${fmtMY(addDays(D.HEND,-1))})`);
   cur.push(`<p class="qual">कुल विंशोत्तरी + योगिनी + त्रिभागी दशा खंड: <b>${T.mtt.length}</b> (क्रम-सूची में N/M/P का अर्थ: N = मुख्य दशा (Normal), M = अंतरदशा-स्तर का बदलाव, P = प्रत्यंतरदशा-स्तर का बदलाव।)</p>`);
   cur.push(tbl(['वर्ष','विंशोत्तरी','योगिनी','चर','त्रिभागी','गुरु गोचर','शनि गोचर'],
     T.mtt.map(r=>[r.year, r.vim, r.yog, r.chara, r.tri, r.guruGochar, r.shaniGochar])));
@@ -1439,12 +1447,12 @@ window.runCalc = async function(mode){
     const D = await computeAll(code, gender, marriage, setStatus);
     if(!D.wins.length){
       const earliestLbl = fmtMY(D.earliest);
-      errEl.innerHTML = `<div class="err">विवाह ${marriageLabel} के 9 महीने बाद (${earliestLbl} से) इस horizon (अक्टूबर 2033 तक) में कोई संतान window नहीं बनती। ${D.removedWindows>0?`विवाह + 9 महीने से पहले की ${D.removedWindows} window(s) हटाई गईं। `:''}कृपया विवाह का महीना-साल जाँचें या horizon के अंदर का समय चुनें।</div>`;
+      errEl.innerHTML = `<div class="err">विवाह ${marriageLabel} के 9 महीने बाद (${earliestLbl} से) इस horizon (${fmtMY(addDays(D.HEND,-1))} तक) में कोई संतान window नहीं बनती। ${D.removedWindows>0?`विवाह + 9 महीने से पहले की ${D.removedWindows} window(s) हटाई गईं। `:''}कृपया विवाह का महीना-साल जाँचें या horizon के अंदर का समय चुनें।</div>`;
       stEl.textContent = 'कोई संतान window नहीं बनी।';
       lastKey = null;
       return;
     }
-    setStatus('गोचर scan हो रहा है (नवंबर 2026 - अक्टूबर 2033 + windows)...');
+    setStatus(`गोचर scan हो रहा है (${fmtMY(D.HSTART)} - ${fmtMY(addDays(D.HEND,-1))} + windows)...`);
     await tick();
     const T = await computeTransits(D, setStatus);
     const F = computeFinal(D, T);
