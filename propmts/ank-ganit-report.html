@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ank Ganit Report Prompts v1.0 - Astro Prompts Copier</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border-left: 5px solid #007bff;
+        }
+        .card-content {
+            white-space: pre-wrap;
+            font-size: 14px;
+            color: #555;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+        .card-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #007bff;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn {
+            align-self: flex-end;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Ank Ganit Report Prompts</h1>
+    <div style="text-align:center; margin:10px 0;">
+        <label for="lang-select" style="font-weight:bold; margin-right:8px;">भाषा / Language / भाषा:</label>
+        <select id="lang-select" onchange="changeLanguage(this.value)" style="padding:8px 12px; font-size:16px; border-radius:8px; border:2px solid #007bff;">
+            <option value="hi" selected>हिंदी</option>
+            <option value="en">English</option>
+            <option value="mr">मराठी</option>
+        </select>
+    </div>
+    <div class="container" id="prompt-container">
+        <!-- Prompts will be loaded here -->
+    </div>
+
+    <div id="snackbar" class="toast">Text Copied to Clipboard!</div>
+
+    <script>
+        // यहाँ आपका पूरा डेटा है
+        const rawData_hi = `यह जातक की अंक गणित Analysis के लिए दी गई जानकारी है। इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि Analysis हो सके:
+
+1] जातक का नाम
+2] जन्म तारीख (दिन, महीना, साल)
+
+यह PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... की कुंडली है, इसमें से सारी जानकारी आपको सेव कर लेनी है, ताकि कुंडली का Analysis हो सके, Analysis करते समय PDF के पेज का संदर्भ ना लिखे लेकिन निम्मलिखित जानकारी किस पेज पर है, यह सूचि दे दीजिए मतलब आपको भी आगे चलकर ढूंढने में आसानी होगी :
+
+1] ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तालिका
+3] गुरु का भिन्नाष्टकवर्ग (BAV) तालिका।
+4] षड्बल तालिका (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+5] भाव बल तालिका 
+6] विमशोपक बल तालिका (षोडश वर्ग, षड् वर्ग, सप्त वर्ग और दश वर्ग)
+7] विशोंतरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] D1 के 12 भाव के राशी-नक्षत्र (Bhava Cusp)
+10] D9 ग्रह स्तिथि तालिका -(ग्रह, डिग्री, राशी, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+11] नवतारा चक्र तालिका
+
+कृपया सभी तालिकाओं को सरल और पठनीय टेबल फॉर्मेट में प्रस्तुत करें।
+
+---
+
+Next Task :
+
+उपरोक्त चैट और  PDF में लग्न कुंडली के बारह भावों में स्थित राशि और भाव स्वामी तथा ग्रह उपस्थिति, जो ग्रह,उच्च,नीच,वक्री, निचभंग, अस्त, वर्गोत्तम है वो भी लिखे. नक्षत्र में स्थित भी लिखे (राहू-केतु को उच्च,नीच,वक्री नही लिखना है)
+
+लिखावट पैटर्न निम्मलिखित रहेगा जो सिर्फ उदाहरण के लिए होगा, जिसे  ""  इसमें दर्शाया गया है  :
+
+"पहला भाव (लग्न):
+इस भाव में सिंह राशि है, इसलिए लग्नेश सूर्य हैं।
+इस भाव में सूर्य और राहु ग्रह स्थित हैं।
+सूर्य: सिंह राशि में स्वगृही (अपने ही घर में) हैं। सूर्य मघा नक्षत्र में स्थित हैं। सूर्य प्रथम भाव (सिंह) के स्वामी होकर लग्न में बैठे हैं। सूर्य की दृष्टि सातवें भाव (कुम्भ) पर है।
+राहु: सिंह राशि में (राहु के लिए शत्रु राशि मानी जाती है)। राहु मघा नक्षत्र में स्थित है। राहु की दृष्टि पांचवें भाव (धनु), सातवें भाव (कुम्भ) और नौवें भाव (मेष) पर है।
+इस भाव पर केतु (सातवें भाव से) की पूर्ण दृष्टि है।"
+
+
+आपकी सुविधा के लिए txt फाइल दी है : "D1_Analysis"
+----------
+कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर सभी ९ ग्रहों (सूर्य, चंद्र, मंगल, बुध, गुरु, शुक्र, शनि, राहु, केतु) का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कुंडली के फलित, षड्बल, विमशोपक आषांश (षोडश वर्ग), और जैमिनी कारकत्व के आधार पर होना चाहिए।
+
+प्रत्येक ग्रह के लिए निम्नलिखित जानकारी प्रदान करें:
+1. [ग्रह का नाम]
+➤ भाव स्वामित्व: (किन भावों का स्वामी है)
+➤ स्थिति: (किस भाव और राशि में)
+➤ राशि में स्थिति: (मित्र, शत्रु, सम, उच्च, नीच, मूलत्रिकोण, स्वराशि)
+➤ नक्षत्र एवं पद: (वह ग्रह किस नक्षत्र और किस पद में है, और नक्षत्र स्वामी का प्रभाव।)
+➤ दृष्टि: (किन भावों/ग्रहों पर दृष्टि) 
+➤ [ग्रह का नाम] पर दृष्टि: (किन ग्रहों की दृष्टि है)
+➤ युति: (किन ग्रहों के साथ युति में है)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री और अवस्था का नाम जैसे बाल, कुमार आदि)
+➤ भावनात्मक/अवस्था शक्ति: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिति: (हाँ/नहीं या स्थिति का नाम)
+➤ भावबल: (केवल मान)
+➤ षड्बल (रूप में):  (रूप में मान और उसका बल कैसा है - औसत से बेहतर, रैंक आदि।)
+➤ विमशोपक आषांश (षोडश वर्ग): (मान और ग्रहों में उसका रैंक, यदि लागू हो।)
+➤ गोचर और दशा में संभावित फल का संक्षिप्त जवाब : (सामान्य तौर पर वह ग्रह अपनी दशा/अंतर्दशा और गोचर में कैसा फल देगा - अच्छा, खराब, या मध्यम।
+➤ निष्कर्ष : समग्र रूप से ग्रह मजबूत है या पीड़ित है ? (प्रतिशत)
+
+➤ अंत मे सभी ग्रहों के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
+----------
+कृपया उपरोक्त सभी चैट और PDF के जन्म विवरणों के आधार पर D1 के सभी 12 भावों का ज्योतिषीय तथ्यों/आंकड़ों की सूची प्रदान करें। जानकारी संक्षिप्त और बिंदुवार होनी चाहिए, विस्तृत व्याख्या की आवश्यकता नहीं है। यह सूची कारकत्व, भाव बल) आधार पर होना चाहिए।
+
+
+प्रत्येक भाव के लिए निम्नलिखित जानकारी प्रदान करें:
+
+1. पहला भाव (लग्न):  राशि का नाम
+➤ कारकत्व: 
+➤ भाव बल: रैंक  (कुंडली में कमजोर अथवा मजबूत भाव)।
+➤ भाव स्वामी (लग्नेश):
+➤ भावेश की स्थिति: 
+➤ स्थित ग्रह: 
+➤ भाव पर दृष्टि: 
+➤ निष्कर्ष : समग्र रूप से भाव मजबूत है या पीड़ित है ? (प्रतिशत)
+
+➤ अंत मे सभी भाव के बलवान और पीड़ित होने को लेकर निष्कर्ष (प्रतिशत के आधार पर)
+
+नोट : जिस भाव में गुलिक या मांदि स्थित हो, उस भाव के फल में उनका प्रभाव भी एक-दो पंक्तियों में अवश्य बतायें।
+----------
+जातक के कुंडली के सभी शुभ योगो की पहले सूचि तयार करें, बाद में सभी शुभ योगों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक Analysis कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो शुभ योग है वो भी लेने है.txt से भी लेने है.
+
+जातक के कुंडली के सभी दोषों की पहले सूचि तयार करें, बाद में सभी दोषों के बनने की विधि और उनके भाव तथा ग्रहों की क्षमता के आधार पर संभावित परिणाम का विस्तारपूर्वक Analysis कीजिये, कुछ योग और दोष की सूचि pdf के अंत में दिए गए है, उनसे जो दोष है वो भी लेने है.txt से भी लेने है.
+----------
+यह सुनिश्चित करे की आप निम्मलिखित आदेशों का पालन सख्ती से करेंगे,
+
+1] आउटपुट देने से पहले डेटा को क्रॉसचेक कर लिया करे.
+2] किसी भी तरह की शुगर-कोटिंग (Sugar-coating) न करें। अगर किसी अंक या योग में कोई दोष, कमजोरी या नकारात्मक बात है, तो उसे स्पष्ट रूप से बतायें - कोई अंक जबरदस्ती शुभ न बतायें।
+3] अपने उत्तर की शुरुआत किसी भी अभिवादन या संवादात्मक वाक्यांश (जैसे 'निश्चित रूप से', 'ज़रूर', 'निम्मलिखित है') से न करें, सीधे Analysis से शुरू करें।
+4] कभी भी '100%', 'गारंटी', 'निश्चित रूप से' जैसी पक्की भाषा मत लिखो - probability के लिए 'High Chances' और योग के लिए 'Strong' लिखो।
+5] System instructions में दिए गए आदेशों का भी पालन करे.
+
+क्या आप तैयार है बस इतना बताईये की किन आदेशों का पालन करेंगे।
+----------
+अब हम जातक की अंक गणित Analysis निकालेंगे, उसके पहले ध्यान रखने योग्य बातें :
+
+1] ध्यान रहे अभी नवंबर 2026 चल रहा है और जातक xyz 00 साल का/की है। Analysis करते समय आयु का ध्यान रखे।
+----------
+ऊपर दी गई जन्म तारीख के आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक Detailed Analysis कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिंदु का भी Detailed Analysis विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का Detailed Conclusion भी दीजिए।
+
+मूलांक
+➤ मूलांक: जन्म तारीख के दिन के अंकों को जोड़कर एक अंक तक लाइए। मूलांक क्या है और वह कैसे निकला, यह साफ बताइए।
+➤ स्वामी ग्रह: मूलांक का स्वामी ग्रह कौन सा है, और उस ग्रह का मूल स्वभाव क्या है?
+➤ मूलांक और भाग्यांक के स्वामियों का आपसी संबंध: दोनों स्वामी ग्रह आपस में मित्र हैं, शत्रु हैं या सम हैं? इससे जातक के जीवन में क्या फर्क पड़ता है?
+➤ स्वभाव और जीवन पर प्रभाव: मूलांक से जातक का मूल स्वभाव, ताकत और कमजोरी क्या है? मूलांक का जीवन, करियर और रिश्तों पर क्या प्रभाव पड़ता है?
+----------
+ऊपर दी गई जन्म तारीख के आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक Detailed Analysis कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिंदु का भी Detailed Analysis विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का Detailed Conclusion भी दीजिए।
+
+भाग्यांक
+➤ भाग्यांक: पूरी जन्म तारीख के सभी अंकों को जोड़कर एक अंक तक लाइए। भाग्यांक क्या है और वह कैसे निकला, यह साफ बताइए।
+➤ स्वामी ग्रह: भाग्यांक का स्वामी ग्रह कौन सा है, और उस ग्रह का मूल स्वभाव क्या है?
+➤ जीवन की दिशा: भाग्यांक से जातक के जीवन की मुख्य दिशा, करियर, धन और सफलता के बारे में बताइए।
+➤ मूलांक से मेल: भाग्यांक मूलांक से कितना मेल खाता है? दोनों के मेल या टकराव से जीवन में क्या फर्क पड़ता है?
+----------
+ऊपर दिए गए नाम के आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक Detailed Analysis कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिंदु का भी Detailed Analysis विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का Detailed Conclusion भी दीजिए।
+
+नामांक
+➤ नामांक: जातक के नाम के हर अक्षर को उसके अंक में बदलकर (A=1 से Z=8 तक, 9 के बाद फिर 1 से शुरू करके) सबको जोड़कर एक अंक तक लाइए। नामांक क्या है और वह कैसे निकला, यह साफ बताइए।
+➤ नामांक का फल: नामांक से जातक के नाम का प्रभाव, पहचान और लोगों पर असर कैसा है?
+➤ भाग्यांक से मेल: नामांक भाग्यांक से मेल खाता है या नहीं? मेल खाता है तो क्या फायदा है, नहीं खाता है तो क्या दिक्कत आ सकती है?
+----------
+ऊपर दी गई जन्म तारीख के आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक Detailed Analysis कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिंदु का भी Detailed Analysis विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का Detailed Conclusion भी दीजिए।
+
+Personal Year
+➤ इस साल का अंक: जातक के जन्म के दिन और महीने के अंकों में इस साल (2026) के अंकों को जोड़कर एक अंक तक लाइए। इस साल का Personal Year अंक क्या है और वह कैसे निकला, यह साफ बताइए।
+➤ इस साल का फल: इस Personal Year अंक से इस साल जातक के करियर, धन, स्वास्थ्य और रिश्तों पर क्या प्रभाव पड़ेगा?
+➤ इस साल क्या करें, क्या टालें: इस साल जातक को कौन से काम करने चाहिए और किन बातों से बचना चाहिए?
+----------
+ऊपर निकाले गए मूलांक, भाग्यांक, नामांक और Personal Year के आधार पर निम्मलिखित बिंदुओं का गहन और विस्तारपूर्वक Detailed Analysis कीजिए, ध्यान रहे सभी बिंदुओं के साथ-साथ उनके प्रत्येक उपबिंदु का भी Detailed Analysis विस्तारपूर्वक होना चाहिए, अंत में प्रत्येक बिंदु का Detailed Conclusion भी दीजिए।
+
+भाग्यशाली, शुभ और अशुभ
+➤ भाग्यशाली: जातक के लिए भाग्यशाली अंक, भाग्यशाली दिन, भाग्यशाली वर्ष, भाग्यशाली धातु, भाग्यशाली रत्न और आराध्य देव/देवता कौन से हैं?
+➤ शुभ: जातक के लिए शुभ अंक, मित्र अंक, शुभ ग्रह, मित्र राशी, शुभ लग्न, शुभ रंग, शुभ दिन और शुभ दिशा कौन सी हैं?
+➤ अशुभ: जातक के लिए अशुभ अंक, शत्रु अंक, अशुभ ग्रह, शत्रू राशी, अशुभ लग्न, टालने योग्य रंग, प्रतिकूल दिन और अशुभ दिशा कौन सी हैं?
+----------
+सवाल 1] मेरे लिए सबसे भाग्यशाली अंक कौन सा है?
+
+इस सवाल का गहन शोध करके ज्योतिषीय Analysis विस्तार से और Conclusion देकर करें, यदि उपाय आवश्यक हो तो उपायों सहित।
+----------
+सवाल 2] मेरे मूलांक और भाग्यांक के अनुसार मेरे जीवन और स्वभाव पर क्या प्रभाव पड़ेगा?
+
+इस सवाल का गहन शोध करके ज्योतिषीय Analysis विस्तार से और Conclusion देकर करें, यदि उपाय आवश्यक हो तो उपायों सहित।
+----------
+सवाल 3] मेरी कुंडली के अनुसार कौन सा अंक मैं ज्यादा उपयोग में लाऊँ, जैसे गाड़ी का नंबर, मोबाइल नंबर?
+
+इस सवाल का गहन शोध करके ज्योतिषीय Analysis विस्तार से और Conclusion देकर करें, यदि उपाय आवश्यक हो तो उपायों सहित।
+----------
+सवाल 4] जीवन में अड़चनें टालने के लिए मैं कौन से अंक टालूँ?
+
+इस सवाल का गहन शोध करके ज्योतिषीय Analysis विस्तार से और Conclusion देकर करें, यदि उपाय आवश्यक हो तो उपायों सहित।
+----------
+सवाल 5] मेरे लिए कौन सा काल, दिन, दशा और गोचर सबसे भाग्यशाली है?
+
+इस सवाल का गहन शोध करके ज्योतिषीय Analysis विस्तार से और Conclusion देकर करें, यदि उपाय आवश्यक हो तो उपायों सहित।
+----------
+सवाल 6] जीवन में अड़चनें टालने के लिए मैं किन बातों को टालूँ - रंग, दिशा, दिन, तिथी?
+
+इस सवाल का गहन शोध करके ज्योतिषीय Analysis विस्तार से और Conclusion देकर करें, यदि उपाय आवश्यक हो तो उपायों सहित।
+----------
+सवाल 7] मेरे मूलांक के अनुसार मेरे लिए सबसे अच्छा करियर/काम कौन सा है?
+
+इस सवाल का गहन शोध करके ज्योतिषीय Analysis विस्तार से और Conclusion देकर करें, यदि उपाय आवश्यक हो तो उपायों सहित।
+----------
+सवाल 8] विवाह के लिए कौन सा अंक शुभ है, जीवनसाथी का मूलांक कैसा होना चाहिए?
+
+इस सवाल का गहन शोध करके ज्योतिषीय Analysis विस्तार से और Conclusion देकर करें, यदि उपाय आवश्यक हो तो उपायों सहित।
+----------
+अब तक हुए सभी Analysis के आधार पर जातक के कमजोर अंक के लिए उपाय दें:
+
+1] गैर-धार्मिक उपाय: (आदतों में बदलाव, दान-पुण्य (बिना धार्मिक विधि के), सकारात्मक व्यवहार परिवर्तन)
+2] धार्मिक/पारंपरिक उपाय: (विशिष्ट देवता की पूजा/जप, व्रत, धार्मिक दान, मंदिर दर्शन)
+3] रत्न/धातु संबंधी उपाय: (यदि आवश्यक हों तो, सावधानियों सहित)
+4] पंडित या ज्योतिषी से करवाने वाले उपाय, या किसी तीर्थ पर जाकर करवाने वाले उपाय: (यदि आवश्यक हो तो)
+
+हर उपाय के साथ यह भी बताइए कि वह किस अंक की कमजोरी के लिए है।
+
+कृपया ध्यान दें: उपाय सरल, व्यावहारिक और जातक की वर्तमान आर्थिक स्थिति के अनुकूल हों।
+----------
+अब पूरी Detailed Analysis हो गई है। उसके आधार पर जातक की अंक गणित Analysis का Brief निकालेंगे। निम्मलिखित सभी मुख्य सवालों के संक्षिप्त उत्तर दीजिए (प्रत्येक 2-3 lines में), सवाल नंबर के साथ, report में सबसे पहले।
+
+1] मेरे लिए सबसे भाग्यशाली अंक कौन सा है?
+2] मेरे मूलांक और भाग्यांक के अनुसार मेरे जीवन और स्वभाव पर क्या प्रभाव पड़ेगा?
+3] मेरी कुंडली के अनुसार कौन सा अंक मैं ज्यादा उपयोग में लाऊँ, जैसे गाड़ी का नंबर, मोबाइल नंबर?
+4] जीवन में अड़चनें टालने के लिए मैं कौन से अंक टालूँ?
+5] मेरे लिए कौन सा काल, दिन, दशा और गोचर सबसे भाग्यशाली है?
+6] जीवन में अड़चनें टालने के लिए मैं किन बातों को टालूँ - रंग, दिशा, दिन, तिथी?
+7] मेरे मूलांक के अनुसार मेरे लिए सबसे अच्छा करियर/काम कौन सा है?
+8] विवाह के लिए कौन सा अंक शुभ है, जीवनसाथी का मूलांक कैसा होना चाहिए?
+
+जातक के सवाल :
+----------
+अब पूरी Analysis हो गई है। मूल data (जन्म तारीख, नाम और कुंडली के तथ्य) से हर hard fact को दोबारा मिलाकर जाँच कीजिए - मूलांक, भाग्यांक और नामांक की गणना, Personal Year का अंक, तारीखें और संख्याएँ। जो भी गलतियाँ मिलें, सिर्फ उनकी list दीजिए, पूरी Analysis दोबारा मत लिखिए। अंत में यह line लिखिए: जाँच पूर्ण - कुल X गलतियाँ मिलीं।`;
+        const rawData_en = `This is the information given for the native's Ank Ganit Analysis. Save all of this information, so that the Analysis can be done:
+
+1] Name of the native
+2] Date of birth (day, month, year)
+
+This PDF is the kundali of a 00-year-old male/female native ...; you must save all the information from it so the kundali can be analyzed. While analyzing, do not write page references of the PDF, but give a list of which page the following information is on - meaning it will be easier for you too to find later:
+
+1] Planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord, Jaimini Chara Karaka)
+2] Sarvashtakavarga table
+3] Jupiter's Bhinnashtakavarga (BAV) table.
+4] Shadbala table (Sthana Bala, Dig Bala, Kala Bala, Cheshta Bala, Naisargika Bala, Drik Bala)
+5] Bhava Bala table 
+6] Vimshopak Bala table (Shodasha Varga, Shad Varga, Sapta Varga and Dasha Varga)
+7] Vimshottari Mahadasha-Antardasha chart
+8] Yogini Dasha-Antardasha chart
+9] D1 12 bhava rashi-nakshatra (Bhava Cusp)
+10] D9 planet position table - (planet, degree, rashi, nakshatra-pada, nakshatra-lord) (screenshot)
+11] Navtara Chakra table
+
+Please present all tables in a simple and readable table format.
+
+---
+
+Next Task :
+
+From the above chat and  PDF, write the rashi placed in the twelve bhavas of the lagna kundali, the bhava lord, and the planetary presence; also write which planets are exalted, debilitated, retrograde, neecha-bhanga, combust, vargottama. Also write the nakshatra placement (do not write exalted, debilitated, retrograde for Rahu-Ketu)
+
+The writing pattern will be as follows, which is only for example, shown in  ""  :
+
+"First house (Lagna):
+This house has Simha rashi, therefore the lagnesh is Surya.
+In this house, Surya and Rahu planets are placed.
+Surya: in Simha rashi, swagrihi (in its own house). Surya is placed in Magha nakshatra. Surya, being the lord of the first house (Simha), sits in the lagna. Surya's drishti is on the seventh house (Kumbha).
+Rahu: in Simha rashi (considered an enemy rashi for Rahu). Rahu is placed in Magha nakshatra. Rahu's drishti is on the fifth house (Dhanu), seventh house (Kumbha) and ninth house (Mesha).
+On this house, Ketu (from the seventh house) has full drishti."
+
+
+For your convenience a txt file has been given : "D1_Analysis"
+----------
+Please provide a list of astrological facts/figures for all 9 planets (Surya, Chandra, Mangal, Budha, Guru, Shukra, Shani, Rahu, Ketu) based on the birth details in all the above chats and PDFs. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on the kundali's phaladesh, shadbala, vimshopak bala (shodasha varga), and Jaimini karakatva.
+
+Provide the following information for each planet:
+1. [Planet name]
+➤ Bhava ownership: (which bhavas it is the lord of)
+➤ Position: (in which bhava and rashi)
+➤ Position in rashi: (friend, enemy, neutral, exalted, debilitated, moolatrikona, own sign)
+➤ Nakshatra and pada: (in which nakshatra and which pada the planet is, and the effect of the nakshatra lord.)
+➤ Drishti: (on which bhavas/planets it has drishti) 
+➤ Drishti on [planet name]: (which planets have drishti on it)
+➤ Yuti: (with which planets it is in yuti)
+➤ Avastha (degree/latitude): (degree and name of avastha like bala, kumara etc.)
+➤ Bhavanatmak/avastha strength: retrograde/combust/debilitated/neecha-bhanga/vargottama status: (yes/no or name of the status)
+➤ Strength in navamsha: afflicted/strong
+➤ Bhava bala: (value only)
+➤ Shadbala (in rupa):  (value in rupa and how its strength is - better than average, rank etc.)
+➤ Vimshopak bala (shodasha varga): (value and its rank among planets, if applicable.)
+➤ Brief answer of probable phala in gochar and dasha : (generally how that planet will give phala in its dasha/antardasha and gochar - good, bad, or medium.
+➤ Conclusion : overall, is the planet strong or afflicted? (percentage)
+
+➤ Finally, a conclusion regarding all planets being strong and afflicted (based on percentage)
+----------
+Please provide a list of astrological facts/figures for all 12 bhavas of D1 based on the birth details in all the above chats and PDFs. The information should be brief and point-wise; no detailed explanation is needed. This list should be based on karakatva, bhava bala).
+
+
+Provide the following information for each bhava:
+
+1. First house (Lagna):  name of the rashi
+➤ Karakatva: 
+➤ Bhava bala: rank  (weak or strong bhava in the kundali).
+➤ Bhava lord (lagnesh):
+➤ Position of bhavesh: 
+➤ Placed planets: 
+➤ Drishti on bhava: 
+➤ Conclusion : overall, is the bhava strong or afflicted? (percentage)
+
+➤ Finally, a conclusion regarding all bhavas being strong and afflicted (based on percentage)
+
+Note: In whichever house Gulika or Mandi is placed, also state their effect on that house's results in one or two lines.
+----------
+First prepare a list of all the shubh yogas of the native's kundali, then analyze in detail the formation method of all the shubh yogas and their probable results based on the strength of their bhavas and planets; some yoga and dosha lists are given at the end of the pdf, from them whatever are shubh yogas must also be taken. Also take from the txt.
+
+First prepare a list of all the doshas of the native's kundali, then analyze in detail the formation method of all the doshas and their probable results based on the strength of their bhavas and planets; some yoga and dosha lists are given at the end of the pdf, from them whatever are doshas must also be taken. Also take from the txt.
+----------
+Make sure that you strictly follow the following instructions,
+
+1] Crosscheck the data before giving the output.
+2] Do not do any kind of sugar-coating. If there is any flaw, weakness or negative point in any number or yog, state it clearly - do not force any number to look auspicious.
+3] Do not begin your answer with any greeting or conversational phrase (like 'definitely', 'surely', 'following is'), start directly with the analysis.
+4] Never use absolute language like '100%', 'guarantee' or 'definitely' - use 'High Chances' for probability and 'Strong' for a yog or signal.
+5] Follow the instructions given in the System instructions as well.
+
+Are you ready, just tell me which instructions you will follow.
+----------
+Now we will take out the native's Ank Ganit Analysis, before that the points to keep in mind:
+
+1] Keep in mind that November 2026 is going on right now and the native is xyz 00 years old. Keep the age in mind while analysing.
+----------
+On the basis of the date of birth given above, do a deep and detailed Detailed Analysis of the following points. Every point, along with each of its sub-points, must be analysed in detail, and at the end give a Detailed Conclusion of every point.
+
+Moolank
+➤ Moolank: Add the digits of the day of the date of birth and reduce it to a single digit. State clearly what the Moolank is and how it was found out.
+➤ Ruling planet: Which planet rules the Moolank, and what is the basic nature of that planet?
+➤ Mutual relation of the rulers of Moolank and Bhagyank: Are the two ruling planets friends, enemies or neutral to each other? What difference does this make in the native's life?
+➤ Effect on nature and life: What are the basic nature, strengths and weaknesses of the native from the Moolank? What is the effect of the Moolank on life, career and relationships?
+----------
+On the basis of the date of birth given above, do a deep and detailed Detailed Analysis of the following points. Every point, along with each of its sub-points, must be analysed in detail, and at the end give a Detailed Conclusion of every point.
+
+Bhagyank
+➤ Bhagyank: Add all the digits of the full date of birth and reduce it to a single digit. State clearly what the Bhagyank is and how it was found out.
+➤ Ruling planet: Which planet rules the Bhagyank, and what is the basic nature of that planet?
+➤ Direction of life: From the Bhagyank, tell about the main direction of the native's life, career, wealth and success.
+➤ Match with Moolank: How well does the Bhagyank match the Moolank? What difference does their match or clash make in life?
+----------
+On the basis of the name given above, do a deep and detailed Detailed Analysis of the following points. Every point, along with each of its sub-points, must be analysed in detail, and at the end give a Detailed Conclusion of every point.
+
+Naamank
+➤ Naamank: Convert every letter of the native's name into its number (A=1 to Z=8, after 9 starting again from 1), add them all and reduce to a single digit. State clearly what the Naamank is and how it was found out.
+➤ Result of the Naamank: What is the effect of the name on the native - identity and impression on people?
+➤ Match with Bhagyank: Does the Naamank match the Bhagyank or not? If it matches, what is the benefit, and if it does not match, what difficulty can arise?
+----------
+On the basis of the date of birth given above, do a deep and detailed Detailed Analysis of the following points. Every point, along with each of its sub-points, must be analysed in detail, and at the end give a Detailed Conclusion of every point.
+
+Personal Year
+➤ Number of this year: Add the digits of the day and month of birth to the digits of this year (2026) and reduce to a single digit. State clearly what the Personal Year number of this year is and how it was found out.
+➤ Result of this year: What will be the effect of this Personal Year number on the native's career, wealth, health and relationships this year?
+➤ What to do and what to avoid this year: Which things should the native do this year, and which things should be avoided?
+----------
+On the basis of the Moolank, Bhagyank, Naamank and Personal Year found out above, do a deep and detailed Detailed Analysis of the following points. Every point, along with each of its sub-points, must be analysed in detail, and at the end give a Detailed Conclusion of every point.
+
+Lucky, Auspicious and Inauspicious
+➤ Lucky: Which are the lucky number, lucky day, lucky years, lucky metal, lucky gemstone and presiding deity for the native?
+➤ Auspicious: Which are the auspicious number, friendly numbers, auspicious planet, friendly rashis, auspicious lagna, auspicious colour, auspicious day and auspicious direction for the native?
+➤ Inauspicious: Which are the inauspicious number, enemy numbers, inauspicious planet, enemy rashis, inauspicious lagna, colours to avoid, unfavourable day and inauspicious direction for the native?
+----------
+Question 1] Which is the luckiest number for me?
+
+Do in-depth research on this question and give the astrological analysis in detail with a conclusion, if remedies are necessary then along with remedies.
+----------
+Question 2] What will be the effect of my Moolank and Bhagyank on my life and nature?
+
+Do in-depth research on this question and give the astrological analysis in detail with a conclusion, if remedies are necessary then along with remedies.
+----------
+Question 3] According to my kundali, which number should I use more, like vehicle number, mobile number?
+
+Do in-depth research on this question and give the astrological analysis in detail with a conclusion, if remedies are necessary then along with remedies.
+----------
+Question 4] Which numbers should I avoid, to avoid difficulties in life?
+
+Do in-depth research on this question and give the astrological analysis in detail with a conclusion, if remedies are necessary then along with remedies.
+----------
+Question 5] Which period, day, dasha and gochar are the luckiest for me?
+
+Do in-depth research on this question and give the astrological analysis in detail with a conclusion, if remedies are necessary then along with remedies.
+----------
+Question 6] To avoid difficulties in life, what should I avoid - colour, direction, day, tithi?
+
+Do in-depth research on this question and give the astrological analysis in detail with a conclusion, if remedies are necessary then along with remedies.
+----------
+Question 7] According to my Moolank, which is the best career/work for me?
+
+Do in-depth research on this question and give the astrological analysis in detail with a conclusion, if remedies are necessary then along with remedies.
+----------
+Question 8] Which number is auspicious for marriage, and how should the Moolank of the life partner be?
+
+Do in-depth research on this question and give the astrological analysis in detail with a conclusion, if remedies are necessary then along with remedies.
+----------
+Based on all the analyses done so far, give the remedies for the weak number of the native:
+
+1] Non-religious remedies: (change in habits, charity (without religious ritual), positive behaviour change)
+2] Religious/traditional remedies: (worship/chanting of a specific deity, fasts, religious charity, temple visits)
+3] Gemstone/metal related remedies: (if necessary, with precautions)
+4] Remedies to be got done through a priest or astrologer, or remedies to be performed by going to a pilgrimage place: (if necessary)
+
+With every remedy, also tell for the weakness of which number it is.
+
+Please note: the remedies should be simple, practical and suited to the native's present financial condition.
+----------
+Now the whole Detailed Analysis is done. On its basis, we will take out the Brief of the native's Ank Ganit Analysis. Give short answers to all the following main questions (2-3 lines each), with the question number, at the very beginning of the report.
+
+1] Which is the luckiest number for me?
+2] What will be the effect of my Moolank and Bhagyank on my life and nature?
+3] According to my kundali, which number should I use more, like vehicle number, mobile number?
+4] Which numbers should I avoid, to avoid difficulties in life?
+5] Which period, day, dasha and gochar are the luckiest for me?
+6] To avoid difficulties in life, what should I avoid - colour, direction, day, tithi?
+7] According to my Moolank, which is the best career/work for me?
+8] Which number is auspicious for marriage, and how should the Moolank of the life partner be?
+
+Native's Questions:
+----------
+Now the whole Analysis is done. Check every hard fact again by matching it with the original data (date of birth, name and the facts of the kundali) - the calculation of Moolank, Bhagyank and Naamank, the number of the Personal Year, dates and numbers. Give only the list of the mistakes found, do not write the whole Analysis again. At the end write this line: Checking complete - total X mistakes found.`;
+        const rawData_mr = `ही जातकाच्या अंक गणित Analysis साठी दिलेली माहिती आहे. यातील सर्व माहिती तुम्हाला सेव करून ठेवायची आहे, जेणेकरून Analysis होऊ शकेल:
+
+1] जातकाचे नाव
+2] जन्म तारीख (दिवस, महिना, वर्ष)
+
+हे PDF 00 वर्षीय पुरुष/महिला जातक/जातिका ... ची कुंडली आहे, यामधील सर्व माहिती तुम्ही जतन करून ठेवली पाहिजे, जेणेकरून कुंडलीचे विश्लेषण करता येईल, विश्लेषण करताना PDF च्या पानांचा संदर्भ लिहू नका पण खालील माहिती कोणत्या पानावर आहे, याची सूची द्या म्हणजे तुम्हालाही पुढे शोधण्यात सोपे जाईल :
+
+1] ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी, जैमिनी चर कारकत्व)
+2] सर्वाष्टकवर्ग तक्ता
+3] गुरूचा भिन्नाष्टकवर्ग (BAV) तक्ता।
+4] षड्बल तक्ता (स्थान बल, दिग्बल, काल बल, चेष्टा बल, नैसर्गिक बल, दृष्टि बल)
+5] भाव बल तक्ता 
+6] विमशोपक बल तक्ता (षोडश वर्ग, षड् वर्ग, सप्त वर्ग आणि दश वर्ग)
+7] विंशोत्तरी महादशा अंतर्दशा चार्ट
+8] योगिनी दशा अंतर्दशा चार्ट
+9] D1 च्या 12 भावांचे रास-नक्षत्र (Bhava Cusp)
+10] D9 ग्रह स्थिती तक्ता - (ग्रह, डिग्री, रास, नक्षत्र-पद, नक्षत्र-स्वामी) (स्क्रीनशॉट)
+11] नवतारा चक्र तक्ता
+
+कृपया सर्व तक्ते सोप्या आणि वाचनीय टेबल फॉर्मेटमध्ये सादर करा।
+
+---
+
+Next Task :
+
+वरील चॅट आणि  PDF मधील लग्न कुंडलीच्या बारा भावांमध्ये असलेली रास आणि भाव स्वामी तसेच ग्रह उपस्थिती, कोणता ग्रह उच्च, नीच, वक्री, नीचभंग, अस्त, वर्गोत्तम आहे तेही लिहा. नक्षत्रातील स्थितीही लिहा (राहू-केतूंना उच्च, नीच, वक्री लिहू नका)
+
+लेखन पॅटर्न खालीलप्रमाणे असेल जो फक्त उदाहरणासाठी आहे, जो  ""  यात दाखवला आहे :
+
+"पहिला भाव (लग्न):
+या भावात सिंह रास आहे, त्यामुळे लग्नेश सूर्य आहेत.
+या भावात सूर्य आणि राहू ग्रह स्थित आहेत.
+सूर्य: सिंह राशीत स्वगृही (स्वतःच्याच घरात) आहेत. सूर्य मघा नक्षत्रात स्थित आहेत. सूर्य प्रथम भावाचा (सिंह) स्वामी होऊन लग्नात बसले आहेत. सूर्याची दृष्टी सातव्या भावावर (कुंभ) आहे.
+राहू: सिंह राशीत (राहूसाठी शत्रू रास मानली जाते). राहू मघा नक्षत्रात स्थित आहे. राहूची दृष्टी पाचव्या भावावर (धनु), सातव्या भावावर (कुंभ) आणि नवव्या भावावर (मेष) आहे.
+या भावावर केतूची (सातव्या भावातून) पूर्ण दृष्टी आहे."
+
+
+तुमच्या सोयीसाठी txt फाईल दिली आहे : "D1_Analysis"
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांवर आधारित सर्व ९ ग्रहांचे (सूर्य, चंद्र, मंगळ, बुध, गुरू, शुक्र, शनि, राहू, केतू) ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत स्पष्टीकरणाची गरज नाही. ही सूची कुंडलीच्या फलादेश, षड्बल, विमशोपक बल (षोडश वर्ग), आणि जैमिनी कारकत्व यावर आधारित असावी.
+
+प्रत्येक ग्रहासाठी खालील माहिती द्या:
+1. [ग्रहाचे नाव]
+➤ भाव स्वामित्व: (कोणत्या भावांचा स्वामी आहे)
+➤ स्थिती: (कोणत्या भावात आणि राशीत)
+➤ राशीतील स्थिती: (मित्र, शत्रू, सम, उच्च, नीच, मूलत्रिकोण, स्वरास)
+➤ नक्षत्र आणि पद: (तो ग्रह कोणत्या नक्षत्रात आणि कोणत्या पदात आहे, आणि नक्षत्र स्वामीचा प्रभाव.)
+➤ दृष्टी: (कोणत्या भावांवर/ग्रहांवर दृष्टी) 
+➤ [ग्रहाच्या नावावर] दृष्टी: (कोणत्या ग्रहांची दृष्टी आहे)
+➤ युती: (कोणत्या ग्रहांसोबत युतीत आहे)
+➤ अवस्था (डिग्री/अक्षांश): (डिग्री आणि अवस्थेचे नाव जसे बाल, कुमार इत्यादी)
+➤ भावनात्मक/अवस्था शक्ती: वक्री/अस्त/नीच/नीचभंग/वर्गोत्तम स्थिती: (होय/नाही किंवा स्थितीचे नाव)
+➤ भाव बल: (फक्त मान)
+➤ षड्बल (रूपात):  (रूपातील मान आणि त्याचे बल कसे आहे - सरासरीपेक्षा चांगले, रँक इत्यादी.)
+➤ विमशोपक बल (षोडश वर्ग): (मान आणि ग्रहांमध्ये त्याचा रँक, लागू असल्यास.)
+➤ गोचर आणि दशेतील संभाव्य फलाचे संक्षिप्त उत्तर : (सामान्यतः तो ग्रह आपल्या दशेत/अंतर्दशेत आणि गोचरात कसे फल देईल - चांगले, खराब, किंवा मध्यम.
+➤ निष्कर्ष : एकंदर ग्रह मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व ग्रहांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीवर आधारित)
+----------
+कृपया वरील सर्व चॅट आणि PDF मधील जन्म तपशिलांवर आधारित D1 च्या सर्व 12 भावांची ज्योतिषीय तथ्ये/आकडेवारीची सूची द्या. माहिती संक्षिप्त आणि मुद्देसूद असावी, विस्तृत स्पष्टीकरणाची गरज नाही. ही सूची कारकत्व, भाव बल) यावर आधारित असावी.
+
+
+प्रत्येक भावासाठी खालील माहिती द्या:
+
+1. पहिला भाव (लग्न):  राशीचे नाव
+➤ कारकत्व: 
+➤ भाव बल: रँक  (कुंडलीत कमजोर किंवा मजबूत भाव).
+➤ भाव स्वामी (लग्नेश):
+➤ भावेशाची स्थिती: 
+➤ स्थित ग्रह: 
+➤ भावावर दृष्टी: 
+➤ निष्कर्ष : एकंदर भाव मजबूत आहे की पीडित आहे ? (टक्केवारी)
+
+➤ शेवटी सर्व भावांच्या बलवान आणि पीडित असण्याबाबत निष्कर्ष (टक्केवारीवर आधारित)
+
+टीप : ज्या भावात गुलिक किंवा मांदि स्थित असेल, त्या भावाच्या फलात त्यांचा प्रभावही एक-दोन ओळींमध्ये अवश्य सांगा.
+----------
+जातकाच्या कुंडलीतील सर्व शुभ योगांची आधी यादी तयार करा, नंतर सर्व शुभ योगांच्या बनण्याची पद्धत आणि त्यांच्या भाव व ग्रहांच्या क्षमतेवर आधारित संभाव्य परिणामांचे सविस्तर विश्लेषण करा, काही योग आणि दोषांच्या याद्या pdf च्या शेवटी दिल्या आहेत, त्यांतून जे शुभ योग आहेत तेही घ्यायचे आहेत. txt मधूनही घ्यायचे आहेत.
+
+जातकाच्या कुंडलीतील सर्व दोषांची आधी यादी तयार करा, नंतर सर्व दोषांच्या बनण्याची पद्धत आणि त्यांच्या भाव व ग्रहांच्या क्षमतेवर आधारित संभाव्य परिणामांचे सविस्तर विश्लेषण करा, काही योग आणि दोषांच्या याद्या pdf च्या शेवटी दिल्या आहेत, त्यांतून जे दोष आहेत तेही घ्यायचे आहेत. txt मधूनही घ्यायचे आहेत.
+----------
+तुम्ही खालील आदेशांचे काटेकोरपणे पालन कराल याची खात्री करा,
+
+1] आउटपुट देण्यापूर्वी डेटा crosscheck करून घ्या.
+2] कोणत्याही प्रकारचे sugar-coating करू नका. कोणत्याही अंकात किंवा योगात काही दोष, कमजोरी किंवा नकारात्मक गोष्ट असेल, तर ती स्पष्टपणे सांगा - कोणताही अंक जबरदस्तीने शुभ सांगू नका.
+3] तुमच्या उत्तराची सुरुवात कोणत्याही अभिवादनाने किंवा संवादात्मक वाक्याने (जसे 'निश्चितपणे', 'खात्रीने', 'खालीलप्रमाणे') करू नका, थेट Analysis ने सुरुवात करा.
+4] '100%', 'गारंटी', 'निश्चितपणे' अशी पक्की भाषा कधीही लिहू नका - Probability साठी 'High Chances' आणि योगासाठी 'Strong' लिहा.
+5] System instructions मध्ये दिलेल्या आदेशांचेही पालन करा.
+
+तुम्ही तयार आहात का, फक्त एवढेच सांगा की कोणत्या आदेशांचे पालन कराल.
+----------
+आता आपण जातकाची अंक गणित Analysis काढणार आहोत, त्याआधी लक्षात ठेवण्याच्या गोष्टी :
+
+1] लक्षात ठेवा की सध्या नोव्हेंबर 2026 चालू आहे आणि जातक xyz 00 वर्षांचा/ची आहे. Analysis करताना वयाचे भान ठेवा.
+----------
+वर दिलेल्या जन्म तारखेच्या आधारे खालील मुद्द्यांचे सखोल आणि तपशीलवार Detailed Analysis करा, लक्षात ठेवा की प्रत्येक मुद्द्यासोबत त्याच्या प्रत्येक उपमुद्द्याचेही Detailed Analysis तपशीलवार असले पाहिजे, शेवटी प्रत्येक मुद्द्याचा Detailed Conclusion देखील द्या.
+
+मूलांक
+➤ मूलांक: जन्म तारखेच्या दिवसाच्या अंकांची बेरीज करून एक अंकी संख्या आणा. मूलांक काय आहे आणि तो कसा निघाला, हे स्पष्टपणे सांगा.
+➤ स्वामी ग्रह: मूलांकाचा स्वामी ग्रह कोणता आहे, आणि त्या ग्रहाचा मूळ स्वभाव काय आहे?
+➤ मूलांक आणि भाग्यांक यांच्या स्वामींचा परस्पर संबंध: दोन्ही स्वामी ग्रह एकमेकांचे मित्र आहेत, शत्रू आहेत की सम आहेत? यामुळे जातकाच्या जीवनात काय फरक पडतो?
+➤ स्वभाव आणि जीवनावर परिणाम: मूलांकावरून जातकाचा मूळ स्वभाव, ताकद आणि कमजोरी काय आहे? मूलांकाचा जीवन, करियर आणि नातेसंबंधांवर काय परिणाम होतो?
+----------
+वर दिलेल्या जन्म तारखेच्या आधारे खालील मुद्द्यांचे सखोल आणि तपशीलवार Detailed Analysis करा, लक्षात ठेवा की प्रत्येक मुद्द्यासोबत त्याच्या प्रत्येक उपमुद्द्याचेही Detailed Analysis तपशीलवार असले पाहिजे, शेवटी प्रत्येक मुद्द्याचा Detailed Conclusion देखील द्या.
+
+भाग्यांक
+➤ भाग्यांक: पूर्ण जन्म तारखेच्या सर्व अंकांची बेरीज करून एक अंकी संख्या आणा. भाग्यांक काय आहे आणि तो कसा निघाला, हे स्पष्टपणे सांगा.
+➤ स्वामी ग्रह: भाग्यांकाचा स्वामी ग्रह कोणता आहे, आणि त्या ग्रहाचा मूळ स्वभाव काय आहे?
+➤ जीवनाची दिशा: भाग्यांकावरून जातकाच्या जीवनाची मुख्य दिशा, करियर, धन आणि यश याबद्दल सांगा.
+➤ मूलांकाशी मेळ: भाग्यांक मूलांकाशी किती जुळतो? दोघांच्या मेळामुळे किंवा संघर्षामुळे जीवनात काय फरक पडतो?
+----------
+वर दिलेल्या नावाच्या आधारे खालील मुद्द्यांचे सखोल आणि तपशीलवार Detailed Analysis करा, लक्षात ठेवा की प्रत्येक मुद्द्यासोबत त्याच्या प्रत्येक उपमुद्द्याचेही Detailed Analysis तपशीलवार असले पाहिजे, शेवटी प्रत्येक मुद्द्याचा Detailed Conclusion देखील द्या.
+
+नामांक
+➤ नामांक: जातकाच्या नावाच्या प्रत्येक अक्षराला त्याचा अंक देऊन (A=1 ते Z=8, 9 नंतर पुन्हा 1 पासून सुरू करून) सर्वांची बेरीज करून एक अंकी संख्या आणा. नामांक काय आहे आणि तो कसा निघाला, हे स्पष्टपणे सांगा.
+➤ नामांकाचे फळ: नामांकावरून जातकाच्या नावाचा प्रभाव, ओळख आणि लोकांवर होणारा परिणाम कसा आहे?
+➤ भाग्यांकाशी मेळ: नामांक भाग्यांकाशी जुळतो की नाही? जुळत असेल तर काय फायदा आहे, जुळत नसेल तर काय अडचण येऊ शकते?
+----------
+वर दिलेल्या जन्म तारखेच्या आधारे खालील मुद्द्यांचे सखोल आणि तपशीलवार Detailed Analysis करा, लक्षात ठेवा की प्रत्येक मुद्द्यासोबत त्याच्या प्रत्येक उपमुद्द्याचेही Detailed Analysis तपशीलवार असले पाहिजे, शेवटी प्रत्येक मुद्द्याचा Detailed Conclusion देखील द्या.
+
+Personal Year
+➤ या वर्षाचा अंक: जातकाच्या जन्माच्या दिवस आणि महिन्याच्या अंकांमध्ये या वर्षाचे (2026) अंक मिळवून एक अंकी संख्या आणा. या वर्षाचा Personal Year अंक काय आहे आणि तो कसा निघाला, हे स्पष्टपणे सांगा.
+➤ या वर्षाचे फळ: या Personal Year अंकावरून या वर्षी जातकाच्या करियर, धन, आरोग्य आणि नातेसंबंधांवर काय परिणाम होईल?
+➤ या वर्षी काय करावे, काय टाळावे: या वर्षी जातकाने कोणती कामे करावीत आणि कोणत्या गोष्टी टाळाव्यात?
+----------
+वर काढलेल्या मूलांक, भाग्यांक, नामांक आणि Personal Year यांच्या आधारे खालील मुद्द्यांचे सखोल आणि तपशीलवार Detailed Analysis करा, लक्षात ठेवा की प्रत्येक मुद्द्यासोबत त्याच्या प्रत्येक उपमुद्द्याचेही Detailed Analysis तपशीलवार असले पाहिजे, शेवटी प्रत्येक मुद्द्याचा Detailed Conclusion देखील द्या.
+
+भाग्यशाली, शुभ आणि अशुभ
+➤ भाग्यशाली: जातकासाठी भाग्यशाली अंक, भाग्यशाली दिवस, भाग्यशाली वर्षे, भाग्यशाली धातू, भाग्यशाली रत्न आणि आराध्य देव/देवता कोणते आहेत?
+➤ शुभ: जातकासाठी शुभ अंक, मित्र अंक, शुभ ग्रह, मित्र राशी, शुभ लग्न, शुभ रंग, शुभ दिवस आणि शुभ दिशा कोणती आहेत?
+➤ अशुभ: जातकासाठी अशुभ अंक, शत्रू अंक, अशुभ ग्रह, शत्रू राशी, अशुभ लग्न, टाळण्यायोग्य रंग, प्रतिकूल दिवस आणि अशुभ दिशा कोणती आहेत?
+----------
+सवाल 1] माझ्यासाठी सर्वात भाग्यशाली अंक कोणता आहे?
+
+या प्रश्नाचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, जर उपाय आवश्यक असतील तर उपायांसह।
+----------
+सवाल 2] माझ्या मूलांक आणि भाग्यांकानुसार माझ्या जीवनावर आणि स्वभावावर काय परिणाम होईल?
+
+या प्रश्नाचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, जर उपाय आवश्यक असतील तर उपायांसह।
+----------
+सवाल 3] माझ्या कुंडलीनुसार मी कोणता अंक जास्त उपयोगात आणावा, जसे गाडीचा नंबर, मोबाईल नंबर?
+
+या प्रश्नाचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, जर उपाय आवश्यक असतील तर उपायांसह।
+----------
+सवाल 4] जीवनात अडचणी टाळण्यासाठी मी कोणते अंक टाळावेत?
+
+या प्रश्नाचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, जर उपाय आवश्यक असतील तर उपायांसह।
+----------
+सवाल 5] माझ्यासाठी कोणता काळ, दिवस, दशा आणि गोचर सर्वात भाग्यशाली आहे?
+
+या प्रश्नाचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, जर उपाय आवश्यक असतील तर उपायांसह।
+----------
+सवाल 6] जीवनात अडचणी टाळण्यासाठी मी कोणत्या गोष्टी टाळाव्यात - रंग, दिशा, दिवस, तिथी?
+
+या प्रश्नाचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, जर उपाय आवश्यक असतील तर उपायांसह।
+----------
+सवाल 7] माझ्या मूलांकानुसार माझ्यासाठी सर्वात चांगले करियर/काम कोणते आहे?
+
+या प्रश्नाचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, जर उपाय आवश्यक असतील तर उपायांसह।
+----------
+सवाल 8] विवाहासाठी कोणता अंक शुभ आहे, जीवनसाथीचा मूलांक कसा असावा?
+
+या प्रश्नाचे सखोल संशोधन करून ज्योतिषीय विश्लेषण विस्ताराने आणि निष्कर्ष देऊन करा, जर उपाय आवश्यक असतील तर उपायांसह।
+----------
+आतापर्यंत झालेल्या सर्व विश्लेषणांच्या आधारे जातकाच्या कमजोर अंकासाठी उपाय द्या:
+
+1] गैर-धार्मिक उपाय: (सवयींमध्ये बदल, दान-पुण्य (धार्मिक विधीशिवाय), सकारात्मक वागणुकीतील बदल)
+2] धार्मिक/पारंपरिक उपाय: (विशिष्ट देवतेची पूजा/जप, व्रत, धार्मिक दान, मंदिर दर्शन)
+3] रत्न/धातू संबंधी उपाय: (आवश्यक असल्यास, सावधगिरीसह)
+4] पंडित किंवा ज्योतिषाकडून करून घ्यावयाचे उपाय, किंवा एखाद्या तीर्थस्थानी जाऊन करावयाचे उपाय: (आवश्यक असल्यास)
+
+प्रत्येक उपायासोबत हेही सांगा की तो कोणत्या अंकाच्या कमजोरीसाठी आहे.
+
+कृपया लक्षात घ्या: उपाय सोपे, व्यावहारिक आणि जातकाच्या सध्याच्या आर्थिक स्थितीला अनुकूल असावेत.
+----------
+आता संपूर्ण Detailed Analysis झाले आहे. त्याच्या आधारे जातकाची अंक गणित Analysis ची Brief काढणार आहोत. खालील सर्व मुख्य सवालांची संक्षिप्त उत्तरे द्या (प्रत्येक 2-3 lines मध्ये), सवाल नंबरासह, report मध्ये सर्वात आधी.
+
+1] माझ्यासाठी सर्वात भाग्यशाली अंक कोणता आहे?
+2] माझ्या मूलांक आणि भाग्यांकानुसार माझ्या जीवनावर आणि स्वभावावर काय परिणाम होईल?
+3] माझ्या कुंडलीनुसार मी कोणता अंक जास्त उपयोगात आणावा, जसे गाडीचा नंबर, मोबाईल नंबर?
+4] जीवनात अडचणी टाळण्यासाठी मी कोणते अंक टाळावेत?
+5] माझ्यासाठी कोणता काळ, दिवस, दशा आणि गोचर सर्वात भाग्यशाली आहे?
+6] जीवनात अडचणी टाळण्यासाठी मी कोणत्या गोष्टी टाळाव्यात - रंग, दिशा, दिवस, तिथी?
+7] माझ्या मूलांकानुसार माझ्यासाठी सर्वात चांगले करियर/काम कोणते आहे?
+8] विवाहासाठी कोणता अंक शुभ आहे, जीवनसाथीचा मूलांक कसा असावा?
+
+जातकाचे सवाल :
+----------
+आता संपूर्ण Analysis झाले आहे. मूळ data (जन्म तारीख, नाव आणि कुंडलीचे तथ्य) शी प्रत्येक hard fact पुन्हा पडताळून तपासा - मूलांक, भाग्यांक आणि नामांक यांची गणना, Personal Year चा अंक, तारखा आणि संख्या. ज्या काही चुका आढळतील, फक्त त्यांची list द्या, संपूर्ण Analysis पुन्हा लिहू नका. शेवटी ही line लिहा: तपासणी पूर्ण - एकूण X चुका आढळल्या.`;
+        let currentLang = 'hi';
+        function getRawData() {
+            if (currentLang === 'en') return rawData_en;
+            if (currentLang === 'mr') return rawData_mr;
+            return rawData_hi;
+        }
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('prompt-container').innerHTML = '';
+            processData();
+        }
+
+        // सेपरेटर लॉजिक: --- या ___ लाइन्स से अलग करना
+        const separatorRegex = /\n-{10,}\n|\n_{10,}\n/g;
+        
+        function processData() {
+            const container = document.getElementById('prompt-container');
+            // पहले डैश लाइन्स से तोडें
+            let parts = getRawData().split(separatorRegex);
+
+            parts.forEach((part, index) => {
+                let cleanText = part.trim();
+                
+                // फिल्टरिंग लॉजिक
+                const lines = cleanText.split('\n');
+                const filteredLines = lines.filter(line => {
+                    const l = line.trim();
+                    // जंक (MMM... RRR... PPPP...) हटाएं
+                    if (l.match(/^[M|P|C|H|R]{5,}$/)) return false;
+                    // सिर्फ डैश वाली लाइन हटाएं
+                    if (l.match(/^-{5,}$/)) return false;
+                    return true;
+                });
+                
+                cleanText = filteredLines.join('\n').trim();
+
+                if (cleanText.length > 5) { // खाली या बहुत छोटी स्ट्रिंग न दिखाएं
+                    createCard(cleanText, index + 1);
+                }
+            });
+        }
+
+        function createCard(text, id) {
+            const container = document.getElementById('prompt-container');
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            header.innerHTML = `<span>Prompt #${id}</span>`;
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+            content.innerText = text;
+
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = 'Copy Prompt';
+            btn.onclick = () => copyText(text, btn);
+
+            card.appendChild(header);
+            card.appendChild(content);
+            card.appendChild(btn);
+            container.appendChild(card);
+        }
+
+        function showBtnFeedback(btn, success){
+            if(!btn) return;
+            var origText = btn.innerText;
+            var origBg = btn.style.backgroundColor;
+            btn.innerText = success ? "\u2713 Copied!" : "\u2717 Failed";
+            btn.style.backgroundColor = success ? "#2e7d32" : "#c62828";
+            btn.style.color = "#fff";
+            setTimeout(function(){ btn.innerText = origText; btn.style.backgroundColor = origBg; }, 2000);
+        }
+        function copyText(text, btn) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast();
+                    showBtnFeedback(btn, true);
+                }).catch(err => {
+                    fallbackCopy(text, btn);
+                });
+            } else {
+                fallbackCopy(text, btn);
+            }
+        }
+
+        function fallbackCopy(text, btn) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed'; // Avoid scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                var ok = document.execCommand('copy');
+                showToast();
+                showBtnFeedback(btn, ok);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                showBtnFeedback(btn, false);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast() {
+            var x = document.getElementById("snackbar");
+            x.className = "toast show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        // Initialize
+        processData();
+
+    </script>
+</body>
+</html>
