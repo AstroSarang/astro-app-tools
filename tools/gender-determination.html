@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gender Research - सभी 9 Versions (एक file, 9 tabs) v1.1</title>
+<style>
+body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
+h1{font-size:24px;color:#7a0000}
+h2{font-size:20px;color:#7a0000;border-bottom:2px solid #7a0000;padding-bottom:4px;margin-top:34px}
+h3{font-size:16px;color:#444;margin-top:22px}
+table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13.5px}
+th,td{border:1px solid #bbb;padding:5px 7px;text-align:left;vertical-align:top}
+th{background:#f2e6e6;color:#7a0000}
+.qual{background:#eef6ee;border-left:4px solid #2a7a2a;padding:8px 10px;font-weight:bold}
+.note{background:#fff8e1;border-left:4px solid #c90;padding:8px 10px}
+.warn{background:#fdecea;border:2px solid #b00;padding:12px;margin:12px 0}
+.verdict{background:#fdf0f0;border:2px solid #7a0000;padding:12px}
+.small{font-size:12.5px;color:#555}
+input[type=text]{width:520px;max-width:100%;padding:8px;font-size:15px}
+input[type=date]{padding:8px;font-size:15px}
+button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
+.btn-main{background:#7a0000;color:#fff;border:1px solid #7a0000}
+.tabbtn{background:#eee;border:1px solid #999;padding:8px 12px;font-size:14px}
+.tabbtn.active{background:#7a0000;color:#fff;border-color:#7a0000}
+.err{background:#fdecea;border:1px solid #b00;color:#900;padding:10px;margin:10px 0}
+#status{color:#555;margin:8px 0}
+.acc{font-size:13px;color:#555}
+</style>
+</head>
+<body>
+<h1>Gender Research - सभी 9 Versions (एक file, 9 tabs) v1.1</h1>
+<div class="warn"><b>यह research/comparison file है, नया product नहीं।</b> नीचे हर version की backtest accuracy लिखी है - कोई भी version 60% से ऊपर नहीं गया है, इसलिए इनमें से किसी को भी working prediction tool की तरह इस्तेमाल नहीं करना है। सभी 9 versions के logic मूल Python/JS sources से faithful port किए गए हैं, कोई नया logic नहीं बनाया गया है।</div>
+<p>
+<label for="astro-code"><b>Astro Code:</b></label><br>
+<input type="text" id="astro-code" value="" placeholder="AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN-DDDMME">
+</p>
+<p>
+<b>यह कुंडली किसकी है?</b><br>
+<label><input type="radio" name="native-gender" value="female" checked> स्त्री की (क्षेत्र स्फुट)</label>&nbsp;&nbsp;
+<label><input type="radio" name="native-gender" value="male"> पुरुष की (बीज स्फुट)</label>
+</p>
+<p>
+<label for="child-date"><b>पहली संतान के जन्म की तारीख (optional - सिर्फ J16/J17/J24 और v2.0 Tier 4 दशा के लिए):</b></label><br>
+<input type="date" id="child-date">
+</p>
+<p><button class="btn-main" onclick="runAll()">सभी Tabs में गणना करें</button></p>
+<div id="status">Ephemeris अभी लोड नहीं हुआ है - गणना दबाते ही लोड होगा।</div>
+<div id="error"></div>
+<div id="chart-info"></div>
+<p>
+<button class="tabbtn active" id="btn-1" onclick="showTab(1)">1. 7-vote</button>
+<button class="tabbtn" id="btn-2" onclick="showTab(2)">2. Gemini v1.0</button>
+<button class="tabbtn" id="btn-3" onclick="showTab(3)">3. Gemini v2.0</button>
+<button class="tabbtn" id="btn-4" onclick="showTab(4)">4. Gemini v3.0</button>
+<button class="tabbtn" id="btn-5" onclick="showTab(5)">5. v3.0 + mu0</button>
+<button class="tabbtn" id="btn-6" onclick="showTab(6)">6. Couple combiner</button>
+<button class="tabbtn" id="btn-7" onclick="showTab(7)">7. 24-जज पैनल</button>
+<button class="tabbtn" id="btn-8" onclick="showTab(8)">8. 28-जज पैनल</button>
+<button class="tabbtn" id="btn-9" onclick="showTab(9)">9. KP 5th CSL</button>
+</p>
+<div id="tab-1">
+<h2>1. 7-vote (majority vote, tie-break Venus D1)</h2>
+<p class="acc">Backtest accuracy: <b>54/104 (51.9%)</b> - 7 single नियमों (BNN, चंद्र D1, शुक्र D1, शुक्र D9, D7B, शुक्र D60, नवमेश D9) का बहुमत; बराबर हो तो शुक्र D1 से फैसला।</p>
+<div id="res-1"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-2" style="display:none">
+<h2>2. Gemini v1.0 (Weighted Scoring)</h2>
+<p class="acc">Backtest accuracy: <b>पुराने 5 पर 1/5</b> - Tier 1: D7 सप्तांश 50% + Tier 2: D1 पंचमेश व बीज/क्षेत्र स्फुट 30% + Tier 3: BNN गुरु क्रम 20%। (v1 quirks सहित: गलत नवांश formula, D7 में राहु +1/केतु -1, occupant 70% + lord 30%, BNN 360° दूरी।)</p>
+<div id="res-2"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-3" style="display:none">
+<h2>3. Gemini v2.0 (Tier system + PK penalty + Tier 4 दशा optional)</h2>
+<p class="acc">Backtest accuracy: <b>static 26/50 (52%)</b> - Tier 1 D7 (Lord 75% + Occupant 25%) + Tier 2 D1 + स्फुट (PK penalty) + Tier 3 BNN/Jaimini + Tier 4 दशा (optional, बच्चे की तारीख पर)। D7 boundary पर weights बदलते हैं।</p>
+<div id="res-3"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-4" style="display:none">
+<h2>4. Gemini v3.0 (mu0 = 0.0)</h2>
+<p class="acc">Backtest accuracy: <b>decided 13/33 (39.4%)</b> - 6 components (D7B, D1 कोर + स्फुट, D9, चंद्र) + time accuracy factor + D7 boundary factor + abstain नियम।</p>
+<div id="res-4"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-5" style="display:none">
+<h2>5. Gemini v3.0 + mu0 calibration (mu0 = +6.79)</h2>
+<p class="acc">Backtest accuracy: <b>mu0 के बाद भी decided 13/33 (39.4%)</b> - v3.0 जैसा ही, सिर्फ mu0 = +6.79 घटाकर (1000 synthetic charts से calibration)।</p>
+<div id="res-5"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-6" style="display:none">
+<h2>6. Couple combiner (पति-पत्नी दोनों के scores मिलाकर)</h2>
+<p class="acc">Backtest accuracy: <b>14 जोड़ों पर 7 सही, 3 abstain, 4 गलत</b> - दोनों partners के v3.0 (mu0=0) scores का confidence-weighted average, strictMode = OFF।</p>
+<p>
+<label><b>पति का Astro Code:</b></label><br>
+<input type="text" id="code-h" value="" placeholder="AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN-DDDMME"><br><br>
+<label><b>पत्नी का Astro Code:</b></label><br>
+<input type="text" id="code-w" value="" placeholder="AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN-DDDMME">
+</p>
+<p><button class="btn-main" onclick="runCouple()">Couple गणना करें</button></p>
+<div id="res-6"><p class="note">ऊपर दोनों Astro Codes डालकर गणना करें।</p></div>
+</div>
+<div id="tab-7" style="display:none">
+<h2>7. 24-जज पैनल (17 single + 7 systems)</h2>
+<p class="acc">Backtest accuracy: <b>61/104 (58.7%)</b> - सभी non-abstaining जजों का बहुमत; बराबर हो तो D7B (J05) से फैसला। J23 (couple combiner) single chart पर abstain करता है - जोड़ा Couple tab में डालें।</p>
+<div id="res-7"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-8" style="display:none">
+<h2>8. 28-जज पैनल (24 + 4 नए पंचम भाव वाले जज)</h2>
+<p class="acc">Backtest accuracy: <b>58/104 (55.8%)</b> - 24-जज पैनल + J25 D1 occupants, J26 D9 occupants, J27 D9 पंचमेश, J28 D7 occupants। 4 नए जज जोड़ने से पैनल और खराब हुआ था।</p>
+<div id="res-8"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-9" style="display:none">
+<h2>9. KP 5th CSL (कृष्णमूर्ति पद्धति - पंचम भाव उप-स्वामी)</h2>
+<p class="acc">Backtest accuracy: <b>reliable-time 85 पर primary 16/42 (38.1%)</b>, सिक्के से भी खराब; strict version की coverage सिर्फ 2/85। KP अयनांश (Lahiri - 5'26.22") + Placidus भाव। नियम: 5th CSL और खासकर उसका star lord पुरुष ग्रह (सूर्य, मंगल, गुरु) + विषम राशि = बेटा; स्त्री ग्रह (चंद्र, शुक्र) + सम राशि = बेटी; बुध, शनि, राहु, केतु neutral हैं।</p>
+<p class="note">Post-hoc खोज (नया नियम नहीं): sign उल्टा कर दें (विषम = बेटी, सम = बेटा) तो 26/42 (61.9%) हो जाता है - इस्तेमाल से पहले नए अलग cases पर confirm करना होगा।</p>
+<div id="res-9"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<script type="module">
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+const SIGNS = ["मेष","वृषभ","मिथुन","कर्क","सिंह","कन्या","तुला","वृश्चिक","धनु","मकर","कुंभ","मीन"];
+const SIGNS_EN = ["Mesha","Vrishabh","Mithun","Karka","Simha","Kanya","Tula","Vrishchik","Dhanu","Makar","Kumbha","Meen"];
+const HI = {'Sun':'सूर्य','Moon':'चंद्र','Mars':'मंगल','Mercury':'बुध','Jupiter':'गुरु','Venus':'शुक्र','Saturn':'शनि','Rahu':'राहु','Ketu':'केतु'};
+const HI_SIGN = {"Mesha":"मेष","Vrishabh":"वृषभ","Mithun":"मिथुन","Karka":"कर्क","Simha":"सिंह","Kanya":"कन्या","Tula":"तुला","Vrishchik":"वृश्चिक","Dhanu":"धनु","Makar":"मकर","Kumbha":"कुंभ","Meen":"मीन"};
+const P9 = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+const SIGN_LORD_ARR = ['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+const norm360 = d => ((d % 360) + 360) % 360;
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+let swe = null, SEP = null, ephemReady = false, ephemLoading = null;
+async function loadEphem(){
+  if(ephemReady) return;
+  if(ephemLoading) return ephemLoading;
+  ephemLoading = (async()=>{
+    const m = await import(/* @vite-ignore */EPHEM_CDN);
+    const se = new m.SwissEphemeris();
+    await se.init();
+    se.setSiderealMode(m.SiderealMode.Lahiri);
+    swe = se; SEP = m.Planet; ephemReady = true;
+  })();
+  return ephemLoading;
+}
+function parseCode(code){
+  const m = code.trim().match(/^AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-]\d{4})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])$/);
+  if(!m) return null;
+  const tzSign = m[7][0]==='+'?1:-1;
+  const tzH = tzSign*(parseInt(m[7].substring(1,3))+parseInt(m[7].substring(3))/60);
+  let lat = parseInt(m[8])+parseInt(m[9])/60;
+  let lon = parseInt(m[11])+parseInt(m[12])/60;
+  return {y:+m[1],mo:+m[2],d:+m[3],hh:+m[4],mi:+m[5],ss:+m[6],tzH,
+    lat:(m[10]==='S'?-lat:lat), lon:(m[13]==='W'?-lon:lon)};
+}
+
+// ================= Weighted Scoring Engine - Gemini (24 Nov 2026, दूसरा output) =================
+// Weights: Tier 1 D7 50% | Tier 2 D1+Sphuta 30% | Tier 3 BNN 20%
+// Final score: -100 (प्रबल कन्या) .. +100 (प्रबल पुत्र)
+// Dynamic rebalancing: tier3 == 0 -> D7 62.5% + D1 37.5%
+// Confidence: |score| >= 55 and tiers agree -> High; >= 25 -> Medium; else Low/मिश्रित
+const clamp = (v, lo = -1, hi = 1) => Math.max(lo, Math.min(hi, v));
+const signOf = lon => Math.floor((((lon % 360) + 360) % 360) / 30);
+const oddEven = s0 => (s0 % 2 === 0 ? 1 : -1); // Plain Odd/Even (0-based): even index = 1-based odd = पुरुष (+1)
+const navamsaSign = lon => (Math.floor(lon / 30) + Math.floor((lon % 30) / 3.3333333)) % 12;
+// D7 (0-based) - JyotishApp verified (Haripal/Sanjivani/Sakshi/Ashika PDFs, 10/10 signs each)
+function d7of(lon){
+  const s = Math.floor(lon/30), d = lon%30, pada = Math.floor(d/(30/7));
+  return s%2===0 ? (s+pada)%12 : (s+6+pada)%12;
+}
+// ---------- Tier 1: D7 Saptamsa (normalized) ----------
+const MALE_SIGNS_D7 = new Set([1, 4, 5, 7, 9, 12]); // Exception Table (1-based)
+const PLANET_GENDER_D7 = { Sun: 1, Mars: 1, Jupiter: 1, Rahu: 1, Moon: -1, Venus: -1, Ketu: -1, Mercury: 0, Saturn: 0 };
+const SIGN_LORD_D7 = { 1:"Mars", 2:"Venus", 3:"Mercury", 4:"Moon", 5:"Sun", 6:"Mercury", 7:"Venus", 8:"Mars", 9:"Jupiter", 10:"Saturn", 11:"Saturn", 12:"Jupiter" };
+const EXALTED_SIGN = { Sun: 1, Moon: 2, Mars: 10, Mercury: 6, Jupiter: 4, Venus: 12, Saturn: 7 };
+const DEBILITATED_SIGN = { Sun: 7, Moon: 8, Mars: 4, Mercury: 12, Jupiter: 10, Venus: 6, Saturn: 1 };
+function d7Tier(d7Lagna1, d7Planets1, options = {}) {
+  const { reverseOnNodesInLagna = false, flipOnExaltDebil = false } = options;
+  const trace = [];
+  let isForward = (d7Lagna1 % 2 === 1);
+  if (reverseOnNodesInLagna && (d7Planets1.Rahu === d7Lagna1 || d7Planets1.Ketu === d7Lagna1)) {
+    isForward = !isForward;
+    trace.push("D7 लग्न में राहु/केतु होने से गिनती की दिशा उलटी गई।");
+  }
+  const targetSign = isForward ? ((d7Lagna1 - 1 + 4) % 12) + 1 : ((d7Lagna1 - 1 + 8) % 12) + 1;
+  trace.push(`D7 लग्न: ${d7Lagna1} (${isForward ? "सव्य/5वाँ" : "अपसव्य/9वाँ"}) → संतान राशि: ${targetSign}`);
+  const occupants = Object.keys(d7Planets1).filter(p => d7Planets1[p] === targetSign);
+  let occupantRaw = 0;
+  occupants.forEach(p => { occupantRaw += PLANET_GENDER_D7[p]; });
+  const lord = SIGN_LORD_D7[targetSign];
+  const lordSign = d7Planets1[lord];
+  let lordSignScore = MALE_SIGNS_D7.has(lordSign) ? 2.0 : -2.0;
+  if (flipOnExaltDebil && (EXALTED_SIGN[lord] === lordSign || DEBILITATED_SIGN[lord] === lordSign)) {
+    lordSignScore = -lordSignScore;
+    trace.push(`भावेश ${lord} उच्च/नीच अवस्था में है → राशि संकेत उलटा गया।`);
+  }
+  const conjuncts = Object.keys(d7Planets1).filter(p => p !== lord && d7Planets1[p] === lordSign);
+  let conjunctScore = 0;
+  conjuncts.forEach(p => { conjunctScore += PLANET_GENDER_D7[p] * 2.5; });
+  const lordOwnScore = PLANET_GENDER_D7[lord] * 1.0;
+  let lordTotal = lordSignScore + conjunctScore + lordOwnScore;
+  if (PLANET_GENDER_D7[lord] === 0 && conjunctScore !== 0) {
+    lordTotal = conjunctScore + (lordSignScore * 0.5);
+    trace.push(`तटस्थ भावेश (${lord}) पर युति (${conjuncts.join(", ")}) को प्राथमिकता।`);
+  }
+  trace.push(`भावेश: ${lord} (राशि ${lordSign}, Exception=${lordSignScore}, युति=[${conjuncts.join(",") || "कोई नहीं"}]:${conjunctScore}, स्व-लिंग=${lordOwnScore}) → कुल=${lordTotal}`);
+  const lordNorm = clamp(lordTotal / 3.0);
+  let score, source;
+  if (occupants.length > 0 && occupantRaw !== 0) {
+    const occNorm = clamp(occupantRaw / 2.0); // 2 same-gender planets = decisive
+    score = clamp(occNorm * 0.70 + lordNorm * 0.30);
+    source = `संतान भाव में स्थित ग्रह (${occupants.join(", ")}) 70% + भावेश 30%`;
+  } else if (lordTotal !== 0) {
+    if (occupants.length > 0) trace.push(`संतान भाव के ग्रह (${occupants.join(", ")}) तटस्थ या बराबर हैं → भावेश निर्णायक।`);
+    score = lordNorm;
+    source = `संतान भावेश (${lord}) और D7 स्थिति`;
+  } else {
+    score = MALE_SIGNS_D7.has(targetSign) ? 0.35 : -0.35;
+    source = "टाई-ब्रेकर (संतान भाव की राशि)";
+  }
+  trace.push(`D7 normalized score: ${score.toFixed(3)} (${source})`);
+  return { score, trace, targetSign, lord, lordSign, occupants, conjuncts, lordTotal, occupantRaw, source };
+}
+// ---------- Tier 2: D1 + Sphuta ----------
+// D1 gender: Sun/Mars/Jupiter +1, Moon/Venus -1, Mercury/Saturn 0, Rahu -1 / Ketu +1 (project BNN convention)
+const D1_GENDER = { Sun: 1, Mars: 1, Jupiter: 1, Moon: -1, Venus: -1, Mercury: 0, Saturn: 0, Rahu: -1, Ketu: 1 };
+function aspectOffsets(p){
+  if(p==='Mars') return [3,6,7];
+  if(p==='Jupiter') return [4,6,8];
+  if(p==='Saturn') return [2,6,9];
+  if(p==='Rahu'||p==='Ketu') return [4,6,8];
+  return [6];
+}
+function aspectingPlanets(plSigns, sign){
+  return Object.keys(plSigns).filter(p => aspectOffsets(p).some(o => (plSigns[p]+o)%12===sign));
+}
+function d1Tier(chart) {
+  const trace = [];
+  const plSigns = {};
+  for (const p of P9) plSigns[p] = signOf(chart.planets[p]);
+  const lagna = signOf(chart.lagna);
+  const sign5 = (lagna + 4) % 12;
+  const lord5 = SIGN_LORD_ARR[sign5];
+  const lord5Sign = plSigns[lord5];
+  const navSign = navamsaSign(chart.planets[lord5]);
+  const navLord = SIGN_LORD_ARR[navSign];
+  const occupants5 = P9.filter(p => plSigns[p] === sign5);
+  const aspectors5 = aspectingPlanets(plSigns, sign5);
+  const influencers = [...new Set([...occupants5, ...aspectors5])];
+  let houseInfluence = 0;
+  influencers.forEach(p => { houseInfluence += D1_GENDER[p]; });
+  const t5sign = oddEven(sign5);
+  const tLordSign = oddEven(lord5Sign);
+  const tLordOwn = D1_GENDER[lord5];
+  const tNavLord = D1_GENDER[navLord];
+  const tHouse = clamp(houseInfluence / 2) * 1.5;
+  const partAraw = 0.5*t5sign + 1.0*tLordSign + 0.75*tLordOwn + 1.25*tNavLord + tHouse;
+  const partA = clamp(partAraw / 4.0);
+  trace.push(`D1 पंचम राशि ${SIGNS_EN[sign5]} (${t5sign>0?"+":""}${t5sign}×0.5), पंचमेश ${lord5} राशि ${SIGNS_EN[lord5Sign]} (${tLordSign>0?"+":""}${tLordSign}×1.0), पंचमेश स्व-लिंग (${tLordOwn>0?"+":""}${tLordOwn}×0.75), नवांशपति ${navLord} (${tNavLord>0?"+":""}${tNavLord}×1.25), भाव प्रभाव [${influencers.join(",")||"कोई नहीं"}]=${houseInfluence} (×1.5) → Part A raw ${partAraw.toFixed(2)} → ${partA.toFixed(3)}`);
+  let sphutaLon, sphutaName;
+  if (chart.nativeGender === 'male') {
+    sphutaLon = (chart.planets.Sun + chart.planets.Venus + chart.planets.Jupiter) % 360;
+    sphutaName = 'बीज स्फुट';
+  } else {
+    sphutaLon = (chart.planets.Moon + chart.planets.Mars + chart.planets.Jupiter) % 360;
+    sphutaName = 'क्षेत्र स्फुट';
+  }
+  const s1 = oddEven(signOf(sphutaLon));
+  const s2 = oddEven(navamsaSign(sphutaLon));
+  const partB = (s1 + s2) / 2;
+  trace.push(`${sphutaName}: ${sphutaLon.toFixed(2)}° → D1 राशि ${SIGNS_EN[signOf(sphutaLon)]} (${s1>0?"+":""}${s1}), D9 राशि ${SIGNS_EN[navamsaSign(sphutaLon)]} (${s2>0?"+":""}${s2}) → Part B ${partB.toFixed(3)}`);
+  const score = clamp(partA * 0.60 + partB * 0.40);
+  trace.push(`Tier 2 score: ${score.toFixed(3)} (Part A ${partA.toFixed(3)}×0.60 + Part B ${partB.toFixed(3)}×0.40)`);
+  return { score, trace, partA, partB, sign5, lord5, lord5Sign, navLord, influencers, houseInfluence, sphutaLon, sphutaName };
+}
+// ---------- Tier 3: BNN Jupiter degree order ----------
+// BNN gender (Gemini): Sun/Mars/Ketu +1, Moon/Venus/Rahu -1, Mercury -0.5, Saturn 0, Jupiter 0
+const BNN_GENDER = { Sun: 1, Mars: 1, Ketu: 1, Moon: -1, Venus: -1, Rahu: -1, Mercury: -0.5, Saturn: 0, Jupiter: 0 };
+function bnnTier(chart) {
+  const trace = [];
+  const jLon = chart.planets.Jupiter;
+  const jSign = signOf(jLon);
+  const houses = [jSign, (jSign+4)%12, (jSign+8)%12, (jSign+6)%12]; // गुरु से 1, 5, 9, 7
+  const inHouses = P9.filter(p => p !== 'Jupiter' && houses.includes(signOf(chart.planets[p])));
+  let primary = null, bestDist = Infinity;
+  for (const p of inHouses) {
+    const dist = ((chart.planets[p] - jLon) % 360 + 360) % 360;
+    if (dist < bestDist) { bestDist = dist; primary = p; }
+  }
+  const primaryScore = primary ? BNN_GENDER[primary] : 0;
+  const balanceRaw = inHouses.reduce((a,p) => a + BNN_GENDER[p], 0);
+  const balance = clamp(balanceRaw / 2);
+  const score = clamp(primaryScore * 0.70 + balance * 0.30);
+  trace.push(`गुरु ${SIGNS_EN[jSign]} ${jLon.toFixed(2)}°; त्रिकोण/सप्तम भावों में ग्रह: [${inHouses.join(",")||"कोई नहीं"}]`);
+  if (primary) trace.push(`निकटतम आगे ग्रह: ${primary} (${bestDist.toFixed(2)}° आगे, BNN लिंग ${primaryScore>0?"+":""}${primaryScore}) ×0.70`);
+  else trace.push(`गुरु के त्रिकोण/सप्तम में कोई ग्रह नहीं → primary 0`);
+  trace.push(`त्रिकोण संतुलन: ${balanceRaw} → ${balance.toFixed(3)} ×0.30`);
+  trace.push(`Tier 3 score: ${score.toFixed(3)}`);
+  return { score, trace, primary, bestDist, inHouses, balanceRaw, balance, primaryScore };
+}
+// ---------- Combined ----------
+function predictFirstChildWeighted(chart, options = {}) {
+  const d7Planets1 = {};
+  for (const p of P9) d7Planets1[p] = d7of(chart.planets[p]) + 1;
+  const d7Lagna1 = d7of(chart.lagna) + 1;
+  const t1 = d7Tier(d7Lagna1, d7Planets1, options);
+  const t2 = d1Tier(chart);
+  const t3 = bnnTier(chart);
+  let w1 = 0.50, w2 = 0.30, w3 = 0.20, rebalanced = false;
+  if (t3.score === 0) {
+    w1 = 0.625; w2 = 0.375; w3 = 0; rebalanced = true;
+  }
+  const final = t1.score*w1 + t2.score*w2 + t3.score*w3;
+  const score = final * 100;
+  const activeTiers = [[t1.score,w1],[t2.score,w2],[t3.score,w3]].filter(([s,w]) => w > 0 && s !== 0);
+  const agree = activeTiers.length > 0 && activeTiers.every(([s]) => Math.sign(s) === Math.sign(final));
+  let confidence;
+  if (Math.abs(score) >= 55 && agree) confidence = 'High (प्रबल संकेत)';
+  else if (Math.abs(score) >= 25) confidence = 'Medium';
+  else confidence = 'Low (मिश्रित / दशा पर निर्भर)';
+  const prediction = score > 0 ? 'पुत्र (Male)' : (score < 0 ? 'कन्या (Female)' : 'अनिर्णीत (मिश्रित)');
+  return {
+    prediction, score, confidence,
+    weights: { d7: w1, d1: w2, bnn: w3 }, rebalanced,
+    breakdown: {
+      d7_Saptamsa: { weight: w1, score: t1.score, trace: t1.trace, detail: t1 },
+      d1_And_Sphuta: { weight: w2, score: t2.score, trace: t2.trace, detail: t2 },
+      bnn_JupiterOrder: { weight: w3, score: t3.score, trace: t3.trace, detail: t3 }
+    }
+  };
+}
+
+function d1TierFixed(chart) {
+  const trace = [];
+  const plSigns = {};
+  for (const p of P9) plSigns[p] = signOf(chart.planets[p]);
+  const lagna = signOf(chart.lagna);
+  const sign5 = (lagna + 4) % 12;
+  const lord5 = SIGN_LORD_ARR[sign5];
+  const lord5Sign = plSigns[lord5];
+  const navSign = navamsaSignFixed(chart.planets[lord5]);
+  const navLord = SIGN_LORD_ARR[navSign];
+  const occupants5 = P9.filter(p => plSigns[p] === sign5);
+  const aspectors5 = aspectingPlanets(plSigns, sign5);
+  const influencers = [...new Set([...occupants5, ...aspectors5])];
+  let houseInfluence = 0;
+  influencers.forEach(p => { houseInfluence += D1_GENDER[p]; });
+  const t5sign = oddEven(sign5);
+  const tLordSign = oddEven(lord5Sign);
+  const tLordOwn = D1_GENDER[lord5];
+  const tNavLord = D1_GENDER[navLord];
+  const tHouse = clamp(houseInfluence / 2) * 1.5;
+  const partAraw = 0.5*t5sign + 1.0*tLordSign + 0.75*tLordOwn + 1.25*tNavLord + tHouse;
+  const partA = clamp(partAraw / 4.0);
+  trace.push(`D1 पंचम राशि ${SIGNS_EN[sign5]} (${t5sign>0?"+":""}${t5sign}×0.5), पंचमेश ${lord5} राशि ${SIGNS_EN[lord5Sign]} (${tLordSign>0?"+":""}${tLordSign}×1.0), पंचमेश स्व-लिंग (${tLordOwn>0?"+":""}${tLordOwn}×0.75), नवांशपति ${navLord} (${tNavLord>0?"+":""}${tNavLord}×1.25), भाव प्रभाव [${influencers.join(",")||"कोई नहीं"}]=${houseInfluence} (×1.5) → Part A raw ${partAraw.toFixed(2)} → ${partA.toFixed(3)}`);
+  let sphutaLon, sphutaName;
+  if (chart.nativeGender === 'male') {
+    sphutaLon = (chart.planets.Sun + chart.planets.Venus + chart.planets.Jupiter) % 360;
+    sphutaName = 'बीज स्फुट';
+  } else {
+    sphutaLon = (chart.planets.Moon + chart.planets.Mars + chart.planets.Jupiter) % 360;
+    sphutaName = 'क्षेत्र स्फुट';
+  }
+  const s1 = oddEven(signOf(sphutaLon));
+  const s2 = oddEven(navamsaSignFixed(sphutaLon));
+  const partB = (s1 + s2) / 2;
+  trace.push(`${sphutaName}: ${sphutaLon.toFixed(2)}° → D1 राशि ${SIGNS_EN[signOf(sphutaLon)]} (${s1>0?"+":""}${s1}), D9 राशि ${SIGNS_EN[navamsaSignFixed(sphutaLon)]} (${s2>0?"+":""}${s2}) → Part B ${partB.toFixed(3)}`);
+  const score = clamp(partA * 0.60 + partB * 0.40);
+  trace.push(`Tier 2 score: ${score.toFixed(3)} (Part A ${partA.toFixed(3)}×0.60 + Part B ${partB.toFixed(3)}×0.40)`);
+  const pk = P9.reduce((best,p)=> (norm360(chart.planets[p])%30) < (norm360(chart.planets[best])%30) ? p : best, P9[0]);
+  return { score, trace, partA, partB, sign5, lord5, lord5Sign, navLord, influencers, houseInfluence, sphutaLon, sphutaName, pk };
+}
+
+// ============================================================
+// ENGINE v3.0 — First Child Gender Research Scorer & Couple Combiner
+// ============================================================
+
+const SIGN_LORD = {
+  1: "Mars", 2: "Venus", 3: "Mercury", 4: "Moon",
+  5: "Sun", 6: "Mercury", 7: "Venus", 8: "Mars",
+  9: "Jupiter", 10: "Saturn", 11: "Saturn", 12: "Jupiter"
+};
+
+const ALL_PLANETS = [
+  "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"
+];
+
+function normDeg(deg) {
+  return ((deg % 360) + 360) % 360;
+}
+
+function clampV3(val, min, max) {
+  return Math.max(min, Math.min(max, val));
+}
+
+function mean(arr) {
+  if (!arr.length) return 0;
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
+function degToSign(deg) {
+  return Math.floor(normDeg(deg) / 30) + 1; // 1 = Aries ... 12 = Pisces
+}
+
+function signPol(sign) {
+  return sign % 2 === 1 ? 1.0 : -1.0; // Odd = +1, Even = -1
+}
+
+function planetPol(planet, sign) {
+  if (planet === "Sun" || planet === "Mars" || planet === "Jupiter") return 1.0;
+  if (planet === "Moon" || planet === "Venus") return -1.0;
+  if (planet === "Mercury" || planet === "Saturn") return sign % 2 === 1 ? 0.75 : -0.75;
+  if (planet === "Rahu") return 0.5;
+  if (planet === "Ketu") return -0.5;
+  return 0.0;
+}
+
+// Parashari Saptamsha (D7)
+function getD7Sign(deg) {
+  const s = degToSign(deg);
+  const rem = normDeg(deg) % 30;
+  const part = Math.min(6, Math.floor((rem * 7) / 30)); // 0..6
+  const startSign = s % 2 === 1 ? s : ((s - 1 + 6) % 12) + 1;
+  return ((startSign - 1 + part) % 12) + 1;
+}
+
+// Parashari Navamsha (D9)
+function getD9Sign(deg) {
+  const s = degToSign(deg);
+  const rem = normDeg(deg) % 30;
+  const pada = Math.min(8, Math.floor((rem * 9) / 30)); // 0..8
+  const mod = s % 4;
+  const startSign = mod === 1 ? 1 : mod === 2 ? 10 : mod === 3 ? 7 : 4;
+  return ((startSign - 1 + pada) % 12) + 1;
+}
+
+// समय सटीकता गुणक: mode = "d7" (1.0 / 0.7 / 0.25) या "couple" (1.0 / 0.8 / 0.5)
+function getTimeAccuracyFactor(timeStr, mode = "d7") {
+  const parts = String(timeStr || "00:00").trim().split(":").map(Number);
+  const mm = Number.isFinite(parts[1]) ? parts[1] : 0;
+  const ss = Number.isFinite(parts[2]) ? parts[2] : 0;
+
+  if (ss !== 0) return 1.0; // सेकंड्स दर्ज हैं
+  if (mm === 0 || mm === 30) return mode === "couple" ? 0.50 : 0.25;
+  if (mm % 5 === 0) return mode === "couple" ? 0.80 : 0.70;
+  return 1.0;
+}
+
+// D7 लग्न सीमा-दूरी गुणक (B)
+function getD7BoundaryFactor(ascDeg) {
+  const theta = normDeg(ascDeg) % 30;
+  const span = 30 / 7; // 4.285714...
+  const r = theta % span;
+  const d = Math.min(r, span - r);
+  if (d < 0.35) return 0.25;
+  if (d < 0.75) return 0.60;
+  return 1.0;
+}
+
+// पारशरी ग्रह दृष्टि व युति जांच (houseDiff = 1..12)
+function aspectsTarget(planet, fromSign, targetSign, includeConjunction = true) {
+  const diff = ((targetSign - fromSign + 12) % 12) + 1;
+  if (includeConjunction && diff === 1) return true;
+  if (diff === 7) return true;
+  if (planet === "Mars" && (diff === 4 || diff === 8)) return true;
+  if (planet === "Jupiter" && (diff === 5 || diff === 9)) return true;
+  if (planet === "Saturn" && (diff === 3 || diff === 10)) return true;
+  return false;
+}
+
+/**
+ * Engine v3.0 मुख्य फ़ंक्शन
+ * chart = {
+ *   id: "#57",
+ *   timeStr: "15:25",
+ *   nativeGender: "M" | "F" | null,
+ *   ascDeg: 325.4, // Sidereal Lagna (0..360)
+ *   planets: { Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu }
+ * }
+ */
+function predictGenderV3(chart, mu0 = 0.0) {
+  const d1Signs = {};
+  const d7Signs = {};
+  const d9Signs = {};
+
+  for (const p of ALL_PLANETS) {
+    d1Signs[p] = degToSign(chart.planets[p]);
+    d7Signs[p] = getD7Sign(chart.planets[p]);
+    d9Signs[p] = getD9Sign(chart.planets[p]);
+  }
+
+  const d1Lagna = degToSign(chart.ascDeg);
+  const d7Lagna = getD7Sign(chart.ascDeg);
+
+  // --- Step 1: घटक A (D7B) ---
+  // विषम D7 लग्न -> 5वाँ भाव (+4); सम D7 लग्न -> उल्टी गिनती से 5वाँ यानी 9वाँ भाव (+8)
+  const h1SignD7 = d7Lagna % 2 === 1
+    ? ((d7Lagna - 1 + 4) % 12) + 1
+    : ((d7Lagna - 1 + 8) % 12) + 1;
+
+  const lord1 = SIGN_LORD[h1SignD7];
+  const sLord = planetPol(lord1, d7Signs[lord1]);
+
+  const d7Occupants = ALL_PLANETS.filter(p => d7Signs[p] === h1SignD7);
+  let sA;
+  if (d7Occupants.length > 0) {
+    const sOcc = mean(d7Occupants.map(p => planetPol(p, h1SignD7)));
+    sA = 0.70 * sLord + 0.30 * sOcc;
+  } else {
+    const sOcc = signPol(d7Signs[lord1]);
+    sA = 0.75 * sLord + 0.25 * sOcc;
+  }
+
+  const T = getTimeAccuracyFactor(chart.timeStr, "d7");
+  const B = getD7BoundaryFactor(chart.ascDeg);
+  const wA = 45.0 * T * B;
+
+  // --- Step 2: घटक B (D1 संतान कोर + बीज/क्षेत्र स्फुट) ---
+  const h5SignD1 = ((d1Lagna - 1 + 4) % 12) + 1;
+  const lord5 = SIGN_LORD[h5SignD1];
+  const lord5Sign = d1Signs[lord5];
+
+  const s5L = 0.50 * planetPol(lord5, lord5Sign) + 0.50 * signPol(lord5Sign);
+
+  const h5Occupants = ALL_PLANETS.filter(p => d1Signs[p] === h5SignD1);
+  const s5H = h5Occupants.length > 0
+    ? 0.50 * signPol(h5SignD1) + 0.50 * mean(h5Occupants.map(p => planetPol(p, h5SignD1)))
+    : signPol(h5SignD1);
+
+  // 5H पर दृष्टि (occupants को छोड़कर) + 5L पर दृष्टि/युति (5L स्वयं को छोड़कर)
+  const aspectingPlanets = new Set();
+  for (const p of ALL_PLANETS) {
+    if (aspectsTarget(p, d1Signs[p], h5SignD1, false)) aspectingPlanets.add(p);
+    if (p !== lord5 && aspectsTarget(p, d1Signs[p], lord5Sign, true)) aspectingPlanets.add(p);
+  }
+  const sAsp = aspectingPlanets.size > 0
+    ? mean([...aspectingPlanets].map(p => planetPol(p, d1Signs[p])))
+    : 0.0;
+
+  const sB1 = clampV3(0.50 * s5L + 0.30 * s5H + 0.20 * sAsp, -1.0, 1.0);
+
+  let sB2 = 0.0;
+  let wB1 = 12.5;
+  let wB2 = 12.5;
+
+  if (chart.nativeGender === "M" || chart.nativeGender === "F") {
+    const sphutaDeg = chart.nativeGender === "M"
+      ? normDeg(chart.planets.Sun + chart.planets.Venus + chart.planets.Jupiter)
+      : normDeg(chart.planets.Moon + chart.planets.Mars + chart.planets.Jupiter);
+    sB2 = 0.50 * signPol(degToSign(sphutaDeg)) + 0.50 * signPol(getD9Sign(sphutaDeg));
+  } else {
+    wB1 = 20.0;
+    wB2 = 0.0;
+  }
+
+  // --- Step 3: घटक C (D9 नवांश सिग्नल) ---
+  const sC1 = signPol(d9Signs.Venus);
+  const wC1 = 10.0;
+
+  const h9SignD1 = ((d1Lagna - 1 + 8) % 12) + 1;
+  const lord9 = SIGN_LORD[h9SignD1];
+  const sC2 = signPol(d9Signs[lord9]);
+  const ascInSign = normDeg(chart.ascDeg) % 30;
+  const nearSignEdge = ascInSign < 1.5 || ascInSign > 28.5;
+  const wC2 = (nearSignEdge && T === 0.25) ? 4.0 : 10.0;
+
+  // --- Step 4: घटक D (चंद्र D1) ---
+  const moonSign = d1Signs.Moon;
+  const moonLord = SIGN_LORD[moonSign];
+  const sD = 0.50 * signPol(moonSign) + 0.50 * planetPol(moonLord, d1Signs[moonLord]);
+  const wD = 10.0;
+
+  // --- Step 5: समेकित स्कोर और mu0 कैलिब्रेशन ---
+  const nonD7Num = wB1 * sB1 + wB2 * sB2 + wC1 * sC1 + wC2 * sC2 + wD * sD;
+  const nonD7Den = wB1 + wB2 + wC1 + wC2 + wD;
+  const sNonD7 = 100.0 * (nonD7Num / nonD7Den);
+
+  const totalNum = wA * sA + nonD7Num;
+  const totalDen = wA + nonD7Den;
+  const sRaw = 100.0 * (totalNum / totalDen);
+  const sFinal = clampV3(sRaw - mu0, -100.0, 100.0);
+
+  // --- Step 6: निर्णय और Abstain नियम ---
+  let verdict = "ABSTAIN";
+  let confidence = "NONE";
+  let abstainReason = null;
+
+  const d7Quality = T * B;
+  const strongConflict =
+    d7Quality >= 0.70 &&
+    Math.abs(sA) >= 0.70 &&
+    Math.abs(sNonD7) >= 40.0 &&
+    (sA * sNonD7 < 0) &&
+    Math.abs(sFinal) < 25.0;
+
+  if (Math.abs(sFinal) < 15.0) {
+    abstainReason = "dead_zone";
+  } else if (strongConflict) {
+    abstainReason = "d7_vs_nond7_conflict";
+  } else if (T === 0.25 && Math.abs(sFinal) < 20.0) {
+    abstainReason = "round_time_weak_signal";
+  } else {
+    verdict = sFinal > 0 ? "boy" : "girl";
+    confidence = Math.abs(sFinal) >= 30.0 ? "HIGH" : "MEDIUM";
+  }
+
+  return {
+    id: chart.id,
+    verdict,
+    confidence,
+    abstainReason,
+    sFinal: Number(sFinal.toFixed(2)),
+    sRaw: Number(sRaw.toFixed(2)),
+    sNonD7: Number(sNonD7.toFixed(2)),
+    d7Quality: Number(d7Quality.toFixed(3)),
+    components: {
+      sA: Number(sA.toFixed(3)), wA: Number(wA.toFixed(2)),
+      sB1: Number(sB1.toFixed(3)), sB2: Number(sB2.toFixed(3)),
+      sC1, sC2, sD: Number(sD.toFixed(3))
+    }
+  };
+}
+
+// 1,000 सिंथेटिक चार्ट्स पर mu0 निकालने का हेल्पर
+function computeMu0(syntheticCharts) {
+  const scores = syntheticCharts.map(c => predictGenderV3(c, 0.0).sRaw);
+  return mean(scores);
+}
+
+// ============================================================
+// COUPLE COMBINER (Confidence-Weighted Average)
+// ============================================================
+function combineCouple(husbandScore, husbandTimeStr, wifeScore, wifeTimeStr, strictMode = false) {
+  const tH = getTimeAccuracyFactor(husbandTimeStr, "couple");
+  const tW = getTimeAccuracyFactor(wifeTimeStr, "couple");
+  const wH = tH * Math.abs(husbandScore);
+  const wW = tW * Math.abs(wifeScore);
+
+  if (wH + wW === 0) {
+    return {
+      sH: husbandScore, sW: wifeScore, tH, tW, wH: 0, wW: 0,
+      sCouple: 0, R: 1.0, agreed: true, verdict: "ABSTAIN"
+    };
+  }
+
+  const sCouple = (wH * husbandScore + wW * wifeScore) / (wH + wW);
+  const minW = Math.min(wH, wW);
+  const R = minW === 0 ? Infinity : Math.max(wH, wW) / minW;
+  const agreed = (husbandScore * wifeScore) >= 0;
+
+  let verdict = "ABSTAIN";
+  if (agreed) {
+    if (Math.abs(sCouple) >= 12.0) verdict = sCouple > 0 ? "boy" : "girl";
+  } else {
+    const highConflictStrict =
+      strictMode && Math.abs(husbandScore) >= 30 && Math.abs(wifeScore) >= 30 && R < 2.0;
+    if (!highConflictStrict && Math.abs(sCouple) >= 15.0 && R >= 1.50) {
+      verdict = sCouple > 0 ? "boy" : "girl";
+    }
+  }
+
+  return {
+    sH: husbandScore,
+    sW: wifeScore,
+    tH,
+    tW,
+    wH: Number(wH.toFixed(2)),
+    wW: Number(wW.toFixed(2)),
+    sCouple: Number(sCouple.toFixed(2)),
+    R: Number.isFinite(R) ? Number(R.toFixed(2)) : Infinity,
+    agreed,
+    verdict
+  };
+}
+
+// ============================================================
+// 50 केसों पर बैच-टेस्टिंग और मेट्रिक्स लॉगर
+// ============================================================
+function evaluateBatch(cases, mu0 = 0.0) {
+  let decided = 0, correct = 0;
+  let highDecided = 0, highCorrect = 0;
+  let boyPredWrong = 0, girlPredWrong = 0;
+  let d7OnlyTotal = 0, d7OnlyCorrect = 0;
+
+  const rows = cases.map(c => {
+    const res = predictGenderV3(c, mu0);
+    if (res.verdict !== "ABSTAIN") {
+      decided++;
+      const isOk = res.verdict === c.actual;
+      if (isOk) correct++;
+      else if (res.verdict === "boy") boyPredWrong++;
+      else girlPredWrong++;
+
+      if (res.confidence === "HIGH") {
+        highDecided++;
+        if (isOk) highCorrect++;
+      }
+    }
+    if (res.d7Quality >= 0.70 && res.components.sA !== 0) {
+      d7OnlyTotal++;
+      const d7Pred = res.components.sA > 0 ? "boy" : "girl";
+      if (d7Pred === c.actual) d7OnlyCorrect++;
+    }
+    return { ...res, actual: c.actual };
+  });
+
+  return {
+    totalCases: cases.length,
+    coveragePct: Number(((decided / cases.length) * 100).toFixed(1)),
+    decidedAccuracyPct: decided ? Number(((correct / decided) * 100).toFixed(1)) : 0,
+    decidedRatio: `${correct}/${decided}`,
+    highConfRatio: `${highCorrect}/${highDecided}`,
+    errorsByPredictedGender: { predictedBoyWasGirl: boyPredWrong, predictedGirlWasBoy: girlPredWrong },
+    d7OnlyReliableRatio: `${d7OnlyCorrect}/${d7OnlyTotal}`,
+    rows
+  };
+}
+
+
+
+// ================= v2.0 engine (port of gender-engine-v2/engine_v2.py) =================
+const navamsaSignFixed = lon => Math.floor(norm360(lon)/(30/9)) % 12;
+const d60of = lon => { const s = Math.floor(norm360(lon)/30); const pada = Math.floor((norm360(lon)%30)/0.5); return (s+pada)%12; };
+const d7BoundaryDist = lagnaLon => { const r = (norm360(lagnaLon)%30)%(30/7); return Math.min(r, 30/7-r); };
+const PLANET_GENDER_D7_V2 = {Sun:1,Mars:1,Jupiter:1,Rahu:-1,Moon:-1,Venus:-1,Ketu:1,Mercury:0,Saturn:0};
+// Python round(): half-to-even (banker's rounding) - engine_v2 static score uses round()
+function pyRound(x){ const f = Math.floor(x); const d = x - f; if (d > 0.5) return f+1; if (d < 0.5) return f; return (f % 2 === 0) ? f : f+1; }
+
+function d7TierV2(d7Lagna1, d7Planets1){
+  const isForward = (d7Lagna1 % 2 === 1);
+  const targetSign = isForward ? ((d7Lagna1-1+4)%12)+1 : ((d7Lagna1-1+8)%12)+1;
+  const occ = P9.filter(p => d7Planets1[p] === targetSign);
+  const occRaw = occ.reduce((a,p)=>a+PLANET_GENDER_D7_V2[p],0);
+  const lord = SIGN_LORD_D7[targetSign];
+  const lordSign = d7Planets1[lord];
+  let lss = MALE_SIGNS_D7.has(lordSign) ? 2.0 : -2.0;
+  if (EXALTED_SIGN[lord] === lordSign || DEBILITATED_SIGN[lord] === lordSign) lss = -lss;
+  const conj = P9.filter(p => p !== lord && d7Planets1[p] === lordSign);
+  const conjScore = conj.reduce((a,p)=>a+PLANET_GENDER_D7_V2[p]*1.5,0);
+  const lordOwn = PLANET_GENDER_D7_V2[lord];
+  let lordTotal = lss + conjScore + lordOwn;
+  if (PLANET_GENDER_D7_V2[lord] === 0 && conjScore !== 0) lordTotal = conjScore + lss*0.5;
+  const lordNorm = clamp(lordTotal/3.0);
+  let score;
+  if (occ.length > 0 && occRaw !== 0) score = clamp(clamp(occRaw/2.0)*0.25 + lordNorm*0.75);
+  else if (lordTotal !== 0) score = lordNorm;
+  else score = MALE_SIGNS_D7.has(targetSign) ? 0.35 : -0.35;
+  return {score, targetSign, lord, lordSign, occupants: occ, conjuncts: conj, lordTotal};
+}
+function circDist(a,b){ const d = Math.abs(a-b)%30; return Math.min(d, 30-d); }
+function bnnTierV2(chart){
+  const pl = chart.planets;
+  const jLon = pl.Jupiter, jSign = signOf(jLon), jDeg = norm360(jLon)%30;
+  const hs = new Set([0,1,4,6,8].map(o=>(jSign+o)%12));
+  const inH = P9.filter(p => p!=='Jupiter' && hs.has(signOf(pl[p])));
+  const cands = inH.filter(p => p!=='Rahu' && p!=='Ketu');
+  let primary = null;
+  if (cands.length) primary = cands.reduce((best,p)=> circDist(norm360(pl[p])%30, jDeg) < circDist(norm360(pl[best])%30, jDeg) ? p : best, cands[0]);
+  const balRaw = inH.reduce((a,p)=>a+BNN_GENDER[p],0);
+  const bal = clamp(balRaw/2.5);
+  const ps = primary ? BNN_GENDER[primary] : 0;
+  const score = clamp(ps*0.7 + bal*0.3);
+  return {score, primary, inHouses: inH, balRaw};
+}
+function d1TierV2(chart, pkDebilPenalty){
+  if (pkDebilPenalty === undefined) pkDebilPenalty = 0.4;
+  const base = d1TierFixed(chart);
+  const pk = base.pk;
+  const pkSign = signOf(chart.planets[pk]) + 1;
+  let penalty = 0;
+  if (pkDebilPenalty && DEBILITATED_SIGN[pk] === pkSign) penalty = -pkDebilPenalty;
+  const score = clamp(base.score + penalty);
+  return Object.assign({}, base, {score, pkPenalty: penalty});
+}
+function staticScoreV2(chart, pkDebilPenalty){
+  if (pkDebilPenalty === undefined) pkDebilPenalty = 0.4;
+  const d7p = {}; for (const p of P9) d7p[p] = d7of(chart.planets[p])+1;
+  const d7L = d7of(chart.lagna)+1;
+  const t1 = d7TierV2(d7L, d7p).score;
+  const t2 = d1TierV2(chart, pkDebilPenalty).score;
+  const t3 = bnnTierV2(chart).score;
+  const bd = d7BoundaryDist(norm360(chart.lagna));
+  let w, borderline;
+  if (bd < 1.25){ w = [0.25,0.45,0.30]; borderline = true; }
+  else { w = [0.45,0.35,0.20]; borderline = false; }
+  const score = pyRound(100*(t1*w[0]+t2*w[1]+t3*w[2]));
+  const verdict = score > 0 ? 'M' : 'F';
+  const conf = Math.abs(score) >= 40 ? 'High' : (Math.abs(score) >= 20 ? 'Medium' : 'Low');
+  return {t1, t2, t3, score, verdict, confidence: conf, boundaryDist: bd, borderline, d7Lagna: d7L, weights: w};
+}
+// ---------- Vimshottari (port of charts.py vimshottari_at) ----------
+const MD_LORDS = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const MD_YEARS = {Ketu:7,Venus:20,Sun:6,Moon:10,Mars:7,Rahu:18,Jupiter:16,Saturn:19,Mercury:17};
+const NAK_LORD = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const DAYS_PER_YEAR = 365.25;
+function vimshottariAt(chart, targetDate){
+  const moon = chart.planets.Moon;
+  const nak = Math.floor(moon / (360/27));
+  const nakStart = nak * (360/27);
+  const frac = (moon - nakStart) / (360/27);
+  const mdLord = NAK_LORD[nak];
+  const birthJd = chart.jd;
+  const targetJd = swe.julianDay(targetDate.getUTCFullYear(), targetDate.getUTCMonth()+1, targetDate.getUTCDate(), targetDate.getUTCHours()+targetDate.getUTCMinutes()/60+targetDate.getUTCSeconds()/3600);
+  let daysLeft = targetJd - birthJd;
+  let curIdx = MD_LORDS.indexOf(mdLord);
+  let curRem = (1-frac)*MD_YEARS[mdLord]*DAYS_PER_YEAR;
+  for(;;){
+    if (daysLeft < curRem){
+      const md = MD_LORDS[curIdx];
+      const mdTotalDays = MD_YEARS[md]*DAYS_PER_YEAR;
+      const mdElapsed = mdTotalDays - curRem + daysLeft;
+      let adIdx = curIdx, adDaysLeft = mdElapsed;
+      for(;;){
+        const ad = MD_LORDS[adIdx];
+        const adDur = mdTotalDays*MD_YEARS[ad]/120.0;
+        if (adDaysLeft < adDur) return {md, ad};
+        adDaysLeft -= adDur;
+        adIdx = (adIdx+1)%9;
+      }
+    }
+    daysLeft -= curRem;
+    curIdx = (curIdx+1)%9;
+    curRem = MD_YEARS[MD_LORDS[curIdx]]*DAYS_PER_YEAR;
+  }
+}
+function dashaT4(chart, adLord){
+  const d7sign = d7of(chart.planets[adLord]) + 1;
+  const signScore = MALE_SIGNS_D7.has(d7sign) ? 1 : -1;
+  const ownScore = PLANET_GENDER_D7_V2[adLord];
+  return 0.6*signScore + 0.4*ownScore;
+}
+function withDasha(staticResult, t4){
+  const total = 0.8*staticResult.score + 0.2*(t4*100);
+  const pred = total > 0 ? 'M' : (total < 0 ? 'F' : 'Tie');
+  const conf = Math.abs(total) >= 55 ? 'High' : (Math.abs(total) >= 25 ? 'Medium' : 'Low');
+  return {prediction: pred, score: total, confidence: conf, t4};
+}
+// ---------- 7-vote (port of engine_v2.seven_vote) ----------
+function sevenVote(chart){
+  const plSigns = {}; for (const p of P9) plSigns[p] = signOf(chart.planets[p]);
+  const lagna = signOf(chart.lagna);
+  const jLon = chart.planets.Jupiter, jSign = signOf(jLon);
+  const houses = [jSign, (jSign+4)%12, (jSign+8)%12, (jSign+6)%12];
+  const inHouses = P9.filter(p => p!=='Jupiter' && houses.includes(signOf(chart.planets[p])));
+  const maleCt = inHouses.filter(p => ['Sun','Mars','Ketu'].includes(p)).length;
+  const femCt = inHouses.filter(p => ['Moon','Venus','Rahu'].includes(p)).length;
+  const bnn = maleCt > femCt ? 'M' : (femCt > maleCt ? 'F' : '-');
+  const moonExc = MALE_SIGNS_D7.has(plSigns.Moon+1) ? 'M' : 'F';
+  const venD1 = oddEven(plSigns.Venus) > 0 ? 'M' : 'F';
+  const venD9x = MALE_SIGNS_D7.has(navamsaSignFixed(chart.planets.Venus)+1) ? 'M' : 'F';
+  const lord5 = SIGN_LORD_ARR[(lagna+4)%12];
+  const d7b = oddEven(d7of(chart.planets[lord5])) > 0 ? 'M' : 'F';
+  const venD60x = MALE_SIGNS_D7.has(d60of(chart.planets.Venus)+1) ? 'M' : 'F';
+  const lord9 = SIGN_LORD_ARR[(lagna+8)%12];
+  const l9d9x = MALE_SIGNS_D7.has(navamsaSignFixed(chart.planets[lord9])+1) ? 'M' : 'F';
+  const votes = {BNN:bnn, MoonExc:moonExc, VenD1:venD1, VenD9x:venD9x, D7B:d7b, VenD60x:venD60x, L9D9x:l9d9x};
+  const m = Object.values(votes).filter(v=>v==='M').length;
+  const f = Object.values(votes).filter(v=>v==='F').length;
+  const verdict = m > f ? 'M' : (f > m ? 'F' : venD1);
+  return {votes, m, f, verdict};
+}
+// ---------- v1.0 wrapper ----------
+function v1Score(chart){
+  const r = predictFirstChildWeighted(chart, {});
+  return {score: r.score, t1: r.breakdown.d7_Saptamsa.score, t2: r.breakdown.d1_And_Sphuta.score, t3: r.breakdown.bnn_JupiterOrder.score, detail: r};
+}
+
+
+// ================= Panel judges J01-J28 (port of run_104_all_rules_panel.py judge_votes) =================
+const JUDGE_NAMES = {
+  J01:'BNN (Guru 1/5/7/9 houses count)', J02:'Moon D1 sign (exception table)',
+  J03:'Venus D1 plain odd/even', J04:'Venus D9 (exception table)',
+  J05:'D7B - 5th lord D7 sign plain odd/even', J06:'Venus D60 (exception table)',
+  J07:'9th lord D9 (exception table)', J08:'R1: D1 5th lord D1 sign odd/even',
+  J09:'R2: Jupiter D1 sign odd/even', J10:'R3: Jupiter D7 sign odd/even',
+  J11:'R4: Jupiter D9 sign odd/even', J12:'R5: D1 5th lord natural gender',
+  J13:'R6: Moon D7 sign odd/even', J14:'R7: Venus D7 sign odd/even',
+  J15:'R8: Sphuta Beeja (male) / Kshetra (female)',
+  J16:'Paksha at conception (birth - 273d): Shukla=son', J17:'Paksha at birth: Shukla=son',
+  J18:'7-vote majority (J01-J07, tie-break Venus D1)', J19:'D7 exception table on D7B',
+  J20:'Gemini v1.0 weighted scoring (D7 50% + D1+Sphuta 30% + BNN 20%)',
+  J21:'Gemini v2.0 static (with PK penalty)', J22:'Gemini v3.0 (mu0=0.0)',
+  J23:'Couple combiner (v3.0, mu0=0.0, strictMode=False)',
+  J24:'Dasha: v2.0 static + birth-AD tier',
+  J25:'D1 5th-house occupants (BNN-style count)', J26:'D9 5th-house occupants (BNN-style count)',
+  J27:'D9 5th lord D9 sign plain odd/even', J28:'D7 5th-house occupants (BNN-style count)'
+};
+const JIDS24 = ['J01','J02','J03','J04','J05','J06','J07','J08','J09','J10','J11','J12','J13','J14','J15','J16','J17','J18','J19','J20','J21','J22','J23','J24'];
+const JIDS28 = JIDS24.concat(['J25','J26','J27','J28']);
+function pakshaForDate(y, mo, d){
+  const jd = swe.julianDay(y, mo, d, 12);
+  const sun = swe.calculatePosition(jd, SEP.Sun, 0).longitude;
+  const moon = swe.calculatePosition(jd, SEP.Moon, 0).longitude;
+  const elong = norm360(moon - sun);
+  return elong < 180 ? 'M' : 'F';
+}
+function datePartsUTC(dt){ return [dt.getUTCFullYear(), dt.getUTCMonth()+1, dt.getUTCDate()]; }
+async function panelVotes(chart, childDate){
+  // childDate: Date (UTC noon) of first child's birth, or null -> J16/J17/J24 abstain
+  const sv = sevenVote(chart);
+  const v = sv.votes;
+  const out = {};
+  out.J01 = v.BNN; out.J02 = v.MoonExc; out.J03 = v.VenD1; out.J04 = v.VenD9x;
+  out.J05 = v.D7B; out.J06 = v.VenD60x; out.J07 = v.L9D9x;
+  const l5 = SIGN_LORD_ARR[(signOf(chart.lagna)+4)%12];
+  out.J08 = oddEven(signOf(chart.planets[l5])) > 0 ? 'M' : 'F';
+  out.J09 = oddEven(signOf(chart.planets.Jupiter)) > 0 ? 'M' : 'F';
+  out.J10 = oddEven(d7of(chart.planets.Jupiter)) > 0 ? 'M' : 'F';
+  out.J11 = oddEven(navamsaSignFixed(chart.planets.Jupiter)) > 0 ? 'M' : 'F';
+  const g = D1_GENDER[l5];
+  out.J12 = g > 0 ? 'M' : (g < 0 ? 'F' : '-');
+  out.J13 = oddEven(d7of(chart.planets.Moon)) > 0 ? 'M' : 'F';
+  out.J14 = oddEven(d7of(chart.planets.Venus)) > 0 ? 'M' : 'F';
+  let sphutaLon;
+  if (chart.nativeGender === 'male') sphutaLon = (chart.planets.Sun + chart.planets.Venus + chart.planets.Jupiter) % 360;
+  else sphutaLon = (chart.planets.Moon + chart.planets.Mars + chart.planets.Jupiter) % 360;
+  out.J15 = oddEven(signOf(sphutaLon)) > 0 ? 'M' : 'F';
+  if (!childDate){ out.J16 = '-'; out.J17 = '-'; }
+  else {
+    const cd = datePartsUTC(childDate);
+    const conc = new Date(childDate.getTime() - 273*86400000);
+    const cp = datePartsUTC(conc);
+    out.J16 = pakshaForDate(cp[0], cp[1], cp[2]);
+    out.J17 = pakshaForDate(cd[0], cd[1], cd[2]);
+  }
+  out.J18 = sv.verdict;
+  out.J19 = MALE_SIGNS_D7.has(d7of(chart.planets[l5])+1) ? 'M' : 'F';
+  const v1 = v1Score(chart);
+  out.J20 = v1.score > 0 ? 'M' : (v1.score < 0 ? 'F' : '-');
+  out.J21 = staticScoreV2(chart).score > 0 ? 'M' : 'F';
+  const v3c = {id:'chart', timeStr: chart.timeStr, nativeGender: chart.nativeGender === 'male' ? 'M' : 'F', ascDeg: chart.ascLon, planets: chart.planets};
+  const r3 = predictGenderV3(v3c, 0.0);
+  out.J22 = r3.verdict === 'boy' ? 'M' : (r3.verdict === 'girl' ? 'F' : '-');
+  out._sfinal3 = r3.sFinal;
+  out.J23 = '-'; // single chart: no partner given (panel run: setdefault '-')
+  if (!childDate){ out.J24 = '-'; }
+  else {
+    const bdt = new Date(Date.UTC(childDate.getUTCFullYear(), childDate.getUTCMonth(), childDate.getUTCDate(), 0, 0, 0));
+    const d = vimshottariAt(chart, bdt);
+    const t4 = dashaT4(chart, d.ad);
+    const st = staticScoreV2(chart);
+    const tot = 0.8*st.score + 0.2*(t4*100);
+    out.J24 = tot > 0 ? 'M' : 'F';
+    out._dasha = {md: d.md, ad: d.ad, t4, total: tot};
+  }
+  const MALE_OCC = ['Sun','Mars','Ketu'], FEM_OCC = ['Moon','Venus','Rahu'];
+  const occVote = (signs, houseSign) => {
+    const m = MALE_OCC.filter(p=>signs[p]===houseSign).length;
+    const f = FEM_OCC.filter(p=>signs[p]===houseSign).length;
+    return m > f ? 'M' : (f > m ? 'F' : '-');
+  };
+  const d1Signs = {}, d9Signs = {}, d7Signs = {};
+  for (const p of P9){ d1Signs[p] = signOf(chart.planets[p]); d9Signs[p] = navamsaSignFixed(chart.planets[p]); d7Signs[p] = d7of(chart.planets[p]); }
+  const lagna = signOf(chart.lagna);
+  const d9Lagna = navamsaSignFixed(chart.lagna);
+  const d7Lagna = d7of(chart.lagna);
+  out.J25 = occVote(d1Signs, (lagna+4)%12);
+  out.J26 = occVote(d9Signs, (d9Lagna+4)%12);
+  const l9_5 = SIGN_LORD_ARR[(d9Lagna+4)%12];
+  out.J27 = oddEven(navamsaSignFixed(chart.planets[l9_5])) > 0 ? 'M' : 'F';
+  out.J28 = occVote(d7Signs, (d7Lagna+4)%12);
+  return out;
+}
+function panelVerdict(votes, jids){
+  let m = 0, f = 0;
+  for (const j of jids){ if (votes[j]==='M') m++; else if (votes[j]==='F') f++; }
+  if (m > f) return 'M';
+  if (f > m) return 'F';
+  return votes.J05; // tie -> D7B
+}
+// ================= Chart computation (ephemeris, as in v1.0 tool) =================
+async function computeChart(code, nativeGender){
+  const ad = parseCode(code);
+  if(!ad) throw new Error('गलत Astro Code - प्रारूप: AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W');
+  await loadEphem();
+  const utcMs = Date.UTC(ad.y, ad.mo-1, ad.d, ad.hh, ad.mi, ad.ss) - ad.tzH*3600000;
+  const ud = new Date(utcMs);
+  const jd = swe.julianDay(ud.getUTCFullYear(), ud.getUTCMonth()+1, ud.getUTCDate(), ud.getUTCHours()+ud.getUTCMinutes()/60+ud.getUTCSeconds()/3600);
+  const ayan = swe.getAyanamsa(jd);
+  const calcLon = body => norm360(swe.calculatePosition(jd, body, 0).longitude - ayan);
+  const bodyMap = {Sun:SEP.Sun,Moon:SEP.Moon,Mars:SEP.Mars,Mercury:SEP.Mercury,Jupiter:SEP.Jupiter,Venus:SEP.Venus,Saturn:SEP.Saturn};
+  const planets = {};
+  for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn']) planets[p] = calcLon(bodyMap[p]);
+  const rahuLon = calcLon(10);
+  planets.Rahu = rahuLon;
+  planets.Ketu = (rahuLon+180)%360;
+  const hs = swe.calculateHouses(jd, ad.lat, ad.lon, 'P');
+  const ascLon = norm360(hs.ascendant - ayan);
+  const timeStr = String(ad.hh).padStart(2,'0')+':'+String(ad.mi).padStart(2,'0')+(ad.ss ? ':'+String(ad.ss).padStart(2,'0') : '');
+  return {ad, jd, ayan, ascLon, lagna: ascLon, planets, nativeGender, timeStr};
+}
+
+
+// ================= KP 5th CSL (port of kp_csl.py + run_kp_5th_csl.py verdicts) =================
+// KP ayanamsa = Lahiri - 5'26.22"; Placidus cusps; Vimshottari sub-lords.
+// Verified 3/3 vs KP Calculator v27.2 rendered output (Komal / Veeru / Sarang).
+const KP_VIM_YEARS = {Ke:7, Ve:20, Su:6, Mo:10, Ma:7, Ra:18, Ju:16, Sa:19, Me:17};
+const KP_VIM_ORDER = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const KP_NAK_LORDS = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const KP_AYA_OFFSET_MIN = 5 + 26.22/60; // arcminutes less than Lahiri
+const KP_PLANET_SHORT = {Sun:'Su', Moon:'Mo', Mars:'Ma', Mercury:'Me', Jupiter:'Ju', Venus:'Ve', Saturn:'Sa', Rahu:'Ra', Ketu:'Ke'};
+const KP_SHORT_HI = {Su:'सूर्य', Mo:'चंद्र', Ma:'मंगल', Me:'बुध', Ju:'गुरु', Ve:'शुक्र', Sa:'शनि', Ra:'राहु', Ke:'केतु'};
+function kpGetSubLords(nakIdx){
+  const total = 800.0, start = nakIdx % 9;
+  const res = []; let pos = 0.0;
+  for (let i=0;i<9;i++){
+    const lord = KP_VIM_ORDER[(start+i)%9];
+    const w = KP_VIM_YEARS[lord]/120*total;
+    res.push({lord, s:pos, e:pos+w}); pos += w;
+  }
+  return res;
+}
+function kpGetLords(absMin, nakIdx){
+  const nakStart = nakIdx*800;
+  const din = absMin - nakStart;
+  for (const sub of kpGetSubLords(nakIdx)){
+    if (sub.s <= din && din < sub.e){
+      const si = KP_VIM_ORDER.indexOf(sub.lord);
+      const wtot = sub.e - sub.s;
+      let pos = sub.s;
+      for (let i=0;i<9;i++){
+        const ssl = KP_VIM_ORDER[(si+i)%9];
+        const w = KP_VIM_YEARS[ssl]/120*wtot;
+        if (pos <= din && din < pos+w) return {sl: sub.lord, ssl};
+        pos += w;
+      }
+    }
+  }
+  return {sl:'?', ssl:'?'};
+}
+function kpPlanetLords(lon){
+  const rashi = Math.floor(norm360(lon)/30)%12;
+  const nakIdx = Math.floor(norm360(lon)/(360/27))%27;
+  const absMin = norm360(lon)*60;
+  const r = kpGetLords(absMin, nakIdx);
+  const pada = Math.floor((absMin - nakIdx*800)/200)+1;
+  return {rashi, nakIdx, nakLord: KP_NAK_LORDS[nakIdx], sl: r.sl, ssl: r.ssl, pada};
+}
+function kpChart(chart){
+  // chart: computeChart() result (Lahiri ayan in chart.ayan, jd, ad with lat/lon)
+  const kpAya = chart.ayan - KP_AYA_OFFSET_MIN/60.0;
+  const bodyMap = {Sun:SEP.Sun,Moon:SEP.Moon,Mars:SEP.Mars,Mercury:SEP.Mercury,Jupiter:SEP.Jupiter,Venus:SEP.Venus,Saturn:SEP.Saturn};
+  const planets = {};
+  for (const p of ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn']){
+    planets[p] = norm360(swe.calculatePosition(chart.jd, bodyMap[p], 0).longitude - kpAya);
+  }
+  const rahuLon = norm360(swe.calculatePosition(chart.jd, 10, 0).longitude - kpAya);
+  planets.Rahu = rahuLon;
+  planets.Ketu = (rahuLon+180)%360;
+  // Placidus cusps: browser build hs.cusps[1] is cusp 1 (== ascendant) -> rotate left by 1
+  const hs = swe.calculateHouses(chart.jd, chart.ad.lat, chart.ad.lon, 'P');
+  let housesArr = (hs && (hs.cusps || hs.houses)) || [];
+  const ascSid = norm360(hs.ascendant - kpAya);
+  let rotated = housesArr;
+  if (housesArr.length >= 12){
+    const ascCheck = norm360(housesArr[1] - kpAya);
+    if (Math.abs(ascCheck - ascSid) < 1.0) rotated = housesArr.slice(1).concat([housesArr[0]]);
+  }
+  const cusps = [];
+  for (let i=0;i<12;i++) cusps.push(norm360(rotated[i] - kpAya));
+  return {jd: chart.jd, kpAya, planets, cusps, asc: ascSid};
+}
+function kpFifthCsl(chart){
+  const kch = kpChart(chart);
+  const cusp5 = kch.cusps[4];
+  const cp = kpPlanetLords(cusp5);
+  const cslLong = Object.keys(KP_PLANET_SHORT).find(k => KP_PLANET_SHORT[k] === cp.sl);
+  const cslLon = kch.planets[cslLong];
+  const cl = kpPlanetLords(cslLon);
+  return {cusp5, cuspRashi: cp.rashi, cuspNakLord: cp.nakLord, cuspSsl: cp.ssl,
+    csl: cp.sl, cslLon, cslRashi: cl.rashi, starLord: cl.nakLord, cslSl: cl.sl, cslSsl: cl.ssl, kpAya: kch.kpAya};
+}
+const KP_MALE = new Set(['Su','Ma','Ju']);
+const KP_FEMALE = new Set(['Mo','Ve']);
+function kpGenderOf(p){ return KP_MALE.has(p) ? 'M' : (KP_FEMALE.has(p) ? 'F' : null); }
+function kpVerdicts(r){
+  const cslOdd = (r.cslRashi % 2 === 0); // rashi 0=Aries(1)=odd
+  const gSl = kpGenderOf(r.starLord), gCsl = kpGenderOf(r.csl);
+  const g = gSl || gCsl || (cslOdd ? 'M' : 'F');
+  const primary = (g === 'M' && cslOdd) ? 'M' : ((g === 'F' && !cslOdd) ? 'F' : '-');
+  let strict = '-';
+  if (gSl && gCsl && gSl === gCsl){
+    if (gSl === 'M' && cslOdd) strict = 'M';
+    else if (gSl === 'F' && !cslOdd) strict = 'F';
+  }
+  const slOnly = gSl || '-';
+  const cslOnly = gCsl || '-';
+  const signOnly = cslOdd ? 'M' : 'F';
+  return {primary, strict, slOnly, cslOnly, signOnly, cslOdd, genderSource: g};
+}
+function kpFmtDeg(absDeg){
+  const r = Math.floor(norm360(absDeg)/30)%12;
+  const d = norm360(absDeg) % 30;
+  let dd = Math.floor(d), mm = Math.floor((d-dd)*60);
+  let ss = Math.round(((d-dd)*60-mm)*60);
+  if (ss===60){ ss=0; mm++; } if (mm===60){ mm=0; dd++; }
+  return {sign: r, text: `${SIGNS[r]} ${dd}°${String(mm).padStart(2,'0')}'${String(ss).padStart(2,'0')}"`};
+}
+
+
+// ================= UI =================
+const VERDICT_TXT = {'M':'बेटा', 'F':'बेटी', '-':'ABSTAIN', 'Tie':'Tie (बराबर)'};
+const vtxt = v => VERDICT_TXT[v] || v;
+function fmtScore(s){ return (s>0?'+':'') + s.toFixed(1); }
+function tbl(head, rows){
+  return '<table><tr>'+head.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr>'+rows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('')+'</table>';
+}
+function verdictBox(title, verdict, extra){
+  return `<div class="verdict"><h2 style="border:none;margin-top:0">${esc(title)}: ${esc(vtxt(verdict))}</h2>${extra||''}</div>`;
+}
+function showTab(n){
+  for (let i=1;i<=9;i++){
+    document.getElementById('tab-'+i).style.display = (i===n) ? 'block' : 'none';
+    document.getElementById('btn-'+i).classList.toggle('active', i===n);
+  }
+}
+function getChildDate(){
+  const v = document.getElementById('child-date').value;
+  if(!v) return null;
+  const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m) return null;
+  return new Date(Date.UTC(+m[1], +m[2]-1, +m[3], 12, 0, 0));
+}
+let LAST = null; // {chart, childDate, votes}
+async function runAll(){
+  const code = document.getElementById('astro-code').value;
+  const nativeGender = document.querySelector('input[name="native-gender"]:checked').value;
+  const childDate = getChildDate();
+  const errEl = document.getElementById('error');
+  const stEl = document.getElementById('status');
+  errEl.innerHTML = '';
+  stEl.textContent = 'गणना हो रही है... (पहली बार Ephemeris लोड होगा)';
+  try{
+    const chart = await computeChart(code, nativeGender);
+    const votes = await panelVotes(chart, childDate);
+    LAST = {chart, childDate, votes};
+    document.getElementById('chart-info').innerHTML =
+      `<p>▸ लग्न: <b>${SIGNS[Math.floor(chart.ascLon/30)]} (${chart.ascLon.toFixed(2)}°)</b> &nbsp;|&nbsp; अयनांश (Lahiri): ${chart.ayan.toFixed(2)}° &nbsp;|&nbsp; जन्म समय: ${esc(chart.timeStr)} &nbsp;|&nbsp; ${nativeGender==='male'?'पुरुष की कुंडली (बीज स्फुट)':'स्त्री की कुंडली (क्षेत्र स्फुट)'}</p>`;
+    renderTab1(chart, votes);
+    renderTab2(chart);
+    renderTab3(chart, childDate);
+    renderTab4(chart, 0.0);
+    renderTab5(chart, 6.79);
+    renderPanelTab(7, chart, votes, JIDS24, '61/104 (58.7%)');
+    renderPanelTab(8, chart, votes, JIDS28, '58/104 (55.8%)');
+    renderTab9(chart);
+    stEl.textContent = 'गणना पूर्ण।';
+  }catch(e){
+    errEl.innerHTML = `<div class="err">${esc(e.message || String(e))}</div>`;
+    stEl.textContent = 'गणना में त्रुटि।';
+  }
+}
+function renderTab1(chart, votes){
+  const sv = sevenVote(chart);
+  const rows = [['BNN (गुरु 1/5/7/9 भाव)', vtxt(sv.votes.BNN)],['चंद्र D1 (exception table)', vtxt(sv.votes.MoonExc)],['शुक्र D1 plain', vtxt(sv.votes.VenD1)],['शुक्र D9 (exception table)', vtxt(sv.votes.VenD9x)],['D7B (पंचमेश की D7 राशि)', vtxt(sv.votes.D7B)],['शुक्र D60 (exception table)', vtxt(sv.votes.VenD60x)],['नवमेश D9 (exception table)', vtxt(sv.votes.L9D9x)]];
+  let extra = `<p>▸ बेटा वाले vote: <b>${sv.m}</b> &nbsp;|&nbsp; बेटी वाले vote: <b>${sv.f}</b></p>`;
+  if (sv.m === sv.f) extra += `<p>▸ बराबर (tie) हुआ, इसलिए शुक्र D1 से फैसला: <b>${vtxt(sv.votes.VenD1)}</b></p>`;
+  document.getElementById('res-1').innerHTML = verdictBox('7-vote verdict', sv.verdict, extra) + tbl(['नियम','Vote'], rows);
+}
+function renderTab2(chart){
+  const r = predictFirstChildWeighted(chart, {});
+  const b = r.breakdown;
+  let html = verdictBox('Gemini v1.0 verdict', r.score > 0 ? 'M' : (r.score < 0 ? 'F' : 'Tie'),
+    `<p>▸ Score: <b>${fmtScore(r.score)}</b> (-100 प्रबल कन्या .. +100 प्रबल पुत्र)</p><p>▸ Confidence: <b>${esc(r.confidence)}</b></p>` + (r.rebalanced ? `<p>▸ BNN score 0 था, इसलिए उसका 20% भार D7 (62.5%) और D1 (37.5%) में बाँट दिया गया है।</p>` : ''));
+  html += tbl(['Tier','Weight','Score (-1..+1)','योगदान'], [
+    ['Tier 1 - D7 सप्तांश', `${(r.weights.d7*100).toFixed(1)}%`, b.d7_Saptamsa.score.toFixed(3), (b.d7_Saptamsa.score*r.weights.d7*100).toFixed(1)],
+    ['Tier 2 - D1 + स्फुट', `${(r.weights.d1*100).toFixed(1)}%`, b.d1_And_Sphuta.score.toFixed(3), (b.d1_And_Sphuta.score*r.weights.d1*100).toFixed(1)],
+    ['Tier 3 - BNN गुरु क्रम', `${(r.weights.bnn*100).toFixed(1)}%`, b.bnn_JupiterOrder.score.toFixed(3), (b.bnn_JupiterOrder.score*r.weights.bnn*100).toFixed(1)],
+    ['<b>Final</b>', '100%', '<b>'+r.score.toFixed(1)+'</b>', ''],
+  ]);
+  html += `<h3>Tier 1 - D7 (कारण)</h3><ol>` + b.d7_Saptamsa.trace.map(t=>`<li>${esc(t)}</li>`).join('') + '</ol>';
+  html += `<h3>Tier 2 - D1 + स्फुट (कारण)</h3><ol>` + b.d1_And_Sphuta.trace.map(t=>`<li>${esc(t)}</li>`).join('') + '</ol>';
+  html += `<h3>Tier 3 - BNN (कारण)</h3><ol>` + b.bnn_JupiterOrder.trace.map(t=>`<li>${esc(t)}</li>`).join('') + '</ol>';
+  document.getElementById('res-2').innerHTML = html;
+}
+function renderTab3(chart, childDate){
+  const st = staticScoreV2(chart);
+  const t1d = d7TierV2(st.d7Lagna, (()=>{ const d={}; for (const p of P9) d[p]=d7of(chart.planets[p])+1; return d; })());
+  const t2d = d1TierV2(chart);
+  const t3d = bnnTierV2(chart);
+  let html = verdictBox('Gemini v2.0 static verdict', st.verdict,
+    `<p>▸ Score: <b>${fmtScore(st.score)}</b> (-100 .. +100)</p><p>▸ Confidence: <b>${esc(st.confidence)}</b></p><p>▸ D7 boundary दूरी: ${st.boundaryDist.toFixed(2)}° ${st.borderline?'(boundary के पास - weights 25% / 45% / 30%)':'(weights 45% / 35% / 20%)'}</p><p>▸ Putrakaraka (PK): ${HI[t2d.pk]} - PK penalty: ${t2d.pkPenalty}</p>`);
+  html += tbl(['Tier','Weight','Score (-1..+1)','योगदान'], [
+    ['Tier 1 - D7 (Lord 75% + Occupant 25%)', `${(st.weights[0]*100).toFixed(0)}%`, st.t1.toFixed(3), (st.t1*st.weights[0]*100).toFixed(1)],
+    ['Tier 2 - D1 + स्फुट (PK penalty सहित)', `${(st.weights[1]*100).toFixed(0)}%`, st.t2.toFixed(3), (st.t2*st.weights[1]*100).toFixed(1)],
+    ['Tier 3 - BNN (candidate B)', `${(st.weights[2]*100).toFixed(0)}%`, st.t3.toFixed(3), (st.t3*st.weights[2]*100).toFixed(1)],
+    ['<b>Final</b>', '100%', '<b>'+st.score+'</b>', ''],
+  ]);
+  html += `<h3>Tier 1 - D7 detail</h3><p>▸ D7 लग्न: ${t1d.targetSign} (संतान राशि) &nbsp;|&nbsp; भावेश: ${HI[t1d.lord]} (D7 राशि ${t1d.lordSign}) &nbsp;|&nbsp; Occupants: ${t1d.occupants.map(p=>HI[p]).join(', ')||'कोई नहीं'} &nbsp;|&nbsp; युति: ${t1d.conjuncts.map(p=>HI[p]).join(', ')||'कोई नहीं'} &nbsp;|&nbsp; Lord total: ${t1d.lordTotal.toFixed(2)}</p>`;
+  html += `<h3>Tier 2 - D1 detail</h3><p>▸ पंचम राशि: ${SIGNS[t2d.sign5]} &nbsp;|&nbsp; पंचमेश: ${HI[t2d.lord5]} &nbsp;|&nbsp; Part A: ${t2d.partA.toFixed(3)} &nbsp;|&nbsp; Part B (${t2d.sphutaName}): ${t2d.partB.toFixed(3)} &nbsp;|&nbsp; स्फुट: ${t2d.sphutaLon.toFixed(2)}°</p>`;
+  html += `<h3>Tier 3 - BNN detail</h3><p>▸ Primary (निकटतम ग्रह): ${t3d.primary ? HI[t3d.primary] : 'कोई नहीं'} &nbsp;|&nbsp; त्रिकोण में ग्रह: ${t3d.inHouses.map(p=>HI[p]).join(', ')||'कोई नहीं'} &nbsp;|&nbsp; Balance raw: ${t3d.balRaw}</p>`;
+  if (childDate){
+    const bdt = new Date(Date.UTC(childDate.getUTCFullYear(), childDate.getUTCMonth(), childDate.getUTCDate(), 0, 0, 0));
+    const d = vimshottariAt(chart, bdt);
+    const t4 = dashaT4(chart, d.ad);
+    const wd = withDasha(st, t4);
+    html += `<h3>Tier 4 - दशा (बच्चे के जन्म की तारीख पर)</h3>` + tbl(['MD','AD','T4','Total (0.8×static + 0.2×T4×100)','Verdict'], [[HI[d.md], HI[d.ad], t4.toFixed(2), wd.score.toFixed(1), vtxt(wd.prediction)]]) + `<p>▸ Confidence: <b>${esc(wd.confidence)}</b></p>`;
+  } else {
+    html += `<p class="note">▸ Tier 4 (दशा) के लिए ऊपर बच्चे के जन्म की तारीख डालें - बिना तारीख के सिर्फ static score दिखाया गया है।</p>`;
+  }
+  document.getElementById('res-3').innerHTML = html;
+}
+function renderV3Tab(n, chart, mu0){
+  const c = {id:'chart', timeStr: chart.timeStr, nativeGender: chart.nativeGender === 'male' ? 'M' : 'F', ascDeg: chart.ascLon, planets: chart.planets};
+  const r = predictGenderV3(c, mu0);
+  const v = r.verdict === 'boy' ? 'M' : (r.verdict === 'girl' ? 'F' : '-');
+  let html = verdictBox(mu0 === 0 ? 'Gemini v3.0 verdict' : 'Gemini v3.0 + mu0 verdict', v,
+    `<p>▸ sFinal: <b>${fmtScore(r.sFinal)}</b> &nbsp;|&nbsp; sRaw: ${r.sRaw.toFixed(2)} &nbsp;|&nbsp; sNonD7: ${r.sNonD7.toFixed(2)}</p><p>▸ Confidence: <b>${esc(r.confidence)}</b>${r.abstainReason ? ` &nbsp;|&nbsp; Abstain कारण: <b>${esc(r.abstainReason)}</b>` : ''}</p><p>▸ D7 quality (T×B): ${r.d7Quality}</p>`);
+  html += tbl(['घटक','Score','Weight'], [
+    ['A - D7B (सप्तांश)', r.components.sA.toFixed(3), r.components.wA.toFixed(2)],
+    ['B1 - D1 संतान कोर', r.components.sB1.toFixed(3), '12.5 / 20'],
+    ['B2 - बीज/क्षेत्र स्फुट', r.components.sB2.toFixed(3), '12.5 / 0'],
+    ['C1 - शुक्र D9', String(r.components.sC1), '10.0'],
+    ['C2 - नवमेश D9', String(r.components.sC2), '10.0 / 4.0'],
+    ['D - चंद्र D1', r.components.sD.toFixed(3), '10.0'],
+  ]);
+  document.getElementById('res-'+n).innerHTML = html;
+}
+function renderTab4(chart, mu0){ renderV3Tab(4, chart, mu0); }
+function renderTab5(chart, mu0){ renderV3Tab(5, chart, mu0); }
+async function runCouple(){
+  const hcode = document.getElementById('code-h').value;
+  const wcode = document.getElementById('code-w').value;
+  const errEl = document.getElementById('error');
+  const stEl = document.getElementById('status');
+  errEl.innerHTML = '';
+  stEl.textContent = 'गणना हो रही है...';
+  try{
+    const h = await computeChart(hcode, 'male');
+    const w = await computeChart(wcode, 'female');
+    const rh = predictGenderV3({id:'husband', timeStr: h.timeStr, nativeGender: 'M', ascDeg: h.ascLon, planets: h.planets}, 0.0);
+    const rw = predictGenderV3({id:'wife', timeStr: w.timeStr, nativeGender: 'F', ascDeg: w.ascLon, planets: w.planets}, 0.0);
+    const out = combineCouple(rh.sFinal, h.timeStr, rw.sFinal, w.timeStr, false);
+    const v = out.verdict === 'boy' ? 'M' : (out.verdict === 'girl' ? 'F' : '-');
+    let html = verdictBox('Couple combiner verdict', v,
+      `<p>▸ S_couple: <b>${fmtScore(out.sCouple)}</b> &nbsp;|&nbsp; R (weight ratio): ${out.R} &nbsp;|&nbsp; सहमत: ${out.agreed ? 'हाँ' : 'नहीं'}</p>`);
+    html += tbl(['', 'Score (v3.0 sFinal)', 'Verdict', 'Time factor'], [
+      ['पति', fmtScore(rh.sFinal), vtxt(rh.verdict === 'boy' ? 'M' : (rh.verdict === 'girl' ? 'F' : '-')), out.tH],
+      ['पत्नी', fmtScore(rw.sFinal), vtxt(rw.verdict === 'boy' ? 'M' : (rw.verdict === 'girl' ? 'F' : '-')), out.tW],
+    ]);
+    html += tbl(['मान','Value'], [['wH (पति का भार)', out.wH],['wW (पत्नी का भार)', out.wW],['S_couple', out.sCouple],['R', out.R],['Agreed', out.agreed ? 'हाँ' : 'नहीं']]);
+    document.getElementById('res-6').innerHTML = html;
+    stEl.textContent = 'गणना पूर्ण।';
+  }catch(e){
+    errEl.innerHTML = `<div class="err">${esc(e.message || String(e))}</div>`;
+    stEl.textContent = 'गणना में त्रुटि।';
+  }
+}
+function renderPanelTab(n, chart, votes, jids, accTxt){
+  const pv = panelVerdict(votes, jids);
+  const m = jids.filter(j=>votes[j]==='M').length;
+  const f = jids.filter(j=>votes[j]==='F').length;
+  const abst = jids.filter(j=>votes[j]==='-').length;
+  let html = verdictBox('Panel verdict', pv,
+    `<p>▸ बेटा वाले जज: <b>${m}</b> &nbsp;|&nbsp; बेटी वाले जज: <b>${f}</b> &nbsp;|&nbsp; ABSTAIN: <b>${abst}</b> &nbsp;|&nbsp; कुल जज: <b>${jids.length}</b></p>` + (m===f ? `<p>▸ बराबर (tie) हुआ, इसलिए D7B (J05) से फैसला: <b>${vtxt(votes.J05)}</b></p>` : ''));
+  const rows = jids.map(j=>{
+    let note = '';
+    if ((j==='J16'||j==='J17'||j==='J24') && !LAST.childDate) note = ' (बच्चे की तारीख नहीं दी गई)';
+    if (j==='J23') note = ' (जोड़ा नहीं दिया गया - Couple tab देखें)';
+    return [j, JUDGE_NAMES[j] + note, vtxt(votes[j])];
+  });
+  html += tbl(['Judge','नियम','Vote'], rows);
+  document.getElementById('res-'+n).innerHTML = html;
+}
+function renderTab9(chart){
+  const r = kpFifthCsl(chart);
+  const v = kpVerdicts(r);
+  const cusp = kpFmtDeg(r.cusp5);
+  const cslPos = kpFmtDeg(r.cslLon);
+  const cslOddTxt = v.cslOdd ? 'विषम' : 'सम';
+  const gSrc = v.genderSource === 'M' ? 'बेटा (पुरुष ग्रह)' : 'बेटी (स्त्री ग्रह)';
+  let html = verdictBox('KP 5th CSL verdict (primary)', v.primary,
+    `<p>▸ 5th cusp: <b>${cusp.text}</b> &nbsp;|&nbsp; CSL: <b>${KP_SHORT_HI[r.csl]} (${r.csl})</b> &nbsp;|&nbsp; Star lord: <b>${KP_SHORT_HI[r.starLord]} (${r.starLord})</b></p><p>▸ CSL की राशि: <b>${SIGNS[r.cslRashi]} (${r.cslRashi+1}) - ${cslOddTxt}</b> &nbsp;|&nbsp; CSL की स्थिति: ${cslPos.text} &nbsp;|&nbsp; Gender source: ${gSrc}</p><p>▸ KP अयनांश: ${r.kpAya.toFixed(4)}° (Lahiri - 5'26.22"), Placidus भाव</p>`);
+  html += tbl(['नियम','Verdict'], [
+    ['Primary (star lord → CSL → CSL राशि + CSL राशि विषम/सम)', vtxt(v.primary)],
+    ['Strict (CSL और star lord दोनों gendered, सहमत, sign match)', vtxt(v.strict)],
+    ['Star-lord-only (star lord का gender)', vtxt(v.slOnly)],
+    ['CSL-only (CSL का gender)', vtxt(v.cslOnly)],
+    ['Sign-only (CSL की राशि विषम = बेटा)', vtxt(v.signOnly)],
+  ]);
+  html += `<h3>Detail</h3><p>▸ 5th cusp का नक्षत्र स्वामी: ${KP_SHORT_HI[r.cuspNakLord]} (${r.cuspNakLord}) &nbsp;|&nbsp; 5th cusp का उप-उप स्वामी (SSL): ${KP_SHORT_HI[r.cuspSsl]} (${r.cuspSsl}) &nbsp;|&nbsp; CSL का उप-स्वामी: ${KP_SHORT_HI[r.cslSl]} (${r.cslSl}) &nbsp;|&nbsp; CSL का उप-उप स्वामी: ${KP_SHORT_HI[r.cslSsl]} (${r.cslSsl})</p>`;
+  html += `<p class="note">▸ सावधानी: 5th CSL हर 2-5 मिनट में बदल जाता है, इसलिए यह नियम सिर्फ सटीक जन्म समय (AA / birth-certificate) पर ही मान्य है - पुराने round-off समय पर नहीं।</p>`;
+  document.getElementById('res-9').innerHTML = html;
+}
+// test hooks (browser verification)
+window.__gtest = {computeChart, loadEphem, sevenVote, v1Score, staticScoreV2, predictGenderV3, combineCouple, panelVotes, panelVerdict, vimshottariAt, dashaT4, predictFirstChildWeighted, d7TierV2, bnnTierV2, kpFifthCsl, kpVerdicts, kpChart, version:'1.1'};
+window.runAll = runAll;
+window.runCouple = runCouple;
+window.showTab = showTab;
+
+</script>
+</body>
+</html>
