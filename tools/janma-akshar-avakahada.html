@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>जन्म अक्षर व अवकहड़ा चक्र कैलकुलेटर v1.5</title>
+<title>जन्म अक्षर व अवकहड़ा चक्र कैलकुलेटर v1.6</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 * { box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Noto Sans Devanagari", "Mangal", system-ui, sans-serif; background: #fdf6ec; color: #3b2f1e; margin: 0; padding: 16px; }
@@ -232,6 +233,27 @@ document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.
 function screenshot(){
 if(window.html2canvas){ html2canvas(document.getElementById('capture')).then(function(cv){ var a=document.createElement('a'); a.href=cv.toDataURL('image/png'); a.download='janma-akshar-avakahada.png'; a.click(); }); }
 }
+async function downloadPDF(){
+var errBox = document.getElementById('err');
+var btn = document.getElementById('pdfBtn');
+var t1 = document.getElementById('tab1pane'), t2 = document.getElementById('tab2pane');
+var pane = (t1 && getComputedStyle(t1).display !== 'none') ? t1 : t2;
+var fname = (pane === t1) ? 'janma-akshar.pdf' : 'avakahada-chakra.pdf';
+if(!window.html2canvas || !window.jspdf){ errBox.style.display='block'; errBox.textContent='PDF लाइब्रेरी लोड नहीं हुई — इंटरनेट चालू करके पुनः प्रयास करें।'; return; }
+errBox.style.display='none';
+if(btn){ btn.textContent='⏳ PDF बन रहा है…'; btn.disabled=true; }
+try{
+var cv = await html2canvas(pane, {scale:2, backgroundColor:'#ffffff'});
+var pdf = new window.jspdf.jsPDF('p','mm','a4');
+var pageW=210, pageH=297, margin=10, usableW=pageW-2*margin, usableH=pageH-2*margin;
+var imgData = cv.toDataURL('image/jpeg', 0.92);
+var imgH = cv.height * usableW / cv.width;
+var pages = Math.max(1, Math.ceil(imgH / usableH));
+for(var i=0;i<pages;i++){ if(i>0) pdf.addPage(); pdf.addImage(imgData, 'JPEG', margin, margin - i*usableH, usableW, imgH); }
+pdf.save(fname);
+}catch(e){ errBox.style.display='block'; errBox.textContent='PDF बनाने में त्रुटि: '+e.message; }
+if(btn){ btn.textContent='📕 PDF डाउनलोड करें'; btn.disabled=false; }
+}
 document.getElementById('kform').addEventListener('submit', async (ev)=>{
 ev.preventDefault();
 const errBox = document.getElementById('err'); errBox.style.display='none';
@@ -378,7 +400,7 @@ var tab2 = ashubhHtml + '<div class="card"><h2>📋 जन्म विवरण
 ['मूलांक', String(moolank)],['भाग्यांक', String(bhagyank)],['शुभ अंक', shubhAnk.join(', ')],['शुभ ग्रह', shubhGraha.join(', ')],['धातु (चंद्र राशि से)', GRAHA_METAL[moonLord]],['रत्न (चंद्र राशि से)', GRAHA_STONE[moonLord]]
 ])+'</table></div>';
 var L = [];
-L.push('जन्म अक्षर व अवकहड़ा चक्र कैलकुलेटर v1.5');
+L.push('जन्म अक्षर व अवकहड़ा चक्र कैलकुलेटर v1.6');
 L.push('नाम: ' + (name||'—') + ' | जन्म: ' + D+'-'+M+'-'+Y+' '+String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0') + ' | स्थान: ' + (place||'—'));
 L.push('नक्षत्र: ' + NAK[nakIdx] + ' पद ' + pada + ' | जन्म अक्षर: ' + padaSyl + ' | चंद्र राशि: ' + RASHI[moonSign] + ' | लग्न: ' + RASHI[lagnaSign]);
 L.push('उसी नक्षत्र के अन्य पद: ' + PADA[nakIdx].filter(function(s,i){ return i!==pada-1; }).join(', '));
@@ -403,11 +425,13 @@ L.push('अनुकूल: मूलांक '+moolank+' | भाग्या�
 _lastTxt = L.join('\n');
 document.getElementById('result').innerHTML = '<div style="text-align:center;margin-bottom:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">'
 +'<button class="calc" type="button" id="txtBtn" style="padding:10px 22px;font-size:1rem">📄 TXT डाउनलोड करें</button>'
++'<button class="calc" type="button" id="pdfBtn" style="padding:10px 22px;font-size:1rem">📕 PDF डाउनलोड करें</button>'
 +'<button class="calc" type="button" id="shotBtn" style="padding:10px 22px;font-size:1rem">📸 Screenshot लें</button></div>'
 +'<div style="display:flex;gap:8px;margin-bottom:14px"><button type="button" class="tabbtn on" id="tab1btn">Tab 1: जन्म अक्षर व नाम</button><button type="button" class="tabbtn" id="tab2btn">Tab 2: अवकहड़ा चक्र पंचांग</button></div>'
 +'<div id="tab1pane">'+tab1+'</div><div id="tab2pane" style="display:none">'+tab2+'</div>';
 document.getElementById('result').style.display='block';
 document.getElementById('txtBtn').addEventListener('click', downloadTXT);
+document.getElementById('pdfBtn').addEventListener('click', downloadPDF);
 document.getElementById('shotBtn').addEventListener('click', screenshot);
 document.getElementById('tab1btn').addEventListener('click', function(){ document.getElementById('tab1pane').style.display='block'; document.getElementById('tab2pane').style.display='none'; this.classList.add('on'); document.getElementById('tab2btn').classList.remove('on'); });
 document.getElementById('tab2btn').addEventListener('click', function(){ document.getElementById('tab1pane').style.display='none'; document.getElementById('tab2pane').style.display='block'; this.classList.add('on'); document.getElementById('tab1btn').classList.remove('on'); });
