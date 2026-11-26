@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gender Research - सभी 9 Versions (एक file, 9 tabs) v1.1</title>
+<title>Gender Research - सभी 11 Versions (एक file, 11 tabs) v1.3</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -29,7 +29,7 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Gender Research - सभी 9 Versions (एक file, 9 tabs) v1.1</h1>
+<h1>Gender Research - सभी 11 Versions (एक file, 11 tabs) v1.3</h1>
 <div class="warn"><b>यह research/comparison file है, नया product नहीं।</b> नीचे हर version की backtest accuracy लिखी है - कोई भी version 60% से ऊपर नहीं गया है, इसलिए इनमें से किसी को भी working prediction tool की तरह इस्तेमाल नहीं करना है। सभी 9 versions के logic मूल Python/JS sources से faithful port किए गए हैं, कोई नया logic नहीं बनाया गया है।</div>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
@@ -58,6 +58,8 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 <button class="tabbtn" id="btn-7" onclick="showTab(7)">7. 24-जज पैनल</button>
 <button class="tabbtn" id="btn-8" onclick="showTab(8)">8. 28-जज पैनल</button>
 <button class="tabbtn" id="btn-9" onclick="showTab(9)">9. KP 5th CSL</button>
+<button class="tabbtn" id="btn-10" onclick="showTab(10)">10. KP 5th CSL flipped-sign</button>
+<button class="tabbtn" id="btn-11" onclick="showTab(11)">11. Bench8 (5 + KP3)</button>
 </p>
 <div id="tab-1">
 <h2>1. 7-vote (majority vote, tie-break Venus D1)</h2>
@@ -111,6 +113,18 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 <p class="acc">Backtest accuracy: <b>reliable-time 85 पर primary 16/42 (38.1%)</b>, सिक्के से भी खराब; strict version की coverage सिर्फ 2/85। KP अयनांश (Lahiri - 5'26.22") + Placidus भाव। नियम: 5th CSL और खासकर उसका star lord पुरुष ग्रह (सूर्य, मंगल, गुरु) + विषम राशि = बेटा; स्त्री ग्रह (चंद्र, शुक्र) + सम राशि = बेटी; बुध, शनि, राहु, केतु neutral हैं।</p>
 <p class="note">Post-hoc खोज (नया नियम नहीं): sign उल्टा कर दें (विषम = बेटी, सम = बेटा) तो 26/42 (61.9%) हो जाता है - इस्तेमाल से पहले नए अलग cases पर confirm करना होगा।</p>
 <div id="res-9"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-10" style="display:none">
+<h2>10. KP 5th CSL flipped-sign (विषम = बेटी, सम = बेटा)</h2>
+<p class="acc">Backtest accuracy (Python reference): <b>104 पर 65/104 (62.5%), AA50 पर 31/50 (62.0%), 57-set पर 19/57 (33.3%), 178-set पर 47/112 (42.0%), 200-batch fresh 30 पर 15/30 (50.0%)</b> - post-hoc नियम: derivation sets पर अच्छा, fresh sets पर सिक्के जैसा। <b>Tab 10 पहली test (26 Nov 2026, 200 unique charts, Playwright): 82/200 (41.0%)</b> - always-girl baseline 107/200 (53.5%) से भी नीचे, FAIL। <b>Tab 11 (Bench8) Python reference (27 Nov 2026): derivation 87/138 (63.0%), fresh 200 पर 100/175 (57.1%)</b> - baseline से बस थोड़ा ऊपर, FAIL।</p>
+<p class="note">Tab 9 के sign-only नियम का उल्टा: CSL की राशि विषम हो तो बेटी, सम हो तो बेटा। बाकी सब कुछ Tab 9 जैसा ही है (KP अयनांश Lahiri - 5'26.22", Placidus भाव)।</p>
+<div id="res-10"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-11" style="display:none">
+<h2>11. Bench8 (5 + KP3 - पाँच सबसे अच्छे नियम + KP के 3 vote)</h2>
+<p class="acc">Backtest accuracy (Python reference, 27 Nov 2026): <b>derivation 154 पर 87/138 (63.0%), fresh 200 पर 100/175 (57.1%)</b> - always-girl baseline 107/200 (53.5%) से बस थोड़ा ऊपर, FAIL। Bench5 अकेला fresh पर 56.0% था, KP3 अकेला 58.7% था। <b>Tab 11 पहली test (27 Nov 2026, 200 unique charts, Playwright): 100/175 (57.1%)</b> - Python reference से 0 mismatch, FAIL।</p>
+<p class="note">Bench5 के 5 नियम (derivation से दिशा) + KP के 3 vote (Tab 9/12 वाले, text दिशा) का बहुमत। KP वाले vote सिर्फ सटीक जन्म समय पर मान्य हैं (5th CSL हर 2-5 मिनट में बदलता है)।</p>
+<div id="res-11"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
 </div>
 <script type="module">
 const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
@@ -1101,7 +1115,7 @@ function verdictBox(title, verdict, extra){
   return `<div class="verdict"><h2 style="border:none;margin-top:0">${esc(title)}: ${esc(vtxt(verdict))}</h2>${extra||''}</div>`;
 }
 function showTab(n){
-  for (let i=1;i<=9;i++){
+  for (let i=1;i<=11;i++){
     document.getElementById('tab-'+i).style.display = (i===n) ? 'block' : 'none';
     document.getElementById('btn-'+i).classList.toggle('active', i===n);
   }
@@ -1136,6 +1150,8 @@ async function runAll(){
     renderPanelTab(7, chart, votes, JIDS24, '61/104 (58.7%)');
     renderPanelTab(8, chart, votes, JIDS28, '58/104 (55.8%)');
     renderTab9(chart);
+    renderTab10(chart);
+    renderTab11(chart);
     stEl.textContent = 'गणना पूर्ण।';
   }catch(e){
     errEl.innerHTML = `<div class="err">${esc(e.message || String(e))}</div>`;
@@ -1274,8 +1290,57 @@ function renderTab9(chart){
   html += `<p class="note">▸ सावधानी: 5th CSL हर 2-5 मिनट में बदल जाता है, इसलिए यह नियम सिर्फ सटीक जन्म समय (AA / birth-certificate) पर ही मान्य है - पुराने round-off समय पर नहीं।</p>`;
   document.getElementById('res-9').innerHTML = html;
 }
+function renderTab10(chart){
+  const r = kpFifthCsl(chart);
+  const v = kpVerdicts(r);
+  const cusp = kpFmtDeg(r.cusp5);
+  const cslPos = kpFmtDeg(r.cslLon);
+  const cslOddTxt = v.cslOdd ? 'विषम' : 'सम';
+  const flipped = v.cslOdd ? 'F' : 'M';
+  let html = verdictBox('KP 5th CSL flipped-sign verdict', flipped,
+    `<p>▸ 5th cusp: <b>${cusp.text}</b> &nbsp;|&nbsp; CSL: <b>${KP_SHORT_HI[r.csl]} (${r.csl})</b> &nbsp;|&nbsp; Star lord: <b>${KP_SHORT_HI[r.starLord]} (${r.starLord})</b></p><p>▸ CSL की राशि: <b>${SIGNS[r.cslRashi]} (${r.cslRashi+1}) - ${cslOddTxt}</b> &nbsp;|&nbsp; CSL की स्थिति: ${cslPos.text}</p><p>▸ नियम: Tab 9 के sign-only का उल्टा - विषम राशि = बेटी, सम राशि = बेटा। KP अयनांश: ${r.kpAya.toFixed(4)}° (Lahiri - 5'26.22"), Placidus भाव</p>`);
+  html += tbl(['नियम','Verdict'], [
+    ['Flipped sign-only (CSL की राशि विषम = बेटी, सम = बेटा)', vtxt(flipped)],
+    ['Sign-only, primary दिशा (Tab 9 वाला - तुलना के लिए)', vtxt(v.signOnly)],
+    ['Primary (Tab 9)', vtxt(v.primary)],
+  ]);
+  html += `<p class="note">▸ सावधानी: 5th CSL हर 2-5 मिनट में बदल जाता है, इसलिए यह नियम सिर्फ सटीक जन्म समय (AA / birth-certificate) पर ही मान्य है - पुराने round-off समय पर नहीं। यह post-hoc नियम है; fresh sets पर यह 33-50% रहा है।</p>`;
+  document.getElementById('res-10').innerHTML = html;
+}
+function renderTab11(chart){
+  const pl = chart.planets;
+  const marsD9 = navamsaSign(pl.Mars) % 2 === 0;
+  const satD9 = navamsaSign(pl.Saturn) % 2 === 0;
+  const sunD1 = signOf(pl.Sun) % 2 === 0;
+  const moonD9 = navamsaSign(pl.Moon) % 2 === 0;
+  const kshLon = (pl.Moon + pl.Mars + pl.Jupiter) % 360;
+  const kshOdd = signOf(kshLon) % 2 === 0;
+  const r = kpFifthCsl(chart);
+  const k1 = kpGenderOf(r.csl);
+  const k2 = kpGenderOf(r.starLord);
+  const k3 = (r.cslRashi % 2 === 0) ? 'M' : 'F';
+  const votes = [
+    ['मंगल D9 विषम = बेटी, सम = बेटा', marsD9 ? 'F' : 'M'],
+    ['शनि D9 विषम = बेटी, सम = बेटा', satD9 ? 'F' : 'M'],
+    ['सूर्य D1 विषम = बेटा, सम = बेटी', sunD1 ? 'M' : 'F'],
+    ['चंद्र D9 विषम = बेटा, सम = बेटी', moonD9 ? 'M' : 'F'],
+    ['क्षेत्र स्फुट (चंद्र+मंगल+गुरु) विषम = बेटी, सम = बेटा', kshOdd ? 'F' : 'M'],
+    ['KP 5th CSL का लिंग (पुरुष = बेटा, स्त्री = बेटी, बुध/शनि = चुप)', k1 || '-'],
+    ['KP CSL के star lord का लिंग', k2 || '-'],
+    ['KP CSL की राशि विषम = बेटा, सम = बेटी', k3],
+  ];
+  let m = 0, f = 0;
+  for (const [,v] of votes){ if(v === 'M') m++; else if(v === 'F') f++; }
+  const verdict = m > f ? 'M' : (f > m ? 'F' : '-');
+  const cusp = kpFmtDeg(r.cusp5);
+  let html = verdictBox('Bench8 verdict (5 + KP3 का बहुमत)', verdict,
+    `<p>▸ बेटा वाले vote: <b>${m}</b> &nbsp;|&nbsp; बेटी वाले vote: <b>${f}</b> &nbsp;|&nbsp; चुप: <b>${8 - m - f}</b></p><p>▸ 5th cusp: <b>${cusp.text}</b> &nbsp;|&nbsp; CSL: <b>${KP_SHORT_HI[r.csl]} (${r.csl})</b> &nbsp;|&nbsp; Star lord: <b>${KP_SHORT_HI[r.starLord]} (${r.starLord})</b> &nbsp;|&nbsp; CSL की राशि: <b>${SIGNS[r.cslRashi]} (${r.cslRashi + 1})</b></p>`);
+  html += tbl(['नियम', 'Vote'], votes.map(([n, v]) => [n, vtxt(v)]));
+  html += `<p class="note">▸ सावधानी: KP वाले 3 vote सिर्फ सटीक जन्म समय पर मान्य हैं (5th CSL हर 2-5 मिनट में बदलता है)। Bench8 derivation पर 63.0% और fresh 200 पर 57.1% रहा - 80% के लक्ष्य से बहुत दूर, FAIL।</p>`;
+  document.getElementById('res-11').innerHTML = html;
+}
 // test hooks (browser verification)
-window.__gtest = {computeChart, loadEphem, sevenVote, v1Score, staticScoreV2, predictGenderV3, combineCouple, panelVotes, panelVerdict, vimshottariAt, dashaT4, predictFirstChildWeighted, d7TierV2, bnnTierV2, kpFifthCsl, kpVerdicts, kpChart, version:'1.1'};
+window.__gtest = {computeChart, loadEphem, sevenVote, v1Score, staticScoreV2, predictGenderV3, combineCouple, panelVotes, panelVerdict, vimshottariAt, dashaT4, predictFirstChildWeighted, d7TierV2, bnnTierV2, kpFifthCsl, kpVerdicts, kpChart, version:'1.3'};
 window.runAll = runAll;
 window.runCouple = runCouple;
 window.showTab = showTab;
