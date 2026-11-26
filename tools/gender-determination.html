@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gender Research - सभी 11 Versions (एक file, 11 tabs) v1.3</title>
+<title>Gender Research - सभी 13 Versions (एक file, 13 tabs) v1.4</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -29,7 +29,7 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Gender Research - सभी 11 Versions (एक file, 11 tabs) v1.3</h1>
+<h1>Gender Research - सभी 13 Versions (एक file, 13 tabs) v1.4</h1>
 <div class="warn"><b>यह research/comparison file है, नया product नहीं।</b> नीचे हर version की backtest accuracy लिखी है - कोई भी version 60% से ऊपर नहीं गया है, इसलिए इनमें से किसी को भी working prediction tool की तरह इस्तेमाल नहीं करना है। सभी 9 versions के logic मूल Python/JS sources से faithful port किए गए हैं, कोई नया logic नहीं बनाया गया है।</div>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
@@ -44,10 +44,11 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 <label for="child-date"><b>पहली संतान के जन्म की तारीख (optional - सिर्फ J16/J17/J24 और v2.0 Tier 4 दशा के लिए):</b></label><br>
 <input type="date" id="child-date">
 </p>
-<p><button class="btn-main" onclick="runAll()">सभी Tabs में गणना करें</button></p>
+<p><button class="btn-main" onclick="runAll()">सभी Tabs में गणना करें</button> <button class="btn-main" onclick="runBench13()">13 टैब बेंच - सबका वोट एक साथ</button></p>
 <div id="status">Ephemeris अभी लोड नहीं हुआ है - गणना दबाते ही लोड होगा।</div>
 <div id="error"></div>
 <div id="chart-info"></div>
+<div id="res-bench13"></div>
 <p>
 <button class="tabbtn active" id="btn-1" onclick="showTab(1)">1. 7-vote</button>
 <button class="tabbtn" id="btn-2" onclick="showTab(2)">2. Gemini v1.0</button>
@@ -60,6 +61,8 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 <button class="tabbtn" id="btn-9" onclick="showTab(9)">9. KP 5th CSL</button>
 <button class="tabbtn" id="btn-10" onclick="showTab(10)">10. KP 5th CSL flipped-sign</button>
 <button class="tabbtn" id="btn-11" onclick="showTab(11)">11. Bench8 (5 + KP3)</button>
+<button class="tabbtn" id="btn-12" onclick="showTab(12)">12. 12-vote</button>
+<button class="tabbtn" id="btn-13" onclick="showTab(13)">13. Universal bench</button>
 </p>
 <div id="tab-1">
 <h2>1. 7-vote (majority vote, tie-break Venus D1)</h2>
@@ -125,6 +128,18 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 <p class="acc">Backtest accuracy (Python reference, 27 Nov 2026): <b>derivation 154 पर 87/138 (63.0%), fresh 200 पर 100/175 (57.1%)</b> - always-girl baseline 107/200 (53.5%) से बस थोड़ा ऊपर, FAIL। Bench5 अकेला fresh पर 56.0% था, KP3 अकेला 58.7% था। <b>Tab 11 पहली test (27 Nov 2026, 200 unique charts, Playwright): 100/175 (57.1%)</b> - Python reference से 0 mismatch, FAIL।</p>
 <p class="note">Bench5 के 5 नियम (derivation से दिशा) + KP के 3 vote (Tab 9/12 वाले, text दिशा) का बहुमत। KP वाले vote सिर्फ सटीक जन्म समय पर मान्य हैं (5th CSL हर 2-5 मिनट में बदलता है)।</p>
 <div id="res-11"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-12" style="display:none">
+<h2>12. 12-vote (पराशरी 6 + जैमिनी 2 + BNN 1 + KP 3)</h2>
+<p class="acc">Backtest accuracy (Python reference, 27 Nov 2026): <b>derivation 154 पर 62/129 (48.1%), fresh 200 पर 88/168 (52.4%)</b> - always-girl baseline 107/200 (53.5%) से नीचे, FAIL। Systems fresh: पराशरी 50.6% (86/170), जैमिनी 46.2% (54/117), BNN 52.5% (105/200), KP 58.7% (88/150)। <b>Tab 12 पहली test (27 Nov 2026, 200 unique charts, Playwright): 88/168 (52.4%)</b> - Python reference से 0 mismatch, FAIL।</p>
+<p class="note">पराशरी: D1/D9/D7 पंचमेश का प्राकृतिक लिंग + पंचमेश की राशि विषम/सम। जैमिनी: पुत्र कारक (5th chara karaka) का लिंग + उसकी D1 राशि। BNN: सिर्फ गुरु की D1 राशि (गुरु का लिंग नहीं)। KP: 5th CSL + CSL के star lord का लिंग + CSL की राशि। बुध/शनि neutral - चुप रहते हैं।</p>
+<div id="res-12"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
+</div>
+<div id="tab-13" style="display:none">
+<h2>13. Universal bench (42 universal नियम - हर कुंडली पर लागू)</h2>
+<p class="acc">Backtest accuracy (Python reference, 27 Nov 2026): <b>derivation 154 पर 98/139 (70.5%), fresh 200 पर 84/181 (46.4%)</b> - fresh पर सिक्के से भी नीचे, FAIL। 3 दिन के सारे नियमों में से सिर्फ universal (100% coverage, कोई शर्त/योग नहीं, कोई abstain नहीं) छाँटे गए, दिशा derivation से, dedupe के बाद 42 बचे। <b>Tab 13 पहली test (27 Nov 2026, 200 unique charts, Playwright): 84/181 (46.4%)</b> - Python reference से 0 mismatch, FAIL। <b>13-बेंच (tool mode) पहली test (27 Nov 2026, 200 unique charts, Playwright): 92/188 (48.9%)</b> - Python reference से 0 mismatch, FAIL।</p>
+<p class="note">सिर्फ राशि विषम/सम वाले नियम: लग्न, पंचमेश (D1/D7/D9), D7/D9 लग्न, गुरु/शुक्र/चंद्र, बीज/क्षेत्र स्फुट, KP CSL राशि, UL, D3, PH त्रिसूत्र, पुत्र कारक, D7 क्रम। हर नियम की दिशा derivation 154 से तय है।</p>
+<div id="res-13"><p class="note">ऊपर Astro Code डालकर गणना करें।</p></div>
 </div>
 <script type="module">
 const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
@@ -1115,7 +1130,7 @@ function verdictBox(title, verdict, extra){
   return `<div class="verdict"><h2 style="border:none;margin-top:0">${esc(title)}: ${esc(vtxt(verdict))}</h2>${extra||''}</div>`;
 }
 function showTab(n){
-  for (let i=1;i<=11;i++){
+  for (let i=1;i<=13;i++){
     document.getElementById('tab-'+i).style.display = (i===n) ? 'block' : 'none';
     document.getElementById('btn-'+i).classList.toggle('active', i===n);
   }
@@ -1152,6 +1167,8 @@ async function runAll(){
     renderTab9(chart);
     renderTab10(chart);
     renderTab11(chart);
+    renderTab12(chart);
+    renderTab13(chart);
     stEl.textContent = 'गणना पूर्ण।';
   }catch(e){
     errEl.innerHTML = `<div class="err">${esc(e.message || String(e))}</div>`;
@@ -1339,9 +1356,268 @@ function renderTab11(chart){
   html += `<p class="note">▸ सावधानी: KP वाले 3 vote सिर्फ सटीक जन्म समय पर मान्य हैं (5th CSL हर 2-5 मिनट में बदलता है)। Bench8 derivation पर 63.0% और fresh 200 पर 57.1% रहा - 80% के लक्ष्य से बहुत दूर, FAIL।</p>`;
   document.getElementById('res-11').innerHTML = html;
 }
+// ---------- Drekkana + Upapada (Tab 13 के लिए; Python: run_classical_round3.py) ----------
+function d3sign(lon){
+  const s = signOf(lon);
+  const pada = Math.floor((((lon % 30) + 30) % 30) / 10);
+  return (s * 3 + pada) % 12;
+}
+function upapada(chart){
+  const pl = chart.planets;
+  const sL = signOf(chart.lagna);
+  const h12 = (sL + 11) % 12;
+  const L12 = SIGN_LORD_ARR[h12];
+  const sL12 = signOf(pl[L12]);
+  const k = ((sL12 - h12) % 12 + 12) % 12 + 1;
+  let ul = (sL12 + k - 1) % 12;
+  if (ul === h12 || ul === (h12 + 6) % 12) ul = (ul + 9) % 12;
+  return ul;
+}
+// ---------- Tab 12: 12-vote (Python: run_12vote.py votes12) ----------
+const P7 = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+function putraKaraka(pl){
+  return [...P7].sort((a, b) => ((norm360(pl[b]) % 30) - (norm360(pl[a]) % 30)) || (P7.indexOf(a) - P7.indexOf(b)))[4];
+}
+function tab12Votes(chart){
+  const pl = chart.planets;
+  const sL = signOf(chart.lagna);
+  const l5 = SIGN_LORD_ARR[(sL + 4) % 12];
+  const d9l = navamsaSignFixed(chart.lagna);
+  const l5d9 = SIGN_LORD_ARR[(d9l + 4) % 12];
+  const d7l = d7of(chart.lagna);
+  const l5d7 = SIGN_LORD_ARR[(d7l + 4) % 12];
+  const nat = p => D1_GENDER[p] > 0 ? 'M' : (D1_GENDER[p] < 0 ? 'F' : '-');
+  const pk = putraKaraka(pl);
+  const r = kpFifthCsl(chart);
+  return {
+    P1_D1_lord: nat(l5),
+    P2_D1_lord_sign: signOf(pl[l5]) % 2 === 0 ? 'M' : 'F',
+    P3_D9_lord: nat(l5d9),
+    P4_D9_lord_sign: navamsaSignFixed(pl[l5d9]) % 2 === 0 ? 'M' : 'F',
+    P5_D7_lord: nat(l5d7),
+    P6_D7_lord_sign: d7of(pl[l5d7]) % 2 === 0 ? 'M' : 'F',
+    J1_PK: nat(pk),
+    J2_PK_sign: signOf(pl[pk]) % 2 === 0 ? 'M' : 'F',
+    B1_Ju_sign: signOf(pl.Jupiter) % 2 === 0 ? 'M' : 'F',
+    K1_CSL: kpGenderOf(r.csl) || '-',
+    K2_CSL_NL: kpGenderOf(r.starLord) || '-',
+    K3_CSL_sign: r.cslRashi % 2 === 0 ? 'M' : 'F',
+  };
+}
+const TAB12_SYSTEMS = {
+  Parashari: ['P1_D1_lord','P2_D1_lord_sign','P3_D9_lord','P4_D9_lord_sign','P5_D7_lord','P6_D7_lord_sign'],
+  Jaimini: ['J1_PK','J2_PK_sign'],
+  BNN: ['B1_Ju_sign'],
+  KP: ['K1_CSL','K2_CSL_NL','K3_CSL_sign'],
+};
+const TAB12_LABELS = {
+  P1_D1_lord: 'पराशरी - D1 पंचमेश का लिंग', P2_D1_lord_sign: 'पराशरी - D1 पंचमेश की राशि विषम = बेटा',
+  P3_D9_lord: 'पराशरी - D9 पंचमेश का लिंग', P4_D9_lord_sign: 'पराशरी - D9 पंचमेश की राशि विषम = बेटा',
+  P5_D7_lord: 'पराशरी - D7 पंचमेश का लिंग', P6_D7_lord_sign: 'पराशरी - D7 पंचमेश की राशि विषम = बेटा',
+  J1_PK: 'जैमिनी - पुत्र कारक (5th chara karaka) का लिंग', J2_PK_sign: 'जैमिनी - पुत्र कारक की D1 राशि विषम = बेटा',
+  B1_Ju_sign: 'BNN - गुरु की D1 राशि विषम = बेटा',
+  K1_CSL: 'KP - 5th CSL का लिंग', K2_CSL_NL: 'KP - CSL के star lord का लिंग', K3_CSL_sign: 'KP - CSL की राशि विषम = बेटा',
+};
+function majorityOf(votesObj){
+  const vs = Object.values(votesObj).filter(x => x !== '-');
+  if (!vs.length) return '-';
+  const m = vs.filter(x => x === 'M').length;
+  const f = vs.length - m;
+  return m > f ? 'M' : (f > m ? 'F' : '-');
+}
+function renderTab12(chart){
+  const v = tab12Votes(chart);
+  const keys = Object.keys(v);
+  let m = 0, f = 0;
+  for (const k of keys){ if (v[k] === 'M') m++; else if (v[k] === 'F') f++; }
+  const verdict = m > f ? 'M' : (f > m ? 'F' : '-');
+  let sysTxt = '';
+  for (const [sys, ks] of Object.entries(TAB12_SYSTEMS)){
+    const sub = {};
+    for (const k of ks) sub[k] = v[k];
+    sysTxt += `<p>▸ ${sys}: <b>${vtxt(majorityOf(sub))}</b></p>`;
+  }
+  let html = verdictBox('12-vote verdict (4 systems का बहुमत)', verdict,
+    `<p>▸ बेटा वाले vote: <b>${m}</b> &nbsp;|&nbsp; बेटी वाले vote: <b>${f}</b> &nbsp;|&nbsp; चुप: <b>${12 - m - f}</b></p>` + sysTxt);
+  html += tbl(['नियम', 'Vote'], keys.map(k => [TAB12_LABELS[k], vtxt(v[k])]));
+  html += `<p class="note">▸ सावधानी: KP वाले 3 vote सिर्फ सटीक जन्म समय पर मान्य हैं (5th CSL हर 2-5 मिनट में बदलता है)। 12-vote derivation पर 48.1% और fresh 200 पर 52.4% रहा - baseline से नीचे, FAIL।</p>`;
+  document.getElementById('res-12').innerHTML = html;
+}
+// ---------- Tab 13: 42-rule universal bench (Python: run_universal_bench.py) ----------
+const UNI_DIRS = {"lagna_odd": "M", "lord5_D1_odd": "F", "lord5_D7_odd": "M", "lord5_D9_odd": "F", "D7_lagna_odd": "F", "D7_lord5_D7_odd": "F", "D9_lagna_odd": "F", "D9_lord5_D9_odd": "M", "Ju_D1_odd": "F", "Ju_D7_odd": "M", "Ju_D9_odd": "F", "Ve_D1_odd": "F", "Ve_D7_odd": "M", "Mo_D7_odd": "F", "sphuta_odd": "F", "KP_csl_sign_odd": "F", "Ve_D9_exc": "M", "Mo_D1_exc": "M", "lord5_D1_exc": "F", "Sun_D1_odd": "M", "Sun_D9_odd": "M", "Mars_D1_odd": "M", "Mars_D9_odd": "F", "Saturn_D1_odd": "F", "Saturn_D9_odd": "F", "Mercury_D1_odd": "M", "Mercury_D9_odd": "F", "Moon_D1_odd": "M", "Moon_D9_odd": "M", "Rahu_D1_odd": "F", "Rahu_D9_odd": "F", "UL_odd": "M", "lord5_D3_odd": "F", "beeja_odd": "F", "kshetra_odd": "F", "beeja_D9_odd": "F", "kshetra_D9_odd": "M", "PH_Tri_sign": "M", "PH_Tri_lord": "F", "PK_sign_odd": "M", "D7SEQ_D1": "F", "D7SEQ_D7": "F"};
+const UNI_LABELS = {
+  lagna_odd: 'लग्न विषम', lord5_D1_odd: 'D1 पंचमेश की D1 राशि विषम', lord5_D7_odd: 'D1 पंचमेश की D7 राशि विषम',
+  lord5_D9_odd: 'D1 पंचमेश की D9 राशि विषम', D7_lagna_odd: 'D7 लग्न विषम', D7_lord5_D7_odd: 'D7 पंचमेश की D7 राशि विषम',
+  D9_lagna_odd: 'D9 लग्न विषम', D9_lord5_D9_odd: 'D9 पंचमेश की D9 राशि विषम',
+  Ju_D1_odd: 'गुरु D1 विषम', Ju_D7_odd: 'गुरु D7 विषम', Ju_D9_odd: 'गुरु D9 विषम',
+  Ve_D1_odd: 'शुक्र D1 विषम', Ve_D7_odd: 'शुक्र D7 विषम', Mo_D7_odd: 'चंद्र D7 विषम',
+  sphuta_odd: 'स्फुट (बीज/क्षेत्र) विषम', KP_csl_sign_odd: 'KP CSL की राशि विषम',
+  Ve_D9_exc: 'शुक्र D9 exception table', Mo_D1_exc: 'चंद्र D1 exception table', lord5_D1_exc: 'पंचमेश D1 exception table',
+  Sun_D1_odd: 'सूर्य D1 विषम', Sun_D9_odd: 'सूर्य D9 विषम', Mars_D1_odd: 'मंगल D1 विषम', Mars_D9_odd: 'मंगल D9 विषम',
+  Saturn_D1_odd: 'शनि D1 विषम', Saturn_D9_odd: 'शनि D9 विषम', Mercury_D1_odd: 'बुध D1 विषम', Mercury_D9_odd: 'बुध D9 विषम',
+  Moon_D1_odd: 'चंद्र D1 विषम', Moon_D9_odd: 'चंद्र D9 विषम', Rahu_D1_odd: 'राहु D1 विषम', Rahu_D9_odd: 'राहु D9 विषम',
+  UL_odd: 'उपपद लग्न विषम', lord5_D3_odd: 'पंचमेश की D3 (द्रेष्काण) राशि विषम',
+  beeja_odd: 'बीज स्फुट विषम', kshetra_odd: 'क्षेत्र स्फुट विषम', beeja_D9_odd: 'बीज स्फुट D9 विषम', kshetra_D9_odd: 'क्षेत्र स्फुट D9 विषम',
+  PH_Tri_sign: 'फलदीपिका त्रिसूत्र - राशि बहुमत', PH_Tri_lord: 'फलदीपिका त्रिसूत्र - स्वामी बहुमत',
+  PK_sign_odd: 'पुत्र कारक की D1 राशि विषम', D7SEQ_D1: 'D7 क्रम - स्वामी की D1 राशि विषम', D7SEQ_D7: 'D7 क्रम - स्वामी की D7 राशि विषम',
+};
+function tab13Votes(chart){
+  const pl = chart.planets;
+  const sL = signOf(chart.lagna);
+  const s5 = (sL + 4) % 12;
+  const lord5 = SIGN_LORD_ARR[s5];
+  const d7lag = d7of(chart.lagna);
+  const d9lag = navamsaSignFixed(chart.lagna);
+  const d7lord5 = SIGN_LORD_ARR[(d7lag + 4) % 12];
+  const d9lord5 = SIGN_LORD_ARR[(d9lag + 4) % 12];
+  const beeja = (pl.Sun + pl.Venus + pl.Jupiter) % 360;
+  const kshetra = (pl.Moon + pl.Mars + pl.Jupiter) % 360;
+  const sph = chart.nativeGender === 'male' ? beeja : kshetra;
+  const r = kpFifthCsl(chart);
+  const ul = upapada(chart);
+  const pk = putraKaraka(pl);
+  const s_mo5 = (signOf(pl.Moon) + 4) % 12;
+  const s_ju5 = (signOf(pl.Jupiter) + 4) % 12;
+  const l_mo5 = SIGN_LORD_ARR[s_mo5];
+  const l_ju5 = SIGN_LORD_ARR[s_ju5];
+  const triVote = vs => (vs.filter(Boolean).length >= 2 ? 'M' : 'F');
+  const triSign = triVote([s5 % 2 === 0, s_mo5 % 2 === 0, s_ju5 % 2 === 0]);
+  const triLord = triVote([signOf(pl[lord5]) % 2 === 0, signOf(pl[l_mo5]) % 2 === 0, signOf(pl[l_ju5]) % 2 === 0]);
+  const hsign = d7lag % 2 === 0 ? (d7lag + 4) % 12 : (d7lag + 8) % 12;
+  const seqLord = SIGN_LORD_ARR[hsign];
+  const p = {};
+  p.lagna_odd = sL % 2 === 0 ? 1 : 0;
+  p.lord5_D1_odd = signOf(pl[lord5]) % 2 === 0 ? 1 : 0;
+  p.lord5_D7_odd = d7of(pl[lord5]) % 2 === 0 ? 1 : 0;
+  p.lord5_D9_odd = navamsaSignFixed(pl[lord5]) % 2 === 0 ? 1 : 0;
+  p.D7_lagna_odd = d7lag % 2 === 0 ? 1 : 0;
+  p.D7_lord5_D7_odd = d7of(pl[d7lord5]) % 2 === 0 ? 1 : 0;
+  p.D9_lagna_odd = d9lag % 2 === 0 ? 1 : 0;
+  p.D9_lord5_D9_odd = navamsaSignFixed(pl[d9lord5]) % 2 === 0 ? 1 : 0;
+  p.Ju_D1_odd = signOf(pl.Jupiter) % 2 === 0 ? 1 : 0;
+  p.Ju_D7_odd = d7of(pl.Jupiter) % 2 === 0 ? 1 : 0;
+  p.Ju_D9_odd = navamsaSignFixed(pl.Jupiter) % 2 === 0 ? 1 : 0;
+  p.Ve_D1_odd = signOf(pl.Venus) % 2 === 0 ? 1 : 0;
+  p.Ve_D7_odd = d7of(pl.Venus) % 2 === 0 ? 1 : 0;
+  p.Mo_D7_odd = d7of(pl.Moon) % 2 === 0 ? 1 : 0;
+  p.sphuta_odd = signOf(sph) % 2 === 0 ? 1 : 0;
+  p.KP_csl_sign_odd = r.cslRashi % 2 === 0 ? 1 : 0;
+  p.Ve_D9_exc = MALE_SIGNS_D7.has(navamsaSignFixed(pl.Venus) + 1) ? 1 : 0;
+  p.Mo_D1_exc = MALE_SIGNS_D7.has(signOf(pl.Moon) + 1) ? 1 : 0;
+  p.lord5_D1_exc = MALE_SIGNS_D7.has(signOf(pl[lord5]) + 1) ? 1 : 0;
+  p.Sun_D1_odd = signOf(pl.Sun) % 2 === 0 ? 1 : 0;
+  p.Sun_D9_odd = navamsaSignFixed(pl.Sun) % 2 === 0 ? 1 : 0;
+  p.Mars_D1_odd = signOf(pl.Mars) % 2 === 0 ? 1 : 0;
+  p.Mars_D9_odd = navamsaSignFixed(pl.Mars) % 2 === 0 ? 1 : 0;
+  p.Saturn_D1_odd = signOf(pl.Saturn) % 2 === 0 ? 1 : 0;
+  p.Saturn_D9_odd = navamsaSignFixed(pl.Saturn) % 2 === 0 ? 1 : 0;
+  p.Mercury_D1_odd = signOf(pl.Mercury) % 2 === 0 ? 1 : 0;
+  p.Mercury_D9_odd = navamsaSignFixed(pl.Mercury) % 2 === 0 ? 1 : 0;
+  p.Moon_D1_odd = signOf(pl.Moon) % 2 === 0 ? 1 : 0;
+  p.Moon_D9_odd = navamsaSignFixed(pl.Moon) % 2 === 0 ? 1 : 0;
+  p.Rahu_D1_odd = signOf(pl.Rahu) % 2 === 0 ? 1 : 0;
+  p.Rahu_D9_odd = navamsaSignFixed(pl.Rahu) % 2 === 0 ? 1 : 0;
+  p.UL_odd = ul % 2 === 0 ? 1 : 0;
+  p.lord5_D3_odd = d3sign(pl[lord5]) % 2 === 0 ? 1 : 0;
+  p.beeja_odd = signOf(beeja) % 2 === 0 ? 1 : 0;
+  p.kshetra_odd = signOf(kshetra) % 2 === 0 ? 1 : 0;
+  p.beeja_D9_odd = navamsaSignFixed(beeja) % 2 === 0 ? 1 : 0;
+  p.kshetra_D9_odd = navamsaSignFixed(kshetra) % 2 === 0 ? 1 : 0;
+  p.PH_Tri_sign = triSign === 'M' ? 1 : 0;
+  p.PH_Tri_lord = triLord === 'M' ? 1 : 0;
+  p.PK_sign_odd = signOf(pl[pk]) % 2 === 0 ? 1 : 0;
+  p.D7SEQ_D1 = signOf(pl[seqLord]) % 2 === 0 ? 1 : 0;
+  p.D7SEQ_D7 = d7of(pl[seqLord]) % 2 === 0 ? 1 : 0;
+  const v = {};
+  for (const k of Object.keys(UNI_DIRS)){
+    const dir = UNI_DIRS[k];
+    v[k] = p[k] === 1 ? dir : (dir === 'M' ? 'F' : 'M');
+  }
+  return v;
+}
+function renderTab13(chart){
+  const v = tab13Votes(chart);
+  const keys = Object.keys(v);
+  let m = 0, f = 0;
+  for (const k of keys){ if (v[k] === 'M') m++; else if (v[k] === 'F') f++; }
+  const verdict = m > f ? 'M' : (f > m ? 'F' : '-');
+  const dirTxt = k => (UNI_DIRS[k] === 'M' ? 'विषम = बेटा' : 'विषम = बेटी');
+  let html = verdictBox('Universal bench verdict (42 नियमों का बहुमत)', verdict,
+    `<p>▸ बेटा वाले vote: <b>${m}</b> &nbsp;|&nbsp; बेटी वाले vote: <b>${f}</b> &nbsp;|&nbsp; चुप: <b>${42 - m - f}</b></p>`);
+  html += tbl(['नियम', 'दिशा (derivation से)', 'Vote'], keys.map(k => [UNI_LABELS[k], dirTxt(k), vtxt(v[k])]));
+  html += `<p class="note">▸ सावधानी: हर नियम की दिशा derivation 154 से तय है - fresh 200 पर यह बेंच 46.4% रही, सिक्के से भी नीचे, FAIL।</p>`;
+  document.getElementById('res-13').innerHTML = html;
+}
+// ---------- Bench8 verdict (Tab 11 जैसा; 13-बेंच के लिए) ----------
+function bench8Verdict(chart){
+  const pl = chart.planets;
+  const marsD9 = navamsaSignFixed(pl.Mars) % 2 === 0;
+  const satD9 = navamsaSignFixed(pl.Saturn) % 2 === 0;
+  const sunD1 = signOf(pl.Sun) % 2 === 0;
+  const moonD9 = navamsaSignFixed(pl.Moon) % 2 === 0;
+  const kshLon = (pl.Moon + pl.Mars + pl.Jupiter) % 360;
+  const kshOdd = signOf(kshLon) % 2 === 0;
+  const r = kpFifthCsl(chart);
+  const votes = [
+    marsD9 ? 'F' : 'M', satD9 ? 'F' : 'M', sunD1 ? 'M' : 'F', moonD9 ? 'M' : 'F',
+    kshOdd ? 'F' : 'M', kpGenderOf(r.csl) || '-', kpGenderOf(r.starLord) || '-',
+    (r.cslRashi % 2 === 0) ? 'M' : 'F',
+  ];
+  let m = 0, f = 0;
+  for (const v of votes){ if (v === 'M') m++; else if (v === 'F') f++; }
+  return m > f ? 'M' : (f > m ? 'F' : '-');
+}
+// ---------- 13-tab bench: सभी 13 tabs का एक साथ वोट ----------
+const BENCH13_NAMES = {
+  T1: '1. 7-vote', T2: '2. Gemini v1.0', T3: '3. Gemini v2.0', T4: '4. Gemini v3.0',
+  T5: '5. v3.0 + mu0', T6: '6. Couple combiner', T7: '7. 24-जज पैनल', T8: '8. 28-जज पैनल',
+  T9: '9. KP 5th CSL', T10: '10. KP 5th CSL flipped-sign', T11: '11. Bench8 (5 + KP3)',
+  T12: '12. 12-vote', T13: '13. Universal bench (42 नियम)',
+};
+function allTabVerdicts(chart, votes){
+  const v3 = mu0 => {
+    const c = {id: 'chart', timeStr: chart.timeStr, nativeGender: chart.nativeGender === 'male' ? 'M' : 'F', ascDeg: chart.ascLon, planets: chart.planets};
+    const r = predictGenderV3(c, mu0);
+    return r.verdict === 'boy' ? 'M' : (r.verdict === 'girl' ? 'F' : '-');
+  };
+  const kv = kpVerdicts(kpFifthCsl(chart));
+  return {
+    T1: sevenVote(chart).verdict,
+    T2: (() => { const s = v1Score(chart).score; return s > 0 ? 'M' : (s < 0 ? 'F' : '-'); })(),
+    T3: staticScoreV2(chart).verdict,
+    T4: v3(0.0),
+    T5: v3(6.79),
+    T6: '-',
+    T7: panelVerdict(votes, JIDS24),
+    T8: panelVerdict(votes, JIDS28),
+    T9: kv.primary,
+    T10: kv.cslOdd ? 'F' : 'M',
+    T11: bench8Verdict(chart),
+    T12: majorityOf(tab12Votes(chart)),
+    T13: majorityOf(tab13Votes(chart)),
+  };
+}
+function runBench13(){
+  const el = document.getElementById('res-bench13');
+  if (!LAST || !LAST.chart){
+    el.innerHTML = '<div class="err">पहले ऊपर Astro Code डालकर गणना करें।</div>';
+    return;
+  }
+  const t = allTabVerdicts(LAST.chart, LAST.votes);
+  const keys = Object.keys(BENCH13_NAMES);
+  let m = 0, f = 0;
+  for (const k of keys){ if (t[k] === 'M') m++; else if (t[k] === 'F') f++; }
+  const verdict = m > f ? 'M' : (f > m ? 'F' : '-');
+  let html = verdictBox('13 टैब बेंच verdict (13 tabs का बहुमत)', verdict,
+    `<p>▸ बेटा वाले: <b>${m}</b> &nbsp;|&nbsp; बेटी वाले: <b>${f}</b> &nbsp;|&nbsp; चुप: <b>${13 - m - f}</b></p><p class="note">Tab 6 (Couple combiner) single chart पर हमेशा चुप रहता है - उसके लिए Couple tab में पति-पत्नी दोनों की कुंडली डालें।</p>`);
+  html += tbl(['Tab', 'Vote'], keys.map(k => [BENCH13_NAMES[k], vtxt(t[k])]));
+  el.innerHTML = html;
+  window.__bench13 = {verdict, tabs: t};
+}
 // test hooks (browser verification)
-window.__gtest = {computeChart, loadEphem, sevenVote, v1Score, staticScoreV2, predictGenderV3, combineCouple, panelVotes, panelVerdict, vimshottariAt, dashaT4, predictFirstChildWeighted, d7TierV2, bnnTierV2, kpFifthCsl, kpVerdicts, kpChart, version:'1.3'};
+window.__gtest = {computeChart, loadEphem, sevenVote, v1Score, staticScoreV2, predictGenderV3, combineCouple, panelVotes, panelVerdict, vimshottariAt, dashaT4, predictFirstChildWeighted, d7TierV2, bnnTierV2, kpFifthCsl, kpVerdicts, kpChart, tab12Votes, tab13Votes, allTabVerdicts, runBench13, version:'1.4'};
 window.runAll = runAll;
+window.runBench13 = runBench13;
 window.runCouple = runCouple;
 window.showTab = showTab;
 
