@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spouse Sign Calculator v1.0</title>
+<style>
+* { box-sizing: border-box; }
+body { font-family: 'Noto Sans Devanagari', 'Mangal', sans-serif; margin: 0; background: #f6f3ec; color: #222; }
+.wrap { max-width: 960px; margin: 0 auto; padding: 16px; }
+.badge { display: inline-block; background: #2e7d32; color: #fff; font-weight: 700; padding: 3px 10px; border-radius: 4px; font-size: 15px; }
+h1 { font-size: 26px; margin: 8px 0 4px; }
+.sub { color: #555; margin: 0 0 14px; }
+.card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
+.note { background: #fff8e1; border: 1px solid #e6c87a; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; }
+.note b { color: #7a5b00; }
+.tabs { display: flex; gap: 8px; margin-bottom: 0; }
+.tabs button { flex: 1; padding: 12px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; border: 1px solid #bbb; border-bottom: none; border-radius: 8px 8px 0 0; background: #e8e2d4; }
+.tabs button.active { background: #fff; color: #7a1f1f; }
+.tab { display: none; background: #fff; border: 1px solid #bbb; border-radius: 0 0 8px 8px; padding: 16px; }
+.tab.active { display: block; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 15px; }
+th, td { border: 1px solid #ddd; padding: 7px 9px; text-align: left; vertical-align: top; }
+th { background: #f0ead9; }
+.sec-title { margin: 18px 0 6px; font-size: 18px; color: #7a1f1f; }
+.kp-sec td, .kp-sec th { background: #f3f6ff; }
+.counts td.num { text-align: center; font-weight: 700; }
+.result { background: #eef7ee; border: 2px solid #2e7d32; border-radius: 8px; padding: 14px; margin-top: 10px; }
+.result h3 { margin: 0 0 6px; color: #2e7d32; }
+.warn { background: #fdecea; border: 1px solid #e0a49e; border-radius: 8px; padding: 10px 12px; margin-top: 10px; }
+.kp-toggle { font-size: 16px; padding: 10px 12px; background: #f3f6ff; border: 1px solid #9db2e8; border-radius: 8px; margin-bottom: 12px; display: block; }
+.kp-toggle input { transform: scale(1.4); margin-right: 8px; }
+.desc { font-size: 13px; color: #555; }
+tr.r3 td { background: #eef7ee; }
+.small { font-size: 13px; color: #666; }
+input[type=text] { font-size: 16px; padding: 9px 10px; width: 100%; max-width: 460px; font-family: inherit; border: 1px solid #bbb; border-radius: 6px; }
+select { font-size: 16px; padding: 9px 10px; font-family: inherit; border: 1px solid #bbb; border-radius: 6px; }
+button.go { font-size: 17px; font-weight: 700; font-family: inherit; padding: 10px 22px; background: #7a1f1f; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+button.go:disabled { background: #aaa; cursor: wait; }
+.err { color: #b3261e; font-weight: 700; margin-top: 8px; }
+.status { font-size: 14px; color: #555; margin-top: 8px; }
+.winner { background: #eef7ee; border: 2px solid #2e7d32; border-radius: 8px; padding: 14px; margin-top: 10px; }
+.winner h3 { margin: 0 0 6px; color: #2e7d32; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>💑 Spouse Sign Calculator <span class="badge">v1.0</span></h1>
+<p class="sub">Astro Code डालते ही जीवनसाथी की चंद्र / लग्न राशि की गणना। दो तरीके — A–G list (Tab 1) और शास्त्रीय नियम (Tab 2)।</p>
+
+<div class="card">
+<label for="astroCode"><b>Astro Code</b></label><br>
+<input type="text" id="astroCode" value="AS1-19950214-030000-+0530-2119N-07951E" spellcheck="false">
+&nbsp;
+<label for="gender"><b>लिंग</b></label>
+<select id="gender">
+<option value="male" selected>पुरुष</option>
+<option value="female">स्त्री</option>
+</select>
+&nbsp;
+<button class="go" id="btnCalc" onclick="runCalc()" disabled>गणना करें</button>
+<div class="status" id="ephemStatus">Ephemeris लोड हो रहा है…</div>
+<div class="err" id="errBox"></div>
+</div>
+
+<div id="outWrap" style="display:none">
+<div class="card" id="summaryCard"></div>
+
+<div class="note">
+<b>ध्यान दें — D9 formula:</b> इस tool में textbook वाला D9 formula use हुआ है (चर: वही राशि; स्थिर: 9वीं राशि से; द्विस्वभाव: 5वीं राशि से)।
+पुराने (गलत) formula से गिनती अलग आती थी — सही formula से शुक्र की गिनती KP सहित 6 और KP बिना 4 आती है (पुरानी 8/6 गलत थी)।
+</div>
+
+<div class="tabs">
+<button id="btn1" class="active" onclick="showTab(1)">Tab 1 — A–G List</button>
+<button id="btn2" onclick="showTab(2)">Tab 2 — शास्त्रीय नियम (R1–R9)</button>
+</div>
+
+<div id="tab1" class="tab active">
+<label class="kp-toggle"><input type="checkbox" id="kpCheck" checked onchange="renderCounts()"> KP वाला हिस्सा (G) गिनती में लो — अनचेक करने पर G के 4 items गिनती से हट जाएँगे</label>
+<div id="sectionsWrap"></div>
+<h3 class="sec-title">ग्रहों की गिनती (Frequency Count)</h3>
+<table class="counts" id="countTable"></table>
+<div class="result" id="resultBox"></div>
+<p class="small">Top-1 method: A–G list में सबसे ज्यादा बार आया ग्रह लो; उसकी 2 राशियों में से कोई एक जीवनसाथी की चंद्र या लग्न राशि होगी।
+174 जोड़ियों के test में यह method fail हुई थी (textbook D9 से 34.5% vs 32.6% baseline) — यह tool सिर्फ गणना दिखाता है, कोई दावा नहीं करता।</p>
+</div>
+
+<div id="tab2" class="tab">
+<p>9 शास्त्रीय नियम — 174 जोड़ियों (87 couples × 2) पर textbook D9 से test किए गए। <b>सिर्फ R3 लग्न के लिए pass हुआ</b> (46.5% vs 27.9% baseline),
+पर वह भी fresh जोड़ियों पर confirm नहीं हुआ है। चंद्र राशि के लिए कोई नियम pass नहीं हुआ।</p>
+<div id="rulesWrap"></div>
+<h3 class="sec-title">सभी नियमों की राशियों की गिनती</h3>
+<table class="counts" id="freqTable"></table>
+<div class="winner" id="winnerBox"></div>
+<p class="small">Winner = सबसे ज्यादा बार आई 2 राशियाँ (दूसरे स्थान पर tie हो तो सभी tied राशियाँ winner)।
+यह <b>validated prediction नहीं है</b> — सिर्फ सबसे ज्यादा बार आई राशियाँ हैं। 9 में से 8 नियम test में fail हो चुके हैं।</p>
+</div>
+</div>
+</div>
+
+<script type="module">
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+let swe = null, SEP = null, SLP = null, SID_MODE_LAHIRI = 1;
+
+// Constants (KP Calculator v27.2 / top1 test से)
+const SIGNS_EN = ['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha','Meena'];
+const SIGN_HI = {'Mesha':'मेष','Vrishabha':'वृषभ','Mithuna':'मिथुन','Karka':'कर्क','Simha':'सिंह','Kanya':'कन्या','Tula':'तुला','Vrishchika':'वृश्चिक','Dhanu':'धनु','Makara':'मकर','Kumbha':'कुंभ','Meena':'मीन'};
+const PLANET_HI = {'Su':'सूर्य','Mo':'चंद्र','Ma':'मंगल','Me':'बुध','Ju':'गुरु','Ve':'शुक्र','Sa':'शनि','Ra':'राहु','Ke':'केतु'};
+const PLANETS = ['Su','Mo','Ma','Me','Ju','Ve','Sa','Ra','Ke'];
+const SIGN_LORD = ['Ma','Ve','Me','Mo','Su','Me','Ve','Ma','Ju','Sa','Sa','Ju'];
+const NAK_LORDS = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me','Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const VIM_YEARS = {Ke:7, Ve:20, Su:6, Mo:10, Ma:7, Ra:18, Ju:16, Sa:19, Me:17};
+const VIM_ORDER = ['Ke','Ve','Su','Mo','Ma','Ra','Ju','Sa','Me'];
+const OWNED = {Su:[4], Mo:[3], Ma:[0,7], Me:[2,5], Ju:[8,11], Ve:[1,6], Sa:[9,10], Ra:[], Ke:[]};
+const EXALT = {Su:0, Mo:1, Ma:9, Me:5, Ju:3, Ve:11, Sa:6, Ra:1, Ke:7};
+const ELEMENT = {0:'fire',4:'fire',8:'fire',1:'earth',5:'earth',9:'earth',2:'air',6:'air',10:'air',3:'water',7:'water',11:'water'};
+const ELEM_SIGNS = {fire:[0,4,8], earth:[1,5,9], air:[2,6,10], water:[3,7,11]};
+const ELEM_HI = {fire:'अग्नि', earth:'पृथ्वी', air:'वायु', water:'जल'};
+const KP_AYA_OFFSET = 5 + 26.22/60; // 5'26.22" less than Lahiri (arcminutes)
+
+let CUR = null; // current computed chart data
+
+(async function(){
+  const st = document.getElementById('ephemStatus');
+  try {
+    const m = await import(/* @vite-ignore */EPHEM_CDN);
+    swe = new m.SwissEphemeris();
+    await swe.init();
+    SEP = m.Planet;
+    SLP = m.LunarPoint;
+    try { SID_MODE_LAHIRI = m.SiderealMode.Lahiri; } catch(e) { SID_MODE_LAHIRI = 1; }
+    st.textContent = '✅ Swiss Ephemeris तैयार';
+    document.getElementById('btnCalc').disabled = false;
+    runCalc();
+  } catch(e) {
+    st.textContent = '❌ Ephemeris लोड नहीं हुआ: ' + e.message;
+  }
+})();
+
+function norm360(x){ return ((x % 360) + 360) % 360; }
+
+function parseAstroCode(code) {
+  const m = code.trim().match(/^AS1-(\d{8})-(\d{6})-([+-]\d{4})-(\d{4})([NS])-(\d{5})([EW])$/i);
+  if(!m) return null;
+  return {
+    yy: +m[1].slice(0,4), mm: +m[1].slice(4,6), dd: +m[1].slice(6,8),
+    hh: +m[2].slice(0,2), mi: +m[2].slice(2,4), ss: +m[2].slice(4,6),
+    tz: m[3].slice(0,3) + ':' + m[3].slice(3),
+    lat: (+m[4].slice(0,2) + (+m[4].slice(2))/60) * (m[5].toUpperCase()==='S' ? -1 : 1),
+    lon: (+m[6].slice(0,3) + (+m[6].slice(3))/60) * (m[7].toUpperCase()==='W' ? -1 : 1)
+  };
+}
+
+function toJulian(yy, mm, dd, hh, mi, ss, tzStr) {
+  const m = tzStr.match(/([+-])(\d+):(\d+)/);
+  const tzH = (+m[2] + (+m[3])/60) * (m[1]==='-' ? -1 : 1);
+  const utcH = hh + mi/60 + ss/3600 - tzH;
+  let y = yy, mo = mm;
+  if(mo <= 2){ y--; mo += 12; }
+  const A = Math.floor(y/100), B = 2 - A + Math.floor(A/4);
+  return Math.floor(365.25*(y+4716)) + Math.floor(30.6001*(mo+1)) + dd + B - 1524.5 + utcH/24;
+}
+
+function getSubLords(nakIdx) {
+  const total = 800.0, start = nakIdx % 9;
+  const res = []; let pos = 0;
+  for(let i=0; i<9; i++){
+    const lord = VIM_ORDER[(start+i)%9];
+    const w = VIM_YEARS[lord]/120*total;
+    res.push({lord, s:pos, e:pos+w}); pos += w;
+  }
+  return res;
+}
+
+function getLords(absMin, nakIdx) {
+  const nakStart = nakIdx * 800;
+  const din = absMin - nakStart;
+  const subs = getSubLords(nakIdx);
+  for(const sub of subs){
+    if(sub.s <= din && din < sub.e){
+      const si = VIM_ORDER.indexOf(sub.lord);
+      const wtot = sub.e - sub.s;
+      let pos = sub.s;
+      for(let i=0; i<9; i++){
+        const ssl = VIM_ORDER[(si+i)%9];
+        const w = VIM_YEARS[ssl]/120*wtot;
+        if(pos <= din && din < pos+w) return {sl: sub.lord, ssl};
+        pos += w;
+      }
+    }
+  }
+  return {sl:'?', ssl:'?'};
+}
+
+function planetLords(lon) {
+  const rashi = Math.floor(norm360(lon)/30)%12;
+  const nakIdx = Math.floor(norm360(lon)/(360/27))%27;
+  const absMin = norm360(lon)*60;
+  const {sl, ssl} = getLords(absMin, nakIdx);
+  return {rashi, nakIdx, nl: NAK_LORDS[nakIdx], sl, ssl, pada: Math.floor((absMin - nakIdx*800)/200)+1};
+}
+
+function nakLord(lon){ return NAK_LORDS[Math.floor(norm360(lon)/(360/27))%27]; }
+function d9Sign(lon){ return Math.floor(norm360(lon)/(30/9))%12; } // textbook D9 shortcut (verified identical)
+
+function aspectsOf(planet, sign){
+  const s = new Set([(sign+6)%12]);
+  if(planet==='Ma'){ s.add((sign+3)%12); s.add((sign+7)%12); }
+  if(planet==='Ju'){ s.add((sign+4)%12); s.add((sign+8)%12); }
+  if(planet==='Sa'){ s.add((sign+2)%12); s.add((sign+9)%12); }
+  if(planet==='Ra' || planet==='Ke'){ s.add((sign+4)%12); s.add((sign+8)%12); }
+  return s;
+}
+
+function arudha(houseSign, lagna){
+  let a = (2*houseSign - lagna) % 12;
+  a = ((a % 12) + 12) % 12;
+  if(a === lagna || a === (lagna+6)%12) a = (a+10)%12;
+  return a;
+}
+
+function buildChart(p){
+  const jd = toJulian(p.yy, p.mm, p.dd, p.hh, p.mi, p.ss, p.tz);
+  swe.setSiderealMode(SID_MODE_LAHIRI);
+  const lahiriAya = swe.getAyanamsa(jd);
+  const kpAya = lahiriAya - KP_AYA_OFFSET/60;
+  const BODIES = [SEP.Sun, SEP.Moon, SEP.Mars, SEP.Mercury, SEP.Jupiter, SEP.Venus, SEP.Saturn, SLP.MeanNode];
+  const trop = {};
+  for(let i=0; i<8; i++){
+    const pos = swe.calculatePosition(jd, BODIES[i]);
+    trop[PLANETS[i]] = pos.longitude;
+  }
+  const sid = {}, sidKP = {};
+  for(const pl of ['Su','Mo','Ma','Me','Ju','Ve','Sa','Ra']){
+    sid[pl] = norm360(trop[pl] - lahiriAya);
+    sidKP[pl] = norm360(trop[pl] - kpAya);
+  }
+  sid['Ke'] = norm360(sid['Ra'] + 180);
+  sidKP['Ke'] = norm360(sidKP['Ra'] + 180);
+  // Placidus cusps (tropical -> sidereal), KP tool rotation check
+  const hs = swe.calculateHouses(jd, p.lat, p.lon, 'P');
+  let housesArr = (hs && (hs.cusps || hs.houses)) || [];
+  if(housesArr.length < 12) throw new Error('House data invalid: ' + housesArr.length + ' cusps');
+  const ascCheck = norm360(housesArr[1] - kpAya);
+  const ascSidKP = norm360(hs.ascendant - kpAya);
+  let rotated = housesArr;
+  if(Math.abs(ascCheck - ascSidKP) < 1.0) rotated = housesArr.slice(1).concat([housesArr[0]]);
+  const cuspsLahiri = [], cuspsKP = [];
+  for(let i=0; i<12; i++){
+    cuspsLahiri.push(norm360(rotated[i] - lahiriAya));
+    cuspsKP.push(norm360(rotated[i] - kpAya));
+  }
+  const ascSid = norm360(hs.ascendant - lahiriAya);
+  const lagna = Math.floor(ascSid/30)%12;
+  const psign = {}, pdeg = {};
+  for(const pl of PLANETS){ psign[pl] = Math.floor(sid[pl]/30)%12; pdeg[pl] = sid[pl]%30; }
+  const d9 = {};
+  for(const pl of PLANETS) d9[pl] = d9Sign(sid[pl]);
+  const d9Lagna = d9Sign(ascSid);
+  const d9LagnaLon = d9Lagna*30 + ((ascSid%30) % (30/9))*9;
+  // KP: 7th cusp sub-lord and its lords
+  const csl = planetLords(cuspsKP[6]).sl;
+  const cslLon = sidKP[csl];
+  const cslLords = planetLords(cslLon);
+  // Jaimini karakas (7 planets, degrees within sign)
+  const seven = ['Su','Mo','Ma','Me','Ju','Ve','Sa'];
+  let ak = seven[0], dk = seven[0];
+  for(const pl of seven){ if(pdeg[pl] > pdeg[ak]) ak = pl; if(pdeg[pl] < pdeg[dk]) dk = pl; }
+  const swamsa = psign[ak], karakamsa = d9[ak];
+  const ul = arudha((lagna+11)%12, lagna);
+  const a7 = arudha((lagna+6)%12, lagna);
+  return {lagna, ascSid, sid, sidKP, psign, pdeg, d9, d9Lagna, d9LagnaLon,
+    cuspsLahiri, cuspsKP, csl, cslSl: cslLords.sl, cslNl: cslLords.nl, cslSsl: cslLords.ssl,
+    ak, dk, swamsa, karakamsa, ul, a7};
+}
+
+function planetsIn(ch, sign){ return PLANETS.filter(pl => ch.psign[pl] === sign); }
+function planetsAspecting(ch, sign){ return PLANETS.filter(pl => aspectsOf(pl, ch.psign[pl]).has(sign)); }
+function planetsInD9(ch, sign){ return PLANETS.filter(pl => ch.d9[pl] === sign); }
+function planetsAspectingD9(ch, sign){ return PLANETS.filter(pl => aspectsOf(pl, ch.d9[pl]).has(sign)); }
+
+function buildLists(ch, gender){
+  const L = ch.lagna, h7 = (L+6)%12, lord7 = SIGN_LORD[h7];
+  const karaka = gender === 'male' ? 'Ve' : 'Ju';
+  const karakaHi = gender === 'male' ? 'शुक्र' : 'गुरु';
+  const items = {};
+  items.A = [
+    ['A1','सप्तम भाव का स्वामी',[lord7]],
+    ['A2','सप्तम भाव के नक्षत्र का स्वामी',[nakLord(ch.cuspsLahiri[6])]],
+    ['A3','सप्तम भाव में बैठे ग्रह',planetsIn(ch, h7)],
+    ['A4','सप्तम भाव पर दृष्टि रखने वाले ग्रह',planetsAspecting(ch, h7)],
+    ['A5','सप्तमेश जिस राशि में है उसका स्वामी',[SIGN_LORD[ch.psign[lord7]]]],
+    ['A6','सप्तमेश जिस नक्षत्र में है उसका स्वामी',[nakLord(ch.sid[lord7])]],
+    ['A7','सप्तमेश से युत ग्रह',PLANETS.filter(pl => pl!==lord7 && ch.psign[pl]===ch.psign[lord7])],
+    ['A8','सप्तमेश पर दृष्टि रखने वाले ग्रह',planetsAspecting(ch, ch.psign[lord7])],
+  ];
+  const d9L = ch.d9Lagna, d9Lord = SIGN_LORD[d9L];
+  items.B = [
+    ['B1','D9 लग्न का स्वामी',[d9Lord]],
+    ['B2','D9 लग्न में बैठे ग्रह',planetsInD9(ch, d9L)],
+    ['B3','D9 लग्न बिंदु के नक्षत्र का स्वामी',[nakLord(ch.d9LagnaLon)]],
+    ['B4','D9 लग्नेश की D9 राशि का स्वामी',[SIGN_LORD[ch.d9[d9Lord]]]],
+    ['B5','D9 लग्नेश से युत ग्रह (D9 में)',PLANETS.filter(pl => pl!==d9Lord && ch.d9[pl]===ch.d9[d9Lord])],
+  ];
+  items.C = [
+    ['C1','शुक्र की राशि का स्वामी',[SIGN_LORD[ch.psign['Ve']]]],
+    ['C2','शुक्र के नक्षत्र का स्वामी',[nakLord(ch.sid['Ve'])]],
+    ['C3','शुक्र से युत ग्रह',PLANETS.filter(pl => pl!=='Ve' && ch.psign[pl]===ch.psign['Ve'])],
+    ['C4','गुरु की राशि का स्वामी',[SIGN_LORD[ch.psign['Ju']]]],
+    ['C5','गुरु के नक्षत्र का स्वामी',[nakLord(ch.sid['Ju'])]],
+    ['C6','गुरु से युत ग्रह',PLANETS.filter(pl => pl!=='Ju' && ch.psign[pl]===ch.psign['Ju'])],
+    ['C7','शुक्र से सप्तम भाव का स्वामी',[SIGN_LORD[(ch.psign['Ve']+6)%12]]],
+    ['C8','चंद्र से सप्तम भाव का स्वामी',[SIGN_LORD[(ch.psign['Mo']+6)%12]]],
+  ];
+  const d9h7 = (d9L+6)%12, d9lord7 = SIGN_LORD[d9h7];
+  items.D = [
+    ['D1','D9 सप्तम भाव का स्वामी',[d9lord7]],
+    ['D2','D9 सप्तम भाव में बैठे ग्रह',planetsInD9(ch, d9h7)],
+    ['D3','D9 सप्तम भाव पर दृष्टि रखने वाले ग्रह',planetsAspectingD9(ch, d9h7)],
+    ['D4','D9 सप्तमेश की D9 राशि का स्वामी',[SIGN_LORD[ch.d9[d9lord7]]]],
+    ['D5','D9 सप्तमेश से युत ग्रह',PLANETS.filter(pl => pl!==d9lord7 && ch.d9[pl]===ch.d9[d9lord7])],
+    ['D6','D9 सप्तमेश पर दृष्टि रखने वाले ग्रह',planetsAspectingD9(ch, ch.d9[d9lord7])],
+    ['D7','D9 लग्न का स्वामी',[d9Lord]],
+    ['D8','D9 लग्नेश की D9 राशि का स्वामी',[SIGN_LORD[ch.d9[d9Lord]]]],
+    ['D9','D9 लग्नेश से युत ग्रह',PLANETS.filter(pl => pl!==d9Lord && ch.d9[pl]===ch.d9[d9Lord])],
+    ['D10','D9 लग्न में बैठे ग्रह',planetsInD9(ch, d9L)],
+  ];
+  items.E = [
+    ['E1','Top-1 ग्रह की दोनों राशियाँ (A–D से)',[], 'signs'],
+    ['E2','दाराकारक (DK)',[ch.dk]],
+    ['E3','उपपद लग्न (UL) की राशि',[], 'sign'],
+    ['E4','UL से सातवीं राशि',[], 'sign'],
+    ['E5','A7 की राशि',[], 'sign'],
+    ['E6','स्वांश से सप्तमेश की राशि',[], 'sign'],
+    ['E7','कारकांश से सप्तमेश की राशि',[], 'sign'],
+  ];
+  items.F = [['F1','जीवनसाथी के कारक (' + karakaHi + ') की राशि का स्वामी',[SIGN_LORD[ch.psign[karaka]]]]];
+  items.G = [
+    ['G1','7वें भाव का CSL',[ch.csl]],
+    ['G2','7वें CSL का SL',[ch.cslSl]],
+    ['G3','7वें CSL का NL',[ch.cslNl]],
+    ['G4','7वें CSL का SSL',[ch.cslSsl]],
+  ];
+  const eSigns = {
+    E1: null, // filled after A-D counting
+    E3: SIGNS_EN[ch.ul],
+    E4: SIGNS_EN[(ch.ul+6)%12],
+    E5: SIGNS_EN[ch.a7],
+    E6: SIGNS_EN[ch.psign[SIGN_LORD[(ch.swamsa+6)%12]]],
+    E7: SIGNS_EN[ch.psign[SIGN_LORD[(ch.karakamsa+6)%12]]],
+  };
+  return {items, eSigns, h7, lord7, d9h7, d9lord7, karaka};
+}
+
+function countPlanets(items, sections){
+  const cnt = {};
+  for(const pl of PLANETS) cnt[pl] = 0;
+  for(const s of sections){
+    for(const it of items[s]) for(const pl of it[2]) cnt[pl]++;
+  }
+  return cnt;
+}
+
+function top1Of(cnt){
+  let mx = -1;
+  for(const pl of PLANETS) if(cnt[pl] > mx) mx = cnt[pl];
+  const tops = PLANETS.filter(pl => cnt[pl] === mx);
+  let owning = tops.filter(pl => OWNED[pl].length > 0);
+  if(owning.length === 0){
+    // top-1 was Rahu/Ketu only: fall back to next most frequent sign-owning planet
+    const rest = PLANETS.filter(pl => OWNED[pl].length > 0).sort((a,b) => cnt[b]-cnt[a]);
+    owning = rest.length ? [rest[0]] : [];
+  }
+  const signs = [...new Set(owning.flatMap(pl => OWNED[pl]))].sort((a,b) => a-b);
+  return {tops, owning, mx, signs};
+}
+
+function mostFreq(xs){
+  const c = new Map();
+  for(const x of xs) c.set(x, (c.get(x)||0)+1);
+  const mx = Math.max(...c.values());
+  return {winners: [...c.keys()].filter(x => c.get(x)===mx), mx};
+}
+
+function r1Set(lord7Sign){
+  // तत्त्व की 3 राशियाँ + हर राशि के स्वामी की दूसरी राशि (सूर्य/चंद्र की एक ही राशि है)
+  const base = ELEM_SIGNS[ELEMENT[lord7Sign]];
+  const extra = [];
+  for(const s of base){
+    const lord = SIGN_LORD[s];
+    for(const os of OWNED[lord]){
+      if(os !== s && !base.includes(os) && !extra.includes(os)) extra.push(os);
+    }
+  }
+  return base.concat(extra);
+}
+
+function buildRules(ch, gender, lists){
+  const L = ch.lagna, h7 = lists.h7, lord7 = lists.lord7, d9L = ch.d9Lagna, d9h7 = lists.d9h7;
+  const karaka = lists.karaka;
+  const p7 = planetsIn(ch, h7);
+  const r3Set = [...new Set(p7.flatMap(pl => OWNED[pl].concat([EXALT[pl]])))].sort((a,b) => a-b);
+  const lagnaPts = [ch.psign[lord7], ch.d9[lord7], d9L, ch.ul];
+  const moonPts = [(ch.psign['Mo']+6)%12, ch.d9['Mo'], ch.psign[karaka], ch.psign[ch.dk]];
+  const lagW = mostFreq(lagnaPts), moonW = mostFreq(moonPts);
+  const elemPts = lagnaPts.concat(moonPts).map(s => ELEMENT[s]);
+  const elW = mostFreq(elemPts);
+  const r1 = r1Set(ch.psign[lord7]);
+  const r1Detail = 'सप्तमेश ' + lord7 + ' ' + SIGN_HI[SIGNS_EN[ch.psign[lord7]]] + ' में (' + ELEM_HI[ELEMENT[ch.psign[lord7]]] + ' तत्त्व)' +
+    ' + स्वामियों की दूसरी राशियाँ: ' + ELEM_SIGNS[ELEMENT[ch.psign[lord7]]].map(s => {
+      const lord = SIGN_LORD[s];
+      const other = OWNED[lord].filter(o => o!==s);
+      return SIGN_HI[SIGNS_EN[s]] + '→' + PLANET_HI[lord] + (other.length ? ' की दूसरी ' + SIGN_HI[SIGNS_EN[other[0]]] : ' (एक ही राशि)');
+    }).join(', ');
+  const rules = [
+    {id:'R1', name:'R1 — तत्त्व', desc:'D1 सप्तमेश जिस तत्त्व की राशि में है, उस तत्त्व की 3 राशियाँ + उन राशियों के स्वामियों की दूसरी राशि',
+     set: r1, applies: true, detail: r1Detail,
+     test: 'चंद्र FAIL (24.1%), लग्न FAIL (25.9%)'},
+    {id:'R2', name:'R2 — Dispositor', desc:'D1 सप्तमेश जिस नवमांश राशि में है, उस राशि के स्वामी की D1 राशि',
+     set: [ch.psign[SIGN_LORD[ch.d9[lord7]]]], applies: true,
+     detail: 'सप्तमेश ' + lord7 + ' की D9 राशि ' + SIGN_HI[SIGNS_EN[ch.d9[lord7]]] + ', उसका स्वामी ' + SIGN_LORD[ch.d9[lord7]] + ', D1 में ' + SIGN_HI[SIGNS_EN[ch.psign[SIGN_LORD[ch.d9[lord7]]]]],
+     test: 'चंद्र FAIL (5.7%), लग्न FAIL (11.5%)'},
+    {id:'R3', name:'R3 — सप्तम में बलवान ग्रह', desc:'सप्तम में बैठे बलवान ग्रह की स्वराशि + उच्च राशि → जीवनसाथी की लग्न राशि',
+     set: r3Set, applies: p7.length > 0,
+     detail: 'सप्तम (' + SIGN_HI[SIGNS_EN[h7]] + ') में बैठे ग्रह: ' + (p7.length ? p7.map(pl => PLANET_HI[pl]).join(', ') : 'कोई नहीं'),
+     test: 'लग्न PASS (46.5% vs 27.9%) · चंद्र FAIL (26.7%)'},
+    {id:'R4', name:'R4 — लग्न से 1/5/7/9', desc:'लग्न से 1/5/7/9 भावों की राशियाँ',
+     set: [0,4,6,8].map(k => (L+k)%12), applies: true, detail: 'लग्न ' + SIGN_HI[SIGNS_EN[L]],
+     test: 'चंद्र FAIL (31.6%), लग्न FAIL (35.6%)'},
+    {id:'R5', name:'R5 — BNN 4-राशि set', desc:'कारक (' + (gender==='male'?'शुक्र':'गुरु') + ') की राशि + उससे 5वीं, 9वीं, 7वीं राशि',
+     set: [0,4,8,6].map(k => (ch.psign[karaka]+k)%12), applies: true,
+     detail: (gender==='male'?'शुक्र':'गुरु') + ' ' + SIGN_HI[SIGNS_EN[ch.psign[karaka]]] + ' में',
+     test: 'चंद्र FAIL (32.2%), लग्न FAIL (22.4%)'},
+    {id:'R6', name:'R6 — D9 चंद्र राशि', desc:'D9 में चंद्र जिस राशि में है',
+     set: [ch.d9['Mo']], applies: true, detail: 'चंद्र D9 में ' + SIGN_HI[SIGNS_EN[ch.d9['Mo']]],
+     test: 'चंद्र FAIL (8.6%), लग्न FAIL (6.3%)'},
+    {id:'R7', name:'R7 — D9 सप्तम राशि', desc:'D9 के सप्तम भाव की राशि',
+     set: [d9h7], applies: true, detail: 'D9 लग्न ' + SIGN_HI[SIGNS_EN[d9L]] + ', सप्तम ' + SIGN_HI[SIGNS_EN[d9h7]],
+     test: 'चंद्र FAIL (6.9%), लग्न FAIL (10.3%)'},
+    {id:'R8a', name:'R8a — सप्तमेश के नक्षत्र स्वामी की राशि', desc:'सप्तमेश के नक्षत्र स्वामी की D1 राशि',
+     set: [ch.psign[nakLord(ch.sid[lord7])]], applies: true,
+     detail: 'सप्तमेश ' + lord7 + ' का नक्षत्र स्वामी ' + nakLord(ch.sid[lord7]) + ', D1 में ' + SIGN_HI[SIGNS_EN[ch.psign[nakLord(ch.sid[lord7])]]],
+     test: 'चंद्र FAIL (6.3%), लग्न FAIL (5.7%)'},
+    {id:'R8b', name:'R8b — कारक के नक्षत्र स्वामी की राशि', desc:'कारक (' + (gender==='male'?'शुक्र':'गुरु') + ') के नक्षत्र स्वामी की D1 राशि',
+     set: [ch.psign[nakLord(ch.sid[karaka])]], applies: true,
+     detail: (gender==='male'?'शुक्र':'गुरु') + ' का नक्षत्र स्वामी ' + nakLord(ch.sid[karaka]) + ', D1 में ' + SIGN_HI[SIGNS_EN[ch.psign[nakLord(ch.sid[karaka])]]],
+     test: 'चंद्र FAIL (6.3%), लग्न FAIL (8.0%)'},
+    {id:'R9L', name:'R9 — Convergence (लग्न group)', desc:'लग्न group (सप्तमेश राशि, सप्तमेश D9 राशि, D9 लग्न, UL) में सबसे ज्यादा बार आई राशि',
+     set: lagW.winners, applies: lagW.winners.length === 1,
+     detail: 'points: ' + lagnaPts.map(s => SIGN_HI[SIGNS_EN[s]]).join(', ') + ' — सबसे ज्यादा: ' + lagW.winners.map(s => SIGN_HI[SIGNS_EN[s]]).join(', ') + ' ×' + lagW.mx,
+     test: 'लग्न FAIL (union 21.8%)'},
+    {id:'R9M', name:'R9 — Convergence (चंद्र group)', desc:'चंद्र group (चंद्र से सप्तम, D9 चंद्र, कारक राशि, DK राशि) में सबसे ज्यादा बार आई राशि',
+     set: moonW.winners, applies: moonW.winners.length === 1,
+     detail: 'points: ' + moonPts.map(s => SIGN_HI[SIGNS_EN[s]]).join(', ') + ' — सबसे ज्यादा: ' + moonW.winners.map(s => SIGN_HI[SIGNS_EN[s]]).join(', ') + ' ×' + moonW.mx,
+     test: 'चंद्र FAIL (union 21.8%)'},
+    {id:'R9E', name:'R9 — Convergence (तत्त्व)', desc:'सभी 8 points में सबसे ज्यादा बार आया तत्त्व, उसकी 3 राशियाँ',
+     set: elW.winners.length === 1 ? ELEM_SIGNS[elW.winners[0]] : [...new Set(elW.winners.flatMap(e => ELEM_SIGNS[e]))].sort((a,b) => a-b),
+     applies: elW.winners.length === 1,
+     detail: 'तत्त्व: ' + elW.winners.join(', ') + ' ×' + elW.mx,
+     test: 'चंद्र FAIL (32.2%), लग्न FAIL (29.9%)'},
+  ];
+  return rules;
+}
+
+function signListHTML(signs){
+  return signs.map(s => SIGN_HI[SIGNS_EN[s]] + ' (' + SIGNS_EN[s] + ')').join(', ');
+}
+function planetListHTML(pls){
+  return pls.length ? pls.map(pl => PLANET_HI[pl] + ' (' + pl + ')').join(', ') : '—';
+}
+
+function renderSummary(p, ch, gender){
+  const L = ch.lagna, h7 = (L+6)%12;
+  document.getElementById('summaryCard').innerHTML =
+    '<b>कुंडली</b><br>' +
+    'Astro Code: ' + document.getElementById('astroCode').value.trim() + '<br>' +
+    'जन्म: ' + p.dd + '/' + p.mm + '/' + p.yy + ', ' + String(p.hh).padStart(2,'0') + ':' + String(p.mi).padStart(2,'0') + ', ' +
+    'Lat ' + p.lat.toFixed(2) + '°, Lon ' + p.lon.toFixed(2) + '°, ' + (gender==='male'?'पुरुष':'स्त्री') + '<br>' +
+    'D1 लग्न: ' + SIGN_HI[SIGNS_EN[L]] + ' · चंद्र: ' + SIGN_HI[SIGNS_EN[ch.psign['Mo']]] + ' · सप्तम भाव: ' + SIGN_HI[SIGNS_EN[h7]] +
+    ' · सप्तमेश: ' + PLANET_HI[SIGN_LORD[h7]] + ' · सप्तम में ग्रह: ' + (planetsIn(ch,h7).length ? planetListHTML(planetsIn(ch,h7)) : 'कोई नहीं') + '<br>' +
+    'D9 लग्न: ' + SIGN_HI[SIGNS_EN[ch.d9Lagna]] + ' (textbook formula) · D9 सप्तम: ' + SIGN_HI[SIGNS_EN[(ch.d9Lagna+6)%12]] + ' · D9 सप्तमेश: ' + PLANET_HI[SIGN_LORD[(ch.d9Lagna+6)%12]] + '<br>' +
+    'KP: 7वें भाव का CSL ' + PLANET_HI[ch.csl] + ' · SL ' + PLANET_HI[ch.cslSl] + ' · NL ' + PLANET_HI[ch.cslNl] + ' · SSL ' + PLANET_HI[ch.cslSsl];
+}
+
+const SEC_TITLES = {
+  A: 'A) 7वां भाव (विवाह)', B: 'B) D9 लग्न (व्यक्तित्व)', C: 'C) नैसर्गिक कारक और शुभ',
+  D: 'D) नवमांश (D9)', E: 'E) जैमिनी', F: 'F) BNN', G: 'G) KP'
+};
+
+function renderSections(){
+  const {items, eSigns} = CUR.lists;
+  let h = '';
+  for(const sec of ['A','B','C','D','E','F','G']){
+    const kpCls = sec === 'G' ? ' kp-sec' : '';
+    h += '<h3 class="sec-title' + kpCls + '">' + SEC_TITLES[sec] + '</h3>';
+    h += '<table class="items' + kpCls + '"><tr><th>#</th><th>नियम</th><th>ग्रह / राशि</th></tr>';
+    for(const it of items[sec]){
+      let val;
+      if(it[3] === 'signs'){
+        val = it[0]==='E1' ? (CUR.e1Signs.length ? signListHTML(CUR.e1Signs) + (CUR.e1Planets.length > 1 ? ' — A–D में ' + CUR.e1Planets.map(pl => PLANET_HI[pl]).join(' + ') + ' tie (' + CUR.e1Count + '–' + CUR.e1Count + ')' : ' — A–D में सबसे ज्यादा बार आया ग्रह ' + PLANET_HI[CUR.e1Planets[0]] + ' (' + CUR.e1Count + ' बार)') : '—') : '—';
+      } else if(it[3] === 'sign'){
+        val = SIGN_HI[SIGNS_EN[eSigns[it[0]]]] + ' (' + eSigns[it[0]] + ')';
+      } else {
+        val = planetListHTML(it[2]);
+      }
+      h += '<tr><td>' + it[0] + '</td><td>' + it[1] + '</td><td>' + val + '</td></tr>';
+    }
+    h += '</table>';
+  }
+  document.getElementById('sectionsWrap').innerHTML = h;
+}
+
+function renderCounts(){
+  if(!CUR) return;
+  const kpOn = document.getElementById('kpCheck').checked;
+  const counts = kpOn ? CUR.countsAG : CUR.countsAF;
+  const top = kpOn ? CUR.topAG : CUR.topAF;
+  const order = PLANETS.slice().sort((a,b) => counts[b]-counts[a]);
+  let h = '<tr><th>ग्रह</th><th>गिनती</th></tr>';
+  for(const pl of order) h += '<tr><td>' + PLANET_HI[pl] + ' (' + pl + ')</td><td class="num">' + counts[pl] + '</td></tr>';
+  document.getElementById('countTable').innerHTML = h;
+  const planets = top.owning.map(pl => PLANET_HI[pl] + ' (' + pl + ')').join(', ');
+  const signs = signListHTML(top.signs);
+  const tieNote = top.tops.length > 1 ? '<br><b>ध्यान दें:</b> ' + top.tops.length + ' ग्रह ' + top.mx + '–' + top.mx + ' से tie हैं — कोई एक top-1 ग्रह नहीं है, इसलिए prediction set ' + top.signs.length + ' राशियों का है।' : '';
+  document.getElementById('resultBox').innerHTML =
+    '<h3>Result — Top-1 Prediction (' + (kpOn ? 'KP सहित (A–G)' : 'KP बिना (A–F)') + ')</h3>' +
+    'सबसे ज्यादा बार आया ग्रह: <b>' + planets + '</b> — ' + top.mx + ' बार<br>' +
+    'जीवनसाथी की चंद्र या लग्न राशि इनमें से कोई एक होगी: <b>' + signs + '</b>' + tieNote;
+  document.querySelectorAll('.kp-sec').forEach(el => { el.style.opacity = kpOn ? '1' : '0.45'; });
+}
+
+function renderRules(){
+  const rules = CUR.rules;
+  let h = '<table><tr><th>नियम</th><th>इस कुंडली के लिए prediction</th><th>लागू?</th><th>Detail</th><th>174 test में</th></tr>';
+  for(const r of rules){
+    const rowCls = r.id === 'R3' ? ' class="r3"' : '';
+    h += '<tr' + rowCls + '><td><b>' + r.name + '</b><br><span class="desc">' + r.desc + '</span></td>' +
+      '<td>' + (r.applies ? signListHTML(r.set) : '—') + '</td>' +
+      '<td>' + (r.applies ? 'हाँ' : 'नहीं') + '</td>' +
+      '<td>' + r.detail + '</td><td>' + r.test + '</td></tr>';
+  }
+  h += '</table>';
+  document.getElementById('rulesWrap').innerHTML = h;
+  // frequency table
+  const freq = {};
+  for(const r of rules) if(r.applies) for(const s of r.set) freq[s] = (freq[s]||0)+1;
+  const order = Object.keys(freq).map(Number).sort((a,b) => freq[b]-freq[a]);
+  let fh = '<tr><th>राशि</th><th>कितनी बार आई</th></tr>';
+  for(const s of order) fh += '<tr><td>' + SIGN_HI[SIGNS_EN[s]] + ' (' + SIGNS_EN[s] + ')</td><td class="num">' + freq[s] + '</td></tr>';
+  document.getElementById('freqTable').innerHTML = fh;
+  // winners: top-2 most frequent; tie for 2nd spot -> all tied
+  const vals = order.map(s => freq[s]);
+  const thr = vals.length > 1 ? vals[1] : vals[0];
+  const winners = order.filter(s => freq[s] >= thr);
+  document.getElementById('winnerBox').innerHTML =
+    '<h3>Winner — सबसे ज्यादा बार आई राशियाँ</h3>' +
+    'जीवनसाथी की चंद्र या लग्न राशि इनमें से कोई एक होगी: <b>' + signListHTML(winners) + '</b>' +
+    ' (हर राशि ' + thr + ' बार आई)' +
+    (winners.length > 2 ? '<br><b>ध्यान दें:</b> दूसरे स्थान पर tie है, इसलिए ' + winners.length + ' राशियाँ winner हैं।' : '') +
+    '<br><span class="desc">यह validated prediction नहीं है — सिर्फ 9 नियमों में सबसे ज्यादा बार आई राशियाँ हैं।</span>';
+  CUR.tab2 = {freq, winners, thr};
+}
+
+function showTab(n){
+  document.getElementById('tab1').classList.toggle('active', n === 1);
+  document.getElementById('tab2').classList.toggle('active', n === 2);
+  document.getElementById('btn1').classList.toggle('active', n === 1);
+  document.getElementById('btn2').classList.toggle('active', n === 2);
+}
+
+function runCalc(){
+  const errBox = document.getElementById('errBox');
+  errBox.textContent = '';
+  if(!swe){ errBox.textContent = 'Ephemeris अभी तैयार नहीं है।'; return; }
+  const p = parseAstroCode(document.getElementById('astroCode').value);
+  if(!p){ errBox.textContent = '❌ गलत Astro Code format — AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN/S-DDDMME/W'; return; }
+  const gender = document.getElementById('gender').value;
+  try {
+    const ch = buildChart(p);
+    const lists = buildLists(ch, gender);
+    const countsAG = countPlanets(lists.items, ['A','B','C','D','E','F','G']);
+    const countsAF = countPlanets(lists.items, ['A','B','C','D','E','F']);
+    const countsAD = countPlanets(lists.items, ['A','B','C','D']);
+    const topAG = top1Of(countsAG), topAF = top1Of(countsAF), topAD = top1Of(countsAD);
+    lists.eSigns.E1 = null;
+    const rules = buildRules(ch, gender, lists);
+    CUR = {ch, lists, gender, countsAG, countsAF, countsAD, topAG, topAF,
+      e1Signs: topAD.signs, e1Planets: topAD.owning, e1Count: topAD.mx, rules};
+    window.__spouseCalc = CUR;
+    renderSummary(p, ch, gender);
+    renderSections();
+    renderCounts();
+    renderRules();
+    document.getElementById('outWrap').style.display = 'block';
+  } catch(e){
+    errBox.textContent = '❌ गणना में error: ' + e.message;
+    console.error(e);
+  }
+}
+
+// Inline onclick handlers (module scope is not global)
+window.showTab = showTab;
+window.renderCounts = renderCounts;
+window.runCalc = runCalc;
+</script>
+</body>
+</html>
