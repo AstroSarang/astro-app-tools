@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marriage Time Calculator v2.1</title>
+<title>Marriage Time Calculator v2.2</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,8 +33,8 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Marriage Time Calculator v2.1</h1>
-<p class="small" id="horizon-note">Astro Code से विवाह का समय - v2.1: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus) + दशा-बदलाव factors। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
+<h1>Marriage Time Calculator v2.2</h1>
+<p class="small" id="horizon-note">Astro Code से विवाह का समय - v2.2: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus) + दशा-बदलाव factors। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
 <input type="text" id="astro-code" value="" placeholder="AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN-DDDMME">
@@ -283,7 +283,7 @@ function vargaSigns(lon){
   const d3s = (s+[0,4,8][Math.floor(d/10)])%12;
   const pada7 = Math.floor(d/(30/7));
   const d7s = s%2===0 ? (s+pada7)%12 : (s+6+pada7)%12;
-  const d9s = (s+Math.floor(d/3.3333333))%12;
+  const d9s = (s+[0,8,4][s%3]+Math.floor(d/3.3333333))%12; // TEXTBOOK D9 (v2.2 fix): chara same, sthira +8, dwisvabhava +4
   const pada12 = Math.floor(d/2.5);
   const d12s = s%2===0 ? (s+pada12)%12 : (s+6+pada12)%12;
   let d30s = null;
@@ -440,7 +440,8 @@ async function computeAll(code, setStatus, startYear, gender){
     pl[p].nak = Math.floor(pl[p].lon/13.3333333);
     pl[p].nakLord = VIM_ORDER[pl[p].nak%9];
   }
-  const navamsha = lon => (Math.floor(lon/30)+Math.floor((lon%30)/3.3333333))%12;
+  // TEXTBOOK D9 (v2.2 fix): chara same sign, sthira 9th from, dwisvabhava 5th from, then + pada
+  const navamsha = lon => { const s = Math.floor(lon/30); return (s+[0,8,4][s%3]+Math.floor((lon%30)/3.3333333))%12; };
   const d9 = {}; for(const p of P9) d9[p] = navamsha(pl[p].lon);
   const d9Lagna = navamsha(ascLon);
   // D60 - VERIFIED (Haripal.pdf p.16, 9/9): sign=(natal_sign+pada)%12, degree=(deg-pada*0.5)*60
@@ -1765,7 +1766,7 @@ function buildSections(D, T, F){
       h += `<tr><td>${s.id}</td><td>${fmtMY(s.start)} - ${fmtMY(s.end)}</td><td>${s.systems.join(' + ')||'-'}</td><td>${s.bestMonth?fmtYM(s.bestMonth.y, s.bestMonth.m)+' ('+s.bestScore+')':'-'}</td><td>${s.score}${s.bothKaraka?' (दोनों कारक +4)':''}</td></tr>`;
     }
     h += `</table>`;
-    h += `<div class="verdict"><p><b>v2.1 Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}${F.peakTxt?(' ('+F.peakTxt+')'):''} - High Chances।</b> Systems: ${F.top.systems.join(' + ')}; सबसे अच्छा महीना: ${F.top.bestMonth?fmtYM(F.top.bestMonth.y, F.top.bestMonth.m)+' (score '+F.top.bestScore+')':'-'}।</p></div>`;
+    h += `<div class="verdict"><p><b>v2.2 Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}${F.peakTxt?(' ('+F.peakTxt+')'):''} - High Chances।</b> Systems: ${F.top.systems.join(' + ')}; सबसे अच्छा महीना: ${F.top.bestMonth?fmtYM(F.top.bestMonth.y, F.top.bestMonth.m)+' (score '+F.top.bestScore+')':'-'}।</p></div>`;
     h += QUAL(`Consensus Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}। यही tool का अंतिम नतीजा है।`);
     S.push(h);
   }
@@ -1846,7 +1847,7 @@ window.runCalc = async function(mode){
   try{
     const setStatus = t => { stEl.textContent = t; };
     const D = await computeAll(code, setStatus, startYear, gender);
-    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - v2.1: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus) + दशा-बदलाव factors। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। लिंग: ${gender==='female'?'महिला (जीवनसाथी कारक मंगल)':'पुरुष (जीवनसाथी कारक शुक्र)'}। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
+    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - v2.2: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus) + दशा-बदलाव factors। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। लिंग: ${gender==='female'?'महिला (जीवनसाथी कारक मंगल)':'पुरुष (जीवनसाथी कारक शुक्र)'}। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
     setStatus(`गोचर scan हो रहा है (नवंबर ${HSTART.getUTCFullYear()} - अक्टूबर ${HSTART.getUTCFullYear()+8} + windows)...`);
     await tick();
     const T = await computeTransits(D, setStatus);

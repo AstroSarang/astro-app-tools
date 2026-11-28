@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Child Birth Time Calculator v1.5</title>
+<title>Child Birth Time Calculator v1.6</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,7 +33,7 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Child Birth Time Calculator v1.5</h1>
+<h1>Child Birth Time Calculator v1.6</h1>
 <p class="small">Astro Code से संतान प्राप्ति का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: विवाह + 9 महीने से 7 साल (विवाह की तारीख से तय होता है)। पहली संतान की खोज विवाह + 9 महीने से शुरू होती है - उससे पहले की windows मान्य नहीं। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
@@ -287,7 +287,7 @@ function vargaSigns(lon){
   const d3s = (s+[0,4,8][Math.floor(d/10)])%12;
   const pada7 = Math.floor(d/(30/7));
   const d7s = s%2===0 ? (s+pada7)%12 : (s+6+pada7)%12;
-  const d9s = (s+Math.floor(d/3.3333333))%12;
+  const d9s = (s+[0,8,4][s%3]+Math.floor(d/3.3333333))%12; // TEXTBOOK D9 (v1.6 fix): chara same, sthira +8, dwisvabhava +4
   const pada12 = Math.floor(d/2.5);
   const d12s = s%2===0 ? (s+pada12)%12 : (s+6+pada12)%12;
   let d30s = null;
@@ -446,7 +446,8 @@ async function computeAll(code, gender, marriage, setStatus){
     pl[p].nak = Math.floor(pl[p].lon/13.3333333);
     pl[p].nakLord = VIM_ORDER[pl[p].nak%9];
   }
-  const navamsha = lon => (Math.floor(lon/30)+Math.floor((lon%30)/3.3333333))%12;
+  // TEXTBOOK D9 (v1.6 fix): chara same sign, sthira 9th from, dwisvabhava 5th from, then + pada
+  const navamsha = lon => { const s = Math.floor(lon/30); return (s+[0,8,4][s%3]+Math.floor((lon%30)/3.3333333))%12; };
   const d9 = {}; for(const p of P9) d9[p] = navamsha(pl[p].lon);
   const d9Lagna = navamsha(ascLon);
   // D60 - VERIFIED (Haripal.pdf p.16, 9/9): sign=(natal_sign+pada)%12, degree=(deg-pada*0.5)*60
@@ -1325,7 +1326,7 @@ function buildSections(D, T, F){
   cur.push(tbl(['ग्रह','D7 राशि','D7 अंश','D7 भाव'],
     P9.map(p=>{ const x=D.d7[p]; return [`<b>${HI[p]}</b>`, SIGNS[x.sign], r2(x.deg), bhavaOf(x.sign, D.d7Lagna.sign)]; })));
   cur.push(`<p><b>${D.gender==='male'?'बीज स्फुट':'क्षेत्र स्फुट'} (Beeja/Kshetra):</b> ${D.gender==='male'?'सूर्य + शुक्र + गुरु':'चंद्र + मंगल + गुरु'} का योग = ${r2(sp.lon)}° - राशि ${SIGNS[sp.sign]} (${sp.sign%2===0?'विषम (Odd)':'सम (Even)'}) - नक्षत्र ${NAK[sp.nak]} - स्वामी ${HI[SIGN_LORD[sp.sign]]} D1 में ${D.pl[SIGN_LORD[sp.sign]].house}वें भाव में - <b>बल: ${spBala}</b></p>`);
-  cur.push(`<p><b>स्फुट पर दृष्टि:</b> ${Object.keys(D.pl).filter(p=>aspectOffsets(p).map(o=>(D.pl[p].sign+o)%12).includes(sp.sign)).map(p=>HI[p]).join(', ')||'कोई नहीं'} &nbsp;|&nbsp; <b>स्फुट की D9 राशि:</b> ${SIGNS[((Math.floor(sp.lon/30)+Math.floor((sp.lon%30)/3.3333333))%12)]}</p>`);
+  cur.push(`<p><b>स्फुट पर दृष्टि:</b> ${Object.keys(D.pl).filter(p=>aspectOffsets(p).map(o=>(D.pl[p].sign+o)%12).includes(sp.sign)).map(p=>HI[p]).join(', ')||'कोई नहीं'} &nbsp;|&nbsp; <b>स्फुट की D9 राशि:</b> ${SIGNS[(()=>{const _s=Math.floor(sp.lon/30);return (_s+[0,8,4][_s%3]+Math.floor((sp.lon%30)/3.3333333))%12;})()]}</p>`); // TEXTBOOK D9 (v1.6 fix)
   cur.push(`<p><b>D60 karmic check:</b> D60 पंचमेश ${HI[d60Panchamesh]} D60 में ${d60PanchameshBhava}वें भाव में - ${d60Ok?'कर्मिक बाधा नहीं':'6/8/12 में - कर्मिक बाधा संभव, उपाय से कम होगी'}</p>`);
   const delayTxt = [];
   const d7panchBhava = bhavaOf(D.d7[D.panchamesh].sign, D.d7Lagna.sign);
