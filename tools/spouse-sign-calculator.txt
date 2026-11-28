@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Spouse Sign Calculator v1.5</title>
+<title>Spouse Sign Calculator v1.6</title>
 <style>
 * { box-sizing: border-box; }
 body { font-family: 'Noto Sans Devanagari', 'Mangal', sans-serif; margin: 0; background: #f6f3ec; color: #222; }
@@ -45,7 +45,7 @@ button.go:disabled { background: #aaa; cursor: wait; }
 </head>
 <body>
 <div class="wrap">
-<h1>💑 Spouse Sign Calculator <span class="badge">v1.5</span></h1>
+<h1>💑 Spouse Sign Calculator <span class="badge">v1.6</span></h1>
 <p class="sub">Astro Code डालते ही जीवनसाथी की चंद्र / लग्न राशि की गणना। दो तरीके — A–G list (Tab 1) और शास्त्रीय नियम (Tab 2)।</p>
 
 <div class="card">
@@ -83,8 +83,8 @@ button.go:disabled { background: #aaa; cursor: wait; }
 <h3 class="sec-title">ग्रहों की गिनती (Frequency Count)</h3>
 <table class="counts" id="countTable"></table>
 <div class="result" id="resultBox"></div>
-<p class="small">Top-1 method: A–G list में सबसे ज्यादा बार आया ग्रह लो; उसकी 2 राशियों में से कोई एक जीवनसाथी की चंद्र या लग्न राशि होगी।
-174 जोड़ियों के test में यह method fail हुई थी (textbook D9 से 34.5% vs 32.6% baseline) — यह tool सिर्फ गणना दिखाता है, कोई दावा नहीं करता।</p>
+<p class="small">Top-2 method: A–G list में सबसे ज्यादा बार आए 2 ग्रह लो; उनकी 4 राशियों में से कोई एक जीवनसाथी की चंद्र या लग्न राशि होगी। दूसरे स्थान पर tie हो तो सभी tied ग्रह winner हैं।
+174 जोड़ियों के test में यह method fail हुई थी (textbook D9 से 59.2% vs 59.7% baseline) — यह tool सिर्फ गणना दिखाता है, कोई दावा नहीं करता।</p>
 </div>
 
 <div id="tab2" class="tab">
@@ -359,18 +359,23 @@ function countPlanets(items, sections){
   return cnt;
 }
 
-function top1Of(cnt){
-  let mx = -1;
-  for(const pl of PLANETS) if(cnt[pl] > mx) mx = cnt[pl];
-  const tops = PLANETS.filter(pl => cnt[pl] === mx);
+// v1.6: Tab 1 top-2 planets (user 28 Nov 2026). Threshold = 2nd distinct
+// count; tie at 2nd place -> all tied planets are winners (Tab 2 rule).
+function top2Of(cnt){
+  const distinct = [...new Set(PLANETS.map(pl => cnt[pl]))].sort((a,b) => b-a);
+  const mx = distinct[0];
+  const thr = distinct.length > 1 ? distinct[1] : distinct[0];
+  const tops = PLANETS.filter(pl => cnt[pl] >= thr);
   let owning = tops.filter(pl => OWNED[pl].length > 0);
   if(owning.length === 0){
-    // top-1 was Rahu/Ketu only: fall back to next most frequent sign-owning planet
+    // top-2 were Rahu/Ketu only: fall back to top-2 sign-owning planets
     const rest = PLANETS.filter(pl => OWNED[pl].length > 0).sort((a,b) => cnt[b]-cnt[a]);
-    owning = rest.length ? [rest[0]] : [];
+    const d2 = [...new Set(rest.map(pl => cnt[pl]))].sort((a,b) => b-a);
+    const thr2 = d2.length > 1 ? d2[1] : d2[0];
+    owning = rest.filter(pl => cnt[pl] >= thr2);
   }
   const signs = [...new Set(owning.flatMap(pl => OWNED[pl]))].sort((a,b) => a-b);
-  return {tops, owning, mx, signs};
+  return {tops, owning, mx, thr, signs};
 }
 
 function mostFreq(xs){
@@ -509,12 +514,12 @@ function renderCounts(){
   let h = '<tr><th>ग्रह</th><th>गिनती</th></tr>';
   for(const pl of order) h += '<tr><td>' + PLANET_HI[pl] + ' (' + pl + ')</td><td class="num">' + counts[pl] + '</td></tr>';
   document.getElementById('countTable').innerHTML = h;
-  const planets = top.owning.map(pl => PLANET_HI[pl] + ' (' + pl + ')').join(', ');
+  const planets = top.owning.map(pl => PLANET_HI[pl] + ' (' + pl + ') — ' + counts[pl] + ' बार').join(', ');
   const signs = signListHTML(top.signs);
-  const tieNote = top.tops.length > 1 ? '<br><b>ध्यान दें:</b> ' + top.tops.length + ' ग्रह ' + top.mx + '–' + top.mx + ' से tie हैं — कोई एक top-1 ग्रह नहीं है, इसलिए prediction set ' + top.signs.length + ' राशियों का है।' : '';
+  const tieNote = top.tops.length > 2 ? '<br><b>ध्यान दें:</b> दूसरे स्थान पर tie है, इसलिए ' + top.tops.length + ' ग्रह winner हैं — prediction set ' + top.signs.length + ' राशियों का है।' : '';
   document.getElementById('resultBox').innerHTML =
-    '<h3>Result — Top-1 Prediction (' + (kpOn ? 'KP सहित (A–G)' : 'KP बिना (A–F)') + ')</h3>' +
-    'सबसे ज्यादा बार आया ग्रह: <b>' + planets + '</b> — ' + top.mx + ' बार<br>' +
+    '<h3>Result — Top-2 Prediction (' + (kpOn ? 'KP सहित (A–G)' : 'KP बिना (A–F)') + ')</h3>' +
+    'सबसे ज्यादा बार आए 2 ग्रह: <b>' + planets + '</b><br>' +
     'जीवनसाथी की चंद्र या लग्न राशि इनमें से कोई एक होगी: <b>' + signs + '</b>' + tieNote;
   document.querySelectorAll('.kp-sec').forEach(el => { el.style.opacity = kpOn ? '1' : '0.45'; });
 }
@@ -570,7 +575,7 @@ function runCalc(){
     const lists = buildLists(ch, gender);
     const countsAG = countPlanets(lists.items, ['A','B','C','D','E','F','G']);
     const countsAF = countPlanets(lists.items, ['A','B','C','D','E','F']);
-    const topAG = top1Of(countsAG), topAF = top1Of(countsAF);
+    const topAG = top2Of(countsAG), topAF = top2Of(countsAF);
     const rules = buildRules(ch, gender, lists);
     CUR = {p, ch, lists, gender, countsAG, countsAF, topAG, topAF, rules};
     window.__spouseCalc = CUR;
@@ -597,7 +602,7 @@ function buildTxt(){
   const kpOn = document.getElementById('kpCheck').checked;
   const L = [];
   const h7 = lists.h7, d9L = ch.d9Lagna, d9h7 = (d9L+6)%12;
-  L.push('Spouse Sign Calculator v1.5');
+  L.push('Spouse Sign Calculator v1.6');
   L.push('Astro Code: ' + document.getElementById('astroCode').value.trim());
   L.push('Gender: ' + (CUR.gender === 'male' ? 'Male (पुरुष)' : 'Female (स्त्री)'));
   L.push('Birth: ' + p.dd + '/' + p.mm + '/' + p.yy + ' ' + String(p.hh).padStart(2,'0') + ':' + String(p.mi).padStart(2,'0') + ':' + String(p.ss).padStart(2,'0'));
@@ -631,20 +636,22 @@ function buildTxt(){
     L.push(label);
     const order = PLANETS.slice().sort((a,b) => counts[b]-counts[a]);
     for(const pl of order) L.push(planetName(pl) + ': ' + counts[pl]);
-    L.push('Top Graha (all tied): ' + planetListTxt(top.tops));
-    L.push('Top Graha (sign-owning): ' + planetListTxt(top.owning));
+    L.push('Top-2 Graha (all tied): ' + planetListTxt(top.tops));
+    L.push('Top-2 Graha (sign-owning): ' + planetListTxt(top.owning));
     L.push('Top Count: ' + top.mx);
-    L.push('Top Signs: ' + signListTxt(top.signs));
+    L.push('Second Count: ' + top.thr);
+    L.push('Top-2 Signs: ' + signListTxt(top.signs));
   }
   countsBlock('Frequency Count - KP ON (A-G)', CUR.countsAG, CUR.topAG);
   countsBlock('Frequency Count - KP OFF (A-F)', CUR.countsAF, CUR.topAF);
   L.push('');
-  L.push('Top-1 Current (KP ' + (kpOn ? 'ON' : 'OFF') + ')');
+  L.push('Top-2 Current (KP ' + (kpOn ? 'ON' : 'OFF') + ')');
   const curTop = kpOn ? CUR.topAG : CUR.topAF;
-  L.push('Top Graha (all tied): ' + planetListTxt(curTop.tops));
-  L.push('Top Graha (sign-owning): ' + planetListTxt(curTop.owning));
+  L.push('Top-2 Graha (all tied): ' + planetListTxt(curTop.tops));
+  L.push('Top-2 Graha (sign-owning): ' + planetListTxt(curTop.owning));
   L.push('Top Count: ' + curTop.mx);
-  L.push('Top Signs: ' + signListTxt(curTop.signs));
+  L.push('Second Count: ' + curTop.thr);
+  L.push('Top-2 Signs: ' + signListTxt(curTop.signs));
   L.push('');
   L.push('Tab 2 - Rules R1-R9');
   for(const r of CUR.rules){
