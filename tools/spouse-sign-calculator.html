@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Spouse Sign Calculator v1.1</title>
+<title>Spouse Sign Calculator v1.5</title>
 <style>
 * { box-sizing: border-box; }
 body { font-family: 'Noto Sans Devanagari', 'Mangal', sans-serif; margin: 0; background: #f6f3ec; color: #222; }
@@ -45,7 +45,7 @@ button.go:disabled { background: #aaa; cursor: wait; }
 </head>
 <body>
 <div class="wrap">
-<h1>💑 Spouse Sign Calculator <span class="badge">v1.1</span></h1>
+<h1>💑 Spouse Sign Calculator <span class="badge">v1.5</span></h1>
 <p class="sub">Astro Code डालते ही जीवनसाथी की चंद्र / लग्न राशि की गणना। दो तरीके — A–G list (Tab 1) और शास्त्रीय नियम (Tab 2)।</p>
 
 <div class="card">
@@ -214,8 +214,11 @@ function aspectsOf(planet, sign){
   return s;
 }
 
-function arudha(houseSign, lagna){
-  let a = (2*houseSign - lagna) % 12;
+function arudha(houseSign, lordSign, lagna){
+  // Classical (BPHS): count from the house to its lord, then the same
+  // number from the lord -> A = (2*lordSign - houseSign) mod 12.
+  // Exception: lands in lagna or 7th from lagna -> 10th from the result.
+  let a = (2*lordSign - houseSign) % 12;
   a = ((a % 12) + 12) % 12;
   if(a === lagna || a === (lagna+6)%12) a = (a+10)%12;
   return a;
@@ -268,12 +271,13 @@ function buildChart(p){
   const seven = ['Su','Mo','Ma','Me','Ju','Ve','Sa'];
   let ak = seven[0], dk = seven[0];
   for(const pl of seven){ if(pdeg[pl] > pdeg[ak]) ak = pl; if(pdeg[pl] < pdeg[dk]) dk = pl; }
-  const swamsa = psign[ak], karakamsa = d9[ak];
-  const ul = arudha((lagna+11)%12, lagna);
-  const a7 = arudha((lagna+6)%12, lagna);
+  const swamsa = d9[ak], karakamsa = d9[ak]; // v1.4: Swamsa = Karakamsa = AK D9 sign (one reference sign)
+  const ul = arudha((lagna+11)%12, psign[SIGN_LORD[(lagna+11)%12]], lagna);
+  const a7 = arudha((lagna+6)%12, psign[SIGN_LORD[(lagna+6)%12]], lagna);
+  const al = arudha(lagna, psign[SIGN_LORD[lagna]], lagna);
   return {lagna, ascSid, sid, sidKP, psign, pdeg, d9, d9Lagna, d9LagnaLon,
     cuspsLahiri, cuspsKP, csl, cslSl: cslLords.sl, cslNl: cslLords.nl, cslSsl: cslLords.ssl,
-    ak, dk, swamsa, karakamsa, ul, a7};
+    ak, dk, swamsa, karakamsa, ul, a7, al};
 }
 
 function planetsIn(ch, sign){ return PLANETS.filter(pl => ch.psign[pl] === sign); }
@@ -304,15 +308,12 @@ function buildLists(ch, gender){
     ['B4','D9 लग्नेश की D9 राशि का स्वामी',[SIGN_LORD[ch.d9[d9Lord]]]],
     ['B5','D9 लग्नेश से युत ग्रह (D9 में)',PLANETS.filter(pl => pl!==d9Lord && ch.d9[pl]===ch.d9[d9Lord])],
   ];
+  // v1.5: C = Moon-only, 3 items (old C1-C7 Shukra/Guru karaka items removed).
+  const moonSign = ch.psign['Mo'], h7m = (moonSign+6)%12, lord7m = SIGN_LORD[h7m];
   items.C = [
-    ['C1','शुक्र की राशि का स्वामी',[SIGN_LORD[ch.psign['Ve']]]],
-    ['C2','शुक्र के नक्षत्र का स्वामी',[nakLord(ch.sid['Ve'])]],
-    ['C3','शुक्र से युत ग्रह',PLANETS.filter(pl => pl!=='Ve' && ch.psign[pl]===ch.psign['Ve'])],
-    ['C4','गुरु की राशि का स्वामी',[SIGN_LORD[ch.psign['Ju']]]],
-    ['C5','गुरु के नक्षत्र का स्वामी',[nakLord(ch.sid['Ju'])]],
-    ['C6','गुरु से युत ग्रह',PLANETS.filter(pl => pl!=='Ju' && ch.psign[pl]===ch.psign['Ju'])],
-    ['C7','शुक्र से सप्तम भाव का स्वामी',[SIGN_LORD[(ch.psign['Ve']+6)%12]]],
-    ['C8','चंद्र से सप्तम भाव का स्वामी',[SIGN_LORD[(ch.psign['Mo']+6)%12]]],
+    ['C1','चंद्रमा (चंद्र कुंडली) से सप्तम भाव में बैठा ग्रह',planetsIn(ch, h7m)],
+    ['C2','चंद्रमा (चंद्र कुंडली) से सप्तम भाव का स्वामी',[lord7m]],
+    ['C3','चंद्रमा (चंद्र कुंडली) से सप्तमेश का राशि स्वामी',[SIGN_LORD[ch.psign[lord7m]]]],
   ];
   const d9h7 = (d9L+6)%12, d9lord7 = SIGN_LORD[d9h7];
   items.D = [
@@ -322,19 +323,22 @@ function buildLists(ch, gender){
     ['D4','D9 सप्तमेश की D9 राशि का स्वामी',[SIGN_LORD[ch.d9[d9lord7]]]],
     ['D5','D9 सप्तमेश से युत ग्रह',PLANETS.filter(pl => pl!==d9lord7 && ch.d9[pl]===ch.d9[d9lord7])],
     ['D6','D9 सप्तमेश पर दृष्टि रखने वाले ग्रह',planetsAspectingD9(ch, ch.d9[d9lord7])],
-    ['D7','D9 लग्न का स्वामी',[d9Lord]],
-    ['D8','D9 लग्नेश की D9 राशि का स्वामी',[SIGN_LORD[ch.d9[d9Lord]]]],
-    ['D9','D9 लग्नेश से युत ग्रह',PLANETS.filter(pl => pl!==d9Lord && ch.d9[pl]===ch.d9[d9Lord])],
-    ['D10','D9 लग्न में बैठे ग्रह',planetsInD9(ch, d9L)],
   ];
+  // v1.4: E = 9 items, ALL planet-counting (old E1 top-1 signs removed).
+  // Master rule: wherever a sign appeared, its D1 lord comes instead and COUNTS.
+  const kk = ch.karakamsa; // Swamsa = Karakamsa = AK D9 sign
+  const h7kk = (kk+6)%12, lord7kk = SIGN_LORD[h7kk];
+  // v1.4 order (user 28 Nov 2026): DK items together at top, AL below E6 (A7 lord).
   items.E = [
-    ['E1','Top-1 ग्रह की दोनों राशियाँ (A–D से)',[], 'signs'],
-    ['E2','दाराकारक (DK)',[ch.dk]],
-    ['E3','उपपद लग्न (UL) की राशि',[], 'sign'],
-    ['E4','UL से सातवीं राशि',[], 'sign'],
-    ['E5','A7 की राशि',[], 'sign'],
-    ['E6','स्वांश से सप्तमेश की राशि',[], 'sign'],
-    ['E7','कारकांश से सप्तमेश की राशि',[], 'sign'],
+    ['E1','दाराकारक (DK)',[ch.dk]],
+    ['E2','DK का राशि स्वामी',[SIGN_LORD[ch.psign[ch.dk]]]],
+    ['E3','DK से युत ग्रह',PLANETS.filter(pl => pl!==ch.dk && ch.psign[pl]===ch.psign[ch.dk])],
+    ['E4','UL की राशि का स्वामी',[SIGN_LORD[ch.ul]]],
+    ['E5','UL से सातवीं राशि का स्वामी',[SIGN_LORD[(ch.ul+6)%12]]],
+    ['E6','A7 की राशि का स्वामी',[SIGN_LORD[ch.a7]]],
+    ['E7','AL से सप्तम राशि का स्वामी',[SIGN_LORD[(ch.al+6)%12]]],
+    ['E8','स्वांश/कारकांश का सप्तम भाव की राशि का स्वामी',[SIGN_LORD[h7kk]]],
+    ['E9','स्वांश/कारकांश के सप्तमेश का राशि स्वामी',[SIGN_LORD[ch.psign[lord7kk]]]],
   ];
   items.F = [['F1','जीवनसाथी के कारक (' + karakaHi + ') की राशि का स्वामी',[SIGN_LORD[ch.psign[karaka]]]]];
   items.G = [
@@ -343,15 +347,7 @@ function buildLists(ch, gender){
     ['G3','7वें CSL का NL',[ch.cslNl]],
     ['G4','7वें CSL का SSL',[ch.cslSsl]],
   ];
-  const eSigns = {
-    E1: null, // filled after A-D counting
-    E3: SIGNS_EN[ch.ul],
-    E4: SIGNS_EN[(ch.ul+6)%12],
-    E5: SIGNS_EN[ch.a7],
-    E6: SIGNS_EN[ch.psign[SIGN_LORD[(ch.swamsa+6)%12]]],
-    E7: SIGNS_EN[ch.psign[SIGN_LORD[(ch.karakamsa+6)%12]]],
-  };
-  return {items, eSigns, h7, lord7, d9h7, d9lord7, karaka};
+  return {items, h7, lord7, d9h7, d9lord7, karaka};
 }
 
 function countPlanets(items, sections){
@@ -485,27 +481,19 @@ function renderSummary(p, ch, gender){
 }
 
 const SEC_TITLES = {
-  A: 'A) 7वां भाव (विवाह)', B: 'B) D9 लग्न (व्यक्तित्व)', C: 'C) नैसर्गिक कारक और शुभ',
-  D: 'D) नवमांश (D9)', E: 'E) जैमिनी', F: 'F) BNN', G: 'G) KP'
+  A: 'A) 7वां भाव (विवाह)', B: 'B) D9 लग्न (व्यक्तित्व)', C: 'C) चंद्र कुंडली (चंद्रमा से सप्तम)',
+  D: 'D) नवमांश (D9 सप्तमेश)', E: 'E) जैमिनी', F: 'F) BNN', G: 'G) KP'
 };
 
 function renderSections(){
-  const {items, eSigns} = CUR.lists;
+  const {items} = CUR.lists;
   let h = '';
   for(const sec of ['A','B','C','D','E','F','G']){
     const kpCls = sec === 'G' ? ' kp-sec' : '';
     h += '<h3 class="sec-title' + kpCls + '">' + SEC_TITLES[sec] + '</h3>';
     h += '<table class="items' + kpCls + '"><tr><th>#</th><th>नियम</th><th>ग्रह / राशि</th></tr>';
     for(const it of items[sec]){
-      let val;
-      if(it[3] === 'signs'){
-        val = it[0]==='E1' ? (CUR.e1Signs.length ? signListHTML(CUR.e1Signs) + (CUR.e1Planets.length > 1 ? ' — A–D में ' + CUR.e1Planets.map(pl => PLANET_HI[pl]).join(' + ') + ' tie (' + CUR.e1Count + '–' + CUR.e1Count + ')' : ' — A–D में सबसे ज्यादा बार आया ग्रह ' + PLANET_HI[CUR.e1Planets[0]] + ' (' + CUR.e1Count + ' बार)') : '—') : '—';
-      } else if(it[3] === 'sign'){
-        val = SIGN_HI[SIGNS_EN[eSigns[it[0]]]] + ' (' + eSigns[it[0]] + ')';
-      } else {
-        val = planetListHTML(it[2]);
-      }
-      h += '<tr><td>' + it[0] + '</td><td>' + it[1] + '</td><td>' + val + '</td></tr>';
+      h += '<tr><td>' + it[0] + '</td><td>' + it[1] + '</td><td>' + planetListHTML(it[2]) + '</td></tr>';
     }
     h += '</table>';
   }
@@ -582,12 +570,9 @@ function runCalc(){
     const lists = buildLists(ch, gender);
     const countsAG = countPlanets(lists.items, ['A','B','C','D','E','F','G']);
     const countsAF = countPlanets(lists.items, ['A','B','C','D','E','F']);
-    const countsAD = countPlanets(lists.items, ['A','B','C','D']);
-    const topAG = top1Of(countsAG), topAF = top1Of(countsAF), topAD = top1Of(countsAD);
-    lists.eSigns.E1 = null;
+    const topAG = top1Of(countsAG), topAF = top1Of(countsAF);
     const rules = buildRules(ch, gender, lists);
-    CUR = {p, ch, lists, gender, countsAG, countsAF, countsAD, topAG, topAF,
-      e1Signs: topAD.signs, e1Planets: topAD.owning, e1Count: topAD.mx, rules};
+    CUR = {p, ch, lists, gender, countsAG, countsAF, topAG, topAF, rules};
     window.__spouseCalc = CUR;
     renderSummary(p, ch, gender);
     renderSections();
@@ -612,7 +597,7 @@ function buildTxt(){
   const kpOn = document.getElementById('kpCheck').checked;
   const L = [];
   const h7 = lists.h7, d9L = ch.d9Lagna, d9h7 = (d9L+6)%12;
-  L.push('Spouse Sign Calculator v1.1');
+  L.push('Spouse Sign Calculator v1.5');
   L.push('Astro Code: ' + document.getElementById('astroCode').value.trim());
   L.push('Gender: ' + (CUR.gender === 'male' ? 'Male (पुरुष)' : 'Female (स्त्री)'));
   L.push('Birth: ' + p.dd + '/' + p.mm + '/' + p.yy + ' ' + String(p.hh).padStart(2,'0') + ':' + String(p.mi).padStart(2,'0') + ':' + String(p.ss).padStart(2,'0'));
@@ -634,22 +619,11 @@ function buildTxt(){
   L.push('');
   L.push('Tab 1 - A-G List');
   L.push('KP: ' + (kpOn ? 'ON' : 'OFF'));
-  const eSigns = lists.eSigns;
   for(const sec of ['A','B','C','D','E','F','G']){
     L.push('');
     L.push('Section ' + sec + ' - ' + SEC_TITLES[sec]);
     for(const it of lists.items[sec]){
-      let val;
-      if(it[3] === 'signs'){
-        val = it[0] === 'E1'
-          ? signListTxt(CUR.e1Signs) + ' | A-D Top Graha: ' + planetListTxt(CUR.e1Planets) + ' (' + CUR.e1Count + ')'
-          : '-';
-      } else if(it[3] === 'sign'){
-        val = signName(eSigns[it[0]]);
-      } else {
-        val = planetListTxt(it[2]);
-      }
-      L.push(it[0] + ' - ' + it[1] + ': ' + val);
+      L.push(it[0] + ' - ' + it[1] + ': ' + planetListTxt(it[2]));
     }
   }
   function countsBlock(label, counts, top){
