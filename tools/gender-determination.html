@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gender Research - सभी 13 Versions (एक file, 13 tabs) v1.5</title>
+<title>Gender Research - सभी 13 Versions (एक file, 13 tabs) v1.6</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -29,7 +29,7 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Gender Research - सभी 13 Versions (एक file, 13 tabs) v1.5</h1>
+<h1>Gender Research - सभी 13 Versions (एक file, 13 tabs) v1.6</h1>
 <div class="warn"><b>यह research/comparison file है, नया product नहीं।</b> नीचे हर version की backtest accuracy लिखी है - कोई भी version 60% से ऊपर नहीं गया है, इसलिए इनमें से किसी को भी working prediction tool की तरह इस्तेमाल नहीं करना है। सभी 9 versions के logic मूल Python/JS sources से faithful port किए गए हैं, कोई नया logic नहीं बनाया गया है।</div>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
@@ -44,11 +44,12 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 <label for="child-date"><b>पहली संतान के जन्म की तारीख (optional - सिर्फ J16/J17/J24 और v2.0 Tier 4 दशा के लिए):</b></label><br>
 <input type="date" id="child-date">
 </p>
-<p><button class="btn-main" onclick="runAll()">सभी Tabs में गणना करें</button> <button class="btn-main" onclick="runBench13()">13 टैब बेंच - सबका वोट एक साथ</button></p>
+<p><button class="btn-main" onclick="runAll()">सभी Tabs में गणना करें</button> <button class="btn-main" onclick="runBench13()">13 टैब बेंच - सबका वोट एक साथ</button> <button class="btn-main" id="btn-txt" onclick="downloadTxt()">TXT Download</button></p>
 <div id="status">Ephemeris अभी लोड नहीं हुआ है - गणना दबाते ही लोड होगा।</div>
 <div id="error"></div>
 <div id="chart-info"></div>
 <div id="res-bench13"></div>
+<p><button class="btn-main" id="btn-txt-2" onclick="downloadTxt()">TXT Download</button></p>
 <p>
 <button class="tabbtn active" id="btn-1" onclick="showTab(1)">1. 7-vote</button>
 <button class="tabbtn" id="btn-2" onclick="showTab(2)">2. Gemini v1.0</button>
@@ -1256,6 +1257,8 @@ async function runCouple(){
     const rh = predictGenderV3({id:'husband', timeStr: h.timeStr, nativeGender: 'M', ascDeg: h.ascLon, planets: h.planets}, 0.0);
     const rw = predictGenderV3({id:'wife', timeStr: w.timeStr, nativeGender: 'F', ascDeg: w.ascLon, planets: w.planets}, 0.0);
     const out = combineCouple(rh.sFinal, h.timeStr, rw.sFinal, w.timeStr, false);
+    LAST = LAST || {};
+    LAST.couple = {husbandCode: hcode, wifeCode: wcode, husband: h, wife: w, husbandResult: rh, wifeResult: rw, out};
     const v = out.verdict === 'boy' ? 'M' : (out.verdict === 'girl' ? 'F' : '-');
     let html = verdictBox('Couple combiner verdict', v,
       `<p>▸ S_couple: <b>${fmtScore(out.sCouple)}</b> &nbsp;|&nbsp; R (weight ratio): ${out.R} &nbsp;|&nbsp; सहमत: ${out.agreed ? 'हाँ' : 'नहीं'}</p>`);
@@ -1614,9 +1617,356 @@ function runBench13(){
   el.innerHTML = html;
   window.__bench13 = {verdict, tabs: t};
 }
+
+// ================= TXT download (v1.6) - pure computed data only =================
+const txtMF = v => v === 'M' ? 'M (Son)' : (v === 'F' ? 'F (Daughter)' : '- (no result)');
+const txtYN = b => b ? 'yes' : 'no';
+const txtList = arr => (arr && arr.length) ? arr.join(', ') : 'none';
+const txtDegInSign = lon => { const sg = Math.floor(norm360(lon) / 30); return SIGNS_EN[sg] + ' ' + (norm360(lon) % 30).toFixed(2) + ' deg'; };
+const txtFmtDeg = absDeg => {
+  const r = Math.floor(norm360(absDeg) / 30) % 12;
+  const d = norm360(absDeg) % 30;
+  let dd = Math.floor(d), mm = Math.floor((d - dd) * 60);
+  let ss = Math.round(((d - dd) * 60 - mm) * 60);
+  if (ss === 60) { ss = 0; mm++; } if (mm === 60) { mm = 0; dd++; }
+  return SIGNS_EN[r] + ' ' + dd + ' deg ' + String(mm).padStart(2, '0') + ' min ' + String(ss).padStart(2, '0') + ' sec';
+};
+const txtKPName = short => ({Su: 'Sun', Mo: 'Moon', Ma: 'Mars', Me: 'Mercury', Ju: 'Jupiter', Ve: 'Venus', Sa: 'Saturn', Ra: 'Rahu', Ke: 'Ketu'})[short] || short;
+function buildTxtText(){
+  if (!LAST || !LAST.chart) return null;
+  const chart = LAST.chart, votes = LAST.votes, childDate = LAST.childDate, couple = LAST.couple || null;
+  const L = [];
+  const beeja = (chart.planets.Sun + chart.planets.Venus + chart.planets.Jupiter) % 360;
+  const kshetra = (chart.planets.Moon + chart.planets.Mars + chart.planets.Jupiter) % 360;
+  L.push('Gender Tool v1.6');
+  L.push('Astro Code: ' + document.getElementById('astro-code').value.trim());
+  L.push('Native: ' + (chart.nativeGender === 'male' ? 'Male' : 'Female'));
+  L.push('Child birth date: ' + (childDate ? childDate.toISOString().slice(0, 10) : 'none'));
+  L.push('Lagna: ' + txtDegInSign(chart.ascLon));
+  L.push('Ayanamsa Lahiri: ' + chart.ayan.toFixed(2) + ' deg');
+  L.push('Birth time: ' + chart.timeStr);
+  L.push('');
+  L.push('Planet positions (D1 sign and deg-in-sign, D7 sign, D9 sign)');
+  for (const p of P9){
+    L.push(p + ': ' + txtDegInSign(chart.planets[p]) + ', D7 ' + SIGNS_EN[d7of(chart.planets[p])] + ', D9 ' + SIGNS_EN[navamsaSignFixed(chart.planets[p])]);
+  }
+  L.push('Beeja sphuta: ' + txtDegInSign(beeja));
+  L.push('Kshetra sphuta: ' + txtDegInSign(kshetra));
+  L.push('Sphuta used: ' + (chart.nativeGender === 'male' ? 'Beeja sphuta' : 'Kshetra sphuta'));
+  // ---- Tab 1 ----
+  const sv = sevenVote(chart);
+  L.push('');
+  L.push('Tab 1 - 7-vote');
+  L.push('Result: ' + txtMF(sv.verdict));
+  L.push('Male votes: ' + sv.m);
+  L.push('Female votes: ' + sv.f);
+  L.push('BNN: ' + txtMF(sv.votes.BNN));
+  L.push('Moon D1 exception: ' + txtMF(sv.votes.MoonExc));
+  L.push('Venus D1: ' + txtMF(sv.votes.VenD1));
+  L.push('Venus D9 exception: ' + txtMF(sv.votes.VenD9x));
+  L.push('D7B: ' + txtMF(sv.votes.D7B));
+  L.push('Venus D60 exception: ' + txtMF(sv.votes.VenD60x));
+  L.push('9th lord D9 exception: ' + txtMF(sv.votes.L9D9x));
+  L.push('Tie: ' + txtYN(sv.m === sv.f));
+  if (sv.m === sv.f) L.push('Tie-break: Venus D1: ' + txtMF(sv.votes.VenD1));
+  // ---- Tab 2 ----
+  const r2 = predictFirstChildWeighted(chart, {});
+  const b2 = r2.breakdown;
+  L.push('');
+  L.push('Tab 2 - Gemini v1.0');
+  L.push('Result: ' + txtMF(r2.score > 0 ? 'M' : (r2.score < 0 ? 'F' : 'Tie')));
+  L.push('Score: ' + r2.score.toFixed(1));
+  L.push('Confidence: ' + r2.confidence);
+  L.push('Rebalanced (BNN 0): ' + txtYN(r2.rebalanced));
+  L.push('Tier 1 D7 weight: ' + r2.weights.d7.toFixed(3));
+  L.push('Tier 1 D7 score: ' + b2.d7_Saptamsa.score.toFixed(3));
+  L.push('Tier 1 D7 contribution: ' + (b2.d7_Saptamsa.score * r2.weights.d7 * 100).toFixed(1));
+  L.push('Tier 2 D1 weight: ' + r2.weights.d1.toFixed(3));
+  L.push('Tier 2 D1 score: ' + b2.d1_And_Sphuta.score.toFixed(3));
+  L.push('Tier 2 D1 contribution: ' + (b2.d1_And_Sphuta.score * r2.weights.d1 * 100).toFixed(1));
+  L.push('Tier 3 BNN weight: ' + r2.weights.bnn.toFixed(3));
+  L.push('Tier 3 BNN score: ' + b2.bnn_JupiterOrder.score.toFixed(3));
+  L.push('Tier 3 BNN contribution: ' + (b2.bnn_JupiterOrder.score * r2.weights.bnn * 100).toFixed(1));
+  L.push('Tier 1 D7 target sign: ' + SIGNS_EN[b2.d7_Saptamsa.detail.targetSign - 1]);
+  L.push('Tier 1 D7 lord: ' + b2.d7_Saptamsa.detail.lord);
+  L.push('Tier 1 D7 lord sign: ' + SIGNS_EN[b2.d7_Saptamsa.detail.lordSign - 1]);
+  L.push('Tier 1 D7 occupants: ' + txtList(b2.d7_Saptamsa.detail.occupants));
+  L.push('Tier 1 D7 conjuncts: ' + txtList(b2.d7_Saptamsa.detail.conjuncts));
+  L.push('Tier 1 D7 lord total: ' + b2.d7_Saptamsa.detail.lordTotal.toFixed(2));
+  L.push('Tier 1 D7 occupant raw: ' + b2.d7_Saptamsa.detail.occupantRaw);
+  L.push('Tier 2 D1 5th sign: ' + SIGNS_EN[b2.d1_And_Sphuta.detail.sign5]);
+  L.push('Tier 2 D1 5th lord: ' + b2.d1_And_Sphuta.detail.lord5);
+  L.push('Tier 2 D1 5th lord sign: ' + SIGNS_EN[b2.d1_And_Sphuta.detail.lord5Sign]);
+  L.push('Tier 2 D1 navamsa lord: ' + b2.d1_And_Sphuta.detail.navLord);
+  L.push('Tier 2 D1 influencers: ' + txtList(b2.d1_And_Sphuta.detail.influencers));
+  L.push('Tier 2 D1 house influence: ' + b2.d1_And_Sphuta.detail.houseInfluence);
+  L.push('Tier 2 D1 part A: ' + b2.d1_And_Sphuta.detail.partA.toFixed(3));
+  L.push('Tier 2 D1 part B: ' + b2.d1_And_Sphuta.detail.partB.toFixed(3));
+  L.push('Tier 2 sphuta name: ' + b2.d1_And_Sphuta.detail.sphutaName);
+  L.push('Tier 2 sphuta longitude: ' + txtDegInSign(b2.d1_And_Sphuta.detail.sphutaLon));
+  L.push('Tier 3 BNN primary: ' + (b2.bnn_JupiterOrder.detail.primary || 'none'));
+  L.push('Tier 3 BNN in-houses: ' + txtList(b2.bnn_JupiterOrder.detail.inHouses));
+  L.push('Tier 3 BNN balance raw: ' + b2.bnn_JupiterOrder.detail.balanceRaw);
+  L.push('Tier 3 BNN balance: ' + b2.bnn_JupiterOrder.detail.balance.toFixed(3));
+  L.push('Tier 3 BNN primary score: ' + b2.bnn_JupiterOrder.detail.primaryScore);
+  // ---- Tab 3 ----
+  const st = staticScoreV2(chart);
+  const d7p3 = {}; for (const p of P9) d7p3[p] = d7of(chart.planets[p]) + 1;
+  const t1d = d7TierV2(st.d7Lagna, d7p3);
+  const t2d = d1TierV2(chart);
+  const t3d = bnnTierV2(chart);
+  L.push('');
+  L.push('Tab 3 - Gemini v2.0');
+  L.push('Result: ' + txtMF(st.verdict));
+  L.push('Score: ' + st.score);
+  L.push('Confidence: ' + st.confidence);
+  L.push('D7 boundary distance: ' + st.boundaryDist.toFixed(2) + ' deg');
+  L.push('Borderline: ' + txtYN(st.borderline));
+  L.push('Weights: ' + st.weights.map(w => w.toFixed(2)).join(', '));
+  L.push('Tier 1 D7 score: ' + st.t1.toFixed(3));
+  L.push('Tier 2 D1 score: ' + st.t2.toFixed(3));
+  L.push('Tier 3 BNN score: ' + st.t3.toFixed(3));
+  L.push('Tier 1 D7 target sign: ' + SIGNS_EN[t1d.targetSign - 1]);
+  L.push('Tier 1 D7 lord: ' + t1d.lord);
+  L.push('Tier 1 D7 lord sign: ' + SIGNS_EN[t1d.lordSign - 1]);
+  L.push('Tier 1 D7 occupants: ' + txtList(t1d.occupants));
+  L.push('Tier 1 D7 conjuncts: ' + txtList(t1d.conjuncts));
+  L.push('Tier 1 D7 lord total: ' + t1d.lordTotal.toFixed(2));
+  L.push('Tier 2 D1 5th sign: ' + SIGNS_EN[t2d.sign5]);
+  L.push('Tier 2 D1 5th lord: ' + t2d.lord5);
+  L.push('Tier 2 D1 5th lord sign: ' + SIGNS_EN[t2d.lord5Sign]);
+  L.push('Tier 2 D1 navamsa lord: ' + t2d.navLord);
+  L.push('Tier 2 D1 influencers: ' + txtList(t2d.influencers));
+  L.push('Tier 2 D1 house influence: ' + t2d.houseInfluence);
+  L.push('Tier 2 D1 part A: ' + t2d.partA.toFixed(3));
+  L.push('Tier 2 D1 part B: ' + t2d.partB.toFixed(3));
+  L.push('Tier 2 sphuta name: ' + t2d.sphutaName);
+  L.push('Tier 2 sphuta longitude: ' + txtDegInSign(t2d.sphutaLon));
+  L.push('Putrakaraka: ' + t2d.pk);
+  L.push('Putrakaraka penalty: ' + t2d.pkPenalty);
+  L.push('Tier 3 BNN primary: ' + (t3d.primary || 'none'));
+  L.push('Tier 3 BNN in-houses: ' + txtList(t3d.inHouses));
+  L.push('Tier 3 BNN balance raw: ' + t3d.balRaw);
+  if (childDate){
+    const bdt = new Date(Date.UTC(childDate.getUTCFullYear(), childDate.getUTCMonth(), childDate.getUTCDate(), 0, 0, 0));
+    const dd = vimshottariAt(chart, bdt);
+    const t4 = dashaT4(chart, dd.ad);
+    const wd = withDasha(st, t4);
+    L.push('Tier 4 Dasha MD: ' + dd.md);
+    L.push('Tier 4 Dasha AD: ' + dd.ad);
+    L.push('Tier 4 T4: ' + t4.toFixed(2));
+    L.push('Tier 4 total: ' + wd.score.toFixed(1));
+    L.push('Tier 4 Result: ' + txtMF(wd.prediction));
+    L.push('Tier 4 Confidence: ' + wd.confidence);
+  } else {
+    L.push('Tier 4 Dasha: none');
+  }
+  // ---- Tabs 4 & 5 (v3.0) ----
+  const v3txt = (n, mu0) => {
+    const c = {id: 'chart', timeStr: chart.timeStr, nativeGender: chart.nativeGender === 'male' ? 'M' : 'F', ascDeg: chart.ascLon, planets: chart.planets};
+    const r = predictGenderV3(c, mu0);
+    const v = r.verdict === 'boy' ? 'M' : (r.verdict === 'girl' ? 'F' : '-');
+    L.push('');
+    L.push('Tab ' + n + ' - Gemini v3.0 mu0 ' + mu0.toFixed(2));
+    L.push('Result: ' + txtMF(v));
+    L.push('sFinal: ' + r.sFinal.toFixed(2));
+    L.push('sRaw: ' + r.sRaw.toFixed(2));
+    L.push('sNonD7: ' + r.sNonD7.toFixed(2));
+    L.push('Confidence: ' + r.confidence);
+    L.push('Abstain reason: ' + (r.abstainReason || 'none'));
+    L.push('D7 quality: ' + r.d7Quality.toFixed(3));
+    L.push('Component A D7B score: ' + r.components.sA.toFixed(3));
+    L.push('Component A D7B weight: ' + r.components.wA.toFixed(2));
+    L.push('Component B1 D1 score: ' + r.components.sB1.toFixed(3));
+    L.push('Component B2 sphuta score: ' + r.components.sB2.toFixed(3));
+    L.push('Component C1 Venus D9 score: ' + r.components.sC1);
+    L.push('Component C2 9th lord D9 score: ' + r.components.sC2);
+    L.push('Component D Moon D1 score: ' + r.components.sD.toFixed(3));
+  };
+  v3txt(4, 0.0);
+  v3txt(5, 6.79);
+  // ---- Tab 6 (couple) ----
+  L.push('');
+  L.push('Tab 6 - Couple combiner');
+  if (couple){
+    const o = couple.out;
+    const hv = o.sH > 0 ? 'M' : (o.sH < 0 ? 'F' : '-');
+    const wv = o.sW > 0 ? 'M' : (o.sW < 0 ? 'F' : '-');
+    const cv = o.verdict === 'boy' ? 'M' : (o.verdict === 'girl' ? 'F' : '-');
+    L.push('Result: ' + txtMF(cv));
+    L.push('S couple: ' + o.sCouple.toFixed(2));
+    L.push('R: ' + o.R);
+    L.push('Agreed: ' + txtYN(o.agreed));
+    L.push('Husband Astro Code: ' + couple.husbandCode);
+    L.push('Husband score: ' + o.sH.toFixed(2));
+    L.push('Husband Result: ' + txtMF(hv));
+    L.push('Husband time factor: ' + o.tH);
+    L.push('Wife Astro Code: ' + couple.wifeCode);
+    L.push('Wife score: ' + o.sW.toFixed(2));
+    L.push('Wife Result: ' + txtMF(wv));
+    L.push('Wife time factor: ' + o.tW);
+    L.push('wH: ' + o.wH.toFixed(2));
+    L.push('wW: ' + o.wW.toFixed(2));
+  } else {
+    L.push('Result: - (no result)');
+    L.push('Couple input: not provided');
+  }
+  // ---- Tabs 7 & 8 (panels) ----
+  const panelTxt = (n, jids) => {
+    const pv = panelVerdict(votes, jids);
+    const m = jids.filter(j => votes[j] === 'M').length;
+    const f = jids.filter(j => votes[j] === 'F').length;
+    const ab = jids.filter(j => votes[j] === '-').length;
+    L.push('');
+    L.push('Tab ' + n + ' - ' + jids.length + '-judge panel');
+    L.push('Result: ' + txtMF(pv));
+    L.push('Male judges: ' + m);
+    L.push('Female judges: ' + f);
+    L.push('Abstain judges: ' + ab);
+    L.push('Total judges: ' + jids.length);
+    L.push('Tie-break judge J05: ' + txtMF(votes.J05));
+    for (const j of jids){
+      let note = '';
+      if ((j === 'J16' || j === 'J17' || j === 'J24') && !childDate) note = ' (no child date)';
+      if (j === 'J23') note = ' (no partner)';
+      L.push(j + ' ' + JUDGE_NAMES[j] + note + ': ' + txtMF(votes[j]));
+    }
+  };
+  panelTxt(7, JIDS24);
+  panelTxt(8, JIDS28);
+  // ---- Tab 9 & 10 (KP) ----
+  const kr = kpFifthCsl(chart);
+  const kv = kpVerdicts(kr);
+  L.push('');
+  L.push('Tab 9 - KP 5th CSL');
+  L.push('Result primary: ' + txtMF(kv.primary));
+  L.push('Strict: ' + txtMF(kv.strict));
+  L.push('Star lord only: ' + txtMF(kv.slOnly));
+  L.push('CSL only: ' + txtMF(kv.cslOnly));
+  L.push('Sign only: ' + txtMF(kv.signOnly));
+  L.push('Gender source: ' + kv.genderSource);
+  L.push('5th cusp: ' + txtFmtDeg(kr.cusp5));
+  L.push('CSL: ' + kr.csl + ' (' + txtKPName(kr.csl) + ')');
+  L.push('Star lord: ' + kr.starLord + ' (' + txtKPName(kr.starLord) + ')');
+  L.push('CSL sign: ' + SIGNS_EN[kr.cslRashi] + ' (' + (kr.cslRashi + 1) + ')');
+  L.push('CSL sign odd/even: ' + (kv.cslOdd ? 'odd' : 'even'));
+  L.push('CSL longitude: ' + txtFmtDeg(kr.cslLon));
+  L.push('5th cusp nakshatra lord: ' + kr.cuspNakLord + ' (' + txtKPName(kr.cuspNakLord) + ')');
+  L.push('5th cusp SSL: ' + kr.cuspSsl + ' (' + txtKPName(kr.cuspSsl) + ')');
+  L.push('CSL sub lord: ' + kr.cslSl + ' (' + txtKPName(kr.cslSl) + ')');
+  L.push('CSL SSL: ' + kr.cslSsl + ' (' + txtKPName(kr.cslSsl) + ')');
+  L.push('KP ayanamsa: ' + kr.kpAya.toFixed(4) + ' deg');
+  L.push('');
+  L.push('Tab 10 - KP 5th CSL flipped sign');
+  L.push('Result flipped: ' + txtMF(kv.cslOdd ? 'F' : 'M'));
+  L.push('Sign only primary direction: ' + txtMF(kv.signOnly));
+  L.push('Primary: ' + txtMF(kv.primary));
+  L.push('5th cusp: ' + txtFmtDeg(kr.cusp5));
+  L.push('CSL: ' + kr.csl + ' (' + txtKPName(kr.csl) + ')');
+  L.push('Star lord: ' + kr.starLord + ' (' + txtKPName(kr.starLord) + ')');
+  L.push('CSL sign: ' + SIGNS_EN[kr.cslRashi] + ' (' + (kr.cslRashi + 1) + ')');
+  L.push('CSL sign odd/even: ' + (kv.cslOdd ? 'odd' : 'even'));
+  L.push('CSL longitude: ' + txtFmtDeg(kr.cslLon));
+  L.push('KP ayanamsa: ' + kr.kpAya.toFixed(4) + ' deg');
+  // ---- Tab 11 (Bench8) ----
+  const pl = chart.planets;
+  const marsD9 = navamsaSign(pl.Mars) % 2 === 0;
+  const satD9 = navamsaSign(pl.Saturn) % 2 === 0;
+  const sunD1 = signOf(pl.Sun) % 2 === 0;
+  const moonD9 = navamsaSign(pl.Moon) % 2 === 0;
+  const kshLon = (pl.Moon + pl.Mars + pl.Jupiter) % 360;
+  const kshOdd = signOf(kshLon) % 2 === 0;
+  const b8 = [
+    marsD9 ? 'F' : 'M', satD9 ? 'F' : 'M', sunD1 ? 'M' : 'F', moonD9 ? 'M' : 'F',
+    kshOdd ? 'F' : 'M', kpGenderOf(kr.csl) || '-', kpGenderOf(kr.starLord) || '-',
+    (kr.cslRashi % 2 === 0) ? 'M' : 'F',
+  ];
+  const b8m = b8.filter(v => v === 'M').length, b8f = b8.filter(v => v === 'F').length;
+  L.push('');
+  L.push('Tab 11 - Bench8');
+  L.push('Result: ' + txtMF(b8m > b8f ? 'M' : (b8f > b8m ? 'F' : '-')));
+  L.push('Male votes: ' + b8m);
+  L.push('Female votes: ' + b8f);
+  L.push('Silent: ' + (8 - b8m - b8f));
+  L.push('Mars D9: ' + txtMF(b8[0]));
+  L.push('Saturn D9: ' + txtMF(b8[1]));
+  L.push('Sun D1: ' + txtMF(b8[2]));
+  L.push('Moon D9: ' + txtMF(b8[3]));
+  L.push('Kshetra sphuta: ' + txtMF(b8[4]));
+  L.push('KP CSL gender: ' + txtMF(b8[5]));
+  L.push('KP star lord gender: ' + txtMF(b8[6]));
+  L.push('KP CSL sign: ' + txtMF(b8[7]));
+  L.push('5th cusp: ' + txtFmtDeg(kr.cusp5));
+  L.push('CSL: ' + kr.csl + ' (' + txtKPName(kr.csl) + ')');
+  L.push('Star lord: ' + kr.starLord + ' (' + txtKPName(kr.starLord) + ')');
+  L.push('CSL sign: ' + SIGNS_EN[kr.cslRashi] + ' (' + (kr.cslRashi + 1) + ')');
+  // ---- Tab 12 ----
+  const v12 = tab12Votes(chart);
+  const keys12 = Object.keys(v12);
+  let m12 = 0, f12 = 0;
+  for (const k of keys12){ if (v12[k] === 'M') m12++; else if (v12[k] === 'F') f12++; }
+  L.push('');
+  L.push('Tab 12 - 12-vote');
+  L.push('Result: ' + txtMF(m12 > f12 ? 'M' : (f12 > m12 ? 'F' : '-')));
+  L.push('Male votes: ' + m12);
+  L.push('Female votes: ' + f12);
+  L.push('Silent: ' + (12 - m12 - f12));
+  for (const [sys, ks] of Object.entries(TAB12_SYSTEMS)){
+    const sub = {};
+    for (const k of ks) sub[k] = v12[k];
+    L.push(sys + ': ' + txtMF(majorityOf(sub)));
+  }
+  for (const k of keys12) L.push(TAB12_LABELS[k] + ': ' + txtMF(v12[k]));
+  // ---- Tab 13 ----
+  const v13 = tab13Votes(chart);
+  const keys13 = Object.keys(v13);
+  let m13 = 0, f13 = 0;
+  for (const k of keys13){ if (v13[k] === 'M') m13++; else if (v13[k] === 'F') f13++; }
+  L.push('');
+  L.push('Tab 13 - Universal bench 42 rules');
+  L.push('Result: ' + txtMF(m13 > f13 ? 'M' : (f13 > m13 ? 'F' : '-')));
+  L.push('Male votes: ' + m13);
+  L.push('Female votes: ' + f13);
+  for (const k of keys13) L.push(k + ' - ' + UNI_LABELS[k] + ' (odd=' + UNI_DIRS[k] + '): ' + txtMF(v13[k]));
+  // ---- Bench 13 tabs ----
+  const bt = allTabVerdicts(chart, votes);
+  const bkeys = Object.keys(BENCH13_NAMES);
+  let bm = 0, bf = 0;
+  for (const k of bkeys){ if (bt[k] === 'M') bm++; else if (bt[k] === 'F') bf++; }
+  L.push('');
+  L.push('Bench - 13 tabs');
+  L.push('Result: ' + txtMF(bm > bf ? 'M' : (bf > bm ? 'F' : '-')));
+  L.push('Male tabs: ' + bm);
+  L.push('Female tabs: ' + bf);
+  L.push('Silent tabs: ' + (13 - bm - bf));
+  for (const k of bkeys) L.push(k + ' ' + BENCH13_NAMES[k] + ': ' + txtMF(bt[k]));
+  return L.join('\n') + '\n';
+}
+function downloadTxt(){
+  const errEl = document.getElementById('error');
+  if (!LAST || !LAST.chart){
+    errEl.innerHTML = '<div class="err">पहले ऊपर Astro Code डालकर गणना करें।</div>';
+    return;
+  }
+  errEl.innerHTML = '';
+  const text = buildTxtText();
+  const code = (document.getElementById('astro-code').value || '').trim().replace(/[^A-Za-z0-9+\-]/g, '_') || 'output';
+  const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'gender-v1.6-' + code + '.txt';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 500);
+  document.getElementById('status').textContent = 'TXT download started.';
+}
+
 // test hooks (browser verification)
-window.__gtest = {computeChart, loadEphem, sevenVote, v1Score, staticScoreV2, predictGenderV3, combineCouple, panelVotes, panelVerdict, vimshottariAt, dashaT4, predictFirstChildWeighted, d7TierV2, bnnTierV2, kpFifthCsl, kpVerdicts, kpChart, tab12Votes, tab13Votes, allTabVerdicts, runBench13, version:'1.5'};
+window.__gtest = {computeChart, loadEphem, sevenVote, v1Score, staticScoreV2, predictGenderV3, combineCouple, panelVotes, panelVerdict, vimshottariAt, dashaT4, predictFirstChildWeighted, d7TierV2, bnnTierV2, kpFifthCsl, kpVerdicts, kpChart, tab12Votes, tab13Votes, allTabVerdicts, runBench13, version:'1.6'};
 window.runAll = runAll;
+window.downloadTxt = downloadTxt;
+window.buildTxtText = buildTxtText;
 window.runBench13 = runBench13;
 window.runCouple = runCouple;
 window.showTab = showTab;

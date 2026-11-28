@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Spouse Sign Calculator v1.0</title>
+<title>Spouse Sign Calculator v1.1</title>
 <style>
 * { box-sizing: border-box; }
 body { font-family: 'Noto Sans Devanagari', 'Mangal', sans-serif; margin: 0; background: #f6f3ec; color: #222; }
@@ -45,7 +45,7 @@ button.go:disabled { background: #aaa; cursor: wait; }
 </head>
 <body>
 <div class="wrap">
-<h1>💑 Spouse Sign Calculator <span class="badge">v1.0</span></h1>
+<h1>💑 Spouse Sign Calculator <span class="badge">v1.1</span></h1>
 <p class="sub">Astro Code डालते ही जीवनसाथी की चंद्र / लग्न राशि की गणना। दो तरीके — A–G list (Tab 1) और शास्त्रीय नियम (Tab 2)।</p>
 
 <div class="card">
@@ -65,6 +65,7 @@ button.go:disabled { background: #aaa; cursor: wait; }
 
 <div id="outWrap" style="display:none">
 <div class="card" id="summaryCard"></div>
+<div class="card"><button class="go" id="btnTxt" onclick="downloadTxt()">TXT Download</button> <span class="small">पूरी गणना (Tab 1 + Tab 2) का TXT</span></div>
 
 <div class="note">
 <b>ध्यान दें — D9 formula:</b> इस tool में textbook वाला D9 formula use हुआ है (चर: वही राशि; स्थिर: 9वीं राशि से; द्विस्वभाव: 5वीं राशि से)।
@@ -585,7 +586,7 @@ function runCalc(){
     const topAG = top1Of(countsAG), topAF = top1Of(countsAF), topAD = top1Of(countsAD);
     lists.eSigns.E1 = null;
     const rules = buildRules(ch, gender, lists);
-    CUR = {ch, lists, gender, countsAG, countsAF, countsAD, topAG, topAF,
+    CUR = {p, ch, lists, gender, countsAG, countsAF, countsAD, topAG, topAF,
       e1Signs: topAD.signs, e1Planets: topAD.owning, e1Count: topAD.mx, rules};
     window.__spouseCalc = CUR;
     renderSummary(p, ch, gender);
@@ -599,10 +600,119 @@ function runCalc(){
   }
 }
 
+
+function signName(s){ return SIGN_HI[SIGNS_EN[s]] + ' (' + SIGNS_EN[s] + ')'; }
+function planetName(pl){ return PLANET_HI[pl] + ' (' + pl + ')'; }
+function signListTxt(signs){ return signs.length ? signs.map(signName).join(', ') : '-'; }
+function planetListTxt(pls){ return pls.length ? pls.map(planetName).join(', ') : '-'; }
+
+function buildTxt(){
+  if(!CUR) return '';
+  const ch = CUR.ch, lists = CUR.lists, p = CUR.p;
+  const kpOn = document.getElementById('kpCheck').checked;
+  const L = [];
+  const h7 = lists.h7, d9L = ch.d9Lagna, d9h7 = (d9L+6)%12;
+  L.push('Spouse Sign Calculator v1.1');
+  L.push('Astro Code: ' + document.getElementById('astroCode').value.trim());
+  L.push('Gender: ' + (CUR.gender === 'male' ? 'Male (पुरुष)' : 'Female (स्त्री)'));
+  L.push('Birth: ' + p.dd + '/' + p.mm + '/' + p.yy + ' ' + String(p.hh).padStart(2,'0') + ':' + String(p.mi).padStart(2,'0') + ':' + String(p.ss).padStart(2,'0'));
+  L.push('Latitude: ' + p.lat.toFixed(4) + ' degrees');
+  L.push('Longitude: ' + p.lon.toFixed(4) + ' degrees');
+  L.push('');
+  L.push('D1 Lagna: ' + signName(ch.lagna));
+  L.push('D1 Chandra: ' + signName(ch.psign['Mo']));
+  L.push('Saptam Bhava: ' + signName(h7));
+  L.push('Saptamesh: ' + planetName(SIGN_LORD[h7]));
+  L.push('Saptam Me Graha: ' + planetListTxt(planetsIn(ch, h7)));
+  L.push('D9 Lagna: ' + signName(d9L));
+  L.push('D9 Saptam: ' + signName(d9h7));
+  L.push('D9 Saptamesh: ' + planetName(SIGN_LORD[d9h7]));
+  L.push('KP 7th CSL: ' + planetName(ch.csl));
+  L.push('KP 7th CSL SL: ' + planetName(ch.cslSl));
+  L.push('KP 7th CSL NL: ' + planetName(ch.cslNl));
+  L.push('KP 7th CSL SSL: ' + planetName(ch.cslSsl));
+  L.push('');
+  L.push('Tab 1 - A-G List');
+  L.push('KP: ' + (kpOn ? 'ON' : 'OFF'));
+  const eSigns = lists.eSigns;
+  for(const sec of ['A','B','C','D','E','F','G']){
+    L.push('');
+    L.push('Section ' + sec + ' - ' + SEC_TITLES[sec]);
+    for(const it of lists.items[sec]){
+      let val;
+      if(it[3] === 'signs'){
+        val = it[0] === 'E1'
+          ? signListTxt(CUR.e1Signs) + ' | A-D Top Graha: ' + planetListTxt(CUR.e1Planets) + ' (' + CUR.e1Count + ')'
+          : '-';
+      } else if(it[3] === 'sign'){
+        val = signName(eSigns[it[0]]);
+      } else {
+        val = planetListTxt(it[2]);
+      }
+      L.push(it[0] + ' - ' + it[1] + ': ' + val);
+    }
+  }
+  function countsBlock(label, counts, top){
+    L.push('');
+    L.push(label);
+    const order = PLANETS.slice().sort((a,b) => counts[b]-counts[a]);
+    for(const pl of order) L.push(planetName(pl) + ': ' + counts[pl]);
+    L.push('Top Graha (all tied): ' + planetListTxt(top.tops));
+    L.push('Top Graha (sign-owning): ' + planetListTxt(top.owning));
+    L.push('Top Count: ' + top.mx);
+    L.push('Top Signs: ' + signListTxt(top.signs));
+  }
+  countsBlock('Frequency Count - KP ON (A-G)', CUR.countsAG, CUR.topAG);
+  countsBlock('Frequency Count - KP OFF (A-F)', CUR.countsAF, CUR.topAF);
+  L.push('');
+  L.push('Top-1 Current (KP ' + (kpOn ? 'ON' : 'OFF') + ')');
+  const curTop = kpOn ? CUR.topAG : CUR.topAF;
+  L.push('Top Graha (all tied): ' + planetListTxt(curTop.tops));
+  L.push('Top Graha (sign-owning): ' + planetListTxt(curTop.owning));
+  L.push('Top Count: ' + curTop.mx);
+  L.push('Top Signs: ' + signListTxt(curTop.signs));
+  L.push('');
+  L.push('Tab 2 - Rules R1-R9');
+  for(const r of CUR.rules){
+    L.push('');
+    L.push(r.id + ' - ' + r.name);
+    L.push('Description: ' + r.desc);
+    L.push('Applies: ' + (r.applies ? 'Yes' : 'No'));
+    L.push('Signs: ' + (r.applies ? signListTxt(r.set) : '-'));
+    L.push('Detail: ' + r.detail);
+  }
+  L.push('');
+  L.push('Frequency Table - Tab 2');
+  const freq = CUR.tab2.freq;
+  const order = Object.keys(freq).map(Number).sort((a,b) => freq[b]-freq[a]);
+  for(const s of order) L.push(signName(s) + ': ' + freq[s]);
+  L.push('');
+  L.push('Winners - Tab 2');
+  L.push('Signs: ' + signListTxt(CUR.tab2.winners));
+  L.push('Frequency: ' + CUR.tab2.thr);
+  L.push('Winner Sign Count: ' + CUR.tab2.winners.length);
+  return L.join('\n') + '\n';
+}
+
+function downloadTxt(){
+  if(!CUR) return;
+  const txt = buildTxt();
+  const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'spouse-sign-' + document.getElementById('astroCode').value.trim().replace(/[^A-Za-z0-9]+/g, '-') + '.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
 // Inline onclick handlers (module scope is not global)
 window.showTab = showTab;
 window.renderCounts = renderCounts;
 window.runCalc = runCalc;
+window.downloadTxt = downloadTxt;
+window.__buildTxt = buildTxt;
 </script>
 </body>
 </html>

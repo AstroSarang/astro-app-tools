@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Child Birth Time Calculator v1.7</title>
+<style>
+body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
+h1{font-size:24px;color:#7a0000}
+h2{font-size:20px;color:#7a0000;border-bottom:2px solid #7a0000;padding-bottom:4px;margin-top:34px}
+h3{font-size:16px;color:#444;margin-top:22px}
+table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13.5px}
+th,td{border:1px solid #bbb;padding:5px 7px;text-align:left;vertical-align:top}
+th{background:#f2e6e6;color:#7a0000}
+.qual{background:#eef6ee;border-left:4px solid #2a7a2a;padding:8px 10px;font-weight:bold}
+.note{background:#fff8e1;border-left:4px solid #c90;padding:8px 10px}
+.verdict{background:#fdf0f0;border:2px solid #7a0000;padding:12px}
+.small{font-size:12.5px;color:#555}
+.tag{color:#b00;font-weight:bold}
+.ok{color:#2a7a2a;font-weight:bold}
+.weak{color:#b00;font-weight:bold}
+.pd{font-size:12.5px;color:#333}
+input[type=text]{width:520px;max-width:100%;padding:8px;font-size:15px}
+button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
+.btn-main{background:#7a0000;color:#fff;border:1px solid #7a0000}
+.btn-all{background:#2a7a2a;color:#fff;border:1px solid #2a7a2a}
+.btn-next{background:#eef6ee;border:1px solid #2a7a2a;color:#2a7a2a;font-weight:bold}
+.err{background:#fdecea;border:1px solid #b00;color:#900;padding:10px;margin:10px 0}
+.step{display:none}
+.step.visible{display:block}
+#progress{font-weight:bold;color:#7a0000;margin:10px 0}
+#status{color:#555;margin:8px 0}
+</style>
+</head>
+<body>
+<h1>Child Birth Time Calculator v1.7</h1>
+<p class="small">Astro Code से संतान प्राप्ति का समय - पराशरी + जैमिनी + BNN + KP। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: विवाह + 9 महीने से 7 साल (विवाह की तारीख से तय होता है)। पहली संतान की खोज विवाह + 9 महीने से शुरू होती है - उससे पहले की windows मान्य नहीं। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
+<p>
+<label for="astro-code"><b>Astro Code:</b></label><br>
+<input type="text" id="astro-code" value="" placeholder="AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN-DDDMME">
+</p>
+<p>
+<b>यह कुंडली किसकी है?</b><br>
+<label><input type="radio" name="gender" value="female" checked> स्त्री की (क्षेत्र स्फुट)</label>&nbsp;&nbsp;
+<label><input type="radio" name="gender" value="male"> पुरुष की (बीज स्फुट)</label>
+</p>
+<p>
+<b>विवाह का महीना और साल (जरूरी):</b><br>
+<select id="marriage-month" style="padding:8px;font-size:15px">
+<option value="">— महीना चुनें —</option>
+<option value="1">जनवरी</option><option value="2">फरवरी</option><option value="3">मार्च</option>
+<option value="4">अप्रैल</option><option value="5">मई</option><option value="6">जून</option>
+<option value="7">जुलाई</option><option value="8">अगस्त</option><option value="9">सितंबर</option>
+<option value="10">अक्टूबर</option><option value="11">नवंबर</option><option value="12">दिसंबर</option>
+</select>
+<input type="number" id="marriage-year" placeholder="2031" min="1900" max="2100" style="width:110px;padding:8px;font-size:15px">
+<span class="small">पहली संतान की खोज विवाह + 9 महीने से शुरू होती है।</span>
+</p>
+<p>
+<button class="btn-main" id="btn-steps" onclick="runCalc('steps')">गणना करें (एक-एक करके)</button>
+<button class="btn-all" id="btn-all" onclick="runCalc('all')">सब एक साथ</button>
+</p>
+<p class="small">एक-एक करके: हर चरण का नतीजा पहले दिखेगा, फिर "अगला चरण" बटन से अगला चरण खुलेगा। सब एक साथ: पूरी गणना एक क्लिक में। दोनों का नतीजा एक ही है।</p>
+<div id="status">Ephemeris अभी लोड नहीं हुआ है - गणना दबाते ही लोड होगा।</div>
+<div id="error"></div>
+<div id="progress"></div>
+<div id="txt-row" style="display:none"><button class="btn-all" id="btn-txt" onclick="downloadTxt()">TXT Download</button></div>
+<div id="results"></div>
+<script type="module">
+const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
+const DPY = 365.256364;
+const SIGNS = ["मेष","वृषभ","मिथुन","कर्क","सिंह","कन्या","तुला","वृश्चिक","धनु","मकर","कुंभ","मीन"];
+const SIGNS_EN = ["Mesha","Vrishabh","Mithun","Karka","Simha","Kanya","Tula","Vrishchik","Dhanu","Makar","Kumbha","Meen"];
+const HI = {'Sun':'सूर्य','Moon':'चंद्र','Mars':'मंगल','Mercury':'बुध','Jupiter':'गुरु','Venus':'शुक्र','Saturn':'शनि','Rahu':'राहु','Ketu':'केतु',
+  'Mangala':'मंगला (चंद्र)','Pingala':'पिंगला (सूर्य)','Dhanya':'धान्या (गुरु)','Bhramari':'भ्रामरी (मंगल)','Bhadrika':'भद्रिका (बुध)','Ulka':'उल्का (शनि)','Siddha':'सिद्धा (शुक्र)','Sankata':'संकटा (राहु)'};
+const NAK = ["अश्विनी","भरणी","कृत्तिका","रोहिणी","मृगशिरा","आर्द्रा","पुनर्वसु","पुष्य","आश्लेषा","मघा","पूर्वाफाल्गुनी","उत्तराफाल्गुनी","हस्त","चित्रा","स्वाति","विशाखा","अनुराधा","ज्येष्ठा","मूल","पूर्वाषाढ़ा","उत्तराषाढ़ा","श्रवण","धनिष्ठा","शतभिषा","पूर्वाभाद्रपद","उत्तराभाद्रपद","रेवती"];
+const MON_EN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MON_HI = ["जनवरी","फरवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"];
+const P7 = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+const P9 = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+const VIM_ORDER = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const VIM_YEARS = {'Ketu':7,'Venus':20,'Sun':6,'Moon':10,'Mars':7,'Rahu':18,'Jupiter':16,'Saturn':19,'Mercury':17};
+const YOG_ORDER = ['Mangala','Pingala','Dhanya','Bhramari','Bhadrika','Ulka','Siddha','Sankata'];
+const YOG_YEARS = {'Mangala':1,'Pingala':2,'Dhanya':3,'Bhramari':4,'Bhadrika':5,'Ulka':6,'Siddha':7,'Sankata':8};
+const YOG2PL = {'Mangala':'Moon','Pingala':'Sun','Dhanya':'Jupiter','Bhramari':'Mars','Bhadrika':'Mercury','Ulka':'Saturn','Siddha':'Venus','Sankata':'Rahu'};
+const SIGN_LORD = ['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+const MINR = {'Sun':5,'Moon':6,'Mars':5,'Mercury':7,'Jupiter':6.5,'Venus':5.5,'Saturn':5};
+const DIGBALA_BHAVA = [60,20,40,60,10,20,0,20,50,30,40,10];
+const norm360 = d => ((d % 360) + 360) % 360;
+const rad = d => d * Math.PI / 180;
+const deg = r => r * 180 / Math.PI;
+const addDays = (d,n) => new Date(d.getTime() + n*86400000);
+const fmt = d => `${d.getUTCDate()} ${MON_EN[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+const fmtMY = d => `${MON_HI[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+const fmtYM = (y,m) => `${MON_HI[m-1]} ${y}`;
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const mod12 = n => ((n%12)+12)%12;
+const bhavaOf = (sign,base) => mod12(sign-base)+1;
+const tick = () => new Promise(r=>setTimeout(r,0));
+let swe = null, SEP = null, ephemReady = false, ephemLoading = null;
+async function loadEphem(){
+  if(ephemReady) return;
+  if(ephemLoading) return ephemLoading;
+  ephemLoading = (async()=>{
+    const m = await import(/* @vite-ignore */EPHEM_CDN);
+    const se = new m.SwissEphemeris();
+    await se.init();
+    se.setSiderealMode(m.SiderealMode.Lahiri);
+    swe = se; SEP = m.Planet; ephemReady = true;
+  })();
+  return ephemLoading;
+}
+function parseCode(code){
+  const m = code.trim().match(/^AS1-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([+-]\d{4})-(\d{2})(\d{2})([NS])-(\d{3})(\d{2})([EW])$/);
+  if(!m) return null;
+  const tzSign = m[7][0]==='+'?1:-1;
+  const tzH = tzSign*(parseInt(m[7].substring(1,3))+parseInt(m[7].substring(3))/60);
+  let lat = parseInt(m[8])+parseInt(m[9])/60;
+  let lon = parseInt(m[11])+parseInt(m[12])/60;
+  return {y:+m[1],mo:+m[2],d:+m[3],hh:+m[4],mi:+m[5],ss:+m[6],tzH,
+    lat:(m[10]==='S'?-lat:lat), lon:(m[13]==='W'?-lon:lon)};
+}
+const BAV_TABLE = {
+  'Sun': {'Sun':[1,2,4,7,8,9,10,11], 'Moon':[3,6,10,11], 'Mars':[1,2,4,7,8,9,10,11], 'Mercury':[3,5,6,9,10,11,12], 'Jupiter':[5,6,9,11], 'Venus':[6,7,12], 'Saturn':[1,2,4,7,8,9,10,11], 'Lagna':[3,4,6,10,11,12]},
+  'Moon': {'Sun':[3,6,7,8,10,11], 'Moon':[1,3,6,7,10,11], 'Mars':[2,3,5,6,9,10,11], 'Mercury':[1,3,4,5,7,8,10,11], 'Jupiter':[1,4,7,8,10,11,12], 'Venus':[3,4,5,7,9,10,11], 'Saturn':[3,5,6,11], 'Lagna':[3,6,10,11]},
+  'Mars': {'Sun':[3,5,6,10,11], 'Moon':[3,6,11], 'Mars':[1,2,4,7,8,10,11], 'Mercury':[3,5,6,11], 'Jupiter':[6,10,11,12], 'Venus':[6,8,11,12], 'Saturn':[1,4,7,8,9,10,11], 'Lagna':[1,3,6,10,11]},
+  'Mercury': {'Sun':[5,6,9,11,12], 'Moon':[2,4,6,8,10,11], 'Mars':[1,2,4,7,8,9,10,11], 'Mercury':[1,3,5,6,9,10,11,12], 'Jupiter':[6,8,11,12], 'Venus':[1,2,3,4,5,8,9,11], 'Saturn':[1,2,4,7,8,9,10,11], 'Lagna':[1,2,4,6,8,10,11]},
+  'Jupiter': {'Sun':[1,2,3,4,7,8,9,10,11], 'Moon':[2,5,7,9,11], 'Mars':[1,2,4,7,8,10,11], 'Mercury':[1,2,4,5,6,9,10,11], 'Jupiter':[1,2,3,4,7,8,10,11], 'Venus':[2,5,6,9,10,11], 'Saturn':[3,5,6,12], 'Lagna':[1,2,4,5,6,7,9,10,11]},
+  'Venus': {'Sun':[8,11,12], 'Moon':[1,2,3,4,5,8,9,11,12], 'Mars':[3,5,6,9,11,12], 'Mercury':[3,5,6,9,11], 'Jupiter':[5,8,9,10,11], 'Venus':[1,2,3,4,5,8,9,10,11], 'Saturn':[3,4,5,8,9,10,11], 'Lagna':[1,2,3,4,5,8,9,11]},
+  'Saturn': {'Sun':[1,2,4,7,8,10,11], 'Moon':[3,6,11], 'Mars':[3,5,6,10,11,12], 'Mercury':[6,8,9,10,11,12], 'Jupiter':[5,6,11,12], 'Venus':[6,11,12], 'Saturn':[3,5,6,11], 'Lagna':[1,3,4,6,10,11]},
+};
+
+// ================= KP sub-lord =================
+function kpSub(cuspLon){
+  const nakIdx = Math.floor(cuspLon/13.3333333);
+  const nakStart = nakIdx*13.3333333;
+  const lord = VIM_ORDER[nakIdx%9];
+  const order = VIM_ORDER.slice(VIM_ORDER.indexOf(lord)).concat(VIM_ORDER.slice(0,VIM_ORDER.indexOf(lord)));
+  let pos = nakStart, sub = null, subStart = null, subEnd = null;
+  for(const l of order){
+    const span = 13.3333333*VIM_YEARS[l]/120;
+    if(pos<=cuspLon && cuspLon<pos+span){ sub=l; subStart=pos; subEnd=pos+span; break; }
+    pos += span;
+  }
+  const order2 = VIM_ORDER.slice(VIM_ORDER.indexOf(sub)).concat(VIM_ORDER.slice(0,VIM_ORDER.indexOf(sub)));
+  pos = subStart; let ssl = null;
+  for(const l of order2){
+    const span = (subEnd-subStart)*VIM_YEARS[l]/120;
+    if(pos<=cuspLon && cuspLon<pos+span){ ssl=l; break; }
+    pos += span;
+  }
+  return [lord,sub,ssl];
+}
+// ================= generic dasha =================
+function calcDasha(order, years, cycle, startLord, startDate, count){
+  const n = order.length; const idx = order.indexOf(startLord);
+  let mdStart = new Date(startDate); const mds = [];
+  for(let m=0;m<count;m++){
+    const lord = order[(idx+m)%n];
+    const mdDays = years[lord]*DPY; const mdEnd = addDays(mdStart, mdDays);
+    const ads = []; let adStart = new Date(mdStart); const mdPos = order.indexOf(lord);
+    for(let i=0;i<n;i++){
+      const adLord = order[(mdPos+i)%n];
+      const adDays = (mdDays/cycle)*years[adLord]; const adEnd = addDays(adStart, adDays);
+      const pds = []; let pdStart = new Date(adStart); const adPos = order.indexOf(adLord);
+      for(let j=0;j<n;j++){
+        const pdLord = order[(adPos+j)%n];
+        const pdDays = (adDays/cycle)*years[pdLord]; const pdEnd = addDays(pdStart, pdDays);
+        pds.push({lord:pdLord,start:new Date(pdStart),end:pdEnd}); pdStart = pdEnd;
+      }
+      ads.push({lord:adLord,start:new Date(adStart),end:adEnd,pds}); adStart = adEnd;
+    }
+    mds.push({lord,start:new Date(mdStart),end:mdEnd,ads}); mdStart = mdEnd;
+  }
+  return mds;
+}
+// ================= Chara dasha (dasha-merged v6.1 logic, verified - KN Rao) =================
+function buildChara(birth, lagna, pSign, pDeg, nodes){
+  const KN_LORD = [2,5,3,1,0,3,5,2,4,6,6,4];
+  const CHARA_BWD = [3,4,5,9,10,11];
+  function countToLord(rashi, lordRashi){
+    if(lordRashi===rashi) return 12;
+    let c;
+    if(CHARA_BWD.includes(rashi)) c = (rashi-lordRashi+12)%12;
+    else c = (lordRashi-rashi+12)%12;
+    return c!==0 ? c : 12;
+  }
+  function dualYears(rashi){
+    const co = rashi===7 ? 'ketu' : 'rahu';
+    const primIdx = KN_LORD[rashi];
+    const primSign = pSign[P7[primIdx]];
+    const coSign = nodes[co];
+    if(primSign===rashi && coSign===rashi) return 12;
+    if(primSign===rashi) return countToLord(rashi, coSign);
+    if(coSign===rashi) return countToLord(rashi, primSign);
+    const allSigns = [...Object.values(pSign), nodes.rahu, nodes.ketu];
+    const conj = s => allSigns.filter(x=>x===s).length - 1;
+    const primDeg = primIdx===2 ? pDeg.mars : pDeg.saturn;
+    const coDeg = pDeg[co];
+    const typer = s => [2,5,8,11].includes(s)?3:([1,4,7,10].includes(s)?2:1);
+    let usePrim;
+    if(conj(primSign)!==conj(coSign)) usePrim = conj(primSign)>conj(coSign);
+    else if(Math.abs(primDeg-coDeg)>1e-9) usePrim = primDeg>coDeg;
+    else if(typer(primSign)!==typer(coSign)) usePrim = typer(primSign)>typer(coSign);
+    else usePrim = true;
+    return countToLord(rashi, usePrim?primSign:coSign);
+  }
+  function rashiYears(rashi){
+    if(rashi===7||rashi===10) return dualYears(rashi);
+    return countToLord(rashi, pSign[P7[KN_LORD[rashi]]]);
+  }
+  const mdForward = [0,4,5,6,10,11].includes(lagna);
+  function baseSeq(base, fwd){
+    const a = [];
+    for(let i=1;i<=12;i++) a.push(fwd ? (base+i)%12 : (((base-i)%12)+12)%12);
+    return a;
+  }
+  const chara = []; let cur = new Date(birth); let r = lagna;
+  for(let m=0;m<16;m++){
+    const yrs = rashiYears(r); const mdDays = yrs*DPY; const mdEnd = addDays(cur, mdDays);
+    const adFwd = [0,4,5,6,10,11].includes(r);
+    const adSeq = baseSeq(r, adFwd);
+    const ads = []; let adStart = new Date(cur);
+    for(const adR of adSeq){
+      const adDays = mdDays/12; const adEnd = addDays(adStart, adDays);
+      const pdFwd = [0,4,5,6,10,11].includes(adR);
+      const pdSeq = baseSeq(adR, pdFwd);
+      const pds = []; let pdStart = new Date(adStart);
+      for(const pdR of pdSeq){
+        const pdDays = adDays/12; const pdEnd = addDays(pdStart, pdDays);
+        pds.push({rashi:pdR,start:new Date(pdStart),end:pdEnd}); pdStart = pdEnd;
+      }
+      ads.push({rashi:adR,start:new Date(adStart),end:adEnd,pds}); adStart = adEnd;
+    }
+    chara.push({rashi:r,years:yrs,start:new Date(cur),end:mdEnd,ads});
+    cur = mdEnd; r = mdForward ? (r+1)%12 : (((r-1)%12)+12)%12;
+  }
+  return chara;
+}
+// ================= sunrise / sunset (stage2/3 sun_event) =================
+function sunEvent(jdNoon, isRise, lat, lon, tzH){
+  const n = jdNoon-2451545.0+0.0008;
+  const Js = n-lon/360;
+  const M = (357.5291+0.98560028*Js)%360;
+  const C = 1.9148*Math.sin(rad(M))+0.0200*Math.sin(rad(2*M))+0.0003*Math.sin(rad(3*M));
+  const L = (M+C+180+102.9372)%360;
+  const Jt = 2451545.0+Js+0.0053*Math.sin(rad(M))-0.0069*Math.sin(rad(2*L));
+  const D = deg(Math.asin(Math.sin(rad(L))*Math.sin(rad(23.44))));
+  const cosH = (Math.sin(rad(-0.83))-Math.sin(rad(lat))*Math.sin(rad(D)))/(Math.cos(rad(lat))*Math.cos(rad(D)));
+  const H = deg(Math.acos(Math.max(-1,Math.min(1,cosH))));
+  const Je = Jt + (isRise ? -H/360 : H/360);
+  const utcH = ((((Je+0.5)%1)+1)%1)*24;
+  return (utcH+tzH)%24;
+}
+// ================= aspects =================
+function aspectOffsets(p){
+  if(p==='Mars') return [3,6,7];
+  if(p==='Jupiter') return [4,6,8];
+  if(p==='Saturn') return [2,6,9];
+  if(p==='Rahu'||p==='Ketu') return [4,6,8];
+  return [6];
+}
+function aspectingPlanets(pl, sign){
+  return Object.keys(pl).filter(p => aspectOffsets(p).some(o => (pl[p].sign+o)%12===sign));
+}
+// ================= Shadbala - STANDARD TEXTBOOK method (verify) =================
+const UCHCHA = {'Sun':0,'Moon':1,'Mars':9,'Mercury':5,'Jupiter':3,'Venus':11,'Saturn':6};
+const MOOL = {'Sun':4,'Moon':1,'Mars':0,'Mercury':5,'Jupiter':8,'Venus':6,'Saturn':10};
+const SWA = {'Sun':[4],'Moon':[3],'Mars':[0,7],'Mercury':[2,5],'Jupiter':[8,11],'Venus':[1,6],'Saturn':[9,10]};
+const FRIEND = {'Sun':['Moon','Mars','Jupiter'],'Moon':['Sun','Mercury'],'Mars':['Sun','Moon','Jupiter'],
+  'Mercury':['Sun','Venus'],'Jupiter':['Sun','Moon','Mars'],'Venus':['Mercury','Saturn'],'Saturn':['Mercury','Venus']};
+const ENEMY = {'Sun':['Venus','Saturn'],'Moon':[],'Mars':['Mercury'],'Mercury':['Moon'],'Jupiter':['Mercury','Venus'],'Venus':['Sun','Moon'],'Saturn':['Sun','Moon','Mars']};
+const NEECHA = {'Sun':190.0,'Moon':213.0,'Mars':118.0,'Mercury':345.0,'Jupiter':275.0,'Venus':177.0,'Saturn':20.0};
+const NAIS = {'Sun':60.0,'Moon':51.43,'Venus':42.85,'Jupiter':34.28,'Mercury':25.71,'Mars':17.14,'Saturn':8.57};
+const DIGV = {'Uchcha':20,'Moolatrikona':18,'Swakshetra':15,'Mitra':10,'Sama':7.5,'Shatru':5,'Neecha':2};
+function dignityOf(p, sign){
+  if(sign===UCHCHA[p]) return 'Uchcha';
+  if(sign===MOOL[p]) return 'Moolatrikona';
+  if(SWA[p].includes(sign)) return 'Swakshetra';
+  const l = SIGN_LORD[sign];
+  if(FRIEND[p].includes(l)) return 'Mitra';
+  if(ENEMY[p].includes(l)) return 'Shatru';
+  return 'Sama';
+}
+function vargaSigns(lon){
+  const s = Math.floor(lon/30), d = lon%30;
+  const d2s = ((s%2===0 && d<15)||(s%2===1 && d>=15)) ? 4 : 3;
+  const d3s = (s+[0,4,8][Math.floor(d/10)])%12;
+  const pada7 = Math.floor(d/(30/7));
+  const d7s = s%2===0 ? (s+pada7)%12 : (s+6+pada7)%12;
+  const d9s = (s+[0,8,4][s%3]+Math.floor(d/3.3333333))%12; // TEXTBOOK D9 (v1.6 fix): chara same, sthira +8, dwisvabhava +4
+  const pada12 = Math.floor(d/2.5);
+  const d12s = s%2===0 ? (s+pada12)%12 : (s+6+pada12)%12;
+  let d30s = null;
+  const b = s%2===0 ? [[0,5,0],[5,10,10],[10,18,8],[18,25,2],[25,30,6]] : [[0,12,5],[12,20,11],[20,25,7],[25,30,8]];
+  for(const [a,bb,sg] of b){ if(a<=d && d<bb){ d30s=sg; break; } }
+  return {'D1':s,'D2':d2s,'D3':d3s,'D7':d7s,'D9':d9s,'D12':d12s,'D30':d30s};
+}
+function calcShadbala(pl, lagna, sunLon, moonLon, sr, ss, ssPrev, birthHour, birthDate){
+  const elong = (moonLon-sunLon+360)%360;
+  const isShukla = elong<180;
+  const isDay = sr <= birthHour && birthHour <= ss;
+  const nightHrs = (24-ssPrev)+sr;
+  const birthGhati = 30+(((24-ssPrev)+birthHour)/nightHrs)*30;
+  const horaSeq = ['Moon','Saturn','Jupiter','Mars','Sun','Venus','Mercury'];
+  const horaLord = horaSeq[Math.floor((24-sr)+birthHour)%7];
+  const weekday = birthDate.getUTCDay(); // 0 Sun
+  const vaaraLord = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'][weekday];
+  const uchchaBala = (p,lon) => {
+    let diff = Math.abs(NEECHA[p]-lon);
+    if(diff>180) diff = Math.abs(360-diff);
+    return diff/3.0;
+  };
+  const pakshaBala = p => {
+    const ben = ['Moon','Mercury','Jupiter','Venus'].includes(p);
+    if((isShukla && ben)||(!isShukla && !ben)) return 60*(isShukla ? elong/180 : (360-elong)/180);
+    return 60*(isShukla ? (180-elong)/180 : (elong-180)/180);
+  };
+  const ayanaBala = p => {
+    const uttara = (sunLon>=270 || sunLon<90);
+    if(p==='Mercury') return 45;
+    return ((['Sun','Mars','Jupiter','Venus'].includes(p))===uttara) ? 60 : 0;
+  };
+  const drikBala = p => {
+    const sign = pl[p].sign;
+    const asp = aspectingPlanets(pl, sign).filter(a=>a!==p);
+    const ben = asp.filter(a=>['Moon','Mercury','Jupiter','Venus'].includes(a)).length;
+    const mal = asp.filter(a=>['Sun','Mars','Saturn','Rahu','Ketu'].includes(a)).length;
+    return [Math.max(0,Math.min(60,30+(ben-mal)*15/4)), ben, mal];
+  };
+  const sb = {};
+  for(const p of P7){
+    const lon = pl[p].lon, sign = pl[p].sign, bhava = pl[p].house;
+    const vs = vargaSigns(lon);
+    const digs = ['D1','D2','D3','D7','D9','D12','D30'].map(k=>dignityOf(p, vs[k]));
+    const sthana = uchchaBala(p,lon) + digs.reduce((a,x)=>a+DIGV[x],0)/7
+      + (((sign%2===0 && ['Sun','Mars','Jupiter','Mercury','Venus'].includes(p))||(sign%2===1 && ['Moon','Saturn'].includes(p))) ? 15 : 0)
+      + ([1,4,7,10].includes(bhava) ? 60 : ([2,5,8,11].includes(bhava) ? 30 : 15))
+      + ((Math.floor((lon%30)/10)===0 && ['Sun','Mars','Jupiter'].includes(p))||(Math.floor((lon%30)/10)===1 && ['Moon','Venus'].includes(p))||(Math.floor((lon%30)/10)===2 && ['Mercury','Saturn'].includes(p)) ? 15 : 0);
+    const strong = {'Sun':10,'Mars':10,'Moon':4,'Venus':4,'Mercury':1,'Jupiter':1,'Saturn':7}[p];
+    const dist = Math.min(Math.abs(bhava-strong), 12-Math.abs(bhava-strong));
+    const dig = 60*(1-(dist*30)/180);
+    let nat;
+    if(isDay) nat = p==='Sun'?60:((p==='Jupiter'||p==='Venus')?30:15);
+    else nat = p==='Moon'?60:((p==='Jupiter'||p==='Venus')?30:15);
+    const pak = pakshaBala(p);
+    const third = Math.floor((birthGhati%30)/10);
+    let trib = 0;
+    if(isDay) trib = ((third===0&&p==='Sun')||(third===1&&p==='Venus')||(third===2&&p==='Mars'))?60:0;
+    else trib = ((third===0&&p==='Moon')||(third===1&&p==='Saturn')||(third===2&&p==='Mercury'))?60:0;
+    const abda = p==='Mars'?15:0;
+    const maasa = p==='Saturn'?30:0;
+    const vaara = p===vaaraLord?45:0;
+    const hora = p===horaLord?60:0;
+    const aya = ayanaBala(p);
+    const kala = nat+pak+trib+abda+maasa+vaara+hora+aya;
+    let ches;
+    if(p==='Sun') ches = aya;
+    else if(p==='Moon') ches = pak;
+    else { let k = Math.abs(sunLon-lon)%360; if(k>180) k = 360-k; ches = k/3; }
+    const [dr,ben,mal] = drikBala(p);
+    const total = sthana+dig+kala+ches+NAIS[p]+dr;
+    sb[p] = {sthana,dig,kala,cheshta:ches,naisargika:NAIS[p],drik:dr,total,rupas:total/60,
+      varga:vs,dignities:digs,
+      kalaParts:{natonnata:nat,paksha:pak,tribhaga:trib,abda,maasa,vaara,hora,ayana:aya},
+      drikAspects:{ben,mal}};
+  }
+  return {shadbala:sb, sunrise:sr, sunset:ss, isDay, birthGhati, horaLord, vaaraLord, elong, isShukla};
+}
+// ================= Bhava Bala - STANDARD TEXTBOOK method (verify) =================
+// Bhava Bala = Adhipati Bala (Shadbala of bhava lord) + Dig Bala (fixed table) + Drig Bala
+// Drig Bala here = (benefic aspecting - malefic aspecting) x 15, sign-based aspects.
+function calcBhavaBala(pl, lagna, sb){
+  const out = [];
+  for(let h=1;h<=12;h++){
+    const sign = (lagna+h-1)%12;
+    const lord = SIGN_LORD[sign];
+    const adhipati = sb[lord].total;
+    const dig = DIGBALA_BHAVA[h-1];
+    const asp = aspectingPlanets(pl, sign);
+    const ben = asp.filter(a=>['Moon','Mercury','Jupiter','Venus'].includes(a)).length;
+    const mal = asp.filter(a=>['Sun','Mars','Saturn','Rahu','Ketu'].includes(a)).length;
+    const drig = (ben-mal)*15;
+    out.push({bhava:h, sign, lord, adhipati, dig, drig, total:adhipati+dig+drig, rupas:(adhipati+dig+drig)/60});
+  }
+  return out;
+}
+
+// ================= Jaimini drishti (standard: chara->sthira, sthira->chara, dual->dual) =================
+function jaiminiAspects(sign){
+  const t = sign%3;
+  if(t===0) return [1,4,7,10];
+  if(t===1) return [0,3,6,9];
+  return [2,5,8,11].filter(s=>s!==sign);
+}
+function argala(pl, sign){
+  const arg = [], vir = [];
+  for(const p of Object.keys(pl)){
+    const h = mod12(pl[p].sign-sign)+1;
+    if([2,4,11].includes(h)) arg.push(p);
+    else if([12,10,3].includes(h)) vir.push(p);
+  }
+  return [arg,vir];
+}
+// ================= main compute =================
+async function computeAll(code, gender, marriage, setStatus){
+  const ad = parseCode(code);
+  if(!ad) throw new Error('गलत Astro Code - प्रारूप: AS1-YYYYMMDD-HHMMSS-±HHMM-DDMMN/S-DDDMME/W');
+  if(!marriage || !marriage.m || !marriage.y) throw new Error('विवाह का महीना-साल डालना जरूरी है - कृपया विवाह का महीना और साल चुनें।');
+  const marriageLabel = fmtYM(marriage.y, marriage.m);
+  const earliest = new Date(Date.UTC(marriage.y, marriage.m-1+9, 1));
+  // v1.3: horizon विवाह + 9 महीने से शुरू (fixed Nov 2026 हटाया) - 7 साल
+  const HSTART = new Date(earliest);
+  const HEND = new Date(Date.UTC(earliest.getUTCFullYear()+7, earliest.getUTCMonth(), 1));
+  setStatus('Ephemeris लोड हो रहा है...');
+  await loadEphem();
+  const utcMs = Date.UTC(ad.y, ad.mo-1, ad.d, ad.hh, ad.mi, ad.ss) - ad.tzH*3600000;
+  const ud = new Date(utcMs);
+  const jd = swe.julianDay(ud.getUTCFullYear(), ud.getUTCMonth()+1, ud.getUTCDate(), ud.getUTCHours()+ud.getUTCMinutes()/60+ud.getUTCSeconds()/3600);
+  const ayan = swe.getAyanamsa(jd);
+  const calcLon = body => norm360(swe.calculatePosition(jd, body, 0).longitude - ayan);
+  const bodyMap = {Sun:SEP.Sun,Moon:SEP.Moon,Mars:SEP.Mars,Mercury:SEP.Mercury,Jupiter:SEP.Jupiter,Venus:SEP.Venus,Saturn:SEP.Saturn};
+  const pl = {};
+  for(const p of P7){
+    const lon = calcLon(bodyMap[p]);
+    pl[p] = {lon, sign:Math.floor(lon/30), deg:lon%30};
+  }
+  const rahuLon = calcLon(10);
+  const ketuLon = (rahuLon+180)%360;
+  pl['Rahu'] = {lon:rahuLon, sign:Math.floor(rahuLon/30), deg:rahuLon%30};
+  pl['Ketu'] = {lon:ketuLon, sign:Math.floor(ketuLon/30), deg:ketuLon%30};
+  const hs = swe.calculateHouses(jd, ad.lat, ad.lon, 'P');
+  const ascLon = norm360(hs.ascendant - ayan);
+  const lagna = Math.floor(ascLon/30);
+  // Placidus cusps (sidereal) for KP; whole-sign cusps for the rest (stage scripts)
+  const placCusp = {};
+  if(hs.cusps){
+    for(let h=1;h<=12;h++){
+      const c = hs.cusps[h];
+      if(typeof c === 'number') placCusp[h] = norm360(c - ayan);
+    }
+  }
+  const cuspWS = h => norm360(ascLon + (h-1)*30);
+  const cuspKP = h => (placCusp[h]!==undefined ? placCusp[h] : cuspWS(h));
+  for(const p of P9){
+    pl[p].house = bhavaOf(pl[p].sign, lagna);
+    pl[p].nak = Math.floor(pl[p].lon/13.3333333);
+    pl[p].nakLord = VIM_ORDER[pl[p].nak%9];
+  }
+  // TEXTBOOK D9 (v1.6 fix): chara same sign, sthira 9th from, dwisvabhava 5th from, then + pada
+  const navamsha = lon => { const s = Math.floor(lon/30); return (s+[0,8,4][s%3]+Math.floor((lon%30)/3.3333333))%12; };
+  const d9 = {}; for(const p of P9) d9[p] = navamsha(pl[p].lon);
+  const d9Lagna = navamsha(ascLon);
+  // D60 - VERIFIED (Haripal.pdf p.16, 9/9): sign=(natal_sign+pada)%12, degree=(deg-pada*0.5)*60
+  const d60of = lon => {
+    const s = Math.floor(lon/30), d = lon%30, pada = Math.floor(d/0.5);
+    return {sign:(s+pada)%12, deg:(d-pada*0.5)*60};
+  };
+  const d60 = {}; for(const p of P9) d60[p] = d60of(pl[p].lon);
+  const d60Lagna = d60of(ascLon);
+  // D7 Saptamsha - VERIFIED (Haripal/Sanjivani/Sakshi/Ashika PDFs, 10/10 signs each)
+  const d7of = lon => {
+    const s = Math.floor(lon/30), d = lon%30, pada = Math.floor(d/(30/7));
+    return {sign: s%2===0 ? (s+pada)%12 : (s+6+pada)%12, deg:(d-pada*30/7)*7};
+  };
+  const d7 = {}; for(const p of P9) d7[p] = d7of(pl[p].lon);
+  const d7Lagna = d7of(ascLon);
+  const moonLon = pl['Moon'].lon, sunLon = pl['Sun'].lon;
+  const nakIdx = Math.floor(moonLon/13.3333333);
+  const elapsed = (moonLon - nakIdx*13.3333333)/13.3333333;
+  const remFrac = 1-elapsed;
+  const birth = new Date(Date.UTC(ad.y, ad.mo-1, ad.d, ad.hh, ad.mi, ad.ss));
+  const birthHour = ad.hh + ad.mi/60 + ad.ss/3600;
+  // ---- dashas ----
+  const startLord = VIM_ORDER[nakIdx%9];
+  const vimStart = addDays(birth, -((1-remFrac)*VIM_YEARS[startLord]*DPY));
+  const vim = calcDasha(VIM_ORDER, VIM_YEARS, 120, startLord, vimStart, 12);
+  const yogStartLord = YOG_ORDER[(nakIdx+3)%8];
+  const yogStart = addDays(birth, -((1-remFrac)*YOG_YEARS[yogStartLord]*DPY));
+  const yog = calcDasha(YOG_ORDER, YOG_YEARS, 36, yogStartLord, yogStart, 14);
+  const triYears = {}; for(const k of Object.keys(VIM_YEARS)) triYears[k] = VIM_YEARS[k]/3;
+  const triStart = addDays(birth, -((1-remFrac)*triYears[startLord]*DPY));
+  const tri = calcDasha(VIM_ORDER, triYears, 40, startLord, triStart, 14);
+  // Chara (verified - KN Rao, dasha v6.1 logic)
+  const pSign = {}, pDeg = {};
+  for(const p of P7){ pSign[p] = pl[p].sign; pDeg[p.toLowerCase()] = pl[p].deg; }
+  pDeg.rahu = pl['Rahu'].deg; pDeg.ketu = pl['Ketu'].deg;
+  const nodes = {rahu:pl['Rahu'].sign, ketu:pl['Ketu'].sign};
+  const chara = buildChara(birth, lagna, pSign, pDeg, nodes);
+  // ---- sun / tithi / paksha ----
+  const jdNoon = swe.julianDay(ad.y, ad.mo, ad.d, 12.0);
+  const jdNoonPrev = swe.julianDay(ad.y, ad.mo, ad.d-1, 12.0);
+  const sr = sunEvent(jdNoon, true, ad.lat, ad.lon, ad.tzH);
+  const ss = sunEvent(jdNoon, false, ad.lat, ad.lon, ad.tzH);
+  const ssPrev = sunEvent(jdNoonPrev, false, ad.lat, ad.lon, ad.tzH);
+  const elong = (moonLon-sunLon+360)%360;
+  const isShukla = elong<180;
+  const tithi = Math.floor(elong/12)+1;
+  const isDay = sr <= birthHour && birthHour <= ss;
+  // ---- Shadbala / Bhava Bala (textbook, verify) ----
+  const sbRes = calcShadbala(pl, lagna, sunLon, moonLon, sr, ss, ssPrev, birthHour, birth);
+  const bhavaBala = calcBhavaBala(pl, lagna, sbRes.shadbala);
+  // ---- BAV / SAV ----
+  const pos7 = {}; for(const p of P7) pos7[p] = pl[p].sign; pos7['Lagna'] = lagna;
+  const calcBav = planet => {
+    const arr = new Array(12).fill(0);
+    for(let r=0;r<12;r++) for(const ref of [...P7,'Lagna']){
+      const h = mod12(r-pos7[ref])+1;
+      if(BAV_TABLE[planet][ref].includes(h)) arr[r]++;
+    }
+    return arr;
+  };
+  const bav = {}; for(const p of P7) bav[p] = calcBav(p);
+  const sav = []; for(let s=0;s<12;s++) sav.push(P7.reduce((a,p)=>a+bav[p][s],0));
+  const savBhava = []; for(let i=0;i<12;i++) savBhava.push(sav[(lagna+i)%12]);
+  const bavBhava = p => { const a=[]; for(let i=0;i<12;i++) a.push(bav[p][(lagna+i)%12]); return a; };
+  // ---- KP ----
+  const housesOwned = planet => { const a=[]; for(let s=0;s<12;s++) if(SIGN_LORD[s]===planet) a.push(bhavaOf(s,lagna)); return a; };
+  const kpSig = {};
+  for(const p of P9){
+    const [nl,sl,ssl] = kpSub(pl[p].lon);
+    const hs2 = new Set([pl[p].house, ...housesOwned(nl), ...housesOwned(sl)]);
+    kpSig[p] = {occ:pl[p].house, nl, sl, ssl, houses:[...hs2].sort((a,b)=>a-b)};
+  }
+  const kpQual = p => {
+    const hs2 = kpSig[p].houses;
+    return {pos:hs2.filter(h=>[2,5,11].includes(h)), neg:hs2.filter(h=>[1,4,10].includes(h))};
+  };
+  const order7 = [...P7].sort((a,b)=>pl[b].deg-pl[a].deg);
+  const karakaNames = ['AK','AmK','BK','MK','PK','GK','DK'];
+  const karakas = {}; order7.forEach((p,i)=>karakas[karakaNames[i]]=p);
+  const arudha = hs2 => {
+    const lord = SIGN_LORD[hs2];
+    const lordSign = pl[lord].sign;
+    const steps = mod12(lordSign-hs2)+1;
+    let res = (lordSign+steps-1)%12;
+    if(res===hs2 || res===(hs2+6)%12) res = (res+9)%12;
+    return res;
+  };
+  const AL = arudha(lagna), UL = arudha((lagna+11)%12), A7 = arudha((lagna+6)%12);
+  const karakansh = d9[karakas['AK']];
+  const s5 = (lagna+4)%12, s2 = (lagna+1)%12, s11 = (lagna+10)%12, s7c = (lagna+6)%12, s9c = (lagna+8)%12;
+  const panchamesh = SIGN_LORD[s5], dwitiyesh = SIGN_LORD[s2], ekadashesh = SIGN_LORD[s11], saptamesh7 = SIGN_LORD[s7c], navamesh = SIGN_LORD[s9c], lagnesh = SIGN_LORD[lagna];
+  const d9s5 = (d9Lagna+4)%12, d9s7 = (d9Lagna+6)%12, d9s9 = (d9Lagna+8)%12;
+  const d9Panchamesh = SIGN_LORD[d9s5], d9Lagnesh = SIGN_LORD[d9Lagna];
+  const d7s5 = (d7Lagna.sign+4)%12, d7s7 = (d7Lagna.sign+6)%12, d7s9 = (d7Lagna.sign+8)%12;
+  const d7Panchamesh = SIGN_LORD[d7s5], d7Lagnesh = SIGN_LORD[d7Lagna.sign];
+  // ---- P18 groups ----
+  const nakLordOf = lon => VIM_ORDER[Math.floor(lon/13.3333333)%9];
+  const [c5nl,c5sl,c5ssl] = kpSub(cuspKP(5));
+  const cslPlanet = c5sl;
+  const [cslNl,cslSl,cslSsl] = kpSub(pl[cslPlanet].lon);
+  const groups = {
+    A:{'पंचमेश':[panchamesh],'5वें भाव का नक्षत्र स्वामी':[nakLordOf(cuspWS(5))],
+      '5वें भाव में बैठे ग्रह':Object.keys(pl).filter(p=>pl[p].sign===s5),
+      '5वें भाव पर दृष्टि':aspectingPlanets(pl,s5),
+      'पंचमेश की राशि का स्वामी':[SIGN_LORD[pl[panchamesh].sign]],
+      'पंचमेश के नक्षत्र का स्वामी':[nakLordOf(pl[panchamesh].lon)],
+      'पंचमेश से युति':Object.keys(pl).filter(p=>p!==panchamesh && pl[p].sign===pl[panchamesh].sign),
+      'पंचमेश पर दृष्टि':aspectingPlanets(pl,pl[panchamesh].sign),
+      '5th CSL':[cslPlanet],'5th CSL NL':[cslNl],'5th CSL SL':[cslSl],'5th CSL SSL':[cslSsl]},
+    B:{'द्वितीयेश':[dwitiyesh],'2रे भाव में बैठे ग्रह':Object.keys(pl).filter(p=>pl[p].sign===s2),
+      '2रे भाव का नक्षत्र स्वामी':[nakLordOf(cuspWS(2))],
+      'द्वितीयेश की राशि का स्वामी':[SIGN_LORD[pl[dwitiyesh].sign]],
+      'द्वितीयेश से युति':Object.keys(pl).filter(p=>p!==dwitiyesh && pl[p].sign===pl[dwitiyesh].sign),
+      '2रे भाव का सिग्निफिकेटर':['Jupiter']},
+    C:{'एकादशेश':[ekadashesh],'11वें भाव में बैठे ग्रह':Object.keys(pl).filter(p=>pl[p].sign===s11),
+      '11वें भाव का नक्षत्र स्वामी':[nakLordOf(cuspWS(11))],
+      'एकादशेश की राशि का स्वामी':[SIGN_LORD[pl[ekadashesh].sign]],
+      'एकादशेश से युति':Object.keys(pl).filter(p=>p!==ekadashesh && pl[p].sign===pl[ekadashesh].sign),
+      '11वें भाव का सिग्निफिकेटर':['Jupiter']},
+    D:{'लग्नेश':[lagnesh],'लग्न में बैठे ग्रह':Object.keys(pl).filter(p=>pl[p].sign===lagna),
+      'लग्न का नक्षत्र स्वामी':[nakLordOf(ascLon)],
+      'लग्नेश की राशि का स्वामी':[SIGN_LORD[pl[lagnesh].sign]],
+      'लग्नेश से युति':Object.keys(pl).filter(p=>p!==lagnesh && pl[p].sign===pl[lagnesh].sign)},
+    E:{'गुरु की राशि का स्वामी':[SIGN_LORD[pl['Jupiter'].sign]],
+      'गुरु के नक्षत्र का स्वामी':[nakLordOf(pl['Jupiter'].lon)],
+      'शुक्र की राशि का स्वामी':[SIGN_LORD[pl['Venus'].sign]],
+      'शुक्र के नक्षत्र का स्वामी':[nakLordOf(pl['Venus'].lon)],
+      'शुक्र से सप्तम का स्वामी':[SIGN_LORD[(pl['Venus'].sign+6)%12]],
+      'चंद्र से सप्तम का स्वामी':[SIGN_LORD[(pl['Moon'].sign+6)%12]],
+      '7वें भाव का स्वामी':[SIGN_LORD[s7c]],
+      '7वें भाव में बैठे ग्रह':Object.keys(pl).filter(p=>pl[p].sign===s7c),
+      '7वें भाव पर दृष्टि':aspectingPlanets(pl,s7c),
+      '9वें भाव का स्वामी':[SIGN_LORD[s9c]],
+      '9वें भाव में बैठे ग्रह':Object.keys(pl).filter(p=>pl[p].sign===s9c),
+      '9वें भाव पर दृष्टि':aspectingPlanets(pl,s9c)},
+    F:{'D9 पंचमेश':[d9Panchamesh],
+      'D9 5वें भाव में बैठे ग्रह':Object.keys(d9).filter(p=>d9[p]===d9s5),
+      'D9 5वें भाव पर दृष्टि':[],
+      'D9 पंचमेश की राशि का स्वामी':[SIGN_LORD[d9[d9Panchamesh]]],
+      'D9 पंचमेश से युति':Object.keys(d9).filter(p=>p!==d9Panchamesh && d9[p]===d9[d9Panchamesh]),
+      'D9 लग्नेश':[d9Lagnesh],
+      'D9 लग्नेश की राशि का स्वामी':[SIGN_LORD[d9[d9Lagnesh]]],
+      'D9 लग्न में बैठे ग्रह':Object.keys(d9).filter(p=>d9[p]===d9Lagna),
+      'D9 2रे + 11वें भाव का स्वामी':[SIGN_LORD[(d9Lagna+1)%12],SIGN_LORD[(d9Lagna+10)%12]]},
+    G:{'D7 पंचमेश':[d7Panchamesh],
+      'D7 5वें भाव में बैठे ग्रह':Object.keys(d7).filter(p=>d7[p].sign===d7s5),
+      'D7 5वें भाव पर दृष्टि':[],
+      'D7 पंचमेश की राशि का स्वामी':[SIGN_LORD[d7[d7Panchamesh].sign]],
+      'D7 पंचमेश से युति':Object.keys(d7).filter(p=>p!==d7Panchamesh && d7[p].sign===d7[d7Panchamesh].sign),
+      'D7 लग्नेश':[d7Lagnesh],
+      'D7 लग्नेश की राशि का स्वामी':[SIGN_LORD[d7[d7Lagnesh].sign]],
+      'D7 लग्न में बैठे ग्रह':Object.keys(d7).filter(p=>d7[p].sign===d7Lagna.sign),
+      'D7 2रे + 11वें भाव का स्वामी':[SIGN_LORD[(d7Lagna.sign+1)%12],SIGN_LORD[(d7Lagna.sign+10)%12]]}
+  };
+  // D9/D7 drishti on 5th
+  const aspD9 = p => {
+    const s = d9[p];
+    return new Set(aspectOffsets(p).map(o=>(s+o)%12));
+  };
+  const aspD7 = p => {
+    const s = d7[p].sign;
+    return new Set(aspectOffsets(p).map(o=>(s+o)%12));
+  };
+  groups.F['D9 5वें भाव पर दृष्टि'] = Object.keys(d9).filter(p=>aspD9(p).has(d9s5));
+  groups.G['D7 5वें भाव पर दृष्टि'] = Object.keys(d7).filter(p=>aspD7(p).has(d7s5));
+  const uniqOf = g => { const out=[]; for(const v of Object.values(g)) for(const p of v) if(p && !out.includes(p)) out.push(p); return out; };
+  const groupsUnique = {}; for(const k of Object.keys(groups)) groupsUnique[k] = uniqOf(groups[k]);
+  const AB = [...new Set([...uniqOf(groups.A), ...uniqOf(groups.B)])];
+  // ---- P19 role list + ranking ----
+  const roleText = {
+    'A':{'पंचमेश':'पंचमेश','5वें भाव का नक्षत्र स्वामी':`5वें भाव का नक्षत्र स्वामी (${NAK[Math.floor(cuspWS(5)/13.3333333)]})`,'5वें भाव में बैठे ग्रह':'5वें भाव में बैठा','5वें भाव पर दृष्टि':'5वें भाव पर दृष्टि','पंचमेश की राशि का स्वामी':'पंचमेश की राशि का स्वामी','पंचमेश के नक्षत्र का स्वामी':`पंचमेश के नक्षत्र का स्वामी (${NAK[pl[panchamesh].nak]})`,'पंचमेश से युति':'पंचमेश से युति','पंचमेश पर दृष्टि':'पंचमेश पर दृष्टि','5th CSL':'5वें भाव का CSL','5th CSL NL':'5वें भाव के CSL का नक्षत्र स्वामी','5th CSL SL':'5वें भाव के CSL का उप-स्वामी','5th CSL SSL':'5वें भाव के CSL का उप-उप-स्वामी'},
+    'B':{'द्वितीयेश':'द्वितीयेश','2रे भाव में बैठे ग्रह':'2रे भाव में बैठा','2रे भाव का नक्षत्र स्वामी':`2रे भाव का नक्षत्र स्वामी (${NAK[Math.floor(cuspWS(2)/13.3333333)]})`,'द्वितीयेश की राशि का स्वामी':'द्वितीयेश की राशि का स्वामी','द्वितीयेश से युति':'द्वितीयेश से युति','2रे भाव का सिग्निफिकेटर':'2रे भाव का सिग्निफिकेटर'},
+    'C':{'एकादशेश':'एकादशेश','11वें भाव में बैठे ग्रह':'11वें भाव में बैठा','11वें भाव का नक्षत्र स्वामी':`11वें भाव का नक्षत्र स्वामी (${NAK[Math.floor(cuspWS(11)/13.3333333)]})`,'एकादशेश की राशि का स्वामी':'एकादशेश की राशि का स्वामी','एकादशेश से युति':'एकादशेश से युति','11वें भाव का सिग्निफिकेटर':'11वें भाव का सिग्निफिकेटर'},
+    'D':{'लग्नेश':'लग्नेश','लग्न में बैठे ग्रह':'लग्न में बैठा','लग्न का नक्षत्र स्वामी':`लग्न का नक्षत्र स्वामी (${NAK[Math.floor(ascLon/13.3333333)]})`,'लग्नेश की राशि का स्वामी':'लग्नेश की राशि का स्वामी','लग्नेश से युति':'लग्नेश से युति'},
+    'E':{'गुरु की राशि का स्वामी':'गुरु की राशि का स्वामी','गुरु के नक्षत्र का स्वामी':'गुरु के नक्षत्र का स्वामी','शुक्र की राशि का स्वामी':'शुक्र की राशि का स्वामी','शुक्र के नक्षत्र का स्वामी':'शुक्र के नक्षत्र का स्वामी','शुक्र से सप्तम का स्वामी':'शुक्र से सप्तम का स्वामी','चंद्र से सप्तम का स्वामी':'चंद्र से सप्तम का स्वामी','7वें भाव का स्वामी':'7वें भाव का स्वामी','7वें भाव में बैठे ग्रह':'7वें भाव में बैठा','7वें भाव पर दृष्टि':'7वें भाव पर दृष्टि','9वें भाव का स्वामी':'9वें भाव का स्वामी','9वें भाव में बैठे ग्रह':'9वें भाव में बैठा','9वें भाव पर दृष्टि':'9वें भाव पर दृष्टि'},
+    'F':{'D9 पंचमेश':'D9 पंचमेश','D9 5वें भाव में बैठे ग्रह':'D9 5वें भाव में बैठा','D9 5वें भाव पर दृष्टि':'D9 5वें भाव पर दृष्टि','D9 पंचमेश की राशि का स्वामी':'D9 पंचमेश की राशि का स्वामी','D9 पंचमेश से युति':'D9 पंचमेश से युति','D9 लग्नेश':'D9 लग्नेश','D9 लग्नेश की राशि का स्वामी':'D9 लग्नेश की राशि का स्वामी','D9 लग्न में बैठे ग्रह':'D9 लग्न में बैठा','D9 2रे + 11वें भाव का स्वामी':'D9 2रे/11वें भाव का स्वामी'},
+    'G':{'D7 पंचमेश':'D7 पंचमेश','D7 5वें भाव में बैठे ग्रह':'D7 5वें भाव में बैठा','D7 5वें भाव पर दृष्टि':'D7 5वें भाव पर दृष्टि','D7 पंचमेश की राशि का स्वामी':'D7 पंचमेश की राशि का स्वामी','D7 पंचमेश से युति':'D7 पंचमेश से युति','D7 लग्नेश':'D7 लग्नेश','D7 लग्नेश की राशि का स्वामी':'D7 लग्नेश की राशि का स्वामी','D7 लग्न में बैठे ग्रह':'D7 लग्न में बैठा','D7 2रे + 11वें भाव का स्वामी':'D7 2रे/11वें भाव का स्वामी'}
+  };
+  const roles = {}; const roleCount = {};
+  for(const p of P9){ roles[p] = []; roleCount[p] = 0; }
+  for(const gk of ['A','B','C','D','E','F','G']){
+    for(const [role,planets] of Object.entries(groups[gk])){
+      for(const p of planets){
+        if(!p) continue;
+        roles[p].push(roleText[gk][role]); roleCount[p]++;
+      }
+    }
+  }
+  roles['Jupiter'].unshift('संतान का नैसर्गिक कारक');
+  const rankA = [];
+  for(const p of ['Jupiter',panchamesh,lagnesh,cslPlanet,d9Panchamesh,d9Lagnesh,d7Panchamesh,d7Lagnesh]) if(!rankA.includes(p)) rankA.push(p);
+  const rest = P9.filter(p=>!rankA.includes(p));
+  const rankB = rest.filter(p=>roleCount[p]>=3).sort((a,b)=>roleCount[b]-roleCount[a]);
+  const rankC = rest.filter(p=>roleCount[p]<3);
+  const ranking = {A:rankA, B:rankB, C:rankC};
+  const roleOrder = [...rankA, ...rankB, ...rankC];
+  // ---- Jaimini rashis ----
+  const A5 = arudha(s5);
+  const A_rashis = {'PK की राशि':pl[karakas['PK']].sign,'PK से 5वीं':(pl[karakas['PK']].sign+4)%12,'UL राशि':UL,'UL से 5वीं':(UL+4)%12,'A5 राशि':A5,'AL से 5वीं':(AL+4)%12,'स्वांश/कारकांश से 5वीं':(karakansh+4)%12};
+  const B_rashis = {'गुरु की राशि':pl['Jupiter'].sign,'AK की राशि':pl[karakas['AK']].sign,'AL राशि':AL,
+    'UL में ग्रह':Object.keys(pl).filter(p=>pl[p].sign===UL),'A5 में ग्रह':Object.keys(pl).filter(p=>pl[p].sign===A5),
+    'UL-5th में ग्रह':Object.keys(pl).filter(p=>pl[p].sign===(UL+4)%12),'A5-5th में ग्रह':Object.keys(pl).filter(p=>pl[p].sign===(A5+4)%12)};
+  const A_set = [...new Set(Object.values(A_rashis))];
+  const B_set = [...new Set([B_rashis['गुरु की राशि'], B_rashis['AK की राशि'], B_rashis['AL राशि'], ...B_rashis['A5-5th में ग्रह'].map(p=>pl[p].sign)])];
+  // ---- dasha tables in horizon ----
+  const adsIn = (mds,start,end) => {
+    const out = [];
+    for(const md of mds){
+      if(md.end<=start || md.start>=end) continue;
+      for(const ad of md.ads){
+        if(ad.end<=start || ad.start>=end) continue;
+        out.push({md,ad});
+      }
+    }
+    return out;
+  };
+  const vimAds = adsIn(vim, HSTART, HEND);
+  const yogAds = adsIn(yog, HSTART, HEND);
+  const triAds = adsIn(tri, HSTART, HEND);
+  const charaAds = [];
+  for(const md of chara){
+    if(md.end<=HSTART || md.start>=HEND) continue;
+    for(const ad of md.ads){
+      if(ad.end<=HSTART || ad.start>=HEND) continue;
+      charaAds.push({md,ad});
+    }
+  }
+  // current Vimshottari MD at horizon start (for windows)
+  const curMD = vim.find(m=>m.start<=HSTART && HSTART<m.end) || vim[0];
+  // ---- windows: Vim AD x strongest overlapping Yogini MD ----
+  const overlap = (a0,a1,b0,b1) => { const s=new Date(Math.max(a0,b0)), e=new Date(Math.min(a1,b1)); return e>s ? [s,e] : null; };
+  const RANKW = {'Jupiter':0,'Venus':0,'Mercury':1,'Moon':1,'Mars':1,'Saturn':1,'Rahu':1,'Sun':2,'Ketu':2};
+  let wins = [];
+  for(const ad of curMD.ads){
+    const a0 = ad.start, a1 = ad.end;
+    if(a1<=HSTART || a0>=HEND) continue;
+    const cands = [];
+    for(const ym of yog){
+      const ov = overlap(a0,a1,ym.start,ym.end);
+      if(ov) cands.push({ym, ov, days:(ov[1]-ov[0])/86400000});
+    }
+    if(!cands.length) continue;
+    const aCands = cands.filter(c=>RANKW[YOG2PL[c.ym.lord]]===0 && c.days>=180);
+    const pool = aCands.length ? aCands : cands;
+    pool.sort((x,y)=>y.days-x.days);
+    const {ym, ov} = pool[0];
+    wins.push({ad:ad.lord, yogMd:ym.lord, yogPl:YOG2PL[ym.lord], start:ov[0], end:ov[1], adStart:a0, adEnd:a1});
+  }
+  wins.sort((a,b)=>a.start-b.start);
+  // v1.1: पहली संतान की खोज विवाह + 9 महीने से शुरू - उससे पहले की windows मान्य नहीं
+  let removedWindows = 0, clippedWindows = 0;
+  const keptWins = [];
+  for(const w of wins){
+    if(w.end<=earliest){ removedWindows++; continue; }
+    if(w.start<earliest){ w.start = new Date(earliest); clippedWindows++; }
+    keptWins.push(w);
+  }
+  wins = keptWins;
+  const sigPlanets = [...new Set([...P9.filter(p=>kpSig[p].houses.includes(2)), ...P9.filter(p=>kpSig[p].houses.includes(5)), ...P9.filter(p=>kpSig[p].houses.includes(11))])];
+  const sigSigns = [...new Set(sigPlanets.map(p=>pl[p].sign))];
+  return {ad, gender, marriage, marriageLabel, earliest, HSTART, HEND, removedWindows, clippedWindows, pl, lagna, ascLon, d9, d9Lagna, d60, d60Lagna, d7, d7Lagna, moonLon, sunLon, nakIdx, remFrac, birth, birthHour,
+    vim, yog, tri, chara, elong, isShukla, tithi, isDay, sr, ss,
+    sbRes, bhavaBala, bav, sav, savBhava, bavBhava, kpSig, kpQual, karakas, AL, UL, A5, karakansh,
+    s5, s2, s11, s7c, s9c, panchamesh, dwitiyesh, ekadashesh, saptamesh7, navamesh, lagnesh,
+    d9s5, d9s7, d9s9, d9Panchamesh, d9Lagnesh, d7s5, d7s7, d7s9, d7Panchamesh, d7Lagnesh,
+    cslPlanet, cslNl, cslSl, cslSsl, c5nl, c5sl, c5ssl, sigPlanets, sigSigns,
+    groups, groupsUnique, AB, roles, roleCount, ranking, roleOrder,
+    A_rashis, B_rashis, A_set, B_set,
+    vimAds, yogAds, triAds, charaAds, curMD, wins, cuspKP, cuspWS, housesOwned};
+}
+
+// ================= transits =================
+async function computeTransits(D, setStatus){
+  const scanEnd = new Date(Math.max(D.HEND.getTime(), ...D.wins.map(w=>w.end.getTime())));
+  const daySign = new Map();
+  const jupEntries = [], satEntries = [], venEntries = [], sunEntries = [];
+  let prevJ = null, prevS = null, prevV = null, prevU = null;
+  let d = new Date(D.HSTART);
+  let n = 0;
+  while(d<=scanEnd){
+    const jd = swe.julianDay(d.getUTCFullYear(), d.getUTCMonth()+1, d.getUTCDate(), 12.0);
+    const ay = swe.getAyanamsa(jd);
+    const js = Math.floor(norm360(swe.calculatePosition(jd, SEP.Jupiter, 0).longitude - ay)/30);
+    const ss2 = Math.floor(norm360(swe.calculatePosition(jd, SEP.Saturn, 0).longitude - ay)/30);
+    const vs = Math.floor(norm360(swe.calculatePosition(jd, SEP.Venus, 0).longitude - ay)/30);
+    const us = Math.floor(norm360(swe.calculatePosition(jd, SEP.Sun, 0).longitude - ay)/30);
+    if(prevJ!==null && js!==prevJ) jupEntries.push({sign:js, entry:new Date(d)});
+    if(prevS!==null && ss2!==prevS) satEntries.push({sign:ss2, entry:new Date(d)});
+    if(prevV!==null && vs!==prevV) venEntries.push({sign:vs, entry:new Date(d)});
+    if(prevU!==null && us!==prevU) sunEntries.push({sign:us, entry:new Date(d)});
+    prevJ = js; prevS = ss2; prevV = vs; prevU = us;
+    daySign.set(d.toISOString().slice(0,10), {jup:js, sat:ss2, ven:vs, sun:us});
+    d = addDays(d,1); n++;
+    if(n%600===0){ setStatus(`गोचर scan: ${fmt(d)} तक...`); await tick(); }
+  }
+  const key = (y,m,dd) => `${y}-${String(m).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+  const months = []; // monthly signs, 15th (DT) + 1st (MTT gochar)
+  let y = D.HSTART.getUTCFullYear(), m = D.HSTART.getUTCMonth()+1;
+  while(!(y===scanEnd.getUTCFullYear() && m>scanEnd.getUTCMonth()+1) && (y<scanEnd.getUTCFullYear() || (y===scanEnd.getUTCFullYear() && m<=scanEnd.getUTCMonth()+1))){
+    const mid = daySign.get(key(y,m,15)), first = daySign.get(key(y,m,1));
+    if(mid) months.push({y, m, jup:mid.jup, sat:mid.sat, ven:mid.ven, sun:mid.sun, jup1:first?first.jup:mid.jup, sat1:first?first.sat:mid.sat, sun1:first?first.sun:mid.sun});
+    m++; if(m>12){ m=1; y++; }
+    if(y>2040) break;
+  }
+  const segmentsFromEntries = (entries, startSign, startDate, endDate) => {
+    const segs = []; let cur = startSign, cs = new Date(startDate);
+    for(const e of entries){
+      if(e.entry>endDate) break;
+      segs.push({sign:cur, start:new Date(cs), end:new Date(e.entry)}); cur = e.sign; cs = new Date(e.entry);
+    }
+    segs.push({sign:cur, start:new Date(cs), end:new Date(endDate)});
+    return segs;
+  };
+  const hsSign = daySign.get(D.HSTART.toISOString().slice(0,10));
+  const hendLast = addDays(D.HEND, -1);
+  const jupSegsH = segmentsFromEntries(jupEntries, hsSign.jup, new Date(D.HSTART), hendLast);
+  const satSegsH = segmentsFromEntries(satEntries, hsSign.sat, new Date(D.HSTART), hendLast);
+  const venSegsH = segmentsFromEntries(venEntries, hsSign.ven, new Date(D.HSTART), hendLast);
+  const sunSegsH = segmentsFromEntries(sunEntries, hsSign.sun, new Date(D.HSTART), hendLast);
+  const jupSegsF = segmentsFromEntries(jupEntries, hsSign.jup, new Date(D.HSTART), scanEnd);
+  const venSegsF = segmentsFromEntries(venEntries, hsSign.ven, new Date(D.HSTART), scanEnd);
+  const sunSegsF = segmentsFromEntries(sunEntries, hsSign.sun, new Date(D.HSTART), scanEnd);
+  // ---- Master Time-Table ----
+  const fmtAdList = items => {
+    const seen = [];
+    for(const [md,ad] of items) if(!seen.some(x=>x[0]===md&&x[1]===ad)) seen.push([md,ad]);
+    const res = []; let cur = null, ads = [];
+    for(const [md,ad] of seen){
+      if(md!==cur){ if(cur) res.push(`${cur} - ${ads.join(' / ')}`); cur = md; ads = [ad]; }
+      else ads.push(ad);
+    }
+    if(cur) res.push(`${cur} - ${ads.join(' / ')}`);
+    return res.join('; ');
+  };
+  const adListInWindow = (mds, start, end, nameFn) => {
+    const out = [];
+    for(const md of mds){
+      if(md.end<=start || md.start>=end) continue;
+      for(const ad of md.ads){
+        if(ad.end<=start || ad.start>=end) continue;
+        out.push([nameFn(md), nameFn(ad)]);
+      }
+    }
+    return out;
+  };
+  const mtt = [];
+  const sm = D.HSTART.getUTCMonth(); // 0-based: year-blocks start at HSTART month
+  for(let k=0; k<7; k++){
+    const yy = D.HSTART.getUTCFullYear()+k;
+    const ws = new Date(Date.UTC(yy,sm,1)), we = new Date(Date.UTC(yy+1,sm,1));
+    const vimL = fmtAdList(adListInWindow(D.vim, ws, we, x=>HI[x.lord]));
+    const yogL = fmtAdList(adListInWindow(D.yog, ws, we, x=>`${x.lord} (${HI[YOG2PL[x.lord]]})`));
+    const chaL = [];
+    for(const md of D.chara){
+      if(md.end<=ws || md.start>=we) continue;
+      for(const ad of md.ads){
+        if(ad.end<=ws || ad.start>=we) continue;
+        chaL.push([SIGNS[md.rashi], SIGNS[ad.rashi]]);
+      }
+    }
+    const chaS = chaL.map(([a,b])=>`${a} - ${b}`).join('; ');
+    const triL = fmtAdList(adListInWindow(D.tri, ws, we, x=>HI[x.lord]));
+    const rows = months.filter(t=>((t.y===yy && t.m>=sm+1)||(t.y===yy+1 && t.m<=sm)));
+    const gj = [...new Set(rows.map(t=>t.jup1))].sort((a,b)=>a-b);
+    const gs = [...new Set(rows.map(t=>t.sat1))].sort((a,b)=>a-b);
+    const go = ss2 => ss2.map(s=>`${SIGNS[s]} (L${bhavaOf(s,D.lagna)}/M${bhavaOf(s,D.pl['Moon'].sign)})`).join(', ');
+    const endM = (sm+11)%12, endY = sm>0 ? yy+1 : yy;
+    mtt.push({year:`${MON_HI[sm]} ${yy} - ${MON_HI[endM]} ${endY}`, vim:vimL, yog:yogL, chara:chaS, tri:triL, guruGochar:go(gj), shaniGochar:go(gs)});
+  }
+  // ---- Double Transit (P28) ----
+  const POINTS = [['5वां भाव',D.s5],['पंचमेश '+HI[D.panchamesh], D.pl[D.panchamesh].sign],['लग्न',D.lagna],['लग्नेश '+HI[D.lagnesh], D.pl[D.lagnesh].sign],['11वां भाव',D.s11],['लाभेश '+HI[D.ekadashesh], D.pl[D.ekadashesh].sign],['2रा भाव',D.s2],['द्वितीयेश '+HI[D.dwitiyesh], D.pl[D.dwitiyesh].sign],['नाताल गुरु',D.pl['Jupiter'].sign],['नाताल शुक्र',D.pl['Venus'].sign],['चंद्र लग्न',D.pl['Moon'].sign],['D9 लग्न',D.d9Lagna],['D9 5वां भाव',D.d9s5],['D7 लग्न',D.d7Lagna.sign],['D7 5वां भाव',D.d7s5]];
+  const dtRow = mo => {
+    const gj = [...new Set(POINTS.filter(([,s])=>([0,4,8].includes((s-mo.jup+12)%12))).map(([n])=>n))];
+    const sj = [...new Set(POINTS.filter(([,s])=>([0,2,6,9].includes((s-mo.sat+12)%12))).map(([n])=>n))];
+    const both = gj.length>0 && sj.length>0;
+    const lagna5 = gj.includes('लग्न')||gj.includes('5वां भाव')||sj.includes('लग्न')||sj.includes('5वां भाव');
+    let comb, conc;
+    if(both && lagna5){ comb='सक्रिय'; conc='प्रबल'; }
+    else if(both){ comb='सक्रिय'; conc='औसत'; }
+    else { comb='निष्क्रिय'; conc='न्यून'; }
+    return {gj, sj, comb, conc};
+  };
+  const HENDy = D.HEND.getUTCFullYear(), HENDm = D.HEND.getUTCMonth()+1;
+  const withinH = t => (t.y<HENDy) || (t.y===HENDy && t.m<HENDm);
+  const dtRows = months.filter(withinH).map(mo=>({y:mo.y, m:mo.m, ...dtRow(mo)}));
+  // ---- Guru+Surya pinpoint helpers (segment 39) ----
+  const pinSigns = new Set([Math.floor(D.cuspKP(5)/30), D.pl[D.c5sl].sign, ...D.sigSigns]);
+  const pinCheck = (jSign, sSign) => (pinSigns.has(jSign)?1:0) + (pinSigns.has(sSign)?1:0);
+  const sunJupBestIn = w => {
+    let best = 0;
+    for(const mo of months){
+      const m0 = new Date(Date.UTC(mo.y, mo.m-1, 1));
+      if(!(w.start<=m0 && m0<w.end)) continue;
+      best = Math.max(best, pinCheck(mo.jup, mo.sun));
+    }
+    return best;
+  };
+  // ---- Jupiter strength table P30 ----
+  const cons = [];
+  const seenS = {};
+  for(const s of jupSegsH){
+    if(seenS[s.sign]!==undefined){ const idx = seenS[s.sign]; cons[idx] = {sign:s.sign, start:cons[idx].start, end:s.end}; }
+    else { seenS[s.sign] = cons.length; cons.push({sign:s.sign, start:s.start, end:s.end}); }
+  }
+  cons.sort((a,b)=>a.start-b.start);
+  const jupEffect = sign => {
+    const eff = [];
+    if(sign===D.pl['Jupiter'].sign) eff.push('नाताल गुरु पर युति (Jupiter Return)');
+    if(sign===D.pl['Venus'].sign) eff.push('नाताल शुक्र पर युति');
+    if(sign===D.pl[D.panchamesh].sign) eff.push('पंचमेश '+HI[D.panchamesh]+' पर युति');
+    if([0,4,8].includes((D.s5-sign+12)%12)) eff.push('5वें भाव पर दृष्टि/युति');
+    if([0,4,8].includes((D.pl[D.panchamesh].sign-sign+12)%12)) eff.push('पंचमेश की राशि पर दृष्टि');
+    if([0,4,8].includes((D.lagna-sign+12)%12)) eff.push('लग्न पर दृष्टि/युति');
+    return eff.length?eff:['सीधा संबंध नहीं'];
+  };
+  const supportEffect = sign => {
+    const eff = [];
+    if([0,4,8].includes((D.s11-sign+12)%12)) eff.push('11वें भाव पर');
+    if([0,4,8].includes((D.s2-sign+12)%12)) eff.push('2रे भाव पर');
+    if([0,4,8].includes((D.s9c-sign+12)%12)) eff.push('9वें भाव पर');
+    if([0,4,8].includes((D.pl['Saturn'].sign-sign+12)%12)) eff.push('नाताल शनि पर');
+    if([0,4,8].includes((D.pl[D.karakas['PK']].sign-sign+12)%12)) eff.push('PK की राशि पर');
+    return eff.length?eff:['-'];
+  };
+  const p30 = cons.map(c=>{
+    const savv = D.sav[c.sign], bavv = D.bav['Jupiter'][c.sign];
+    const Lbb = bhavaOf(c.sign, D.lagna);
+    const bal = D.bhavaBala[Lbb-1].total;
+    const qual = (savv>28 && bal>500) ? 'High' : (savv>28 ? 'Medium' : 'Low');
+    const eff = jupEffect(c.sign), sup = supportEffect(c.sign);
+    const fin = (eff[0]!=='सीधा संबंध नहीं' && (qual==='High'||qual==='Medium')) ? 'प्रबल संभावना' : (eff[0]!=='सीधा संबंध नहीं' ? 'औसत' : 'न्यून');
+    return {sign:c.sign, start:c.start, end:c.end, sav:savv, bav:bavv, bal, qual, eff:eff.join(' ; '), sup:sup.join(' ; '), fin, L:Lbb, M:bhavaOf(c.sign, D.pl['Moon'].sign)};
+  });
+  // ---- Saturn strength table P30s (Approve / Delay) ----
+  const consS = [];
+  const seenSS = {};
+  for(const s of satSegsH){
+    if(seenSS[s.sign]!==undefined){ const idx = seenSS[s.sign]; consS[idx] = {sign:s.sign, start:consS[idx].start, end:s.end}; }
+    else { seenSS[s.sign] = consS.length; consS.push({sign:s.sign, start:s.start, end:s.end}); }
+  }
+  consS.sort((a,b)=>a.start-b.start);
+  const satEffect = sign => {
+    const eff = [];
+    if([0,2,6,9].includes((D.s5-sign+12)%12)) eff.push('5वें भाव पर दृष्टि/युति');
+    if([0,2,6,9].includes((D.pl[D.panchamesh].sign-sign+12)%12)) eff.push('पंचमेश की राशि पर दृष्टि');
+    if([0,2,6,9].includes((D.pl['Jupiter'].sign-sign+12)%12)) eff.push('नाताल गुरु पर दृष्टि');
+    if([0,2,6,9].includes((D.pl['Venus'].sign-sign+12)%12)) eff.push('नाताल शुक्र पर दृष्टि');
+    return eff.length?eff:['सीधा संबंध नहीं'];
+  };
+  const p30s = consS.map(c=>{
+    const savv = D.sav[c.sign], bavv = D.bav['Saturn'][c.sign];
+    const Lbb = bhavaOf(c.sign, D.lagna);
+    const bal = D.bhavaBala[Lbb-1].total;
+    const qual = (savv>28 && bal>500) ? 'High' : (savv>28 ? 'Medium' : 'Low');
+    const eff = satEffect(c.sign), sup = supportEffect(c.sign);
+    const fin = (eff[0]!=='सीधा संबंध नहीं' && (qual==='High'||qual==='Medium')) ? 'Approve' : (eff[0]!=='सीधा संबंध नहीं' ? 'आंशिक (Approve की ओर)' : 'Delay');
+    return {sign:c.sign, start:c.start, end:c.end, sav:savv, bav:bavv, bal, qual, eff:eff.join(' ; '), sup:sup.join(' ; '), fin, L:Lbb, M:bhavaOf(c.sign, D.pl['Moon'].sign)};
+  });
+  // ---- window scoring ----
+  const segMonths = (w, segs, sign) => {
+    let tot = 0;
+    for(const s of segs){
+      if(s.sign!==sign) continue;
+      const a = new Date(Math.max(s.start, w.start)), b = new Date(Math.min(s.end, w.end));
+      if(b>a) tot += (b-a)/86400000/30.44;
+    }
+    return tot;
+  };
+  const charaAt = dt => {
+    for(const md of D.chara){
+      if(md.start<=dt && dt<md.end){
+        for(const ad of md.ads) if(ad.start<=dt && dt<ad.end) return {md, ad};
+      }
+    }
+    return {md:null, ad:null};
+  };
+  const dtBestIn = w => {
+    let best = 0;
+    for(const mo of months){
+      const m0 = new Date(Date.UTC(mo.y, mo.m-1, 1));
+      if(!(w.start<=m0 && m0<w.end)) continue;
+      const r = dtRow(mo);
+      best = Math.max(best, r.conc==='प्रबल'?10:(r.comb==='सक्रिय'?5:0));
+    }
+    return best;
+  };
+  const scored = D.wins.map((w,i)=>{
+    const q = D.kpQual(w.ad);
+    const clean = q.neg.length===0;
+    const kpSc = clean?15:5;
+    const ymV = segMonths(w, jupSegsF, D.pl['Venus'].sign);
+    const ymG = segMonths(w, jupSegsF, D.pl['Jupiter'].sign);
+    const ymS = segMonths(w, jupSegsF, D.pl[D.panchamesh].sign);
+    const dom = [[ymV,9,'Venus'],[ymG,15,'Return'],[ymS,5,'panchamesh']].sort((a,b)=>b[0]-a[0])[0];
+    const ssSign = D.pl[D.panchamesh].sign;
+    const supSigns = [ssSign, (ssSign+4)%12, (ssSign+8)%12];
+    const sup = jupSegsF.some(s=>supSigns.includes(s.sign) && s.end>w.start && s.start<w.end);
+    let bnnSc, bnnLbl;
+    if(dom[0]>0){ bnnSc = dom[1]; bnnLbl = dom[2]==='Venus'?'गुरु नाताल शुक्र पर':(dom[2]==='Return'?'Jupiter Return (नाताल गुरु पर)':'गुरु पंचमेश पर'); }
+    else if(sup){ bnnSc = 5; bnnLbl = 'सहायक (पंचमेश पर दृष्टि)'; }
+    else { bnnSc = -10; bnnLbl = 'कोई युति नहीं'; }
+    const {md, ad} = charaAt(w.start);
+    const mdSc = md ? (D.A_set.includes(md.rashi)?10:(D.B_set.includes(md.rashi)?5:0)) : 0;
+    let adSc = 0, bonus = 0;
+    for(const m2 of D.chara){
+      for(const a2 of m2.ads){
+        if(a2.end<=w.start || a2.start>=w.end) continue;
+        adSc = Math.max(adSc, D.A_set.includes(a2.rashi)?5:(D.B_set.includes(a2.rashi)?2:0));
+        if(md && a2.rashi===md.rashi) bonus = 5;
+      }
+    }
+    const dtSc = dtBestIn(w);
+    const sj = sunJupBestIn(w);
+    const sjSc = (sj===2 && clean)?5:(sj>=1?2:0);
+    const total = 30+kpSc+bnnSc+mdSc+adSc+bonus+dtSc+sjSc;
+    const pct = total>=80?'80-85%':(total>=75?'75-80%':(total>=65?'65-70%':(total>=55?'55-60%':(total>=45?'45-50%':'40-45%'))));
+    const overlapTxt = `विंशोत्तरी ${HI[D.curMD.lord]}-${HI[w.ad]} + योगिनी ${w.yogMd} (${HI[w.yogPl]}) + त्रिभागी ${D.tri.find(m=>m.start<=w.start && w.start<m.end)?.lord ? HI[D.tri.find(m=>m.start<=w.start && w.start<m.end).lord] : '-'} + चर ${md?SIGNS[md.rashi]:'-'} (${md?(D.A_set.includes(md.rashi)?'A':(D.B_set.includes(md.rashi)?'B':'-')):'-'}) + BNN ${bnnLbl}`;
+    return {...w, id:'W'+(i+1), kpClean:clean, kpPos:q.pos, kpNeg:q.neg, kpSc, bnnSc, bnnLbl, mdSc, adSc, bonus, dtSc, sj, sjSc, total, pct, overlapTxt,
+      hasVenusYuti: ymV>0, venusYutiMonths:ymV, hasJupReturn: ymG>0};
+  });
+  return {months, jupEntries, satEntries, venEntries, sunEntries, jupSegsH, satSegsH, venSegsH, sunSegsH, jupSegsF, venSegsF, sunSegsF,
+    mtt, dtRows, p30, p30s, scored, POINTS, dtRow, pinSigns, scanEnd};
+}
+
+// ================= P22-equivalent / BNN final / KP transit / pinpoint / final =================
+function computeFinal(D, T){
+  const HENDyF = D.HEND.getUTCFullYear(), HENDmF = D.HEND.getUTCMonth()+1;
+  const withinHF = mo => (mo.y<HENDyF) || (mo.y===HENDyF && mo.m<HENDmF);
+  const mergeRanges = (ranges, gapDays) => {
+    const rs = ranges.filter(r=>r.end>r.start).sort((a,b)=>a.start-b.start);
+    const out = [];
+    for(const r of rs){
+      const last = out[out.length-1];
+      if(last && (r.start-last.end)/86400000 <= gapDays) last.end = new Date(Math.max(last.end, r.end));
+      else out.push({start:new Date(r.start), end:new Date(r.end)});
+    }
+    return out;
+  };
+  const satApproves = (satSign, targetSign) => [0,2,6,9].includes((targetSign-satSign+12)%12);
+  const satSegsApproval = targetSign => T.satSegsH.filter(s=>satApproves(s.sign, targetSign));
+  const jupYutiSegs = targetSign => T.jupSegsH.filter(s=>s.sign===targetSign);
+  const overlapRanges = (aSegs, bSegs) => {
+    const out = [];
+    for(const a of aSegs) for(const b of bSegs){
+      const s = new Date(Math.max(a.start, b.start)), e = new Date(Math.min(a.end, b.end));
+      if(e>s) out.push({start:s, end:e});
+    }
+    return out;
+  };
+  // ---- BNN final ranges: Jupiter on natal Jupiter / Venus / panchamesh + Saturn approval ----
+  const apprAll = [...satSegsApproval(D.pl['Venus'].sign), ...satSegsApproval(D.pl['Jupiter'].sign), ...satSegsApproval(D.pl[D.panchamesh].sign)];
+  const bnnVenus = mergeRanges(overlapRanges(jupYutiSegs(D.pl['Venus'].sign), apprAll), 180);
+  const bnnReturn = mergeRanges(overlapRanges(jupYutiSegs(D.pl['Jupiter'].sign), apprAll), 180);
+  const bnnPanchamesh = mergeRanges(overlapRanges(jupYutiSegs(D.pl[D.panchamesh].sign), apprAll), 180);
+  // ---- KP transit ranges (2, 5, 11 significators) ----
+  const sigPlanets = D.sigPlanets, sigSigns = D.sigSigns;
+  const satHitsSig = satSign => sigSigns.includes(satSign) || sigSigns.some(s=>[0,2,6,9].includes((s-satSign+12)%12));
+  const kpMonths = [];
+  for(const mo of T.months){
+    if(!withinHF(mo)) continue;
+    if(sigSigns.includes(mo.jup) && satHitsSig(mo.sat)) kpMonths.push({y:mo.y, m:mo.m});
+  }
+  const kpRanges = [];
+  for(const km of kpMonths){
+    const d0 = new Date(Date.UTC(km.y, km.m-1, 1));
+    const last = kpRanges[kpRanges.length-1];
+    if(last && (d0-last.end)/86400000 <= 35) last.end = new Date(Date.UTC(km.y, km.m-1, 1));
+    else kpRanges.push({start:d0, end:new Date(Date.UTC(km.y, km.m-1, 1))});
+  }
+  const kpRangeTxt = kpRanges.map(r=>`${fmtMY(r.start)} - ${fmtMY(r.end)}`);
+  // ---- Guru+Surya pinpoint months (segment 39): both on 5th cusp / 5th CSL / significator signs ----
+  const cusp5Sign = Math.floor(D.cuspKP(5)/30);
+  const pinSigns = new Set([cusp5Sign, D.pl[D.c5sl].sign, ...sigSigns]);
+  const pinMonths = [];
+  for(const mo of T.months){
+    if(!withinHF(mo)) continue;
+    if(pinSigns.has(mo.jup) && pinSigns.has(mo.sun)) pinMonths.push({y:mo.y, m:mo.m, jup:mo.jup, sun:mo.sun});
+  }
+  const pinRanges = [];
+  for(const km of pinMonths){
+    const d0 = new Date(Date.UTC(km.y, km.m-1, 1));
+    const last = pinRanges[pinRanges.length-1];
+    if(last && (d0-last.end)/86400000 <= 35) last.end = new Date(Date.UTC(km.y, km.m-1, 1));
+    else pinRanges.push({start:d0, end:new Date(Date.UTC(km.y, km.m-1, 1))});
+  }
+  const pinRangeTxt = pinRanges.map(r=>`${fmtMY(r.start)} - ${fmtMY(r.end)}`);
+  // ---- final ----
+  const ranked = [...T.scored].sort((a,b)=>(b.total+(b.hasJupReturn?10:0))-(a.total+(a.hasJupReturn?10:0)));
+  const top = ranked[0], second = ranked[1];
+  const topScore = T.scored.slice().sort((a,b)=>b.total-a.total);
+  // most probable year: year with most Jupiter-on-natal-Jupiter/Venus months inside top window
+  const yutiMonthsByYear = {};
+  for(const s of T.jupSegsF){
+    if(s.sign!==D.pl['Jupiter'].sign && s.sign!==D.pl['Venus'].sign) continue;
+    const a = new Date(Math.max(s.start, top.start)), b = new Date(Math.min(s.end, top.end));
+    if(b<=a) continue;
+    let cur = new Date(Date.UTC(a.getUTCFullYear(), a.getUTCMonth(), 1));
+    while(cur<b){
+      const yk = cur.getUTCFullYear();
+      yutiMonthsByYear[yk] = (yutiMonthsByYear[yk]||0)+1;
+      cur = new Date(Date.UTC(yk, cur.getUTCMonth()+1, 1));
+    }
+  }
+  let bestYear = null, bestCount = -1;
+  for(const [yk,c] of Object.entries(yutiMonthsByYear)) if(c>bestCount){ bestCount = c; bestYear = +yk; }
+  if(bestYear===null){
+    const yc = {};
+    let cur = new Date(Date.UTC(top.start.getUTCFullYear(), top.start.getUTCMonth(), 1));
+    while(cur<top.end){ const yk = cur.getUTCFullYear(); yc[yk]=(yc[yk]||0)+1; cur = new Date(Date.UTC(yk, cur.getUTCMonth()+1, 1)); }
+    for(const [yk,c] of Object.entries(yc)) if(c>bestCount){ bestCount = c; bestYear = +yk; }
+  }
+  // peak months: last cluster in bestYear where Jupiter on natal Jupiter/Venus + DT प्रबल
+  const dtPrabal = new Set(T.dtRows.filter(r=>r.conc==='प्रबल').map(r=>`${r.y}-${r.m}`));
+  const peakKeys = [];
+  for(const s of T.jupSegsF){
+    if(s.sign!==D.pl['Jupiter'].sign && s.sign!==D.pl['Venus'].sign) continue;
+    const a = new Date(Math.max(s.start, top.start)), b = new Date(Math.min(s.end, top.end));
+    if(b<=a) continue;
+    let cur = new Date(Date.UTC(a.getUTCFullYear(), a.getUTCMonth(), 1));
+    while(cur<b){
+      const kk = `${cur.getUTCFullYear()}-${cur.getUTCMonth()+1}`;
+      if(cur.getUTCFullYear()===bestYear && dtPrabal.has(kk)) peakKeys.push(kk);
+      cur = new Date(Date.UTC(cur.getUTCFullYear(), cur.getUTCMonth()+1, 1));
+    }
+  }
+  let peakTxt = '';
+  if(peakKeys.length){
+    const idxs = peakKeys.map(k=>{ const [yy,mm] = k.split('-').map(Number); return yy*12+mm; }).sort((a,b)=>a-b);
+    let cluster = [idxs[idxs.length-1]];
+    for(let i=idxs.length-2;i>=0;i--){ if(idxs[i]===cluster[0]-1) cluster.unshift(idxs[i]); else break; }
+    const f = v => `${MON_HI[(v-1)%12]}`;
+    peakTxt = cluster.length>1 ? `${f(cluster[0])} - ${f(cluster[cluster.length-1])} ${bestYear}` : `${f(cluster[0])} ${bestYear}`;
+  }
+  const unStart = new Date(Math.min(top.start, second?second.start:top.start));
+  const unanimous = `${fmtMY(unStart)} - ${fmtMY(top.end)}`;
+  return {bnnVenus, bnnReturn, bnnPanchamesh, sigPlanets, sigSigns, kpRanges, kpRangeTxt,
+    pinMonths, pinRanges, pinRangeTxt, cusp5Sign,
+    ranked, top, second, topScore, bestYear, peakTxt, unanimous};
+}
+// ================= Jaimini influence (PK/AK based for progeny) =================
+function jaiminiInfluence(D, rashi){
+  const out = [];
+  const cands = [['PK',D.karakas['PK']],['AK',D.karakas['AK']],['Shukra','Venus'],['Guru','Jupiter']];
+  for(const [lbl,p] of cands){
+    if(D.pl[p].sign===rashi) out.push(`${HI[p]} स्वयं ${SIGNS[rashi]} में`);
+    else if(jaiminiAspects(D.pl[p].sign).includes(rashi)){
+      const tp = D.pl[p].sign%3===0?'चर':(D.pl[p].sign%3===1?'स्थिर':'द्विस्वभाव');
+      out.push(`${HI[p]} (${SIGNS[D.pl[p].sign]}, ${tp}) की जैमिनी दृष्टि ${SIGNS[rashi]} पर`);
+    }
+  }
+  return out;
+}
+// ================= Beeja / Kshetra sphuta (dual-kundali tool Tab 3 logic) =================
+function sphutaOf(lons){
+  const t = lons.reduce((s,l)=>s+l,0)%360;
+  return {lon:t, sign:Math.floor(t/30), deg:t%30, nak:Math.floor(t/13.3333333)};
+}
+function sphutaBalaOf(spSign, pl){
+  const lord = SIGN_LORD[spSign];
+  const bh = pl[lord].house;
+  if([1,4,7,10,5,9].includes(bh)) return 'बलवान';
+  if([6,8,12].includes(bh)) return 'पीड़ित';
+  return 'मध्यम';
+}
+// ================= rendering =================
+const QUAL = s => `<p class="qual">आगे की process के लिए qualified दशा: ${s}</p>`;
+const r2 = v => (Math.round(v*100)/100).toFixed(2);
+function sbLine(D, p){
+  const v = D.sbRes.shadbala[p].rupas;
+  const ok = v>=MINR[p] ? '✓' : '✗ कम';
+  return `${HI[p]} ${r2(v)} रूप (${MINR[p]} चाहिए - ${ok}) (verify)`;
+}
+// ================= SECTIONS =================
+function buildSections(D, T, F){
+  const html = [];
+  let cur = [];
+  const flush = () => { if(cur.length){ html.push(cur.join('')); cur = []; } };
+  const h2 = t => { flush(); cur.push(`<h2>${t}</h2>`); };
+  const tbl = (hdr, rows) => `<table class="t1"><tr>${hdr.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</table>`;
+  const qualLine = (t, lines) => cur.push(`<p class="qual"><b>${t}:</b> ${lines.join('<br>')}</p>`);
+  const cslQ = D.kpQual(D.cslPlanet);
+  const curMD = D.curMD;
+  const curYog = D.yog.find(m=>m.start<=D.HSTART && D.HSTART<m.end) || D.yog[0];
+  const curTri = D.tri.find(m=>m.start<=D.HSTART && D.HSTART<m.end) || D.tri[0];
+  const curChara = D.chara.find(m=>m.start<=D.HSTART && D.HSTART<m.end) || D.chara[0];
+  const genderLabel = D.gender==='male' ? 'पुरुष की कुंडली' : 'स्त्री की कुंडली';
+  const sp = D.gender==='male'
+    ? sphutaOf([D.pl['Sun'].lon, D.pl['Venus'].lon, D.pl['Jupiter'].lon])
+    : sphutaOf([D.pl['Moon'].lon, D.pl['Mars'].lon, D.pl['Jupiter'].lon]);
+  const spBala = sphutaBalaOf(sp.sign, D.pl);
+  const spIsVen = (sp.sign%2===0), spIsPha = sp.sign%2===1;
+  const d60s5 = (D.d60Lagna.sign+4)%12, d60Panchamesh = SIGN_LORD[d60s5];
+  const d60PanchameshBhava = bhavaOf(D.d60[d60Panchamesh].sign, D.d60Lagna.sign);
+  const d60Ok = ![6,8,12].includes(d60PanchameshBhava);
+  // Promise checks
+  const promiseChecks = [];
+  const pkPlanet = D.karakas['PK'], akPlanet = D.karakas['AK'];
+  promiseChecks.push([D.pl[D.panchamesh].house===5 ? 'अच्छा' : (D.pl[D.panchamesh].house===1 ? 'अच्छा' : 'देखें'), `पंचमेश ${HI[D.panchamesh]} D1 में ${D.pl[D.panchamesh].house}वें भाव में (${SIGNS[D.pl[D.panchamesh].sign]})`]);
+  promiseChecks.push([D.pl['Jupiter'].house===5||D.pl['Jupiter'].house===9||D.pl['Jupiter'].house===1 ? 'अच्छा' : 'देखें', `नाताल गुरु ${D.pl['Jupiter'].house}वें भाव में (${SIGNS[D.pl['Jupiter'].sign]})`]);
+  promiseChecks.push([cslQ.pos.length>0 && cslQ.neg.length===0 ? 'अच्छा' : (cslQ.pos.length>0 ? 'मिश्रित' : 'कमजोर'), `KP: 5वां भाव का CSL ${HI[D.cslPlanet]} - positive ${cslQ.pos.join(', ')||'-'}, negative ${cslQ.neg.join(', ')||'-'}`]);
+  promiseChecks.push([d60Ok ? 'अच्छा' : 'देखें', `D60: पंचमेश ${HI[d60Panchamesh]} D60 में ${d60PanchameshBhava}वें भाव में`]);
+  promiseChecks.push([spBala==='बलवान' ? 'अच्छा' : (spBala==='पीड़ित' ? 'कमजोर' : 'मध्यम'), `${D.gender==='male'?'बीज स्फुट (सूर्य + शुक्र + गुरु)':'क्षेत्र स्फुट (चंद्र + मंगल + गुरु)'}`]);
+  const promiseYes = cslQ.pos.length>0 && promiseChecks.filter(c=>c[0]==='अच्छा').length>=2;
+  // ---- Step 1 ----
+  h2('Step 1 - कुंडली सार + Promise of Progeny');
+  cur.push(`<p><b>विवाह:</b> ${D.marriageLabel} &nbsp;|&nbsp; <b>पहली संतान की खोज:</b> ${fmtMY(D.earliest)} से (विवाह + 9 महीने) &nbsp;|&nbsp; <b>Horizon:</b> ${fmtMY(addDays(D.HEND,-1))} तक</p>`);
+  cur.push(`<p><b>Astro Code:</b> ${document.getElementById('astro-code').value} &nbsp;|&nbsp; <b>कुंडली:</b> ${genderLabel} &nbsp;|&nbsp; <b>लग्न:</b> ${SIGNS[D.lagna]} &nbsp;|&nbsp; <b>चंद्र:</b> ${SIGNS[D.pl['Moon'].sign]} (${NAK[D.nakIdx]}-${(Math.floor((D.pl["Moon"].lon%30)/3.3333333)+1)}; तिथि ${D.tithi}, ${D.isShukla?'शुक्ल':'कृष्ण'} पक्ष) &nbsp;|&nbsp; <b>पंचमेश:</b> ${HI[D.panchamesh]} &nbsp;|&nbsp; <b>5th CSL:</b> ${HI[D.cslPlanet]} &nbsp;|&nbsp; <b>D9 लग्न:</b> ${SIGNS[D.d9Lagna]} &nbsp;|&nbsp; <b>D7 लग्न:</b> ${SIGNS[D.d7Lagna.sign]} &nbsp;|&nbsp; <b>D60 लग्न:</b> ${SIGNS[D.d60Lagna.sign]}</p>`);
+  cur.push(`<p><b>वर्तमान विंशोत्तरी महादशा:</b> ${HI[curMD.lord]} (${fmt(curMD.start)} - ${fmt(curMD.end)}) &nbsp;|&nbsp; <b>योगिनी महादशा:</b> ${HI[curYog.lord]} &nbsp;|&nbsp; <b>चर महादशा:</b> ${SIGNS[curChara.rashi]} &nbsp;|&nbsp; <b>त्रिभागी महादशा:</b> ${HI[curTri.lord]}</p>`);
+  cur.push(tbl(['ग्रह','राशि','अंश','भाव','नक्षत्र','D9 राशि','D7 राशि','D60 राशि'],
+    P9.map(p=>{ const x=D.pl[p]; return [`<b>${HI[p]}</b>`, SIGNS[x.sign], r2(x.deg), x.house, `${NAK[x.nak]}-${(Math.floor((x.lon%30)/3.3333333)+1)}`, SIGNS[D.d9[p]], SIGNS[D.d7[p].sign], SIGNS[D.d60[p].sign]]; })));
+  cur.push(tbl(['पंचम भाव (5th)','D1','D9','D7','D60'],
+    [[`राशि`, SIGNS[D.s5], SIGNS[D.d9s5], SIGNS[D.d7s5], SIGNS[d60s5]],
+     [`स्वामी`, HI[D.panchamesh], HI[D.d9Panchamesh], HI[D.d7Panchamesh], HI[d60Panchamesh]],
+     [`स्वामी की स्थिति`, `${D.pl[D.panchamesh].house}वां भाव`, `${bhavaOf(D.d9[D.panchamesh], D.d9Lagna)}वां भाव`, `${bhavaOf(D.d7[D.panchamesh].sign, D.d7Lagna.sign)}वां भाव`, `${bhavaOf(D.d60[D.panchamesh].sign, D.d60Lagna.sign)}वां भाव`]]));
+  cur.push(`<p><b>Promise of Progeny (संतान का वादा) - 5 systems:</b><br>${promiseChecks.map(c=>`▸ ${c[1]} - ${c[0]}`).join('<br>')}<br><b>निष्कर्ष:</b> ${promiseYes ? 'संतान का वादा है - High Chances' : 'संतान का वादा कमजोर/मिश्रित है - दशा-गोचर में समय लगेगा'}</p>`);
+  qualLine('आगे की process के लिए qualified दशा', [`विंशोत्तरी MD ${HI[curMD.lord]} के अंदर की दशाएँ`]);
+  // ---- Step 2 ----
+  h2(`Step 2 - Timing Setup: Master Time-Table (7 साल, ${fmtMY(D.HSTART)} - ${fmtMY(addDays(D.HEND,-1))})`);
+  cur.push(`<p class="qual">कुल विंशोत्तरी + योगिनी + त्रिभागी दशा खंड: <b>${T.mtt.length}</b> (क्रम-सूची में N/M/P का अर्थ: N = मुख्य दशा (Normal), M = अंतरदशा-स्तर का बदलाव, P = प्रत्यंतरदशा-स्तर का बदलाव।)</p>`);
+  cur.push(tbl(['वर्ष','विंशोत्तरी','योगिनी','चर','त्रिभागी','गुरु गोचर','शनि गोचर'],
+    T.mtt.map(r=>[r.year, r.vim, r.yog, r.chara, r.tri, r.guruGochar, r.shaniGochar])));
+  h2('Groups A-G (Ranking की कुंजी)');
+  const grpTbl = [];
+  for(const k of ['A','B','C','D','E','F','G']){
+    for(const [rule, plan] of Object.entries(D.groups[k])){
+      grpTbl.push([`Group ${k}`, rule, plan.map(x=>HI[x]).join(', ')]);
+    }
+  }
+  cur.push(tbl(['Group','नियम','ग्रह'], grpTbl));
+  cur.push(`<p><b>Ranking A/B/C (दशा analysis के लिए):</b><br>▸ A रैंक: ${D.ranking.A.map(x=>HI[x]).join(', ')} (Group A + B के सभी ग्रह)<br>▸ B रैंक: ${D.ranking.B.map(x=>HI[x]).join(', ')} (Group C + D के ग्रह)<br>▸ C रैंक: ${D.ranking.C.map(x=>HI[x]).join(', ')} (Group E + F + G के ग्रह)</p>`);
+  cur.push(`<p><b>ग्रहों की रैंकिंग भूमिका (कितने groups में):</b> ${D.roleOrder.map(p=>`${HI[p]} - ${D.roleCount[p]} groups (${D.roles[p].slice(0,3).join(', ')})`).join(' | ')}</p>`);
+  qualLine('आगे की process के लिए qualified दशा', [`Group A/B/C के ग्रहों की दशाएँ - Ranking: ${D.ranking.A.map(x=>HI[x]).join(', ')}`]);
+  // ---- Step 3.1 Vimshottari ----
+  h2('Step 3 - Parashari Layer: (3.1) विंशोत्तरी दशा');
+  cur.push(`<p class="qual">वर्तमान विंशोत्तरी महादशा <b>${HI[curMD.lord]}</b> (${fmt(curMD.start)} - ${fmt(curMD.end)})। यह महादशा ${curMD.lord==='Jupiter'||curMD.lord===D.panchamesh||D.kpSig[curMD.lord].houses.includes(5)?'संतान के लिए अनुकूल है (पंचमेश/गुरु/5th significator)':'संतान के लिए सीधी अनुकूलता नहीं देती - अंतरदशा से देखना होगा'}।</p>`);
+  const vimRows = D.vimAds.map(({ad})=>{ const q=D.kpQual(ad.lord); const rk=D.ranking.A.includes(ad.lord)?'A':(D.ranking.B.includes(ad.lord)?'B':'C'); return [`${HI[ad.lord]}`, fmt(ad.start), fmt(ad.end), `${fmtMY(ad.start)} - ${fmtMY(ad.end)}`, rk, q.pos.length?`+${q.pos.join(', ')}`:'-', q.neg.length?`-${q.neg.join(', ')}`:'-']; });
+  cur.push(tbl(['अंतरदशा','शुरुआत','समाप्ति','अवधि','रैंक','KP Positive','KP Negative'], vimRows));
+  cur.push(`<p><b>महादशा स्तर पर विश्लेषण:</b> विंशोत्तरी में ${D.vim.map(v=>`${HI[v.lord]} (${fmtMY(v.start)}-${fmtMY(v.end)})`).join(', ')}।</p>`);
+  qualLine('आगे की process के लिए qualified दशा', D.vimAds.filter(({ad})=>D.ranking.A.includes(ad.lord)||D.ranking.B.includes(ad.lord)).map(({ad})=>`${HI[ad.lord]} AD (${fmtMY(ad.start)}-${fmtMY(ad.end)})`));
+  // ---- Step 3.2 Yogini ----
+  h2('Step 3 - Parashari Layer: (3.2) योगिनी दशा');
+  const yogRows = D.yogAds.map(({ad})=>{ const q=D.kpQual(YOG2PL[ad.lord]); const rk=D.ranking.A.includes(YOG2PL[ad.lord])?'A':(D.ranking.B.includes(YOG2PL[ad.lord])?'B':'C'); return [`${ad.lord} (${HI[YOG2PL[ad.lord]]})`, fmt(ad.start), fmt(ad.end), `${fmtMY(ad.start)} - ${fmtMY(ad.end)}`, rk, q.pos.length?`+${q.pos.join(', ')}`:'-', q.neg.length?`-${q.neg.join(', ')}`:'-']; });
+  cur.push(tbl(['योगिनी AD','शुरुआत','समाप्ति','अवधि','रैंक','KP Positive','KP Negative'], yogRows));
+  cur.push(`<p><b>योगिनी महादशा:</b> ${D.yog.map(v=>`${v.lord} (${HI[YOG2PL[v.lord]]}) (${fmtMY(v.start)}-${fmtMY(v.end)})`).join(', ')}।</p>`);
+  qualLine('आगे की process के लिए qualified दशा', D.yogAds.filter(({ad})=>D.ranking.A.includes(YOG2PL[ad.lord])||D.ranking.B.includes(YOG2PL[ad.lord])).map(({ad})=>`${ad.lord} (${HI[YOG2PL[ad.lord]]}) (${fmtMY(ad.start)}-${fmtMY(ad.end)})`));
+  // ---- Step 3.3 Windows ----
+  h2('Step 3 - Parashari Layer: (3.3) संभावित समय-विंडो (Vimshottari AD × Yogini AD)');
+  cur.push(`<p class="qual">कुल संभावित टाइम विंडो (पहली संतान): <b>${T.scored.length}</b>।</p>`);
+  if(D.removedWindows>0 || D.clippedWindows>0) cur.push(`<p class="note"><b>विवाह anchor (${D.marriageLabel} + 9 महीने = ${fmtMY(D.earliest)}):</b> ${D.removedWindows>0?`इससे पहले की ${D.removedWindows} window(s) हटाई गईं - वे पहली संतान के लिए मान्य नहीं। `:''}${D.clippedWindows>0?`${D.clippedWindows} window(s) की शुरुआत ${fmtMY(D.earliest)} से काटी गई है।`:''}</p>`);
+  cur.push(tbl(['विंडो','अवधि','विंशोत्तरी AD','योगिनी AD','Overlap','संभावना'],
+    T.scored.map((w,i)=>[i+1, `${fmtMY(w.start)} - ${fmtMY(w.end)}`, `${HI[w.ad]}`, `${w.yogMd} (${HI[w.yogPl]})`, `${w.overlapTxt}`, `${w.total}%`])));
+  qualLine('आगे की process के लिए qualified दशा', T.scored.slice(0,5).map(w=>`${HI[w.ad]} AD (${fmtMY(w.start)}-${fmtMY(w.end)})`));
+  // ---- Step 3.4 Tribhagi ----
+  h2('Step 3 - Parashari Layer: (3.4) त्रिभागी दशा - refinement');
+  const triRows = D.triAds.map(({ad})=>{ const q=D.kpQual(ad.lord); const rk=D.ranking.A.includes(ad.lord)?'A':(D.ranking.B.includes(ad.lord)?'B':'C'); return [`${HI[ad.lord]}`, fmt(ad.start), fmt(ad.end), `${fmtMY(ad.start)} - ${fmtMY(ad.end)}`, rk, q.pos.length?`+${q.pos.join(', ')}`:'-', q.neg.length?`-${q.neg.join(', ')}`:'-']; });
+  cur.push(tbl(['त्रिभागी AD','शुरुआत','समाप्ति','अवधि','रैंक','KP Positive','KP Negative'], triRows));
+  cur.push(`<p><b>त्रिभागी महादशा:</b> ${D.tri.map(v=>`${HI[v.lord]} (${fmtMY(v.start)}-${fmtMY(v.end)})`).join(', ')}।</p>`);
+  cur.push(`<p><b>त्रिभागी से विंडो refinement:</b> त्रिभागी AD के अंदर की ${D.triAds.length} अंतरदशाओं में से रैंक A/B वाली ही आगे बढ़ती हैं।</p>`);
+  qualLine('आगे की process के लिए qualified दशा', D.triAds.filter(({ad})=>D.ranking.A.includes(ad.lord)||D.ranking.B.includes(ad.lord)).map(({ad})=>`${HI[ad.lord]} AD (${fmtMY(ad.start)}-${fmtMY(ad.end)})`));
+  // ---- Step 3.5 BAV/SAV ----
+  h2('Step 3 - Parashari Layer: (3.5) भाव बल + BAV/SAV');
+  cur.push(`<p><b>सबसे मजबूत भाव:</b> ${D.bhavaBala[0].bhava}वां भाव (${D.bhavaBala[0].total.toFixed(2)} विरूप) &nbsp;|&nbsp; <b>सबसे कमजोर भाव:</b> ${D.bhavaBala[11].bhava}वां भाव (${D.bhavaBala[11].total.toFixed(2)} विरूप) &nbsp;|&nbsp; <b>5वां भाव:</b> ${D.bhavaBala[4].total.toFixed(2)} विरूप (${D.bhavaBala[4].total>8?'Strong':(D.bhavaBala[4].total>6?'Medium':'Weak')})</p>`);
+  cur.push(tbl(['भाव','राशि','बल (विरूप)','श्रेणी'],
+    D.bhavaBala.map(b=>[b.bhava, SIGNS[(D.lagna+b.bhava-1)%12], b.total.toFixed(2), b.total>8?'Strong':(b.total>6?'Medium':'Weak')])));
+  const sbSorted = P7.map(p=>({pl:p, sb:D.sbRes.shadbala[p].rupas, min:MINR[p]})).sort((a,b)=>a.sb-b.sb);
+  cur.push(`<p><b>षड्बल (सबसे कमजोर ग्रह):</b> ${HI[sbSorted[6].pl]} (${r2(sbSorted[6].sb)} रूप, min ${sbSorted[6].min}) &nbsp;|&nbsp; <b>सबसे मजबूत:</b> ${HI[sbSorted[0].pl]} (${r2(sbSorted[0].sb)} रूप)</p>`);
+  cur.push(`<p><b>गुरु का षड्बल:</b> ${r2(D.sbRes.shadbala['Jupiter'].rupas)} रूप (min ${MINR['Jupiter']}) &nbsp;|&nbsp; <b>पंचमेश (${HI[D.panchamesh]}) का षड्बल:</b> ${r2(D.sbRes.shadbala[D.panchamesh].rupas)} रूप (min ${MINR[D.panchamesh]})</p>`);
+  cur.push(tbl(['ग्रह','BAV (मेष से मीन, राशि-वार)'],
+    P7.map(p=>[HI[p], D.bav[p].join(', ')])));
+  cur.push(`<p><b>SAV भाव-वार:</b> ${D.savBhava.map((s,i)=>`${i+1}:${s}`).join(', ')} &nbsp;|&nbsp; <b>गुरु BAV भाव-वार:</b> ${D.bavBhava('Jupiter').map((s,i)=>`${i+1}:${s}`).join(', ')}</p>`);
+  qualLine('आगे की process के लिए qualified दशा', [`5वां भाव ${D.bhavaBala[4].total>6?'मजबूत है':'कमजोर है'} - BAV/SAV के साथ आगे`]);
+  // ---- Step 3.6 Double Transit ----
+  h2('Step 3 - Parashari Layer: (3.6) Double Transit (गुरु+शनि, D1 + D9 + D7)');
+  cur.push(tbl(['महीना','गुरु','शनि','गुरु प्रभाव','शनि प्रभाव','समग्र निष्कर्ष'],
+    T.dtRows.map(r=>{ const mo=T.months.find(t=>t.y===r.y&&t.m===r.m); return [`${MON_HI[r.m-1]} ${r.y}`, mo?SIGNS[mo.jup]:'-', mo?SIGNS[mo.sat]:'-', r.gj.join(', ')||'-', r.sj.join(', ')||'-', r.conc]; })));
+  cur.push(`<p class="qual">Double Transit में <b>${T.dtRows.filter(r=>r.conc==='प्रबल').length} महीने प्रबल</b> (${T.dtRows.filter(r=>r.conc==='प्रबल').map(r=>`${MON_HI[r.m-1]} ${r.y}`).join(', ')||'-'}) और <b>${T.dtRows.filter(r=>r.conc==='मध्यम').length} महीने मध्यम</b> हैं।</p>`);
+  qualLine('आगे की process के लिए qualified दशा', [`Double Transit प्रबल महीनों वाली दशाएँ`]);
+  // ---- Step 3.7 Jupiter/Saturn strength ----
+  h2('Step 3 - Parashari Layer: (3.7) गुरु शक्ति + शनि शक्ति तालिकाएँ');
+  cur.push(`<p><b>गुरु शक्ति तालिका (SAV/BAV/BAL/गुणवत्ता):</b></p>`);
+  cur.push(tbl(['गोचर भाव','समय','SAV','BAV','BAL','गुणवत्ता','5th पर प्रभाव','सहायक भावों पर प्रभाव','अंतिम निष्कर्ष'],
+    T.p30.map(r=>[`${SIGNS[r.sign]} (L${r.L}/M${r.M})`, `${fmtMY(r.start)} - ${fmtMY(r.end)}`, r.sav, r.bav, r2(r.bal), r.qual, r.eff, r.sup, r.fin])));
+  cur.push(`<p><b>शनि शक्ति तालिका (Approve / Delay):</b></p>`);
+  cur.push(tbl(['गोचर भाव','समय','SAV','BAV','BAL','गुणवत्ता','5th पर प्रभाव','सहायक भावों पर प्रभाव','अंतिम निष्कर्ष'],
+    T.p30s.map(r=>[`${SIGNS[r.sign]} (L${r.L}/M${r.M})`, `${fmtMY(r.start)} - ${fmtMY(r.end)}`, r.sav, r.bav, r2(r.bal), r.qual, r.eff, r.sup, r.fin])));
+  cur.push(`<p><b>शनि का निष्कर्ष:</b> ${T.p30s.filter(r=>r.fin==='Approve').length} खंडों में Approve, ${T.p30s.filter(r=>r.fin!=='Approve').length} में Delay/आंशिक।</p>`);
+  qualLine('आगे की process के लिए qualified दशा', [`गुरु शक्ति ${T.p30.filter(r=>r.fin==='प्रबल संभावना').length} खंडों में प्रबल + शनि ${T.p30s.filter(r=>r.fin==='Approve').length} खंडों में Approve`]);
+  // ---- Step 3.8 Strength + % + Parashari Final ----
+  h2('Step 3 - Parashari Layer: (3.8) Strength + % + Parashari Final');
+  const sav5 = D.savBhava[4], savLagna = D.savBhava[0];
+  const bavJup5 = D.bavBhava('Jupiter')[4];
+  const savChecks = [];
+  savChecks.push(`(a) गुरु लग्न/5वें भाव की राशि से गुजरता है और SAV 28 से अधिक है - ${sav5>28?'हाँ':'नहीं'} (5th SAV ${sav5})`);
+  savChecks.push(`(b) गुरु मजबूत विंडो में है - ${T.scored.slice(0,3).map(w=>`${fmtMY(w.start)}-${fmtMY(w.end)}`).join(', ')}`);
+  savChecks.push(`(c) गुरु अगली विंडो में है - ${T.scored[1]?`${fmtMY(T.scored[1].start)}-${fmtMY(T.scored[1].end)}`:'-'}`);
+  const bavChecks = [];
+  bavChecks.push(`(a) गुरु की BAV में 5 या अधिक बिंदुओं वाली राशि से गुरु गुजरता है - ${bavJup5>=5?'हाँ':'नहीं'} (गुरु BAV 5th: ${bavJup5})`);
+  bavChecks.push(`(b) गुरु की BAV में मजबूत भावों की राशि से गुरु गुजरता है - ${D.bavBhava('Jupiter').map((v,i)=>v>=5?`${i+1}`:'').filter(Boolean).join(', ')||'-'}`);
+  bavChecks.push(`(c) गुरु पंचमेश (${HI[D.panchamesh]}) की राशि से गुजरता है और SAV अच्छी है - ${D.savBhava[bhavaOf(D.pl[D.panchamesh].sign, D.lagna)-1]}`);
+  const shadChecks = [];
+  shadChecks.push(`(a) गुरु का षड्बल: ${r2(D.sbRes.shadbala['Jupiter'].rupas)} रूप (min ${MINR['Jupiter']})`);
+  shadChecks.push(`(b) 5वें भाव का बल: ${D.bhavaBala[4].total.toFixed(2)} विरूप (${D.bhavaBala[4].total>8?'Strong':(D.bhavaBala[4].total>6?'Medium':'Weak')})`);
+  shadChecks.push(`(c) पंचमेश (${HI[D.panchamesh]}) का षड्बल: ${r2(D.sbRes.shadbala[D.panchamesh].rupas)} रूप (min ${MINR[D.panchamesh]})`);
+  cur.push(`<p><b>SAV जांच (गुरु गोचर):</b><br>${savChecks.map(c=>`▸ ${c}`).join('<br>')}</p>`);
+  cur.push(`<p><b>BAV जांच (गुरु गोचर):</b><br>${bavChecks.map(c=>`▸ ${c}`).join('<br>')}</p>`);
+  cur.push(`<p><b>षड्बल और भाव बल जांच:</b><br>${shadChecks.map(c=>`▸ ${c}`).join('<br>')}</p>`);
+  cur.push(tbl(['विंडो','अवधि','KP','BNN','MD','AD','Bonus','DT','गुरु+सूर्य','कुल %'],
+    T.scored.map((w,i)=>[i+1, `${fmtMY(w.start)} - ${fmtMY(w.end)}`, w.kpSc, w.bnnSc, w.mdSc, w.adSc, w.bonus, w.dtSc, w.sjSc, `${w.total}%`])));
+  const p34 = [];
+  const c1 = D.kpSig[curMD.lord].houses.includes(5)||curMD.lord===D.panchamesh;
+  p34.push(`(a) महादशा (MD) संतान दे सकती है - ${c1?'हाँ':'नहीं'} (${HI[curMD.lord]})`);
+  const c2 = T.scored.some(w=>w.kpSc>=20);
+  p34.push(`(b) महादशा स्वामी ने BAV/SAV के साथ दशा स्वीकृत की है - ${c2?'हाँ':'नहीं'}`);
+  const c3 = T.scored.some(w=>w.bnnSc>=9);
+  p34.push(`(c) गुरु गोचर 5वें भाव/पंचमेश पर है - ${c3?'हाँ':'नहीं'}`);
+  const c4 = F.pinMonths.length>0;
+  p34.push(`(d) गुरु+सूर्य pinpoint महीने मिले - ${c4?'हाँ':'नहीं'} (${F.pinRangeTxt.join(' | ')||'-'})`);
+  const c5 = T.p30s.some(r=>r.fin==='Approve');
+  p34.push(`(e) शनि Approve देता है - ${c5?'हाँ':'नहीं'}`);
+  const c6 = T.scored.some(w=>w.total>=70);
+  p34.push(`(f) विंडो की कुल संभावना 70% या अधिक है - ${c6?'हाँ':'नहीं'} (सबसे अधिक ${F.topScore[0].total}%)`);
+  const p34ok = [c1,c2,c3,c4,c5,c6].filter(Boolean).length;
+  cur.push(`<p><b>Parashari Final - 6 शर्तें (segment 33):</b><br>${p34.map(c=>`▸ ${c}`).join('<br>')}<br><b>निष्कर्ष:</b> ${p34ok}/6 शर्तें पूरी हुईं। ${p34ok>=4?'सबसे संभावित विंडो '+(F.top?`${fmtMY(F.top.start)} - ${fmtMY(F.top.end)} (${F.top.total}%)`:'-')+' है - High Chances।':'शर्तें कम पूरी हुईं - समय अभी और परिपक्व होना बाकी है।'}</p>`);
+  qualLine('आगे की process के लिए qualified दशा', [`${fmtMY(F.top.start)} - ${fmtMY(F.top.end)} (${F.top.total}%) - ${HI[F.top.ad]} AD`]);
+  // ---- Step 4 Jaimini ----
+  h2('Step 4 - Jaimini Layer');
+  cur.push(`<p><b>जैमिनी राशियाँ (PK/UL/A5/स्वांश-कारकांश):</b><br>${Object.entries(D.A_rashis).map(([k,v])=>`▸ ${k}: ${SIGNS[v]}`).join('<br>')}</p>`);
+  cur.push(`<p><b>B राशियाँ (जिनमें ग्रह होने पर रैंक बढ़ती है):</b><br>${Object.entries(D.B_rashis).map(([k,v])=>`▸ ${k}: ${Array.isArray(v)?v.map(p=>HI[p]).join(', ')||'-':SIGNS[v]}`).join('<br>')}</p>`);
+  const jaimRows = [];
+  const aInA = D.A_set.filter(s=>D.B_set.includes(s));
+  jaimRows.push(['A रैंक राशियाँ', D.A_set.map(s=>SIGNS[s]).join(', ')]);
+  jaimRows.push(['B रैंक राशियाँ', D.B_set.map(s=>SIGNS[s]).join(', ')]);
+  jaimRows.push(['दोनों में common', aInA.map(s=>SIGNS[s]).join(', ')||'-']);
+  cur.push(tbl(['','राशियाँ'], jaimRows));
+  cur.push(`<p><b>चर दशा:</b> ${D.chara.map(v=>`${SIGNS[v.rashi]} (${fmtMY(v.start)}-${fmtMY(v.end)})`).join(', ')}।</p>`);
+  const charaRows = D.charaAds.map(({md,ad})=>{ const rk=D.A_set.includes(ad.rashi)?'A':(D.B_set.includes(ad.rashi)?'B':'-'); return [`${SIGNS[md.rashi]} - ${SIGNS[ad.rashi]}`, fmt(ad.start), fmt(ad.end), `${fmtMY(ad.start)} - ${fmtMY(ad.end)}`, rk]; });
+  cur.push(tbl(['चर MD - AD','शुरुआत','समाप्ति','अवधि','रैंक'], charaRows));
+  const argalaTxt = [];
+  const argalaOf = r => {
+    const out = [];
+    const arg = (from, lbl) => { const s = (r+from)%12; const occ = Object.keys(D.pl).filter(p=>D.pl[p].sign===s); if(occ.length) out.push(`${lbl}: ${occ.map(p=>HI[p]).join(', ')} (${SIGNS[s]})`); };
+    arg(1,'2nd (धन)'); arg(3,'4th (सुख)'); arg(10,'11th (लाभ)');
+    return out;
+  };
+  argalaTxt.push(`5वां भाव (${SIGNS[D.s5]}) पर अर्गला: ${argalaOf(D.s5).join('; ')||'कोई नहीं'}`);
+  argalaTxt.push(`पंचमेश (${HI[D.panchamesh]}) की राशि (${SIGNS[D.pl[D.panchamesh].sign]}) पर अर्गला: ${argalaOf(D.pl[D.panchamesh].sign).join('; ')||'कोई नहीं'}`);
+  cur.push(`<p><b>अर्गला:</b><br>${argalaTxt.map(c=>`▸ ${c}`).join('<br>')}</p>`);
+  qualLine('आगे की process के लिए qualified दशा', D.charaAds.filter(({ad})=>D.A_set.includes(ad.rashi)||D.B_set.includes(ad.rashi)).map(({md,ad})=>`${SIGNS[md.rashi]}-${SIGNS[ad.rashi]} AD (${fmtMY(ad.start)}-${fmtMY(ad.end)})`));
+  // ---- Step 5 BNN ----
+  h2('Step 5 - BNN Layer: गुरु activation + शनि approval');
+  cur.push(`<p><b>(5.1) गुरु activation:</b> गुरु की अंतर्दशा में गुरु ${D.pl['Jupiter'].house}वें भाव (${SIGNS[D.pl['Jupiter'].sign]}) में है। गुरु जब नाताल गुरु पर (${SIGNS[D.pl['Jupiter'].sign]}), नाताल शुक्र पर (${SIGNS[D.pl['Venus'].sign]}) या पंचमेश (${HI[D.panchamesh]}) पर (${SIGNS[D.pl[D.panchamesh].sign]}) गोचर करता है, तब संतान की activation होती है।</p>`);
+  const bnnRows = [];
+  const fmtR = rs => rs.map(r=>`${fmtMY(r.start)} - ${fmtMY(r.end)}`).join(' | ')||'-';
+  bnnRows.push(['गुरु नाताल शुक्र पर + शनि approval', fmtR(F.bnnVenus)]);
+  bnnRows.push(['गुरु नाताल गुरु पर (Return) + शनि approval', fmtR(F.bnnReturn)]);
+  bnnRows.push(['गुरु पंचमेश पर + शनि approval', fmtR(F.bnnPanchamesh)]);
+  cur.push(tbl(['BNN activation','अवधि'], bnnRows));
+  cur.push(`<p><b>(5.2) शनि approval:</b> शनि जब 5वें भाव, पंचमेश, गुरु या शुक्र से 1, 3, 7, 10 (केंद्र/त्रिकोण नियम) में हो, तब approval मिलता है।</p>`);
+  qualLine('आगे की process के लिए qualified दशा', [`BNN activation: ${fmtR(F.bnnReturn).slice(0,60)}`]);
+  // ---- Step 6 KP ----
+  h2('Step 6 - KP Layer: (6.1) दशा qualification + (6.2) गुरु+सूर्य pinpoint');
+  const kpRows = D.vimAds.map(({ad})=>{ const q=D.kpQual(ad.lord); const ok=q.pos.length>0&&q.neg.length===0; return [`${HI[ad.lord]}`, fmt(ad.start), fmt(ad.end), `${fmtMY(ad.start)} - ${fmtMY(ad.end)}`, q.pos.join(', ')||'-', q.neg.join(', ')||'-', ok?'✅ योग्य':'❌ अयोग्य']; });
+  cur.push(tbl(['विंशोत्तरी AD','शुरुआत','समाप्ति','अवधि','Positive (2, 5, 11)','Negative (1, 4, 10)','निष्कर्ष'], kpRows));
+  cur.push(`<p><b>5th CSL:</b> ${HI[D.cslPlanet]} - नक्षत्र स्वामी ${HI[D.cslNl]}, उप-नक्षत्र स्वामी ${HI[D.cslSl]}, उप-उप-नक्षत्र स्वामी ${HI[D.cslSsl]}। 5th cusp: ${SIGNS[F.cusp5Sign]} (${r2(D.cuspKP(5)%30)}°)।</p>`);
+  cur.push(`<p><b>KP transit ranges (2, 5, 11 significators):</b> ${F.kpRangeTxt.join(' | ')||'-'}</p>`);
+  cur.push(`<p><b>KP significators (2, 5, 11):</b> ${F.sigPlanets.map(p=>HI[p]).join(', ')} - राशियाँ: ${F.sigSigns.map(s=>SIGNS[s]).join(', ')}</p>`);
+  cur.push(`<p><b>(6.2) गुरु+सूर्य transit से महीना pinpoint (segment 39):</b> जब गुरु और सूर्य दोनों एक ही महीने में 5th cusp (${SIGNS[F.cusp5Sign]}), 5th CSL (${HI[D.cslPlanet]} की राशि ${SIGNS[D.pl[D.cslPlanet].sign]}) या significator राशियों (${F.sigSigns.map(s=>SIGNS[s]).join(', ')}) पर हों, तब वह महीना सबसे संभावित है।</p>`);
+  cur.push(tbl(['महीना','गुरु की राशि','सूर्य की राशि'],
+    F.pinMonths.map(m=>[`${MON_HI[m.m-1]} ${m.y}`, SIGNS[m.jup], SIGNS[m.sun]])));
+  cur.push(`<p class="qual"><b>Pinpoint महीने:</b> ${F.pinRangeTxt.join(' | ')||'-'}</p>`);
+  qualLine('आगे की process के लिए qualified दशा', [`KP योग्य AD + pinpoint महीने: ${F.pinRangeTxt.slice(0,3).join(', ')||'-'}`]);
+  // ---- Step 7 D7 + Beeja-Kshetra + D60 ----
+  h2('Step 7 - D7 + बीज/क्षेत्र स्फुट + D60');
+  cur.push(`<p><b>D7 (सप्तमांश) लग्न:</b> ${SIGNS[D.d7Lagna.sign]} (${r2(D.d7Lagna.deg)}°) &nbsp;|&nbsp; <b>D7 5वां भाव:</b> ${SIGNS[D.d7s5]} (स्वामी ${HI[D.d7Panchamesh]}) &nbsp;|&nbsp; <b>D7 लग्नेश:</b> ${HI[D.d7Lagnesh]} &nbsp;|&nbsp; <b>D7 में पंचमेश (${HI[D.panchamesh]}):</b> ${SIGNS[D.d7[D.panchamesh].sign]} (${bhavaOf(D.d7[D.panchamesh].sign, D.d7Lagna.sign)}वां भाव)</p>`);
+  cur.push(tbl(['ग्रह','D7 राशि','D7 अंश','D7 भाव'],
+    P9.map(p=>{ const x=D.d7[p]; return [`<b>${HI[p]}</b>`, SIGNS[x.sign], r2(x.deg), bhavaOf(x.sign, D.d7Lagna.sign)]; })));
+  cur.push(`<p><b>${D.gender==='male'?'बीज स्फुट':'क्षेत्र स्फुट'} (Beeja/Kshetra):</b> ${D.gender==='male'?'सूर्य + शुक्र + गुरु':'चंद्र + मंगल + गुरु'} का योग = ${r2(sp.lon)}° - राशि ${SIGNS[sp.sign]} (${sp.sign%2===0?'विषम (Odd)':'सम (Even)'}) - नक्षत्र ${NAK[sp.nak]} - स्वामी ${HI[SIGN_LORD[sp.sign]]} D1 में ${D.pl[SIGN_LORD[sp.sign]].house}वें भाव में - <b>बल: ${spBala}</b></p>`);
+  cur.push(`<p><b>स्फुट पर दृष्टि:</b> ${Object.keys(D.pl).filter(p=>aspectOffsets(p).map(o=>(D.pl[p].sign+o)%12).includes(sp.sign)).map(p=>HI[p]).join(', ')||'कोई नहीं'} &nbsp;|&nbsp; <b>स्फुट की D9 राशि:</b> ${SIGNS[(()=>{const _s=Math.floor(sp.lon/30);return (_s+[0,8,4][_s%3]+Math.floor((sp.lon%30)/3.3333333))%12;})()]}</p>`); // TEXTBOOK D9 (v1.6 fix)
+  cur.push(`<p><b>D60 karmic check:</b> D60 पंचमेश ${HI[d60Panchamesh]} D60 में ${d60PanchameshBhava}वें भाव में - ${d60Ok?'कर्मिक बाधा नहीं':'6/8/12 में - कर्मिक बाधा संभव, उपाय से कम होगी'}</p>`);
+  const delayTxt = [];
+  const d7panchBhava = bhavaOf(D.d7[D.panchamesh].sign, D.d7Lagna.sign);
+  if([6,8,12].includes(d7panchBhava)) delayTxt.push(`D7 में पंचमेश ${d7panchBhava}वें भाव में - विलंब संभव`);
+  if(D.kpSig[D.panchamesh].houses.includes(6)||D.kpSig[D.panchamesh].houses.includes(8)||D.kpSig[D.panchamesh].houses.includes(12)) delayTxt.push(`पंचमेश KP में 6/8/12 signify करता है - विलंब संभव`);
+  if(D.pl['Saturn'].house===5||D.pl['Rahu'].house===5) delayTxt.push('5वें भाव में शनि/राहु - विलंब संभव');
+  const ivfTxt = [];
+  if(D.pl['Saturn'].house===5||D.pl['Rahu'].house===5||D.pl['Ketu'].house===5) ivfTxt.push('5वें भाव में शनि/राहु/केतु - चिकित्सा/IVF का विचार संभव');
+  if(spBala==='पीड़ित') ivfTxt.push('स्फुट पीड़ित - चिकित्सा सहायता का विचार संभव');
+  cur.push(`<p><b>विलंब के संकेत:</b> ${delayTxt.join('; ')||'कोई स्पष्ट विलंब संकेत नहीं'}</p>`);
+  cur.push(`<p><b>IVF/चिकित्सा के संकेत:</b> ${ivfTxt.join('; ')||'कोई स्पष्ट संकेत नहीं'}</p>`);
+  qualLine('आगे की process के लिए qualified दशा', [`D7 पंचमेश ${d7panchBhava}वां भाव + स्फुट ${spBala}`]);
+  // ---- Step 8 Order + Final ----
+  h2('Step 8 - Final Conclusion');
+  cur.push(tbl(['विंडो','अवधि','संभावना','BNN','KP','DT'],
+    F.ranked.map((w,i)=>[i+1, `${fmtMY(w.start)} - ${fmtMY(w.end)}`, `${w.total}%`, w.bnnLbl, `${w.kpSc}/15`, (w.dtSc>=10?'प्रबल':(w.dtSc>=5?'मध्यम':'न्यून'))])));
+  cur.push(`<p><b>Alternate windows:</b> ${F.ranked.slice(1,4).map(w=>`${fmtMY(w.start)} - ${fmtMY(w.end)} (${w.total}%)`).join(' | ')||'-'}</p>`);
+  cur.push(`<p class="qual"><b>Final Conclusion:</b><br>▸ सबसे संभावित विंडो: <b>${fmtMY(F.top.start)} - ${fmtMY(F.top.end)} (${F.top.total}%)</b> - ${HI[F.top.ad]} AD + ${F.top.yogMd} (${HI[F.top.yogPl]})<br>▸ सबसे संभावित वर्ष: <b>${F.bestYear}</b>${F.peakTxt?` - सबसे अच्छा समय: <b>${F.peakTxt}</b>`:''}<br>▸ सभी systems का common समय: <b>${F.unanimous}</b><br>▸ Parashari: ${p34ok}/6 शर्तें पूरी - BNN: गुरु activation ${F.bnnReturn.length||F.bnnVenus.length?'मिली':'नहीं मिली'} - KP: pinpoint महीने ${F.pinRangeTxt.length} - Jaimini: चर दशा ${SIGNS[curChara.rashi]}<br><b>निष्कर्ष: ${fmtMY(F.top.start)} - ${fmtMY(F.top.end)} के बीच संतान प्राप्ति की सबसे अधिक संभावना है - High Chances।</b></p>`);
+  cur.push(`<p><b>Notes:</b><br>▸ संख्या (कुल संतान की गिनती) इस tool में नहीं आती - prompt set में गिनने की कोई formula नहीं है।<br>▸ पहली संतान का लिंग इस tool में नहीं आता - उसके लिए अलग Gender Determination Tool है।<br>▸ षड्बल standard textbook पद्धति से, त्रिभागी दशा dasha v6.1 logic से, चर दशा KN Rao rules से - D60 और D7 JyotishApp PDFs से verify (D7: 4 charts, 10/10 signs match)।<br>▸ उपाय इस tool का हिस्सा नहीं हैं - report prompt set में अलग से आते हैं।</p>`);
+  flush();
+  return html;
+}
+// ================= step modes =================
+let SECTIONS = [], lastKey = null, shownCount = 0;
+let lastD = null, lastT = null, lastF = null;
+function updateProgress(){
+  const el = document.getElementById('progress');
+  if(!SECTIONS.length){ el.textContent = ''; return; }
+  el.textContent = shownCount>=SECTIONS.length ? `गणना पूर्ण - सभी ${SECTIONS.length} चरण दिखाए गए।` : `चरण ${shownCount} / ${SECTIONS.length}`;
+}
+function showStep(i){
+  const el = document.getElementById('step-'+i);
+  if(!el) return;
+  el.classList.add('visible');
+  shownCount = i;
+  updateProgress();
+}
+window.nextStep = function(i){
+  const btn = document.getElementById('next-'+i);
+  if(btn) btn.style.display = 'none';
+  if(i<SECTIONS.length){
+    showStep(i+1);
+    const el = document.getElementById('step-'+(i+1));
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  } else updateProgress();
+};
+function showAll(){
+  for(let i=1;i<=SECTIONS.length;i++){
+    const el = document.getElementById('step-'+i);
+    if(el) el.classList.add('visible');
+    const btn = document.getElementById('next-'+i);
+    if(btn) btn.style.display = 'none';
+  }
+  shownCount = SECTIONS.length;
+  updateProgress();
+}
+function renderSections(){
+  const wrap = document.getElementById('results');
+  wrap.innerHTML = SECTIONS.map((h,i)=>{
+    const nextBtn = i<SECTIONS.length-1 ? `<p><button class="btn-next" id="next-${i+1}" onclick="nextStep(${i+1})">अगला चरण →</button></p>` : '';
+    return `<section class="step" id="step-${i+1}">${h}${nextBtn}</section>`;
+  }).join('');
+}
+// ================= TXT download (v1.7) - pure computed data only =================
+function buildTxt(D, T, F){
+  const L = [];
+  const genderLabel = D.gender==='male' ? 'पुरुष की कुंडली' : 'स्त्री की कुंडली';
+  const curMD = D.curMD;
+  const curYog = D.yog.find(m=>m.start<=D.HSTART && D.HSTART<m.end) || D.yog[0];
+  const curTri = D.tri.find(m=>m.start<=D.HSTART && D.HSTART<m.end) || D.tri[0];
+  const curChara = D.chara.find(m=>m.start<=D.HSTART && D.HSTART<m.end) || D.chara[0];
+  const sp = D.gender==='male'
+    ? sphutaOf([D.pl['Sun'].lon, D.pl['Venus'].lon, D.pl['Jupiter'].lon])
+    : sphutaOf([D.pl['Moon'].lon, D.pl['Mars'].lon, D.pl['Jupiter'].lon]);
+  const spBala = sphutaBalaOf(sp.sign, D.pl);
+  const d60s5 = (D.d60Lagna.sign+4)%12, d60Panchamesh = SIGN_LORD[d60s5];
+  const d60PanchameshBhava = bhavaOf(D.d60[d60Panchamesh].sign, D.d60Lagna.sign);
+  const d60Ok = ![6,8,12].includes(d60PanchameshBhava);
+  const cslQ = D.kpQual(D.cslPlanet);
+  const promiseChecks = [];
+  promiseChecks.push([D.pl[D.panchamesh].house===5 ? 'अच्छा' : (D.pl[D.panchamesh].house===1 ? 'अच्छा' : 'देखें'), `पंचमेश ${HI[D.panchamesh]} D1 में ${D.pl[D.panchamesh].house}वें भाव में (${SIGNS[D.pl[D.panchamesh].sign]})`]);
+  promiseChecks.push([D.pl['Jupiter'].house===5||D.pl['Jupiter'].house===9||D.pl['Jupiter'].house===1 ? 'अच्छा' : 'देखें', `नाताल गुरु ${D.pl['Jupiter'].house}वें भाव में (${SIGNS[D.pl['Jupiter'].sign]})`]);
+  promiseChecks.push([cslQ.pos.length>0 && cslQ.neg.length===0 ? 'अच्छा' : (cslQ.pos.length>0 ? 'मिश्रित' : 'कमजोर'), `KP: 5वां भाव का CSL ${HI[D.cslPlanet]} - positive ${cslQ.pos.join(', ')||'-'}, negative ${cslQ.neg.join(', ')||'-'}`]);
+  promiseChecks.push([d60Ok ? 'अच्छा' : 'देखें', `D60: पंचमेश ${HI[d60Panchamesh]} D60 में ${d60PanchameshBhava}वें भाव में`]);
+  promiseChecks.push([spBala==='बलवान' ? 'अच्छा' : (spBala==='पीड़ित' ? 'कमजोर' : 'मध्यम'), `${D.gender==='male'?'बीज स्फुट (सूर्य + शुक्र + गुरु)':'क्षेत्र स्फुट (चंद्र + मंगल + गुरु)'}`]);
+
+  L.push('Child Birth Time Calculator v1.7');
+  L.push('Astro Code: ' + document.getElementById('astro-code').value);
+  L.push('कुंडली: ' + genderLabel);
+  L.push('विवाह: ' + D.marriageLabel);
+  L.push('पहली संतान की खोज: ' + fmtMY(D.earliest) + ' से');
+  L.push('Horizon: ' + fmtMY(addDays(D.HEND,-1)) + ' तक');
+  L.push('');
+  L.push('Step 1 - कुंडली सार');
+  L.push('लग्न: ' + SIGNS[D.lagna]);
+  L.push('चंद्र: ' + SIGNS[D.pl['Moon'].sign] + ' (' + NAK[D.nakIdx] + '-' + (Math.floor((D.pl['Moon'].lon%30)/3.3333333)+1) + '; तिथि ' + D.tithi + ', ' + (D.isShukla?'शुक्ल':'कृष्ण') + ' पक्ष)');
+  L.push('पंचमेश: ' + HI[D.panchamesh]);
+  L.push('5th CSL: ' + HI[D.cslPlanet]);
+  L.push('D9 लग्न: ' + SIGNS[D.d9Lagna]);
+  L.push('D7 लग्न: ' + SIGNS[D.d7Lagna.sign]);
+  L.push('D60 लग्न: ' + SIGNS[D.d60Lagna.sign]);
+  L.push('वर्तमान विंशोत्तरी महादशा: ' + HI[curMD.lord] + ' (' + fmt(curMD.start) + ' - ' + fmt(curMD.end) + ')');
+  L.push('योगिनी महादशा: ' + HI[curYog.lord]);
+  L.push('चर महादशा: ' + SIGNS[curChara.rashi]);
+  L.push('त्रिभागी महादशा: ' + HI[curTri.lord]);
+  L.push('');
+  L.push('ग्रह स्थिति (D1):');
+  L.push('ग्रह | राशि | अंश | भाव | नक्षत्र | D9 राशि | D7 राशि | D60 राशि');
+  for(const p of P9){
+    const x = D.pl[p];
+    L.push(`${HI[p]} | ${SIGNS[x.sign]} | ${r2(x.deg)} | ${x.house} | ${NAK[x.nak]}-${(Math.floor((x.lon%30)/3.3333333)+1)} | ${SIGNS[D.d9[p]]} | ${SIGNS[D.d7[p].sign]} | ${SIGNS[D.d60[p].sign]}`);
+  }
+  L.push('');
+  L.push('पंचम भाव (5th):');
+  L.push('D1 राशि: ' + SIGNS[D.s5] + ' | स्वामी: ' + HI[D.panchamesh] + ' | स्वामी की स्थिति: ' + D.pl[D.panchamesh].house + 'वां भाव');
+  L.push('D9 राशि: ' + SIGNS[D.d9s5] + ' | स्वामी: ' + HI[D.d9Panchamesh] + ' | स्वामी की स्थिति: ' + bhavaOf(D.d9[D.panchamesh], D.d9Lagna) + 'वां भाव');
+  L.push('D7 राशि: ' + SIGNS[D.d7s5] + ' | स्वामी: ' + HI[D.d7Panchamesh] + ' | स्वामी की स्थिति: ' + bhavaOf(D.d7[D.panchamesh].sign, D.d7Lagna.sign) + 'वां भाव');
+  L.push('D60 राशि: ' + SIGNS[d60s5] + ' | स्वामी: ' + HI[d60Panchamesh] + ' | स्वामी की स्थिति: ' + bhavaOf(D.d60[D.panchamesh].sign, D.d60Lagna.sign) + 'वां भाव');
+  L.push('');
+  L.push('Promise of Progeny - 5 systems:');
+  for(const c of promiseChecks) L.push('- ' + c[1] + ' - ' + c[0]);
+  L.push('');
+  L.push('Step 2 - Master Time-Table (7 साल, ' + fmtMY(D.HSTART) + ' - ' + fmtMY(addDays(D.HEND,-1)) + '):');
+  L.push('वर्ष-खंड: ' + T.mtt.length);
+  L.push('वर्ष | विंशोत्तरी | योगिनी | चर | त्रिभागी | गुरु गोचर | शनि गोचर');
+  for(const r of T.mtt) L.push(`${r.year} | ${r.vim} | ${r.yog} | ${r.chara} | ${r.tri} | ${r.guruGochar} | ${r.shaniGochar}`);
+  L.push('');
+  L.push('Groups A-G:');
+  for(const k of ['A','B','C','D','E','F','G']){
+    for(const [rule, plan] of Object.entries(D.groups[k])){
+      L.push(`Group ${k} | ${rule} | ${plan.map(x=>HI[x]).join(', ')}`);
+    }
+  }
+  L.push('Ranking A: ' + D.ranking.A.map(x=>HI[x]).join(', '));
+  L.push('Ranking B: ' + D.ranking.B.map(x=>HI[x]).join(', '));
+  L.push('Ranking C: ' + D.ranking.C.map(x=>HI[x]).join(', '));
+  L.push('ग्रहों की रैंकिंग भूमिका: ' + D.roleOrder.map(p=>`${HI[p]} - ${D.roleCount[p]} groups (${D.roles[p].slice(0,3).join(', ')})`).join(' | '));
+  L.push('');
+  L.push('Step 3.1 - विंशोत्तरी दशा:');
+  L.push('विंशोत्तरी महादशाएँ: ' + D.vim.map(v=>`${HI[v.lord]} (${fmtMY(v.start)}-${fmtMY(v.end)})`).join(', '));
+  L.push('अंतरदशा | शुरुआत | समाप्ति | अवधि | रैंक | KP Positive | KP Negative');
+  for(const {ad} of D.vimAds){
+    const q = D.kpQual(ad.lord);
+    const rk = D.ranking.A.includes(ad.lord)?'A':(D.ranking.B.includes(ad.lord)?'B':'C');
+    L.push(`${HI[ad.lord]} | ${fmt(ad.start)} | ${fmt(ad.end)} | ${fmtMY(ad.start)} - ${fmtMY(ad.end)} | ${rk} | ${q.pos.length?'+'+q.pos.join(', '):'-'} | ${q.neg.length?'-'+q.neg.join(', '):'-'}`);
+  }
+  L.push('');
+  L.push('Step 3.2 - योगिनी दशा:');
+  L.push('योगिनी महादशाएँ: ' + D.yog.map(v=>`${v.lord} (${HI[YOG2PL[v.lord]]}) (${fmtMY(v.start)}-${fmtMY(v.end)})`).join(', '));
+  L.push('योगिनी AD | शुरुआत | समाप्ति | अवधि | रैंक | KP Positive | KP Negative');
+  for(const {ad} of D.yogAds){
+    const q = D.kpQual(YOG2PL[ad.lord]);
+    const rk = D.ranking.A.includes(YOG2PL[ad.lord])?'A':(D.ranking.B.includes(YOG2PL[ad.lord])?'B':'C');
+    L.push(`${ad.lord} (${HI[YOG2PL[ad.lord]]}) | ${fmt(ad.start)} | ${fmt(ad.end)} | ${fmtMY(ad.start)} - ${fmtMY(ad.end)} | ${rk} | ${q.pos.length?'+'+q.pos.join(', '):'-'} | ${q.neg.length?'-'+q.neg.join(', '):'-'}`);
+  }
+  L.push('');
+  L.push('Step 3.3 - संभावित समय-विंडो (Vimshottari AD x Yogini AD):');
+  L.push('कुल संभावित टाइम विंडो (पहली संतान): ' + T.scored.length);
+  L.push('विवाह से पहले हटाई गई windows: ' + D.removedWindows);
+  L.push('शुरुआत काटी गई windows: ' + D.clippedWindows);
+  L.push('विंडो | अवधि | विंशोत्तरी AD | योगिनी AD | Overlap | कुल %');
+  T.scored.forEach((w,i)=>L.push(`${i+1} | ${fmtMY(w.start)} - ${fmtMY(w.end)} | ${HI[w.ad]} | ${w.yogMd} (${HI[w.yogPl]}) | ${w.overlapTxt} | ${w.total}%`));
+  L.push('');
+  L.push('Step 3.4 - त्रिभागी दशा:');
+  L.push('त्रिभागी महादशाएँ: ' + D.tri.map(v=>`${HI[v.lord]} (${fmtMY(v.start)}-${fmtMY(v.end)})`).join(', '));
+  L.push('त्रिभागी AD | शुरुआत | समाप्ति | अवधि | रैंक | KP Positive | KP Negative');
+  for(const {ad} of D.triAds){
+    const q = D.kpQual(ad.lord);
+    const rk = D.ranking.A.includes(ad.lord)?'A':(D.ranking.B.includes(ad.lord)?'B':'C');
+    L.push(`${HI[ad.lord]} | ${fmt(ad.start)} | ${fmt(ad.end)} | ${fmtMY(ad.start)} - ${fmtMY(ad.end)} | ${rk} | ${q.pos.length?'+'+q.pos.join(', '):'-'} | ${q.neg.length?'-'+q.neg.join(', '):'-'}`);
+  }
+  L.push('');
+  L.push('Step 3.5 - भाव बल + BAV/SAV:');
+  L.push('सबसे मजबूत भाव: ' + D.bhavaBala[0].bhava + 'वां भाव (' + D.bhavaBala[0].total.toFixed(2) + ' विरूप)');
+  L.push('सबसे कमजोर भाव: ' + D.bhavaBala[11].bhava + 'वां भाव (' + D.bhavaBala[11].total.toFixed(2) + ' विरूप)');
+  L.push('5वां भाव: ' + D.bhavaBala[4].total.toFixed(2) + ' विरूप (' + (D.bhavaBala[4].total>8?'Strong':(D.bhavaBala[4].total>6?'Medium':'Weak')) + ')');
+  L.push('भाव | राशि | बल (विरूप) | श्रेणी');
+  for(const b of D.bhavaBala) L.push(`${b.bhava} | ${SIGNS[(D.lagna+b.bhava-1)%12]} | ${b.total.toFixed(2)} | ${b.total>8?'Strong':(b.total>6?'Medium':'Weak')}`);
+  const sbSorted = P7.map(p=>({pl:p, sb:D.sbRes.shadbala[p].rupas, min:MINR[p]})).sort((a,b)=>a.sb-b.sb);
+  L.push('षड्बल सबसे कमजोर ग्रह: ' + HI[sbSorted[6].pl] + ' (' + r2(sbSorted[6].sb) + ' रूप, min ' + sbSorted[6].min + ')');
+  L.push('षड्बल सबसे मजबूत ग्रह: ' + HI[sbSorted[0].pl] + ' (' + r2(sbSorted[0].sb) + ' रूप)');
+  L.push('गुरु का षड्बल: ' + r2(D.sbRes.shadbala['Jupiter'].rupas) + ' रूप (min ' + MINR['Jupiter'] + ')');
+  L.push('पंचमेश (' + HI[D.panchamesh] + ') का षड्बल: ' + r2(D.sbRes.shadbala[D.panchamesh].rupas) + ' रूप (min ' + MINR[D.panchamesh] + ')');
+  for(const p of P7) L.push('BAV ' + HI[p] + ': ' + D.bav[p].join(', '));
+  L.push('SAV भाव-वार: ' + D.savBhava.map((s,i)=>`${i+1}:${s}`).join(', '));
+  L.push('गुरु BAV भाव-वार: ' + D.bavBhava('Jupiter').map((s,i)=>`${i+1}:${s}`).join(', '));
+  L.push('');
+  L.push('Step 3.6 - Double Transit (गुरु+शनि):');
+  L.push('Double Transit प्रबल महीने: ' + T.dtRows.filter(r=>r.conc==='प्रबल').length);
+  L.push('Double Transit औसत महीने: ' + T.dtRows.filter(r=>r.conc==='औसत').length);
+  L.push('Double Transit न्यून महीने: ' + T.dtRows.filter(r=>r.conc==='न्यून').length);
+  L.push('महीना | गुरु | शनि | गुरु प्रभाव | शनि प्रभाव | समग्र निष्कर्ष');
+  for(const r of T.dtRows){
+    const mo = T.months.find(t=>t.y===r.y&&t.m===r.m);
+    L.push(`${MON_HI[r.m-1]} ${r.y} | ${mo?SIGNS[mo.jup]:'-'} | ${mo?SIGNS[mo.sat]:'-'} | ${r.gj.join(', ')||'-'} | ${r.sj.join(', ')||'-'} | ${r.conc}`);
+  }
+  L.push('');
+  L.push('Step 3.7 - गुरु शक्ति तालिका:');
+  L.push('गोचर भाव | समय | SAV | BAV | BAL | गुणवत्ता | 5th पर प्रभाव | सहायक भावों पर प्रभाव | अंतिम निष्कर्ष');
+  for(const r of T.p30) L.push(`${SIGNS[r.sign]} (L${r.L}/M${r.M}) | ${fmtMY(r.start)} - ${fmtMY(r.end)} | ${r.sav} | ${r.bav} | ${r2(r.bal)} | ${r.qual} | ${r.eff} | ${r.sup} | ${r.fin}`);
+  L.push('Step 3.7 - शनि शक्ति तालिका:');
+  L.push('गोचर भाव | समय | SAV | BAV | BAL | गुणवत्ता | 5th पर प्रभाव | सहायक भावों पर प्रभाव | अंतिम निष्कर्ष');
+  for(const r of T.p30s) L.push(`${SIGNS[r.sign]} (L${r.L}/M${r.M}) | ${fmtMY(r.start)} - ${fmtMY(r.end)} | ${r.sav} | ${r.bav} | ${r2(r.bal)} | ${r.qual} | ${r.eff} | ${r.sup} | ${r.fin}`);
+  L.push('शनि Approve खंड: ' + T.p30s.filter(r=>r.fin==='Approve').length);
+  L.push('शनि Delay/आंशिक खंड: ' + T.p30s.filter(r=>r.fin!=='Approve').length);
+  L.push('');
+  L.push('Step 3.8 - Strength + %:');
+  const sav5 = D.savBhava[4];
+  const bavJup5 = D.bavBhava('Jupiter')[4];
+  L.push('SAV जांच (गुरु गोचर):');
+  L.push('(a) गुरु लग्न/5वें भाव की राशि से गुजरता है और SAV 28 से अधिक है - ' + (sav5>28?'हाँ':'नहीं') + ' (5th SAV ' + sav5 + ')');
+  L.push('(b) गुरु मजबूत विंडो में है - ' + T.scored.slice(0,3).map(w=>`${fmtMY(w.start)}-${fmtMY(w.end)}`).join(', '));
+  L.push('(c) गुरु अगली विंडो में है - ' + (T.scored[1]?`${fmtMY(T.scored[1].start)}-${fmtMY(T.scored[1].end)}`:'-'));
+  L.push('BAV जांच (गुरु गोचर):');
+  L.push('(a) गुरु की BAV में 5 या अधिक बिंदुओं वाली राशि से गुरु गुजरता है - ' + (bavJup5>=5?'हाँ':'नहीं') + ' (गुरु BAV 5th: ' + bavJup5 + ')');
+  L.push('(b) गुरु की BAV में मजबूत भावों की राशि से गुरु गुजरता है - ' + (D.bavBhava('Jupiter').map((v,i)=>v>=5?`${i+1}`:'').filter(Boolean).join(', ')||'-'));
+  L.push('(c) गुरु पंचमेश (' + HI[D.panchamesh] + ') की राशि से गुजरता है और SAV अच्छी है - ' + D.savBhava[bhavaOf(D.pl[D.panchamesh].sign, D.lagna)-1]);
+  L.push('षड्बल और भाव बल जांच:');
+  L.push('(a) गुरु का षड्बल: ' + r2(D.sbRes.shadbala['Jupiter'].rupas) + ' रूप (min ' + MINR['Jupiter'] + ')');
+  L.push('(b) 5वें भाव का बल: ' + D.bhavaBala[4].total.toFixed(2) + ' विरूप (' + (D.bhavaBala[4].total>8?'Strong':(D.bhavaBala[4].total>6?'Medium':'Weak')) + ')');
+  L.push('(c) पंचमेश (' + HI[D.panchamesh] + ') का षड्बल: ' + r2(D.sbRes.shadbala[D.panchamesh].rupas) + ' रूप (min ' + MINR[D.panchamesh] + ')');
+  L.push('विंडो | अवधि | KP | BNN | MD | AD | Bonus | DT | गुरु+सूर्य | कुल %');
+  T.scored.forEach((w,i)=>L.push(`${i+1} | ${fmtMY(w.start)} - ${fmtMY(w.end)} | ${w.kpSc} | ${w.bnnSc} | ${w.mdSc} | ${w.adSc} | ${w.bonus} | ${w.dtSc} | ${w.sjSc} | ${w.total}%`));
+  const c1 = D.kpSig[curMD.lord].houses.includes(5)||curMD.lord===D.panchamesh;
+  const c2 = T.scored.some(w=>w.kpSc>=20);
+  const c3 = T.scored.some(w=>w.bnnSc>=9);
+  const c4 = F.pinMonths.length>0;
+  const c5 = T.p30s.some(r=>r.fin==='Approve');
+  const c6 = T.scored.some(w=>w.total>=70);
+  const p34ok = [c1,c2,c3,c4,c5,c6].filter(Boolean).length;
+  L.push('Parashari Final - 6 शर्तें:');
+  L.push('(a) महादशा (MD) संतान दे सकती है - ' + (c1?'हाँ':'नहीं') + ' (' + HI[curMD.lord] + ')');
+  L.push('(b) महादशा स्वामी ने BAV/SAV के साथ दशा स्वीकृत की है - ' + (c2?'हाँ':'नहीं'));
+  L.push('(c) गुरु गोचर 5वें भाव/पंचमेश पर है - ' + (c3?'हाँ':'नहीं'));
+  L.push('(d) गुरु+सूर्य pinpoint महीने मिले - ' + (c4?'हाँ':'नहीं') + ' (' + (F.pinRangeTxt.join(' | ')||'-') + ')');
+  L.push('(e) शनि Approve देता है - ' + (c5?'हाँ':'नहीं'));
+  L.push('(f) विंडो की कुल संभावना 70% या अधिक है - ' + (c6?'हाँ':'नहीं') + ' (सबसे अधिक ' + F.topScore[0].total + '%)');
+  L.push('शर्तें पूरी: ' + p34ok + '/6');
+  L.push('');
+  L.push('Step 4 - Jaimini Layer:');
+  for(const [k,v] of Object.entries(D.A_rashis)) L.push(k + ': ' + SIGNS[v]);
+  for(const [k,v] of Object.entries(D.B_rashis)) L.push(k + ': ' + (Array.isArray(v)?v.map(p=>HI[p]).join(', ')||'-':SIGNS[v]));
+  L.push('A रैंक राशियाँ: ' + D.A_set.map(s=>SIGNS[s]).join(', '));
+  L.push('B रैंक राशियाँ: ' + D.B_set.map(s=>SIGNS[s]).join(', '));
+  L.push('दोनों में common: ' + (D.A_set.filter(s=>D.B_set.includes(s)).map(s=>SIGNS[s]).join(', ')||'-'));
+  L.push('चर महादशाएँ: ' + D.chara.map(v=>`${SIGNS[v.rashi]} (${fmtMY(v.start)}-${fmtMY(v.end)})`).join(', '));
+  L.push('चर MD - AD | शुरुआत | समाप्ति | अवधि | रैंक');
+  for(const {md,ad} of D.charaAds){
+    const rk = D.A_set.includes(ad.rashi)?'A':(D.B_set.includes(ad.rashi)?'B':'-');
+    L.push(`${SIGNS[md.rashi]} - ${SIGNS[ad.rashi]} | ${fmt(ad.start)} | ${fmt(ad.end)} | ${fmtMY(ad.start)} - ${fmtMY(ad.end)} | ${rk}`);
+  }
+  const argalaOf = r => {
+    const out = [];
+    const arg = (from, lbl) => { const s = (r+from)%12; const occ = Object.keys(D.pl).filter(p=>D.pl[p].sign===s); if(occ.length) out.push(`${lbl}: ${occ.map(p=>HI[p]).join(', ')} (${SIGNS[s]})`); };
+    arg(1,'2nd (धन)'); arg(3,'4th (सुख)'); arg(10,'11th (लाभ)');
+    return out;
+  };
+  L.push('अर्गला:');
+  L.push('5वां भाव (' + SIGNS[D.s5] + ') पर अर्गला: ' + (argalaOf(D.s5).join('; ')||'कोई नहीं'));
+  L.push('पंचमेश (' + HI[D.panchamesh] + ') की राशि (' + SIGNS[D.pl[D.panchamesh].sign] + ') पर अर्गला: ' + (argalaOf(D.pl[D.panchamesh].sign).join('; ')||'कोई नहीं'));
+  L.push('');
+  L.push('Step 5 - BNN Layer:');
+  L.push('गुरु नाताल शुक्र पर + शनि approval: ' + (F.bnnVenus.map(r=>`${fmtMY(r.start)} - ${fmtMY(r.end)}`).join(' | ')||'-'));
+  L.push('गुरु नाताल गुरु पर (Return) + शनि approval: ' + (F.bnnReturn.map(r=>`${fmtMY(r.start)} - ${fmtMY(r.end)}`).join(' | ')||'-'));
+  L.push('गुरु पंचमेश पर + शनि approval: ' + (F.bnnPanchamesh.map(r=>`${fmtMY(r.start)} - ${fmtMY(r.end)}`).join(' | ')||'-'));
+  L.push('');
+  L.push('Step 6 - KP Layer:');
+  L.push('विंशोत्तरी AD | शुरुआत | समाप्ति | अवधि | Positive (2, 5, 11) | Negative (1, 4, 10) | निष्कर्ष');
+  for(const {ad} of D.vimAds){
+    const q = D.kpQual(ad.lord);
+    const ok = q.pos.length>0&&q.neg.length===0;
+    L.push(`${HI[ad.lord]} | ${fmt(ad.start)} | ${fmt(ad.end)} | ${fmtMY(ad.start)} - ${fmtMY(ad.end)} | ${q.pos.join(', ')||'-'} | ${q.neg.join(', ')||'-'} | ${ok?'योग्य':'अयोग्य'}`);
+  }
+  L.push('5th CSL: ' + HI[D.cslPlanet] + ' - नक्षत्र स्वामी ' + HI[D.cslNl] + ', उप-नक्षत्र स्वामी ' + HI[D.cslSl] + ', उप-उप-नक्षत्र स्वामी ' + HI[D.cslSsl]);
+  L.push('5th cusp: ' + SIGNS[F.cusp5Sign] + ' (' + r2(D.cuspKP(5)%30) + '°)');
+  L.push('KP transit ranges (2, 5, 11 significators): ' + (F.kpRangeTxt.join(' | ')||'-'));
+  L.push('KP significators (2, 5, 11): ' + F.sigPlanets.map(p=>HI[p]).join(', ') + ' - राशियाँ: ' + F.sigSigns.map(s=>SIGNS[s]).join(', '));
+  L.push('गुरु+सूर्य pinpoint महीने:');
+  L.push('महीना | गुरु की राशि | सूर्य की राशि');
+  for(const m of F.pinMonths) L.push(`${MON_HI[m.m-1]} ${m.y} | ${SIGNS[m.jup]} | ${SIGNS[m.sun]}`);
+  L.push('Pinpoint महीने: ' + (F.pinRangeTxt.join(' | ')||'-'));
+  L.push('');
+  L.push('Step 7 - D7 + बीज/क्षेत्र स्फुट + D60:');
+  L.push('D7 लग्न: ' + SIGNS[D.d7Lagna.sign] + ' (' + r2(D.d7Lagna.deg) + '°)');
+  L.push('D7 5वां भाव: ' + SIGNS[D.d7s5] + ' (स्वामी ' + HI[D.d7Panchamesh] + ')');
+  L.push('D7 लग्नेश: ' + HI[D.d7Lagnesh]);
+  L.push('D7 में पंचमेश (' + HI[D.panchamesh] + '): ' + SIGNS[D.d7[D.panchamesh].sign] + ' (' + bhavaOf(D.d7[D.panchamesh].sign, D.d7Lagna.sign) + 'वां भाव)');
+  L.push('ग्रह | D7 राशि | D7 अंश | D7 भाव');
+  for(const p of P9){
+    const x = D.d7[p];
+    L.push(`${HI[p]} | ${SIGNS[x.sign]} | ${r2(x.deg)} | ${bhavaOf(x.sign, D.d7Lagna.sign)}`);
+  }
+  L.push((D.gender==='male'?'बीज स्फुट':'क्षेत्र स्फुट') + ' (' + (D.gender==='male'?'सूर्य + शुक्र + गुरु':'चंद्र + मंगल + गुरु') + ') का योग = ' + r2(sp.lon) + '° - राशि ' + SIGNS[sp.sign] + ' (' + (sp.sign%2===0?'विषम (Odd)':'सम (Even)') + ') - नक्षत्र ' + NAK[sp.nak] + ' - स्वामी ' + HI[SIGN_LORD[sp.sign]] + ' D1 में ' + D.pl[SIGN_LORD[sp.sign]].house + 'वें भाव में - बल: ' + spBala);
+  L.push('स्फुट पर दृष्टि: ' + (Object.keys(D.pl).filter(p=>aspectOffsets(p).map(o=>(D.pl[p].sign+o)%12).includes(sp.sign)).map(p=>HI[p]).join(', ')||'कोई नहीं'));
+  L.push('स्फुट की D9 राशि: ' + SIGNS[(()=>{const _s=Math.floor(sp.lon/30);return (_s+[0,8,4][_s%3]+Math.floor((sp.lon%30)/3.3333333))%12;})()]);
+  L.push('D60 पंचमेश ' + HI[d60Panchamesh] + ' D60 में ' + d60PanchameshBhava + 'वें भाव में');
+  const delayTxt = [];
+  const d7panchBhava = bhavaOf(D.d7[D.panchamesh].sign, D.d7Lagna.sign);
+  if([6,8,12].includes(d7panchBhava)) delayTxt.push(`D7 में पंचमेश ${d7panchBhava}वें भाव में - विलंब संभव`);
+  if(D.kpSig[D.panchamesh].houses.includes(6)||D.kpSig[D.panchamesh].houses.includes(8)||D.kpSig[D.panchamesh].houses.includes(12)) delayTxt.push('पंचमेश KP में 6/8/12 signify करता है - विलंब संभव');
+  if(D.pl['Saturn'].house===5||D.pl['Rahu'].house===5) delayTxt.push('5वें भाव में शनि/राहु - विलंब संभव');
+  const ivfTxt = [];
+  if(D.pl['Saturn'].house===5||D.pl['Rahu'].house===5||D.pl['Ketu'].house===5) ivfTxt.push('5वें भाव में शनि/राहु/केतु - चिकित्सा/IVF का विचार संभव');
+  if(spBala==='पीड़ित') ivfTxt.push('स्फुट पीड़ित - चिकित्सा सहायता का विचार संभव');
+  L.push('विलंब के संकेत: ' + (delayTxt.join('; ')||'कोई स्पष्ट विलंब संकेत नहीं'));
+  L.push('IVF/चिकित्सा के संकेत: ' + (ivfTxt.join('; ')||'कोई स्पष्ट संकेत नहीं'));
+  L.push('');
+  L.push('Step 8 - Final Conclusion:');
+  L.push('विंडो | अवधि | संभावना | BNN | KP | DT');
+  F.ranked.forEach((w,i)=>L.push(`${i+1} | ${fmtMY(w.start)} - ${fmtMY(w.end)} | ${w.total}% | ${w.bnnLbl} | ${w.kpSc}/15 | ${(w.dtSc>=10?'प्रबल':(w.dtSc>=5?'मध्यम':'न्यून'))}`));
+  L.push('Alternate windows: ' + (F.ranked.slice(1,4).map(w=>`${fmtMY(w.start)} - ${fmtMY(w.end)} (${w.total}%)`).join(' | ')||'-'));
+  L.push('सबसे संभावित विंडो: ' + fmtMY(F.top.start) + ' - ' + fmtMY(F.top.end) + ' (' + F.top.total + '%) - ' + HI[F.top.ad] + ' AD + ' + F.top.yogMd + ' (' + HI[F.top.yogPl] + ')');
+  L.push('सबसे संभावित वर्ष: ' + F.bestYear);
+  if(F.peakTxt) L.push('सबसे अच्छा समय: ' + F.peakTxt);
+  L.push('सभी systems का common समय: ' + F.unanimous);
+  L.push('Parashari: ' + p34ok + '/6 शर्तें पूरी - BNN: गुरु activation ' + (F.bnnReturn.length||F.bnnVenus.length?'मिली':'नहीं मिली') + ' - KP: pinpoint महीने ' + F.pinRangeTxt.length + ' - Jaimini: चर दशा ' + SIGNS[curChara.rashi]);
+  return L.join('\n') + '\n';
+}
+window.downloadTxt = function(){
+  if(!lastD || !lastT || !lastF){ return; }
+  const txt = buildTxt(lastD, lastT, lastF);
+  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'child-birth-time-v1.7.txt';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+};
+
+window.runCalc = async function(mode){
+  const code = document.getElementById('astro-code').value;
+  const errEl = document.getElementById('error');
+  const stEl = document.getElementById('status');
+  errEl.innerHTML = '';
+  const marM = parseInt((document.getElementById('marriage-month').value||''), 10);
+  const marYRaw = (document.getElementById('marriage-year').value||'').trim();
+  const marY = parseInt(marYRaw, 10);
+  if(!marM || !/^\d{4}$/.test(marYRaw) || !(marY>=1900 && marY<=2100)){
+    errEl.innerHTML = '<div class="err">विवाह का महीना-साल डालना जरूरी है - कृपया विवाह का महीना चुनें और 4 अंकों का साल डालें (जैसे 2031)। बिना इसके गणना नहीं चलेगी।</div>';
+    stEl.textContent = 'गणना नहीं चली - विवाह का महीना-साल डालें।';
+    return;
+  }
+  const marriage = {m:marM, y:marY};
+  const marriageLabel = fmtYM(marY, marM);
+  const runKey = code+'|'+((document.querySelector('input[name="gender"]:checked')||{}).value||'female')+'|'+marY+'-'+marM;
+  if(runKey===lastKey && SECTIONS.length){
+    if(mode==='all'){ showAll(); stEl.textContent = 'सभी चरण एक साथ दिखाए गए।'; }
+    else {
+      document.querySelectorAll('.step').forEach(el=>el.classList.remove('visible'));
+      document.querySelectorAll('.btn-next').forEach(b=>b.style.display='');
+      showStep(1);
+      stEl.textContent = 'चरण 1 / '+SECTIONS.length+' दिखाया गया।';
+    }
+    return;
+  }
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('txt-row').style.display = 'none';
+  SECTIONS = []; shownCount = 0; updateProgress();
+  document.getElementById('btn-steps').disabled = true;
+  document.getElementById('btn-all').disabled = true;
+  try{
+    const setStatus = t => { stEl.textContent = t; };
+    const gender = (document.querySelector('input[name="gender"]:checked')||{}).value || 'female';
+    const D = await computeAll(code, gender, marriage, setStatus);
+    if(!D.wins.length){
+      const earliestLbl = fmtMY(D.earliest);
+      errEl.innerHTML = `<div class="err">विवाह ${marriageLabel} के 9 महीने बाद (${earliestLbl} से) इस horizon (${fmtMY(addDays(D.HEND,-1))} तक) में कोई संतान window नहीं बनती। ${D.removedWindows>0?`विवाह + 9 महीने से पहले की ${D.removedWindows} window(s) हटाई गईं। `:''}कृपया विवाह का महीना-साल जाँचें या horizon के अंदर का समय चुनें।</div>`;
+      stEl.textContent = 'कोई संतान window नहीं बनी।';
+      document.getElementById('txt-row').style.display = 'none';
+      lastKey = null;
+      return;
+    }
+    setStatus(`गोचर scan हो रहा है (${fmtMY(D.HSTART)} - ${fmtMY(addDays(D.HEND,-1))} + windows)...`);
+    await tick();
+    const T = await computeTransits(D, setStatus);
+    const F = computeFinal(D, T);
+    setStatus('नतीजे बनाए जा रहे हैं...');
+    await tick();
+    SECTIONS = buildSections(D, T, F);
+    lastD = D; lastT = T; lastF = F;
+    document.getElementById('txt-row').style.display = 'block';
+    lastKey = runKey;
+    renderSections();
+    if(mode==='all'){ showAll(); stEl.textContent = 'गणना पूर्ण - सभी '+SECTIONS.length+' चरण एक साथ दिखाए गए।'; }
+    else { showStep(1); stEl.textContent = 'गणना पूर्ण - चरण 1 / '+SECTIONS.length+' दिखाया गया। "अगला चरण" से आगे बढ़ें।'; }
+  }catch(e){
+    errEl.innerHTML = `<div class="err">त्रुटि: ${esc(e.message||String(e))}</div>`;
+    stEl.textContent = 'गणना पूरी नहीं हो सकी।';
+    document.getElementById('txt-row').style.display = 'none';
+  }finally{
+    document.getElementById('btn-steps').disabled = false;
+    document.getElementById('btn-all').disabled = false;
+  }
+};
+
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marriage Time Calculator v2.2</title>
+<title>Marriage Time Calculator v2.3</title>
 <style>
 body{font-family:"Noto Sans Devanagari",sans-serif;max-width:1100px;margin:0 auto;padding:18px;color:#222;background:#fff}
 h1{font-size:24px;color:#7a0000}
@@ -33,8 +33,8 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>Marriage Time Calculator v2.2</h1>
-<p class="small" id="horizon-note">Astro Code से विवाह का समय - v2.2: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus) + दशा-बदलाव factors। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
+<h1>Marriage Time Calculator v2.3</h1>
+<p class="small" id="horizon-note">Astro Code से विवाह का समय - v2.3: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus) + दशा-बदलाव factors। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर 2026 - अक्टूबर 2034 (8 साल)। भाषा: High Chances - पक्का दावा कहीं नहीं।</p>
 <p>
 <label for="astro-code"><b>Astro Code:</b></label><br>
 <input type="text" id="astro-code" value="" placeholder="AS1-YYYYMMDD-HHMMSS-+HHMM-DDMMN-DDDMME">
@@ -59,6 +59,7 @@ button{padding:9px 16px;font-size:15px;margin:4px 4px 4px 0;cursor:pointer}
 <div id="error"></div>
 <div id="progress"></div>
 <div id="results"></div>
+<p><button class="btn-all" id="btn-txt" onclick="downloadTxt()" disabled>TXT Download</button></p>
 <script type="module">
 const EPHEM_CDN = 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.4.0/dist/swisseph-browser.js';
 const DPY = 365.256364;
@@ -283,7 +284,7 @@ function vargaSigns(lon){
   const d3s = (s+[0,4,8][Math.floor(d/10)])%12;
   const pada7 = Math.floor(d/(30/7));
   const d7s = s%2===0 ? (s+pada7)%12 : (s+6+pada7)%12;
-  const d9s = (s+[0,8,4][s%3]+Math.floor(d/3.3333333))%12; // TEXTBOOK D9 (v2.2 fix): chara same, sthira +8, dwisvabhava +4
+  const d9s = (s+[0,8,4][s%3]+Math.floor(d/3.3333333))%12; // TEXTBOOK D9: chara same, sthira +8, dwisvabhava +4
   const pada12 = Math.floor(d/2.5);
   const d12s = s%2===0 ? (s+pada12)%12 : (s+6+pada12)%12;
   let d30s = null;
@@ -440,7 +441,7 @@ async function computeAll(code, setStatus, startYear, gender){
     pl[p].nak = Math.floor(pl[p].lon/13.3333333);
     pl[p].nakLord = VIM_ORDER[pl[p].nak%9];
   }
-  // TEXTBOOK D9 (v2.2 fix): chara same sign, sthira 9th from, dwisvabhava 5th from, then + pada
+  // TEXTBOOK D9: chara same sign, sthira 9th from, dwisvabhava 5th from, then + pada
   const navamsha = lon => { const s = Math.floor(lon/30); return (s+[0,8,4][s%3]+Math.floor((lon%30)/3.3333333))%12; };
   const d9 = {}; for(const p of P9) d9[p] = navamsha(pl[p].lon);
   const d9Lagna = navamsha(ascLon);
@@ -1766,7 +1767,7 @@ function buildSections(D, T, F){
       h += `<tr><td>${s.id}</td><td>${fmtMY(s.start)} - ${fmtMY(s.end)}</td><td>${s.systems.join(' + ')||'-'}</td><td>${s.bestMonth?fmtYM(s.bestMonth.y, s.bestMonth.m)+' ('+s.bestScore+')':'-'}</td><td>${s.score}${s.bothKaraka?' (दोनों कारक +4)':''}</td></tr>`;
     }
     h += `</table>`;
-    h += `<div class="verdict"><p><b>v2.2 Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}${F.peakTxt?(' ('+F.peakTxt+')'):''} - High Chances।</b> Systems: ${F.top.systems.join(' + ')}; सबसे अच्छा महीना: ${F.top.bestMonth?fmtYM(F.top.bestMonth.y, F.top.bestMonth.m)+' (score '+F.top.bestScore+')':'-'}।</p></div>`;
+    h += `<div class="verdict"><p><b>v2.3 Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}${F.peakTxt?(' ('+F.peakTxt+')'):''} - High Chances।</b> Systems: ${F.top.systems.join(' + ')}; सबसे अच्छा महीना: ${F.top.bestMonth?fmtYM(F.top.bestMonth.y, F.top.bestMonth.m)+' (score '+F.top.bestScore+')':'-'}।</p></div>`;
     h += QUAL(`Consensus Final: ${F.top.id} (${fmtMY(F.top.start)} - ${fmtMY(F.top.end)}), सबसे संभावित वर्ष ${F.bestYear}। यही tool का अंतिम नतीजा है।`);
     S.push(h);
   }
@@ -1812,6 +1813,177 @@ function renderSections(){
     return `<section class="step" id="step-${i+1}">${h}${nextBtn}</section>`;
   }).join('');
 }
+// ---- v2.3: TXT download (pure computed data only) ----
+let LAST = null;
+const isoD = d => `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+const ymD = (y,m) => `${y}-${String(m).padStart(2,'0')}`;
+const joinOrDash = a => a.length ? a.join(', ') : '-';
+function buildTxt(){
+  const {D, T, F, code, gender} = LAST;
+  const L = [];
+  L.push('Marriage Time Calculator v2.3');
+  L.push('Astro Code: ' + code);
+  L.push('Gender: ' + (gender==='female' ? 'female' : 'male'));
+  L.push('Horizon Start: ' + isoD(HSTART));
+  L.push('Horizon End: ' + isoD(HEND));
+  L.push('');
+  L.push('[Chart]');
+  for(const p of P9){
+    const v = D.pl[p];
+    L.push(p + ': Sign=' + SIGNS_EN[v.sign] + ' Degree=' + r2(v.deg) + ' House=' + v.house + ' Nakshatra=' + NAK[v.nak] + ' D9=' + SIGNS_EN[D.d9[p]] + ' D60=' + SIGNS_EN[D.d60[p].sign] + ' ' + r2(D.d60[p].deg));
+  }
+  L.push('Lagna: ' + SIGNS_EN[D.lagna] + ' ' + (D.ascLon%30).toFixed(2));
+  L.push('D9 Lagna: ' + SIGNS_EN[D.d9Lagna]);
+  L.push('D60 Lagna: ' + SIGNS_EN[D.d60Lagna.sign] + ' ' + r2(D.d60Lagna.deg));
+  L.push('Saptamesh: ' + D.saptamesh);
+  L.push('Dwitiyesh: ' + D.dwitiyesh);
+  L.push('Ekadashesh: ' + D.ekadashesh);
+  L.push('Lagnesh: ' + D.lagnesh);
+  L.push('Spouse Karaka: ' + D.spouseKaraka);
+  L.push('7th CSL: ' + D.cslPlanet + ' NL=' + D.cslNl + ' SL=' + D.cslSl + ' SSL=' + D.cslSsl);
+  L.push('D9 Saptamesh: ' + D.d9Saptamesh);
+  L.push('D9 Lagnesh: ' + D.d9Lagnesh);
+  L.push('Moon Saptamesh Lord: ' + F.moonSaptameshLord + ' Sign=' + SIGNS_EN[F.moonSaptameshSign]);
+  L.push('Current Vimshottari MD: ' + D.curMD.lord + ' ' + isoD(D.curMD.start) + ' to ' + isoD(D.curMD.end));
+  L.push('');
+  L.push('[Final]');
+  L.push('Final Window: ' + F.top.id);
+  L.push('Final Start: ' + isoD(F.top.start));
+  L.push('Final End: ' + isoD(F.top.end));
+  L.push('Final Systems: ' + (F.top.systems.join('+') || '-'));
+  L.push('Final Score: ' + F.top.score);
+  L.push('Best Month: ' + (F.top.bestMonth ? ymD(F.top.bestMonth.y, F.top.bestMonth.m) : '-'));
+  L.push('Best Month Score: ' + (F.top.bestMonth ? F.top.bestMonth.total : '-'));
+  L.push('Best Year: ' + F.bestYear);
+  L.push('Peak Months: ' + (F.peakTxt || '-'));
+  L.push('Peak Mechanism: ' + F.peakMechanism);
+  if(F.second){
+    L.push('Second Window: ' + F.second.id);
+    L.push('Second Start: ' + isoD(F.second.start));
+    L.push('Second End: ' + isoD(F.second.end));
+    L.push('Second Systems: ' + (F.second.systems.join('+') || '-'));
+    L.push('Second Score: ' + F.second.score);
+    L.push('Second Best Month: ' + (F.second.bestMonth ? ymD(F.second.bestMonth.y, F.second.bestMonth.m) : '-'));
+    L.push('Second Best Month Score: ' + (F.second.bestMonth ? F.second.bestMonth.total : '-'));
+  }
+  L.push('');
+  L.push('[Consensus Segments]');
+  for(const s of F.consensus){
+    L.push(s.id + ': ' + isoD(s.start) + ' to ' + isoD(s.end) + ' Systems=' + (s.systems.join('+') || '-') + ' BestMonth=' + (s.bestMonth ? ymD(s.bestMonth.y, s.bestMonth.m) : '-') + ' BestMonthScore=' + (s.bestMonth ? s.bestMonth.total : '-') + ' Score=' + s.score + ' BothKaraka=' + (s.bothKaraka ? 'yes' : 'no'));
+  }
+  L.push('');
+  L.push('[Window Scores]');
+  for(const w of T.scored){
+    L.push(w.id + ': ' + isoD(w.start) + ' to ' + isoD(w.end) + ' Total=' + w.total + ' Probability=' + w.pct + ' KP=' + (w.kpClean ? 'clean' : 'with-negative') + ' BNN=' + w.bnnSc + ' ' + w.bnnLbl + ' CharaMD=' + w.mdSc + ' CharaAD=' + w.adSc + ' Bonus=' + w.bonus + ' DT=' + w.dtSc + ' P29=' + w.p29Sc + ' AD=' + w.ad + ' YoginiMD=' + w.yogMd);
+  }
+  L.push('');
+  L.push('[Monthly Scores]');
+  for(const ms of T.monthScores){
+    L.push(ymD(ms.y, ms.m) + ': Total=' + ms.total + ' Systems=' + (ms.systems.join('+') || '-') + ' KP=' + ms.kpSc + ' BNN=' + ms.bnnSc + ' ' + ms.bnnLbl + ' Drishti=' + ms.drishti + ' CharaMD=' + ms.mdSc + ' CharaAD=' + ms.adSc + ' Bonus=' + ms.bonus + ' DT=' + ms.dtSc + ' P29=' + ms.p29Sc + ' TribhagiKP=' + ms.triKp + ' ULAD=' + ms.ulAd + ' SaptameshTransit=' + ms.saptTrans + ' ExactReturn=' + ms.exactRet + ' PDChange=' + ms.pd7chg + ' YoginiChange=' + ms.yogChg + ' Convergence=' + ms.pyBonus + ' ADLord=' + (ms.adLord || '-') + ' TribhagiLord=' + (ms.triLord || '-'));
+  }
+  L.push('');
+  L.push('[Double Transit Monthly]');
+  for(const r of T.dtRows){
+    L.push(ymD(r.y, r.m) + ': Guru=' + joinOrDash(r.gj) + ' Shani=' + joinOrDash(r.sj) + ' Combined=' + r.comb + ' Conclusion=' + r.conc);
+  }
+  L.push('');
+  L.push('[Venus Periods]');
+  for(const p of T.venPeriods){
+    L.push(SIGNS_EN[p.sign] + ': ' + isoD(p.start) + ' to ' + isoD(p.end) + ' Signals=' + p.checks.length + ' ' + p.checks.join('; '));
+  }
+  L.push('');
+  L.push('[Jupiter Strength]');
+  for(const r of T.p30){
+    L.push(SIGNS_EN[r.sign] + ': ' + isoD(r.start) + ' to ' + isoD(r.end) + ' SAV=' + r.sav + ' BAV=' + r.bav + ' Bala=' + r2(r.bal) + ' Quality=' + r.qual + ' Effect=' + r.eff + ' Support=' + r.sup + ' Conclusion=' + r.fin + ' LagnaBhava=' + r.L + ' MoonBhava=' + r.M);
+  }
+  L.push('');
+  L.push('[BAV SAV]');
+  for(const p of ['Jupiter','Saturn','Venus']){
+    L.push(p + ' BAV Signs: ' + D.bav[p].join(' '));
+    L.push(p + ' BAV Houses: ' + D.bavBhava(p).join(' '));
+    L.push(p + ' BAV Total: ' + D.bav[p].reduce((a,b)=>a+b,0));
+  }
+  L.push('SAV Signs: ' + D.sav.join(' '));
+  L.push('SAV Houses: ' + D.savBhava.join(' '));
+  L.push('SAV Total: ' + D.sav.reduce((a,b)=>a+b,0));
+  L.push('');
+  L.push('[Shadbala]');
+  for(const p of P7){
+    const v = D.sbRes.shadbala[p];
+    L.push(p + ': Total=' + r2(v.total) + ' Rupas=' + r2(v.rupas) + ' Minimum=' + MINR[p] + ' Sthana=' + r2(v.sthana) + ' Dig=' + r2(v.dig) + ' Kala=' + r2(v.kala) + ' Cheshta=' + r2(v.cheshta) + ' Naisargika=' + r2(v.naisargika) + ' Drik=' + r2(v.drik));
+  }
+  L.push('');
+  L.push('[Bhava Bala]');
+  for(let i=0;i<12;i++){
+    const b = D.bhavaBala[i];
+    L.push('House ' + b.bhava + ': Sign=' + SIGNS_EN[b.sign] + ' Lord=' + b.lord + ' Total=' + r2(b.total) + ' Rupas=' + r2(b.rupas) + ' Adhipati=' + r2(b.adhipati) + ' Dig=' + b.dig + ' Drig=' + b.drig);
+  }
+  L.push('');
+  L.push('[KP Significators]');
+  for(const p of P9){
+    const q = D.kpQual(p);
+    L.push(p + ': Houses=' + D.kpSig[p].houses.join(',') + ' Positive=' + (q.pos.join(',') || '-') + ' Negative=' + (q.neg.join(',') || '-'));
+  }
+  L.push('');
+  L.push('[Jaimini]');
+  L.push('A Rashis: ' + D.A_set.map(s=>SIGNS_EN[s]).join(', '));
+  L.push('B Rashis: ' + D.B_set.map(s=>SIGNS_EN[s]).join(', '));
+  L.push('AL: ' + SIGNS_EN[D.AL] + ' UL: ' + SIGNS_EN[D.UL] + ' A7: ' + SIGNS_EN[D.A7] + ' Karakansh: ' + SIGNS_EN[D.karakansh]);
+  for(const k of ['AK','AmK','BK','MK','PK','GK','DK']) L.push(k + ': ' + D.karakas[k]);
+  L.push('');
+  L.push('[Chara Dasha]');
+  for(const md of D.chara){
+    L.push(SIGNS_EN[md.rashi] + ' MD: ' + md.years + ' years ' + isoD(md.start) + ' to ' + isoD(md.end));
+  }
+  L.push('[Chara ADs in Horizon]');
+  for(const {md,ad} of D.charaAds){
+    L.push(SIGNS_EN[md.rashi] + '-' + SIGNS_EN[ad.rashi] + ': ' + isoD(ad.start) + ' to ' + isoD(ad.end) + ' Rank=' + (D.A_set.includes(ad.rashi) ? 'A' : (D.B_set.includes(ad.rashi) ? 'B' : '-')));
+  }
+  L.push('');
+  L.push('[Vimshottari ADs]');
+  for(const {md,ad} of D.vimAds) L.push(md.lord + '-' + ad.lord + ': ' + isoD(ad.start) + ' to ' + isoD(ad.end));
+  L.push('[Yogini ADs]');
+  for(const {md,ad} of D.yogAds) L.push(md.lord + '-' + ad.lord + ': ' + isoD(ad.start) + ' to ' + isoD(ad.end));
+  L.push('[Tribhagi ADs]');
+  for(const {md,ad} of D.triAds) L.push(md.lord + '-' + ad.lord + ': ' + isoD(ad.start) + ' to ' + isoD(ad.end));
+  L.push('');
+  L.push('[Master Time Table]');
+  for(const r of T.mtt){
+    L.push(r.year + ': Vimshottari=' + r.vim + ' Yogini=' + r.yog + ' Chara=' + r.chara + ' Tribhagi=' + r.tri + ' GuruGochar=' + r.guruGochar + ' ShaniGochar=' + r.shaniGochar);
+  }
+  L.push('');
+  L.push('[BNN Ranges]');
+  L.push('Venus: ' + (F.bnnVenus.map(rr=>isoD(rr.start)+' to '+isoD(rr.end)).join('; ') || '-'));
+  L.push('Mars: ' + (F.bnnMars.map(rr=>isoD(rr.start)+' to '+isoD(rr.end)).join('; ') || '-'));
+  L.push('Return: ' + (F.bnnReturn.map(rr=>isoD(rr.start)+' to '+isoD(rr.end)).join('; ') || '-'));
+  L.push('KP Transit Ranges: ' + (F.kpRangeTxt.join('; ') || '-'));
+  L.push('Exact Jupiter Return Days: ' + (T.exactReturnDays.map(isoD).join(', ') || '-'));
+  L.push('');
+  L.push('[Independent Windows]');
+  for(const k of ['P','J','B','K']){
+    L.push(k + ': ' + (T.sysWindows[k].map(w=>isoD(w.start)+' to '+isoD(w.end)).join('; ') || '-'));
+  }
+  L.push('');
+  L.push('[Ashtottari]');
+  L.push('Applicable: ' + (F.ashApplicable ? 'yes' : 'no'));
+  L.push('Rahu House: ' + D.pl['Rahu'].house);
+  L.push('Condition1: ' + (F.cond1 ? 'yes' : 'no'));
+  L.push('Condition2: ' + (F.cond2 ? 'yes' : 'no'));
+  L.push('Moon Saptamesh Windows: ' + (F.p22Wins.join(', ') || '-'));
+  return L.join('\n') + '\n';
+}
+window.downloadTxt = function(){
+  if(!LAST) return;
+  const txt = buildTxt();
+  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'marriage-time-v2.3.txt';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+};
+
 window.runCalc = async function(mode){
   const code = document.getElementById('astro-code').value;
   const errEl = document.getElementById('error');
@@ -1847,7 +2019,7 @@ window.runCalc = async function(mode){
   try{
     const setStatus = t => { stEl.textContent = t; };
     const D = await computeAll(code, setStatus, startYear, gender);
-    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - v2.2: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus) + दशा-बदलाव factors। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। लिंग: ${gender==='female'?'महिला (जीवनसाथी कारक मंगल)':'पुरुष (जीवनसाथी कारक शुक्र)'}। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
+    document.getElementById('horizon-note').textContent = `Astro Code से विवाह का समय - v2.3: पराशरी + जैमिनी + BNN + KP की स्वतंत्र windows + month scoring (consensus) + दशा-बदलाव factors। गणना: Swiss Ephemeris (browser build), Lahiri अयनांश। Horizon: नवंबर ${startYear} - अक्टूबर ${startYear+8} (8 साल)। लिंग: ${gender==='female'?'महिला (जीवनसाथी कारक मंगल)':'पुरुष (जीवनसाथी कारक शुक्र)'}। भाषा: High Chances - पक्का दावा कहीं नहीं।`;
     setStatus(`गोचर scan हो रहा है (नवंबर ${HSTART.getUTCFullYear()} - अक्टूबर ${HSTART.getUTCFullYear()+8} + windows)...`);
     await tick();
     const T = await computeTransits(D, setStatus);
@@ -1856,6 +2028,8 @@ window.runCalc = async function(mode){
     await tick();
     SECTIONS = buildSections(D, T, F);
     lastKey = runKey;
+    LAST = {D, T, F, code, startYear, gender};
+    document.getElementById('btn-txt').disabled = false;
     renderSections();
     if(mode==='all'){ showAll(); stEl.textContent = 'गणना पूर्ण - सभी '+SECTIONS.length+' चरण एक साथ दिखाए गए।'; }
     else { showStep(1); stEl.textContent = 'गणना पूर्ण - चरण 1 / '+SECTIONS.length+' दिखाया गया। "अगला चरण" से आगे बढ़ें।'; }
